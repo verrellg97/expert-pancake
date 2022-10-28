@@ -1,3 +1,5 @@
+github.com/calvinkmts/expert-pancake/engine v0.0.0-20221028183511-de01ce05c4ff h1:V166E84mqgQwJ8kr/mN8d1tkZ0ljv6GCeweX+VKJKqo=
+github.com/calvinkmts/expert-pancake/engine v0.0.0-20221028183511-de01ce05c4ff/go.mod h1:uBkV/5So1udtUWd1npnrNw1+U4CtblK3vhgQD6wU3gs=
 github.com/go-chi/chi/v5 v5.0.7 h1:rDTPXLDHGATaeHvVlLcR4Qe0zftYethFucbjVQ1PxU8=
 github.com/go-chi/chi/v5 v5.0.7/go.mod h1:DslCQbL2OYiznFReuXYUmQ2hGd1aDpCnlMNITLSKoi8=
 github.com/go-chi/cors v1.2.1 h1:xEC8UT3Rlp2QuWNEr4Fs/c2EAGVKBwy/1vHx3bppil4=

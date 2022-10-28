@@ -1,8 +1,7 @@
 package impl
 
 import (
-	"encoding/json"
-	"log"
+	"github.com/calvinkmts/expert-pancake/engine/httpHandler"
 	"net/http"
 )
 
@@ -12,15 +11,19 @@ type JsonResponse struct {
 	Data    any    `json:"data,omitempty"`
 }
 
-func (a accountService) HelloWorld(w http.ResponseWriter, r *http.Request) {
-	resp, err := json.Marshal(JsonResponse{
+type HelloWorldRequest struct {
+}
+
+func (a accountService) HelloWorld(w http.ResponseWriter, r *http.Request) error {
+
+	var req HelloWorldRequest
+
+	httpHandler.ParseHTTPRequest(r, &req)
+
+	httpHandler.WriteResponse(w, JsonResponse{
 		Error:   false,
 		Message: "hello world",
 	})
 
-	if err != nil {
-		log.Panic(err)
-	}
-
-	w.Write(resp)
+	return nil
 }

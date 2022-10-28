@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/calvinkmts/expert-pancake/engine/httpHandler"
 	"github.com/expert-pancake/service/account/model"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -24,7 +25,12 @@ func (c *component) Routes(accountService model.AccountService) http.Handler {
 
 	mux.Use(middleware.Heartbeat("/ping"))
 
-	mux.Get("/hello-world", accountService.HelloWorld)
+	httpHandler.New(accountService.HelloWorld)
+
+	mux.Method("GET", "/hello-world", httpHandler.New(accountService.HelloWorld))
+	mux.Method("GET", "/hello-error", httpHandler.New(accountService.HelloError))
+
+	// mux.Get("/hello-world", httpHandler.New(accountService.HelloWorld))
 
 	return mux
 }
