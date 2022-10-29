@@ -1,0 +1,12 @@
+{
+  "db": {
+    "host": "localhost",
+    "db_name": "konekin_account",
+    "username": "postgres",
+    "password": "postgres",
+    "ssl": "disable"
+  },
+  "server": {
+    "port": "3000"
+  }
+}
