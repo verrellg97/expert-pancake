@@ -60,6 +60,14 @@ func (ths HttpHandler) encodeJsonErrorResponse(w http.ResponseWriter, err error)
 				ErrorType: data.ErrorType,
 			})
 		}
+
+		response = generalResponse{
+			Error: &customErrorResponse{
+				Code:    errType.Code,
+				Message: errType.Message,
+				Errors:  clientDataError,
+			},
+		}
 	case errors.ServerError:
 		statusCode = http.StatusInternalServerError
 		response = generalResponse{
