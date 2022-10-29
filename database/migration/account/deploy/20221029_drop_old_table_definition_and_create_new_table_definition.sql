@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS "account"."users" (
 );
 
 CREATE TABLE IF NOT EXISTS "account"."user_passwords" (
-  "user_id" text,
+  "user_id" text NOT NULL,
   "password" text NOT NULL,
   "created_at" timestamptz DEFAULT (now()),
   "updated_at" timestamptz DEFAULT (now()),
@@ -25,16 +25,12 @@ CREATE TABLE IF NOT EXISTS "account"."user_passwords" (
 );
 
 CREATE TABLE IF NOT EXISTS "account"."user_infos" (
-  "user_id" text,
+  "user_id" text NOT NULL,
   "key" text NOT NULL,
   "value" text NOT NULL,
   "created_at" timestamptz DEFAULT (now()),
   "updated_at" timestamptz DEFAULT (now()),
   PRIMARY KEY ("user_id", "key")
 );
-
-ALTER TABLE "account"."user_passwords" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id");
-
-ALTER TABLE "account"."user_infos" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id");
 
 COMMIT;
