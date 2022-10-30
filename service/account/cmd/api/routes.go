@@ -36,7 +36,7 @@ func (c *component) Routes(accountService model.AccountService) http.Handler {
 
 	mux.Method("GET", "/hello-world", httpHandler.New(accountService.HelloWorld))
 	mux.Method("GET", "/hello-error", httpHandler.New(accountService.HelloError))
-	
+
 	mux.Method("POST", RegisterPath, httpHandler.New(accountService.Register))
 	mux.Method("POST", LoginPath, httpHandler.New(accountService.Login))
 	mux.Method("POST", CheckPhoneNumberPath, httpHandler.New(accountService.CheckPhoneNumber))
