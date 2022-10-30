@@ -11,6 +11,8 @@ type AccountService interface {
 
 	Register(w http.ResponseWriter, r *http.Request) error
 
+	CheckPhoneNumber(w http.ResponseWriter, r *http.Request) error
+
 	Login(w http.ResponseWriter, r *http.Request) error
 }
 
@@ -47,4 +49,12 @@ type LoginResponse struct {
 	RefreshToken          string       `json:"refresh_token"`
 	RefreshTokenExpiresAt time.Time    `json:"refresh_token_expires_at"`
 	User                  UserResponse `json:"user"`
+}
+
+type PhoneNumberRequest struct {
+	PhoneNumber string `json:"phone_number"`
+}
+
+type PhoneNumberResponse struct {
+	AccountId string `json:"account_id"`
 }

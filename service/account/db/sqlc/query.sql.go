@@ -54,6 +54,18 @@ func (q *Queries) GetUser(ctx context.Context, id string) (AccountUser, error) {
 	return i, err
 }
 
+const getUserByPhoneNumber = `-- name: GetUserByPhoneNumber :one
+SELECT id FROM account.users
+WHERE phone_number = $1
+`
+
+func (q *Queries) GetUserByPhoneNumber(ctx context.Context, phoneNumber string) (string, error) {
+	row := q.db.QueryRowContext(ctx, getUserByPhoneNumber, phoneNumber)
+	var id string
+	err := row.Scan(&id)
+	return id, err
+}
+
 const getUserPassword = `-- name: GetUserPassword :one
 SELECT user_id, password, created_at, updated_at FROM account.user_passwords
 WHERE user_id = $1

@@ -21,3 +21,7 @@ WHERE user_id = $1;
 -- name: GetUser :one
 SELECT * FROM account.users
 WHERE id = $1;
+
+-- name: GetUserByPhoneNumber :one
+SELECT id FROM account.users
+WHERE phone_number = $1;
