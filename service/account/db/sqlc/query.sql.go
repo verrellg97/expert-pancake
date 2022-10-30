@@ -34,6 +34,43 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) error {
 	return err
 }
 
+const getUser = `-- name: GetUser :one
+SELECT id, fullname, nickname, email, phone_number, created_at, updated_at FROM account.users
+WHERE id = $1
+`
+
+func (q *Queries) GetUser(ctx context.Context, id string) (AccountUser, error) {
+	row := q.db.QueryRowContext(ctx, getUser, id)
+	var i AccountUser
+	err := row.Scan(
+		&i.ID,
+		&i.Fullname,
+		&i.Nickname,
+		&i.Email,
+		&i.PhoneNumber,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const getUserPassword = `-- name: GetUserPassword :one
+SELECT user_id, password, created_at, updated_at FROM account.user_passwords
+WHERE user_id = $1
+`
+
+func (q *Queries) GetUserPassword(ctx context.Context, userID string) (AccountUserPassword, error) {
+	row := q.db.QueryRowContext(ctx, getUserPassword, userID)
+	var i AccountUserPassword
+	err := row.Scan(
+		&i.UserID,
+		&i.Password,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
 const upsertUserInfo = `-- name: UpsertUserInfo :exec
 INSERT INTO account.user_infos(user_id, key, value)
 VALUES ($1, $2, $3)

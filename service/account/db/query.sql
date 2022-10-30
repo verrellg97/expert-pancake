@@ -13,3 +13,11 @@ INSERT INTO account.user_passwords(user_id, password)
 VALUES ($1, $2)
 ON CONFLICT (user_id)
 DO UPDATE SET password = EXCLUDED.password;
+
+-- name: GetUserPassword :one
+SELECT * FROM account.user_passwords
+WHERE user_id = $1;
+
+-- name: GetUser :one
+SELECT * FROM account.users
+WHERE id = $1;

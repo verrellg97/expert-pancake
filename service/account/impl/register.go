@@ -36,11 +36,13 @@ func (a accountService) Register(w http.ResponseWriter, r *http.Request) error {
 	}
 
 	res := model.RegisterResponse{
-		Id:          result.Id,
-		FullName:    result.FullName,
-		Nickname:    result.Nickname,
-		Email:       result.Email,
-		PhoneNumber: result.PhoneNumber,
+		UserResponse: model.UserResponse{
+			Id:          result.Id,
+			FullName:    result.FullName,
+			Nickname:    result.Nickname,
+			Email:       result.Email,
+			PhoneNumber: result.PhoneNumber,
+		},
 	}
 
 	httpHandler.WriteResponse(w, res)

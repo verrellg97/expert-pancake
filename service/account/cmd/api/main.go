@@ -6,6 +6,7 @@ import (
 	"github.com/calvinkmts/expert-pancake/engine/validator"
 	db "github.com/expert-pancake/service/account/db/transaction"
 	"github.com/expert-pancake/service/account/impl"
+	"github.com/expert-pancake/service/account/token"
 	"github.com/expert-pancake/service/account/util"
 	_ "github.com/lib/pq"
 	"log"
@@ -33,7 +34,12 @@ func (c *component) New() error {
 
 	validator := validator.NewValidator()
 
-	accountService := impl.NewAccountService(validator, accountTrx)
+	tokenMaker, err := token.NewPasetoMaker(config.Token.SymmetricKey)
+	if err != nil {
+		log.Panic(err)
+	}
+
+	accountService := impl.NewAccountService(config, validator, accountTrx, tokenMaker)
 
 	server := &http.Server{
 		Addr:    fmt.Sprintf(":%s", config.Server.Port),

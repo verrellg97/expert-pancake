@@ -7,7 +7,8 @@ create table account.users
     fullname     text not null,
     nickname     text not null,
     email        text,
-    phone_number text not null,
+    phone_number text not null
+        unique,
     created_at   timestamp with time zone default now(),
     updated_at   timestamp with time zone default now()
 );

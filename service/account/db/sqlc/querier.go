@@ -10,6 +10,8 @@ import (
 
 type Querier interface {
 	CreateUser(ctx context.Context, arg CreateUserParams) error
+	GetUser(ctx context.Context, id string) (AccountUser, error)
+	GetUserPassword(ctx context.Context, userID string) (AccountUserPassword, error)
 	UpsertUserInfo(ctx context.Context, arg UpsertUserInfoParams) error
 	UpsertUserPassword(ctx context.Context, arg UpsertUserPasswordParams) error
 }
