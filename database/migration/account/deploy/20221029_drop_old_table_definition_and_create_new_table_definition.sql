@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS "account"."users" (
   "fullname" text NOT NULL,
   "nickname" text NOT NULL,
   "email" text,
-  "phone_number" text NOT NULL,
+  "phone_number" text NOT NULL UNIQUE,
   "created_at" timestamptz DEFAULT (now()),
   "updated_at" timestamptz DEFAULT (now())
 );
