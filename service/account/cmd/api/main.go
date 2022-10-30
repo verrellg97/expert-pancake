@@ -34,7 +34,7 @@ func (c *component) New() error {
 
 	validator := validator.NewValidator()
 
-	tokenMaker, err := token.NewJWTMaker(config.Token.SymmetricKey)
+	tokenMaker, err := token.NewPasetoMaker(config.Token.SymmetricKey)
 	if err != nil {
 		log.Panic(err)
 	}
