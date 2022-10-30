@@ -12,7 +12,7 @@ type AccountService interface {
 	Register(w http.ResponseWriter, r *http.Request) error
 
 	CheckPhoneNumber(w http.ResponseWriter, r *http.Request) error
-
+	PostOtp(w http.ResponseWriter, r *http.Request) error
 	Login(w http.ResponseWriter, r *http.Request) error
 }
 
@@ -57,4 +57,12 @@ type PhoneNumberRequest struct {
 
 type PhoneNumberResponse struct {
 	AccountId string `json:"account_id"`
+}
+
+type PostOtpRequest struct {
+	Otp string `json:"otp""`
+}
+
+type PostOtpResponse struct {
+	Message string `json:"message"`
 }
