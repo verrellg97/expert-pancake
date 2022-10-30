@@ -15,7 +15,7 @@ var vp *viper.Viper
 func LoadConfig() (config Config, err error) {
 	vp = viper.New()
 
-	vp.SetConfigName("config")
+	vp.SetConfigName("account")
 	vp.SetConfigType("json")
 	vp.AddConfigPath("./config")
 
