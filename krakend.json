@@ -1,0 +1,79 @@
+{
+  "$schema": "https://www.krakend.io/schema/v3.json",
+  "version": 3,
+  "name": "KrakenD - API Gateway",
+  "timeout": "3000ms",
+  "cache_ttl": "300s",
+  "output_encoding": "json",
+  "disable_rest": true,
+  "endpoints": [
+    {
+      "endpoint": "/location/provinces",
+      "method": "GET",
+      "output_encoding": "json",
+      "backend": [
+        {
+          "url_pattern": "/api/provinces.json",
+          "encoding": "json",
+          "sd": "static",
+          "method": "GET",
+          "host": [
+            "https://calvinkmts.github.io/api-wilayah-indonesia"
+          ],
+          "disable_host_sanitize": false
+        }
+      ]
+    },
+    {
+      "endpoint": "/location/regencies/{provinceId}",
+      "method": "GET",
+      "output_encoding": "json",
+      "backend": [
+        {
+          "url_pattern": "/api/regencies/{provinceId}.json",
+          "encoding": "json",
+          "sd": "static",
+          "method": "GET",
+          "host": [
+            "https://calvinkmts.github.io/api-wilayah-indonesia"
+          ],
+          "disable_host_sanitize": false
+        }
+      ]
+    },
+    {
+      "endpoint": "/location/districts/{regencyId}",
+      "method": "GET",
+      "output_encoding": "json",
+      "backend": [
+        {
+          "url_pattern": "/api/districts/{regencyId}.json",
+          "encoding": "json",
+          "sd": "static",
+          "method": "GET",
+          "host": [
+            "https://calvinkmts.github.io/api-wilayah-indonesia"
+          ],
+          "disable_host_sanitize": false
+        }
+      ]
+    },
+    {
+      "endpoint": "/location/villages/{districtId}",
+      "method": "GET",
+      "output_encoding": "json",
+      "backend": [
+        {
+          "url_pattern": "/api/villages/{districtId}.json",
+          "encoding": "json",
+          "sd": "static",
+          "method": "GET",
+          "host": [
+            "https://calvinkmts.github.io/api-wilayah-indonesia"
+          ],
+          "disable_host_sanitize": false
+        }
+      ]
+    }
+  ]
+}
