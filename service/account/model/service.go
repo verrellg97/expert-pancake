@@ -17,6 +17,8 @@ type AccountService interface {
 
 	GetDefaultSecurityQuestions(w http.ResponseWriter, r *http.Request) error
 	UpsertUserAddress(w http.ResponseWriter, r *http.Request) error
+
+	UpdateUser(w http.ResponseWriter, r *http.Request) error
 }
 
 type UserResponse struct {
@@ -75,13 +77,35 @@ type GetDefaultSecurityQuestionsResponse struct {
 }
 
 type UpsertUserAddressRequest struct {
-	AccountId   string `json:"account_id" validate:"required"`
-	Province    string `json:"province" validate:"required"`
-	Regency     string `json:"regency" validate:"required"`
-	District    string `json:"district" validate:"required"`
-	FullAddress string `json:"full_address" validate:"required"`
+	AccountId string `json:"account_id" validate:"required"`
+	Location
 }
 
 type UpsertUserAddressResponse struct {
 	Message string `json:"message"`
+}
+
+type UpdateUserRequest struct {
+	AccountId   string   `json:"account_id" validate:"required"`
+	FullName    string   `json:"full_name" validate:"required"`
+	Nickname    string   `json:"nickname" validate:"required"`
+	Email       string   `json:"email"`
+	PhoneNumber string   `json:"phone_number" validate:"required"`
+	Location    Location `json:"location"`
+}
+
+type UpdateUserResponse struct {
+	AccountId   string   `json:"account_id" validate:"required"`
+	FullName    string   `json:"full_name" validate:"required"`
+	Nickname    string   `json:"nickname" validate:"required"`
+	Email       string   `json:"email"`
+	PhoneNumber string   `json:"phone_number" validate:"required"`
+	Location    Location `json:"location"`
+}
+
+type Location struct {
+	Province    string `json:"province"`
+	Regency     string `json:"regency"`
+	District    string `json:"district"`
+	FullAddress string `json:"full_address"`
 }

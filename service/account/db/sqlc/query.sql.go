@@ -83,6 +83,37 @@ func (q *Queries) GetUserPassword(ctx context.Context, userID string) (AccountUs
 	return i, err
 }
 
+const updateUser = `-- name: UpdateUser :exec
+UPDATE account.users
+SET
+    fullname = $2,
+    nickname = $3,
+    email = $4,
+    phone_number = $5,
+    updated_at = NOW()
+WHERE
+    id = $1
+`
+
+type UpdateUserParams struct {
+	ID          string         `db:"id"`
+	Fullname    string         `db:"fullname"`
+	Nickname    string         `db:"nickname"`
+	Email       sql.NullString `db:"email"`
+	PhoneNumber string         `db:"phone_number"`
+}
+
+func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) error {
+	_, err := q.db.ExecContext(ctx, updateUser,
+		arg.ID,
+		arg.Fullname,
+		arg.Nickname,
+		arg.Email,
+		arg.PhoneNumber,
+	)
+	return err
+}
+
 const upsertUserAddresses = `-- name: UpsertUserAddresses :exec
 INSERT INTO account.user_addresses(user_id, country, province, regency, district, full_address)
 VALUES ($1, $2, $3, $4, $5, $6)

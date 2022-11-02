@@ -41,3 +41,14 @@ DO UPDATE SET
     district = EXCLUDED.district,
     full_address = EXCLUDED.full_address,
     updated_at = NOW();
+
+-- name: UpdateUser :exec
+UPDATE account.users
+SET
+    fullname = $2,
+    nickname = $3,
+    email = $4,
+    phone_number = $5,
+    updated_at = NOW()
+WHERE
+    id = $1;

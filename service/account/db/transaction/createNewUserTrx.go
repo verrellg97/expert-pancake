@@ -8,7 +8,7 @@ import (
 	uuid "github.com/satori/go.uuid"
 )
 
-type CreateNewUserParams struct {
+type CreateNewUserTrxParams struct {
 	FullName         string
 	Nickname         string
 	Email            string
@@ -18,7 +18,7 @@ type CreateNewUserParams struct {
 	SecurityAnswer   string
 }
 
-type CreateNewUserResult struct {
+type CreateNewUserTrxResult struct {
 	Id          string
 	FullName    string
 	Nickname    string
@@ -26,8 +26,8 @@ type CreateNewUserResult struct {
 	PhoneNumber string
 }
 
-func (trx *Trx) CreateNewUser(ctx context.Context, arg CreateNewUserParams) (CreateNewUserResult, error) {
-	var result CreateNewUserResult
+func (trx *Trx) CreateNewUserTrx(ctx context.Context, arg CreateNewUserTrxParams) (CreateNewUserTrxResult, error) {
+	var result CreateNewUserTrxResult
 
 	err := trx.execTx(ctx, func(q *db.Queries) error {
 		var err error

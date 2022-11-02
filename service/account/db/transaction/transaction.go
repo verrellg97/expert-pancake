@@ -9,7 +9,8 @@ import (
 
 type AccountTrx interface {
 	Querier
-	CreateNewUser(ctx context.Context, arg CreateNewUserParams) (CreateNewUserResult, error)
+	CreateNewUserTrx(ctx context.Context, arg CreateNewUserTrxParams) (CreateNewUserTrxResult, error)
+	UpdateUserTrx(ctx context.Context, arg UpdateUserTrxParams) (UpdateUserTrxResult, error)
 }
 
 // Trx provides all functions to execute SQL queries and transactions

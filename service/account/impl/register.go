@@ -20,7 +20,7 @@ func (a accountService) Register(w http.ResponseWriter, r *http.Request) error {
 		return errors.NewClientError().WithDataMap(errMapRequest)
 	}
 
-	arg := db.CreateNewUserParams{
+	arg := db.CreateNewUserTrxParams{
 		FullName:         req.FullName,
 		Nickname:         req.Nickname,
 		Email:            req.Email,
@@ -30,7 +30,7 @@ func (a accountService) Register(w http.ResponseWriter, r *http.Request) error {
 		SecurityAnswer:   req.SecurityAnswer,
 	}
 
-	result, err := a.dbTrx.CreateNewUser(context.Background(), arg)
+	result, err := a.dbTrx.CreateNewUserTrx(context.Background(), arg)
 	if err != nil {
 		return errors.NewServerError(model.CreateNewUserTransactionError, err.Error())
 	}
