@@ -5,7 +5,6 @@ import (
 	"github.com/calvinkmts/expert-pancake/engine/sql"
 	db "github.com/expert-pancake/service/account/db/sqlc"
 	"github.com/expert-pancake/service/account/model"
-	"reflect"
 )
 
 type UpdateUserTrxParams struct {
@@ -32,7 +31,7 @@ func (trx *Trx) UpdateUserTrx(ctx context.Context, arg UpdateUserTrxParams) (Upd
 	err := trx.execTx(ctx, func(q *db.Queries) error {
 		var err error
 
-		err = q.UpdateUser(ctx, db.UpdateUserParams{
+		userRes, err := q.UpdateUser(ctx, db.UpdateUserParams{
 			ID:          arg.AccountId,
 			Fullname:    arg.FullName,
 			Nickname:    arg.Nickname,
@@ -43,26 +42,29 @@ func (trx *Trx) UpdateUserTrx(ctx context.Context, arg UpdateUserTrxParams) (Upd
 			return err
 		}
 
-		if !reflect.ValueOf(arg.Location).IsZero() {
-			err = q.UpsertUserAddresses(ctx, db.UpsertUserAddressesParams{
-				UserID:      arg.AccountId,
-				Country:     "INDONESIA",
-				Province:    arg.Location.Province,
-				Regency:     arg.Location.Regency,
-				District:    arg.Location.District,
-				FullAddress: arg.Location.FullAddress,
-			})
-			if err != nil {
-				return err
-			}
+		userAddressRes, err := q.UpsertUserAddresses(ctx, db.UpsertUserAddressesParams{
+			UserID:      arg.AccountId,
+			Country:     "INDONESIA",
+			Province:    arg.Location.Province,
+			Regency:     arg.Location.Regency,
+			District:    arg.Location.District,
+			FullAddress: arg.Location.FullAddress,
+		})
+		if err != nil {
+			return err
 		}
 
-		result.AccountId = arg.AccountId
-		result.FullName = arg.FullName
-		result.Nickname = arg.Nickname
-		result.Email = arg.Email
-		result.PhoneNumber = arg.PhoneNumber
-		result.Location = arg.Location
+		result.AccountId = userRes.ID
+		result.FullName = userRes.Fullname
+		result.Nickname = userRes.Nickname
+		result.Email = userRes.Email.String
+		result.PhoneNumber = userRes.PhoneNumber
+		result.Location = model.Location{
+			Province:    userAddressRes.Province,
+			Regency:     userAddressRes.Regency,
+			District:    userAddressRes.District,
+			FullAddress: userAddressRes.FullAddress,
+		}
 
 		return err
 	})

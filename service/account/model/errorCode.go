@@ -9,4 +9,5 @@ const (
 	GetUserByPhoneNumberError     = 300006
 	UpsertUserAddressError        = 300007
 	UpdateUserError               = 300008
+	UpdateUserPasswordError       = 300009
 )

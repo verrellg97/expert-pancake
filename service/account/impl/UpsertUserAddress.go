@@ -28,7 +28,7 @@ func (a accountService) UpsertUserAddress(w http.ResponseWriter, r *http.Request
 		FullAddress: req.FullAddress,
 	}
 
-	err := a.dbTrx.UpsertUserAddresses(context.Background(), arg)
+	_, err := a.dbTrx.UpsertUserAddresses(context.Background(), arg)
 	if err != nil {
 		return errors.NewServerError(model.UpsertUserAddressError, err.Error())
 	}

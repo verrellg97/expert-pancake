@@ -19,21 +19,6 @@ func (a accountService) UpdateUser(w http.ResponseWriter, r *http.Request) error
 		return errors.NewClientError().WithDataMap(errMapRequest)
 	}
 
-	/*if req.NewPassword != "" && req.OldPassword != "" {
-		result, err := a.dbTrx.GetUserPassword(context.Background(), req.AccountId)
-		if err != nil {
-			return errors.NewServerError(model.GetUserPasswordError, err.Error())
-		}
-
-		err = util.CheckPassword(req.OldPassword, result.Password)
-		if err != nil {
-			return errors.NewClientError().With(errors.ClientErrorData{
-				Field:     "Password",
-				ErrorType: "Password doesn't match our record",
-			})
-		}
-	}*/
-
 	result, err := a.dbTrx.UpdateUserTrx(context.Background(), db.UpdateUserTrxParams{
 		AccountId:   req.AccountId,
 		FullName:    req.FullName,

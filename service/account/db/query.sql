@@ -30,19 +30,20 @@ WHERE id = $1;
 SELECT id FROM account.users
 WHERE phone_number = $1;
 
--- name: UpsertUserAddresses :exec
+-- name: UpsertUserAddresses :one
 INSERT INTO account.user_addresses(user_id, country, province, regency, district, full_address)
 VALUES ($1, $2, $3, $4, $5, $6)
 ON CONFLICT (user_id)
 DO UPDATE SET
-    country = EXCLUDED.country,
-    province = EXCLUDED.province,
-    regency = EXCLUDED.regency,
-    district = EXCLUDED.district,
-    full_address = EXCLUDED.full_address,
-    updated_at = NOW();
+    country = EXCLUDED.country || account.user_addresses.country,
+    province = EXCLUDED.province || account.user_addresses.province,
+    regency = EXCLUDED.regency || account.user_addresses.regency,
+    district = EXCLUDED.district || account.user_addresses.district,
+    full_address = EXCLUDED.full_address || account.user_addresses.full_address,
+    updated_at = NOW()
+RETURNING *;
 
--- name: UpdateUser :exec
+-- name: UpdateUser :one
 UPDATE account.users
 SET
     fullname = $2,
@@ -51,4 +52,5 @@ SET
     phone_number = $5,
     updated_at = NOW()
 WHERE
-    id = $1;
+    id = $1
+RETURNING *;

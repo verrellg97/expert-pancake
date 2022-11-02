@@ -19,6 +19,7 @@ type AccountService interface {
 	UpsertUserAddress(w http.ResponseWriter, r *http.Request) error
 
 	UpdateUser(w http.ResponseWriter, r *http.Request) error
+	UpdateUserPassword(w http.ResponseWriter, r *http.Request) error
 }
 
 type UserResponse struct {
@@ -95,11 +96,11 @@ type UpdateUserRequest struct {
 }
 
 type UpdateUserResponse struct {
-	AccountId   string   `json:"account_id" validate:"required"`
-	FullName    string   `json:"full_name" validate:"required"`
-	Nickname    string   `json:"nickname" validate:"required"`
+	AccountId   string   `json:"account_id"`
+	FullName    string   `json:"full_name"`
+	Nickname    string   `json:"nickname"`
 	Email       string   `json:"email"`
-	PhoneNumber string   `json:"phone_number" validate:"required"`
+	PhoneNumber string   `json:"phone_number"`
 	Location    Location `json:"location"`
 }
 
@@ -108,4 +109,14 @@ type Location struct {
 	Regency     string `json:"regency"`
 	District    string `json:"district"`
 	FullAddress string `json:"full_address"`
+}
+
+type UpdateUserPasswordRequest struct {
+	AccountId   string `json:"account_id"`
+	OldPassword string `json:"old_password"`
+	NewPassword string `json:"new_password"`
+}
+
+type UpdateUserPasswordResponse struct {
+	Message string `json:"message"`
 }

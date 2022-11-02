@@ -83,7 +83,7 @@ func (q *Queries) GetUserPassword(ctx context.Context, userID string) (AccountUs
 	return i, err
 }
 
-const updateUser = `-- name: UpdateUser :exec
+const updateUser = `-- name: UpdateUser :one
 UPDATE account.users
 SET
     fullname = $2,
@@ -93,6 +93,7 @@ SET
     updated_at = NOW()
 WHERE
     id = $1
+RETURNING id, fullname, nickname, email, phone_number, created_at, updated_at
 `
 
 type UpdateUserParams struct {
@@ -103,28 +104,39 @@ type UpdateUserParams struct {
 	PhoneNumber string         `db:"phone_number"`
 }
 
-func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) error {
-	_, err := q.db.ExecContext(ctx, updateUser,
+func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (AccountUser, error) {
+	row := q.db.QueryRowContext(ctx, updateUser,
 		arg.ID,
 		arg.Fullname,
 		arg.Nickname,
 		arg.Email,
 		arg.PhoneNumber,
 	)
-	return err
+	var i AccountUser
+	err := row.Scan(
+		&i.ID,
+		&i.Fullname,
+		&i.Nickname,
+		&i.Email,
+		&i.PhoneNumber,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
 }
 
-const upsertUserAddresses = `-- name: UpsertUserAddresses :exec
+const upsertUserAddresses = `-- name: UpsertUserAddresses :one
 INSERT INTO account.user_addresses(user_id, country, province, regency, district, full_address)
 VALUES ($1, $2, $3, $4, $5, $6)
 ON CONFLICT (user_id)
 DO UPDATE SET
-    country = EXCLUDED.country,
-    province = EXCLUDED.province,
-    regency = EXCLUDED.regency,
-    district = EXCLUDED.district,
-    full_address = EXCLUDED.full_address,
+    country = EXCLUDED.country || account.user_addresses.country,
+    province = EXCLUDED.province || account.user_addresses.province,
+    regency = EXCLUDED.regency || account.user_addresses.regency,
+    district = EXCLUDED.district || account.user_addresses.district,
+    full_address = EXCLUDED.full_address || account.user_addresses.full_address,
     updated_at = NOW()
+RETURNING user_id, country, province, regency, district, full_address, created_at, updated_at
 `
 
 type UpsertUserAddressesParams struct {
@@ -136,8 +148,8 @@ type UpsertUserAddressesParams struct {
 	FullAddress string `db:"full_address"`
 }
 
-func (q *Queries) UpsertUserAddresses(ctx context.Context, arg UpsertUserAddressesParams) error {
-	_, err := q.db.ExecContext(ctx, upsertUserAddresses,
+func (q *Queries) UpsertUserAddresses(ctx context.Context, arg UpsertUserAddressesParams) (AccountUserAddress, error) {
+	row := q.db.QueryRowContext(ctx, upsertUserAddresses,
 		arg.UserID,
 		arg.Country,
 		arg.Province,
@@ -145,7 +157,18 @@ func (q *Queries) UpsertUserAddresses(ctx context.Context, arg UpsertUserAddress
 		arg.District,
 		arg.FullAddress,
 	)
-	return err
+	var i AccountUserAddress
+	err := row.Scan(
+		&i.UserID,
+		&i.Country,
+		&i.Province,
+		&i.Regency,
+		&i.District,
+		&i.FullAddress,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
 }
 
 const upsertUserInfo = `-- name: UpsertUserInfo :exec
