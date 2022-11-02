@@ -21,7 +21,7 @@ func (a accountService) UpsertUserAddress(w http.ResponseWriter, r *http.Request
 
 	arg := db.UpsertUserAddressesParams{
 		UserID:      req.AccountId,
-		Country:     req.Country,
+		Country:     "INDONESIA",
 		Province:    req.Province,
 		Regency:     req.Regency,
 		District:    req.District,

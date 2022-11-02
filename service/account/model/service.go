@@ -76,7 +76,6 @@ type GetDefaultSecurityQuestionsResponse struct {
 
 type UpsertUserAddressRequest struct {
 	AccountId   string `json:"account_id" validate:"required"`
-	Country     string `json:"country"`
 	Province    string `json:"province" validate:"required"`
 	Regency     string `json:"regency" validate:"required"`
 	District    string `json:"district" validate:"required"`
