@@ -66,6 +66,29 @@ func (q *Queries) GetUserByPhoneNumber(ctx context.Context, phoneNumber string) 
 	return id, err
 }
 
+const getUserInfo = `-- name: GetUserInfo :one
+SELECT user_id, key, value, created_at, updated_at FROM account.user_infos
+WHERE user_id = $1 AND key = $2
+`
+
+type GetUserInfoParams struct {
+	UserID string `db:"user_id"`
+	Key    string `db:"key"`
+}
+
+func (q *Queries) GetUserInfo(ctx context.Context, arg GetUserInfoParams) (AccountUserInfo, error) {
+	row := q.db.QueryRowContext(ctx, getUserInfo, arg.UserID, arg.Key)
+	var i AccountUserInfo
+	err := row.Scan(
+		&i.UserID,
+		&i.Key,
+		&i.Value,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
 const getUserPassword = `-- name: GetUserPassword :one
 SELECT user_id, password, created_at, updated_at FROM account.user_passwords
 WHERE user_id = $1

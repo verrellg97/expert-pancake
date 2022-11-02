@@ -18,6 +18,7 @@ const (
 	UpsertUserAddressPath           = "/account/address/upsert"
 	UpdateUserPath                  = "/account/user/update"
 	UpdateUserPasswordPath          = "/account/user/password/update"
+	GetUserSecurityQuestionPath     = "/account/user/security-question"
 )
 
 func (c *component) Routes(accountService model.AccountService) http.Handler {
@@ -49,6 +50,7 @@ func (c *component) Routes(accountService model.AccountService) http.Handler {
 	// mux.Method("POST", UpsertUserAddressPath, httpHandler.New(accountService.UpsertUserAddress))
 	mux.Method("POST", UpdateUserPath, httpHandler.New(accountService.UpdateUser))
 	mux.Method("POST", UpdateUserPasswordPath, httpHandler.New(accountService.UpdateUserPassword))
+	mux.Method("POST", GetUserSecurityQuestionPath, httpHandler.New(accountService.GetUserSecurityQuestion))
 
 	// mux.Get("/hello-world", httpHandler.New(accountService.HelloWorld))
 

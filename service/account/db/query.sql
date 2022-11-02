@@ -54,3 +54,7 @@ SET
 WHERE
     id = $1
 RETURNING *;
+
+-- name: GetUserInfo :one
+SELECT * FROM account.user_infos
+WHERE user_id = $1 AND key = $2;

@@ -10,4 +10,5 @@ const (
 	UpsertUserAddressError        = 300007
 	UpdateUserError               = 300008
 	UpdateUserPasswordError       = 300009
+	GetUserSecurityQuestionError  = 300010
 )

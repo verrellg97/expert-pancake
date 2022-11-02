@@ -16,6 +16,7 @@ type AccountService interface {
 	Login(w http.ResponseWriter, r *http.Request) error
 
 	GetDefaultSecurityQuestions(w http.ResponseWriter, r *http.Request) error
+	GetUserSecurityQuestion(w http.ResponseWriter, r *http.Request) error
 	UpsertUserAddress(w http.ResponseWriter, r *http.Request) error
 
 	UpdateUser(w http.ResponseWriter, r *http.Request) error
@@ -119,4 +120,12 @@ type UpdateUserPasswordRequest struct {
 
 type UpdateUserPasswordResponse struct {
 	Message string `json:"message"`
+}
+
+type GetUserSecurityQuestionRequest struct {
+	AccountId string `json:"account_id" validate:"required"`
+}
+
+type GetUserSecurityQuestionResponse struct {
+	Question string `json:"question"`
 }
