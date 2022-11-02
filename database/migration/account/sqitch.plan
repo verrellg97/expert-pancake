@@ -3,3 +3,4 @@
 
 20221011_account_schema_and_table 2022-10-10T18:56:33Z calvink <calvink@DESKTOP-ETMNB9T> # Add Schema and Table for Account Service Database
 20221029_drop_old_table_definition_and_create_new_table_definition 2022-10-29T07:24:29Z osboxes.org,,, <osboxes@osboxes> # Dropping old table definition
+20221102_add_new_table_user_addresses 2022-11-02T01:14:26Z osboxes.org,,, <osboxes@osboxes> # Add new table user_addresses

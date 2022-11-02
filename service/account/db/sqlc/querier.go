@@ -13,6 +13,7 @@ type Querier interface {
 	GetUser(ctx context.Context, id string) (AccountUser, error)
 	GetUserByPhoneNumber(ctx context.Context, phoneNumber string) (string, error)
 	GetUserPassword(ctx context.Context, userID string) (AccountUserPassword, error)
+	UpsertUserAddresses(ctx context.Context, arg UpsertUserAddressesParams) error
 	UpsertUserInfo(ctx context.Context, arg UpsertUserInfoParams) error
 	UpsertUserPassword(ctx context.Context, arg UpsertUserPasswordParams) error
 }

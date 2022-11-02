@@ -11,10 +11,12 @@ type AccountService interface {
 
 	Register(w http.ResponseWriter, r *http.Request) error
 
-	// Login Flow
 	CheckPhoneNumber(w http.ResponseWriter, r *http.Request) error
 	PostOtp(w http.ResponseWriter, r *http.Request) error
 	Login(w http.ResponseWriter, r *http.Request) error
+
+	GetDefaultSecurityQuestions(w http.ResponseWriter, r *http.Request) error
+	UpsertUserAddress(w http.ResponseWriter, r *http.Request) error
 }
 
 type UserResponse struct {
@@ -53,7 +55,7 @@ type LoginResponse struct {
 }
 
 type PhoneNumberRequest struct {
-	PhoneNumber string `json:"phone_number"`
+	PhoneNumber string `json:"phone_number" validate:"required"`
 }
 
 type PhoneNumberResponse struct {
@@ -61,9 +63,26 @@ type PhoneNumberResponse struct {
 }
 
 type PostOtpRequest struct {
-	Otp string `json:"otp""`
+	Otp string `json:"otp" validate:"required"`
 }
 
 type PostOtpResponse struct {
+	Message string `json:"message"`
+}
+
+type GetDefaultSecurityQuestionsResponse struct {
+	Questions []string `json:"questions"`
+}
+
+type UpsertUserAddressRequest struct {
+	AccountId   string `json:"account_id" validate:"required"`
+	Country     string `json:"country"`
+	Province    string `json:"province" validate:"required"`
+	Regency     string `json:"regency" validate:"required"`
+	District    string `json:"district" validate:"required"`
+	FullAddress string `json:"full_address" validate:"required"`
+}
+
+type UpsertUserAddressResponse struct {
 	Message string `json:"message"`
 }

@@ -83,11 +83,47 @@ func (q *Queries) GetUserPassword(ctx context.Context, userID string) (AccountUs
 	return i, err
 }
 
+const upsertUserAddresses = `-- name: UpsertUserAddresses :exec
+INSERT INTO account.user_addresses(user_id, country, province, regency, district, full_address)
+VALUES ($1, $2, $3, $4, $5, $6)
+ON CONFLICT (user_id)
+DO UPDATE SET
+    country = EXCLUDED.country,
+    province = EXCLUDED.province,
+    regency = EXCLUDED.regency,
+    district = EXCLUDED.district,
+    full_address = EXCLUDED.full_address,
+    updated_at = NOW()
+`
+
+type UpsertUserAddressesParams struct {
+	UserID      string `db:"user_id"`
+	Country     string `db:"country"`
+	Province    string `db:"province"`
+	Regency     string `db:"regency"`
+	District    string `db:"district"`
+	FullAddress string `db:"full_address"`
+}
+
+func (q *Queries) UpsertUserAddresses(ctx context.Context, arg UpsertUserAddressesParams) error {
+	_, err := q.db.ExecContext(ctx, upsertUserAddresses,
+		arg.UserID,
+		arg.Country,
+		arg.Province,
+		arg.Regency,
+		arg.District,
+		arg.FullAddress,
+	)
+	return err
+}
+
 const upsertUserInfo = `-- name: UpsertUserInfo :exec
 INSERT INTO account.user_infos(user_id, key, value)
 VALUES ($1, $2, $3)
 ON CONFLICT (user_id, key)
-DO UPDATE SET value = EXCLUDED.value
+DO UPDATE SET
+    value = EXCLUDED.value,
+    updated_at = NOW()
 `
 
 type UpsertUserInfoParams struct {
@@ -105,7 +141,9 @@ const upsertUserPassword = `-- name: UpsertUserPassword :exec
 INSERT INTO account.user_passwords(user_id, password)
 VALUES ($1, $2)
 ON CONFLICT (user_id)
-DO UPDATE SET password = EXCLUDED.password
+DO UPDATE SET
+    password = EXCLUDED.password,
+    updated_at = NOW()
 `
 
 type UpsertUserPasswordParams struct {

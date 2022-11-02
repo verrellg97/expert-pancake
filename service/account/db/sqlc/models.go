@@ -18,6 +18,17 @@ type AccountUser struct {
 	UpdatedAt   sql.NullTime   `db:"updated_at"`
 }
 
+type AccountUserAddress struct {
+	UserID      string       `db:"user_id"`
+	Country     string       `db:"country"`
+	Province    string       `db:"province"`
+	Regency     string       `db:"regency"`
+	District    string       `db:"district"`
+	FullAddress string       `db:"full_address"`
+	CreatedAt   sql.NullTime `db:"created_at"`
+	UpdatedAt   sql.NullTime `db:"updated_at"`
+}
+
 type AccountUserInfo struct {
 	UserID    string       `db:"user_id"`
 	Key       string       `db:"key"`

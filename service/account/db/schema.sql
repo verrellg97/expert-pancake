@@ -6,7 +6,8 @@ create table account.users
         primary key,
     fullname     text not null,
     nickname     text not null,
-    email        text,
+    email        text
+        unique,
     phone_number text not null
         unique,
     created_at   timestamp with time zone default now(),
@@ -30,4 +31,17 @@ create table account.user_infos
     created_at timestamp with time zone default now(),
     updated_at timestamp with time zone default now(),
     primary key (user_id, key)
+);
+
+create table account.user_addresses
+(
+    user_id      text not null
+        primary key,
+    country      text not null,
+    province     text not null,
+    regency      text not null,
+    district     text not null,
+    full_address text not null,
+    created_at   timestamp with time zone default now(),
+    updated_at   timestamp with time zone default now()
 );

@@ -10,10 +10,11 @@ import (
 )
 
 const (
-	RegisterPath         = "/account/register"
-	LoginPath            = "/account/login"
-	CheckPhoneNumberPath = "/account/phone-number/check"
-	PostOtpPath          = "/account/otp/post"
+	RegisterPath                    = "/account/register"
+	LoginPath                       = "/account/login"
+	CheckPhoneNumberPath            = "/account/phone-number/check"
+	PostOtpPath                     = "/account/otp/post"
+	GetDefaultSecurityQuestionsPath = "/account/security-questions"
 )
 
 func (c *component) Routes(accountService model.AccountService) http.Handler {
@@ -36,6 +37,7 @@ func (c *component) Routes(accountService model.AccountService) http.Handler {
 
 	mux.Method("GET", "/hello-world", httpHandler.New(accountService.HelloWorld))
 	mux.Method("GET", "/hello-error", httpHandler.New(accountService.HelloError))
+	mux.Method("GET", GetDefaultSecurityQuestionsPath, httpHandler.New(accountService.GetDefaultSecurityQuestions))
 
 	mux.Method("POST", RegisterPath, httpHandler.New(accountService.Register))
 	mux.Method("POST", LoginPath, httpHandler.New(accountService.Login))
