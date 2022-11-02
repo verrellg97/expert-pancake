@@ -17,6 +17,7 @@ type AccountService interface {
 
 	GetDefaultSecurityQuestions(w http.ResponseWriter, r *http.Request) error
 	GetUserSecurityQuestion(w http.ResponseWriter, r *http.Request) error
+	PostUserSecurityAnswer(w http.ResponseWriter, r *http.Request) error
 	UpsertUserAddress(w http.ResponseWriter, r *http.Request) error
 
 	UpdateUser(w http.ResponseWriter, r *http.Request) error
@@ -128,4 +129,14 @@ type GetUserSecurityQuestionRequest struct {
 
 type GetUserSecurityQuestionResponse struct {
 	Question string `json:"question"`
+}
+
+type PostUserSecurityAnswerRequest struct {
+	AccountId string `json:"account_id" validate:"required"`
+	Question  string `json:"question" validate:"required"`
+	Answer    string `json:"answer" validate:"required"`
+}
+
+type PostUserSecurityAnswerResponse struct {
+	Message string `json:"message"`
 }

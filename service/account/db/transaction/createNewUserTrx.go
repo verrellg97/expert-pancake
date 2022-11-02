@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/calvinkmts/expert-pancake/engine/sql"
 	db "github.com/expert-pancake/service/account/db/sqlc"
+	"github.com/expert-pancake/service/account/model"
 	"github.com/expert-pancake/service/account/util"
 	uuid "github.com/satori/go.uuid"
 )
@@ -57,7 +58,7 @@ func (trx *Trx) CreateNewUserTrx(ctx context.Context, arg CreateNewUserTrxParams
 
 		err = q.UpsertUserInfo(ctx, db.UpsertUserInfoParams{
 			UserID: id,
-			Key:    "security_questions",
+			Key:    model.UserSecurityQuestionKey,
 			Value:  arg.SecurityQuestion,
 		})
 		if err != nil {
@@ -66,7 +67,7 @@ func (trx *Trx) CreateNewUserTrx(ctx context.Context, arg CreateNewUserTrxParams
 
 		err = q.UpsertUserInfo(ctx, db.UpsertUserInfoParams{
 			UserID: id,
-			Key:    "security_answers",
+			Key:    model.UserSecurityAnswerKey,
 			Value:  arg.SecurityAnswer,
 		})
 		if err != nil {
