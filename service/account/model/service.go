@@ -11,6 +11,7 @@ type AccountService interface {
 
 	Register(w http.ResponseWriter, r *http.Request) error
 
+	// Login Flow
 	CheckPhoneNumber(w http.ResponseWriter, r *http.Request) error
 	PostOtp(w http.ResponseWriter, r *http.Request) error
 	Login(w http.ResponseWriter, r *http.Request) error
@@ -27,7 +28,7 @@ type UserResponse struct {
 type RegisterRequest struct {
 	FullName         string `json:"full_name" validate:"required"`
 	Nickname         string `json:"nickname" validate:"required"`
-	Email            string `json:"email" validate:"required"`
+	Email            string `json:"email"`
 	PhoneNumber      string `json:"phone_number" validate:"required"`
 	Password         string `json:"password" validate:"required"`
 	SecurityQuestion string `json:"security_question" validate:"required"`
