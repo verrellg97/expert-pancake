@@ -13,14 +13,18 @@
       "output_encoding": "json",
       "backend": [
         {
-          "url_pattern": "/api/provinces.json",
+          "url_pattern": "/api-wilayah-indonesia/api/provinces.json",
           "encoding": "json",
           "sd": "static",
           "method": "GET",
           "host": [
-            "https://calvinkmts.github.io/api-wilayah-indonesia"
+            "https://calvinkmts.github.io"
           ],
-          "disable_host_sanitize": false
+          "disable_host_sanitize": false,
+          "is_collection": true,
+          "mapping": {
+            "collection": "result"
+          }
         }
       ]
     },
@@ -30,14 +34,18 @@
       "output_encoding": "json",
       "backend": [
         {
-          "url_pattern": "/api/regencies/{provinceId}.json",
+          "url_pattern": "/api-wilayah-indonesia/api/regencies/{provinceId}.json",
           "encoding": "json",
           "sd": "static",
           "method": "GET",
           "host": [
-            "https://calvinkmts.github.io/api-wilayah-indonesia"
+            "https://calvinkmts.github.io"
           ],
-          "disable_host_sanitize": false
+          "disable_host_sanitize": false,
+          "is_collection": true,
+          "mapping": {
+            "collection": "result"
+          }
         }
       ]
     },
@@ -47,14 +55,18 @@
       "output_encoding": "json",
       "backend": [
         {
-          "url_pattern": "/api/districts/{regencyId}.json",
+          "url_pattern": "/api-wilayah-indonesia/api/districts/{regencyId}.json",
           "encoding": "json",
           "sd": "static",
           "method": "GET",
           "host": [
-            "https://calvinkmts.github.io/api-wilayah-indonesia"
+            "https://calvinkmts.github.io"
           ],
-          "disable_host_sanitize": false
+          "disable_host_sanitize": false,
+          "is_collection": true,
+          "mapping": {
+            "collection": "result"
+          }
         }
       ]
     },
@@ -64,14 +76,18 @@
       "output_encoding": "json",
       "backend": [
         {
-          "url_pattern": "/api/villages/{districtId}.json",
+          "url_pattern": "/api-wilayah-indonesia/api/villages/{districtId}.json",
           "encoding": "json",
           "sd": "static",
           "method": "GET",
           "host": [
-            "https://calvinkmts.github.io/api-wilayah-indonesia"
+            "https://calvinkmts.github.io"
           ],
-          "disable_host_sanitize": false
+          "disable_host_sanitize": false,
+          "is_collection": true,
+          "mapping": {
+            "collection": "result"
+          }
         }
       ]
     }

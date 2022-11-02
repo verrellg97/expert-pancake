@@ -45,6 +45,15 @@ services:
       - postgres
     restart: unless-stopped
 
+  krakend:
+    container_name: krakend_container
+    image: devopsfaith/krakend:2.1.0
+    volumes:
+      - $PWD:/etc/krakend/
+    ports:
+      - "8080:8080"
+    command: ["run", "-d", "-c", "/etc/krakend/krakend.json"]
+
 networks:
   postgres:
     driver: bridge
