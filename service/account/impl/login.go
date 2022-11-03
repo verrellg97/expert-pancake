@@ -58,7 +58,7 @@ func (a accountService) Login(w http.ResponseWriter, r *http.Request) error {
 		AccessTokenExpiresAt:  accessPayload.ExpiredAt,
 		RefreshToken:          refreshToken,
 		RefreshTokenExpiresAt: refreshPayload.ExpiredAt,
-		User: model.UserResponse{
+		User: model.User{
 			Id:          account.ID,
 			FullName:    account.Fullname,
 			Nickname:    account.Nickname,

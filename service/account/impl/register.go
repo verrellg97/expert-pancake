@@ -36,7 +36,7 @@ func (a accountService) Register(w http.ResponseWriter, r *http.Request) error {
 	}
 
 	res := model.RegisterResponse{
-		UserResponse: model.UserResponse{
+		User: model.User{
 			Id:          result.Id,
 			FullName:    result.FullName,
 			Nickname:    result.Nickname,

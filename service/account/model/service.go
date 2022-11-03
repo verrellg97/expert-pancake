@@ -24,12 +24,19 @@ type AccountService interface {
 	UpdateUserPassword(w http.ResponseWriter, r *http.Request) error
 }
 
-type UserResponse struct {
-	Id          string `json:"id"`
-	FullName    string `json:"full_name"`
-	Nickname    string `json:"nickname"`
+type User struct {
+	Id          string `json:"id" validate:"required"`
+	FullName    string `json:"full_name" validate:"required"`
+	Nickname    string `json:"nickname" validate:"required"`
 	Email       string `json:"email"`
-	PhoneNumber string `json:"phone_number"`
+	PhoneNumber string `json:"phone_number" validate:"required"`
+}
+
+type Location struct {
+	Province    string `json:"province" validate:"required"`
+	Regency     string `json:"regency" validate:"required"`
+	District    string `json:"district" validate:"required"`
+	FullAddress string `json:"full_address" validate:"required"`
 }
 
 type RegisterRequest struct {
@@ -43,7 +50,7 @@ type RegisterRequest struct {
 }
 
 type RegisterResponse struct {
-	UserResponse
+	User
 }
 
 type LoginRequest struct {
@@ -52,11 +59,16 @@ type LoginRequest struct {
 }
 
 type LoginResponse struct {
-	AccessToken           string       `json:"access_token"`
-	AccessTokenExpiresAt  time.Time    `json:"access_token_expires_at"`
-	RefreshToken          string       `json:"refresh_token"`
-	RefreshTokenExpiresAt time.Time    `json:"refresh_token_expires_at"`
-	User                  UserResponse `json:"user"`
+	AccessToken           string            `json:"access_token"`
+	AccessTokenExpiresAt  time.Time         `json:"access_token_expires_at"`
+	RefreshToken          string            `json:"refresh_token"`
+	RefreshTokenExpiresAt time.Time         `json:"refresh_token_expires_at"`
+	User                  LoginUserResponse `json:"user"`
+}
+
+type LoginUserResponse struct {
+	User
+	Location Location `json:"location"`
 }
 
 type PhoneNumberRequest struct {
@@ -104,13 +116,6 @@ type UpdateUserResponse struct {
 	Email       string   `json:"email"`
 	PhoneNumber string   `json:"phone_number"`
 	Location    Location `json:"location"`
-}
-
-type Location struct {
-	Province    string `json:"province"`
-	Regency     string `json:"regency"`
-	District    string `json:"district"`
-	FullAddress string `json:"full_address"`
 }
 
 type UpdateUserPasswordRequest struct {

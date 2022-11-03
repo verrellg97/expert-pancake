@@ -35,11 +35,11 @@ INSERT INTO account.user_addresses(user_id, country, province, regency, district
 VALUES ($1, $2, $3, $4, $5, $6)
 ON CONFLICT (user_id)
 DO UPDATE SET
-    country = EXCLUDED.country || account.user_addresses.country,
-    province = EXCLUDED.province || account.user_addresses.province,
-    regency = EXCLUDED.regency || account.user_addresses.regency,
-    district = EXCLUDED.district || account.user_addresses.district,
-    full_address = EXCLUDED.full_address || account.user_addresses.full_address,
+    country = EXCLUDED.country,
+    province = EXCLUDED.province,
+    regency = EXCLUDED.regency,
+    district = EXCLUDED.district,
+    full_address = EXCLUDED.full_address,
     updated_at = NOW()
 RETURNING *;
 
@@ -64,8 +64,8 @@ INSERT INTO account.users (id, fullname, nickname, email, phone_number)
 VALUES ($1, $2, $3, $4, $5)
 ON CONFLICT (id)
 DO UPDATE SET
-    fullname = EXCLUDED.fullname || account.users.fullname,
-    nickname = EXCLUDED.nickname || account.users.nickname,
-    email = EXCLUDED.email || account.users.email,
-    phone_number = EXCLUDED.phone_number || account.users.phone_number
+    fullname = EXCLUDED.fullname,
+    nickname = EXCLUDED.nickname,
+    email = EXCLUDED.email,
+    phone_number = EXCLUDED.phone_number
 RETURNING *;
