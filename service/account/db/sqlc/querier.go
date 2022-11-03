@@ -11,6 +11,7 @@ import (
 type Querier interface {
 	CreateUser(ctx context.Context, arg CreateUserParams) error
 	GetUser(ctx context.Context, id string) (AccountUser, error)
+	GetUserAddress(ctx context.Context, userID string) (AccountUserAddress, error)
 	GetUserByPhoneNumber(ctx context.Context, phoneNumber string) (string, error)
 	GetUserInfo(ctx context.Context, arg GetUserInfoParams) (AccountUserInfo, error)
 	GetUserPassword(ctx context.Context, userID string) (AccountUserPassword, error)

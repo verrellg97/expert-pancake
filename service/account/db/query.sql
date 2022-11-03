@@ -69,3 +69,7 @@ DO UPDATE SET
     email = EXCLUDED.email,
     phone_number = EXCLUDED.phone_number
 RETURNING *;
+
+-- name: GetUserAddress :one
+SELECT * FROM account.user_addresses
+WHERE user_id = $1;

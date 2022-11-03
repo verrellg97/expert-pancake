@@ -37,6 +37,8 @@ func (a accountService) Login(w http.ResponseWriter, r *http.Request) error {
 		return errors.NewServerError(model.GetUserError, err.Error())
 	}
 
+	accountAddress, _ := a.dbTrx.GetUserAddress(context.Background(), req.AccountId)
+
 	accessToken, accessPayload, err := a.tokenMaker.CreateToken(
 		result.UserID,
 		a.config.Token.AccessTokenDuration,
@@ -58,12 +60,20 @@ func (a accountService) Login(w http.ResponseWriter, r *http.Request) error {
 		AccessTokenExpiresAt:  accessPayload.ExpiredAt,
 		RefreshToken:          refreshToken,
 		RefreshTokenExpiresAt: refreshPayload.ExpiredAt,
-		User: model.User{
-			Id:          account.ID,
-			FullName:    account.Fullname,
-			Nickname:    account.Nickname,
-			Email:       account.Email.String,
-			PhoneNumber: account.PhoneNumber,
+		User: model.LoginUserResponse{
+			User: model.User{
+				Id:          account.ID,
+				FullName:    account.Fullname,
+				Nickname:    account.Nickname,
+				Email:       account.Email.String,
+				PhoneNumber: account.PhoneNumber,
+			},
+			Location: model.Location{
+				Province:    accountAddress.Province,
+				Regency:     accountAddress.Regency,
+				District:    accountAddress.District,
+				FullAddress: accountAddress.FullAddress,
+			},
 		},
 	}
 

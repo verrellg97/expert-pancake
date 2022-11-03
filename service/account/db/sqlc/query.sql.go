@@ -54,6 +54,27 @@ func (q *Queries) GetUser(ctx context.Context, id string) (AccountUser, error) {
 	return i, err
 }
 
+const getUserAddress = `-- name: GetUserAddress :one
+SELECT user_id, country, province, regency, district, full_address, created_at, updated_at FROM account.user_addresses
+WHERE user_id = $1
+`
+
+func (q *Queries) GetUserAddress(ctx context.Context, userID string) (AccountUserAddress, error) {
+	row := q.db.QueryRowContext(ctx, getUserAddress, userID)
+	var i AccountUserAddress
+	err := row.Scan(
+		&i.UserID,
+		&i.Country,
+		&i.Province,
+		&i.Regency,
+		&i.District,
+		&i.FullAddress,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
 const getUserByPhoneNumber = `-- name: GetUserByPhoneNumber :one
 SELECT id FROM account.users
 WHERE phone_number = $1
