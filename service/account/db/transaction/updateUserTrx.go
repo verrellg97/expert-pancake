@@ -31,7 +31,7 @@ func (trx *Trx) UpdateUserTrx(ctx context.Context, arg UpdateUserTrxParams) (Upd
 	err := trx.execTx(ctx, func(q *db.Queries) error {
 		var err error
 
-		userRes, err := q.UpdateUser(ctx, db.UpdateUserParams{
+		userRes, err := q.UpsertUser(ctx, db.UpsertUserParams{
 			ID:          arg.AccountId,
 			Fullname:    arg.FullName,
 			Nickname:    arg.Nickname,

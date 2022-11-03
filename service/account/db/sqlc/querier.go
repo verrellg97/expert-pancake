@@ -15,6 +15,7 @@ type Querier interface {
 	GetUserInfo(ctx context.Context, arg GetUserInfoParams) (AccountUserInfo, error)
 	GetUserPassword(ctx context.Context, userID string) (AccountUserPassword, error)
 	UpdateUser(ctx context.Context, arg UpdateUserParams) (AccountUser, error)
+	UpsertUser(ctx context.Context, arg UpsertUserParams) (AccountUser, error)
 	UpsertUserAddresses(ctx context.Context, arg UpsertUserAddressesParams) (AccountUserAddress, error)
 	UpsertUserInfo(ctx context.Context, arg UpsertUserInfoParams) error
 	UpsertUserPassword(ctx context.Context, arg UpsertUserPasswordParams) error

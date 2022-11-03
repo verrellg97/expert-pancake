@@ -16,3 +16,5 @@
 .idea
 
 *.log
+
+./service/account/accountService

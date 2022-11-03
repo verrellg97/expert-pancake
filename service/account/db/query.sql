@@ -58,3 +58,14 @@ RETURNING *;
 -- name: GetUserInfo :one
 SELECT * FROM account.user_infos
 WHERE user_id = $1 AND key = $2;
+
+-- name: UpsertUser :one
+INSERT INTO account.users (id, fullname, nickname, email, phone_number)
+VALUES ($1, $2, $3, $4, $5)
+ON CONFLICT (id)
+DO UPDATE SET
+    fullname = EXCLUDED.fullname || account.users.fullname,
+    nickname = EXCLUDED.nickname || account.users.nickname,
+    email = EXCLUDED.email || account.users.email,
+    phone_number = EXCLUDED.phone_number || account.users.phone_number
+RETURNING *;

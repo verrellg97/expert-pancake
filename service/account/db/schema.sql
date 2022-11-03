@@ -6,8 +6,7 @@ create table account.users
         primary key,
     fullname     text not null,
     nickname     text not null,
-    email        text
-        unique,
+    email        text,
     phone_number text not null
         unique,
     created_at   timestamp with time zone default now(),

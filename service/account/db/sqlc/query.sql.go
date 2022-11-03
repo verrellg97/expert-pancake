@@ -148,6 +148,47 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (Account
 	return i, err
 }
 
+const upsertUser = `-- name: UpsertUser :one
+INSERT INTO account.users (id, fullname, nickname, email, phone_number)
+VALUES ($1, $2, $3, $4, $5)
+ON CONFLICT (id)
+DO UPDATE SET
+    fullname = EXCLUDED.fullname || account.users.fullname,
+    nickname = EXCLUDED.nickname || account.users.nickname,
+    email = EXCLUDED.email || account.users.email,
+    phone_number = EXCLUDED.phone_number || account.users.phone_number
+RETURNING id, fullname, nickname, email, phone_number, created_at, updated_at
+`
+
+type UpsertUserParams struct {
+	ID          string         `db:"id"`
+	Fullname    string         `db:"fullname"`
+	Nickname    string         `db:"nickname"`
+	Email       sql.NullString `db:"email"`
+	PhoneNumber string         `db:"phone_number"`
+}
+
+func (q *Queries) UpsertUser(ctx context.Context, arg UpsertUserParams) (AccountUser, error) {
+	row := q.db.QueryRowContext(ctx, upsertUser,
+		arg.ID,
+		arg.Fullname,
+		arg.Nickname,
+		arg.Email,
+		arg.PhoneNumber,
+	)
+	var i AccountUser
+	err := row.Scan(
+		&i.ID,
+		&i.Fullname,
+		&i.Nickname,
+		&i.Email,
+		&i.PhoneNumber,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
 const upsertUserAddresses = `-- name: UpsertUserAddresses :one
 INSERT INTO account.user_addresses(user_id, country, province, regency, district, full_address)
 VALUES ($1, $2, $3, $4, $5, $6)

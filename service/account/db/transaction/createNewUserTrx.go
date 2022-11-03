@@ -35,7 +35,7 @@ func (trx *Trx) CreateNewUserTrx(ctx context.Context, arg CreateNewUserTrxParams
 
 		id := uuid.NewV4().String()
 
-		err = q.CreateUser(ctx, db.CreateUserParams{
+		userRes, err := q.UpsertUser(ctx, db.UpsertUserParams{
 			ID:          id,
 			Fullname:    arg.FullName,
 			Nickname:    arg.Nickname,
@@ -75,10 +75,10 @@ func (trx *Trx) CreateNewUserTrx(ctx context.Context, arg CreateNewUserTrxParams
 		}
 
 		result.Id = id
-		result.FullName = arg.FullName
-		result.Nickname = arg.Nickname
-		result.Email = arg.Email
-		result.PhoneNumber = arg.PhoneNumber
+		result.FullName = userRes.Fullname
+		result.Nickname = userRes.Nickname
+		result.Email = userRes.Email.String
+		result.PhoneNumber = userRes.PhoneNumber
 
 		return err
 	})
