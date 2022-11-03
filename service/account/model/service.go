@@ -114,9 +114,10 @@ type Location struct {
 }
 
 type UpdateUserPasswordRequest struct {
-	AccountId   string `json:"account_id"`
-	OldPassword string `json:"old_password"`
-	NewPassword string `json:"new_password"`
+	AccountId        string `json:"account_id" validate:"required"`
+	OldPassword      string `json:"old_password"`
+	NewPassword      string `json:"new_password" validate:"required"`
+	IsForgotPassword bool   `json:"is_forgot_password"`
 }
 
 type UpdateUserPasswordResponse struct {
