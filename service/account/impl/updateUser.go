@@ -19,6 +19,11 @@ func (a accountService) UpdateUser(w http.ResponseWriter, r *http.Request) error
 		return errors.NewClientError().WithDataMap(errMapRequest)
 	}
 
+	_, err := a.dbTrx.GetUser(context.Background(), req.AccountId)
+	if err != nil {
+		return errors.NewServerError(model.GetUserError, err.Error())
+	}
+
 	result, err := a.dbTrx.UpdateUserTrx(context.Background(), db.UpdateUserTrxParams{
 		AccountId:   req.AccountId,
 		FullName:    req.FullName,
