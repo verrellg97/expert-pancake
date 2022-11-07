@@ -25,7 +25,7 @@ type AccountService interface {
 }
 
 type User struct {
-	Id          string `json:"id" validate:"required"`
+	AccountId   string `json:"account_id" validate:"required"`
 	FullName    string `json:"full_name" validate:"required"`
 	Nickname    string `json:"nickname" validate:"required"`
 	Email       string `json:"email"`
