@@ -33,10 +33,10 @@ type User struct {
 }
 
 type Location struct {
-	Province    string `json:"province" validate:"required"`
-	Regency     string `json:"regency" validate:"required"`
-	District    string `json:"district" validate:"required"`
-	FullAddress string `json:"full_address" validate:"required"`
+	Province    string `json:"province"`
+	Regency     string `json:"regency"`
+	District    string `json:"district"`
+	FullAddress string `json:"full_address"`
 }
 
 type RegisterRequest struct {
