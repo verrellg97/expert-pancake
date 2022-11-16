@@ -25,3 +25,15 @@ build_account:
 	@echo "Building acccount binary..."
 	cd ./service/account && env GOOS=linux CGO_ENABLED=0 go build -o ${ACCOUNT_BINARY} ./cmd/api
 	@echo "Done!"
+
+## up_appwrite: starts appwrite in the background
+up_appwrite:
+	@echo "Starting Appwrite..."
+	cd ./appwrite && docker compose up -d
+	@echo "Appwrite started!"
+
+## down_appwrite: stops appwrite
+down_appwrite:
+	@echo "Stopping Appwrite..."
+	cd ./appwrite && docker compose down
+	@echo "Appwrite stopped!"

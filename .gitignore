@@ -17,4 +17,4 @@
 
 *.log
 
-./service/account/accountService
+service/account/accountService
