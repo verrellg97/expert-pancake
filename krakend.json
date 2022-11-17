@@ -9,22 +9,30 @@
   "extra_config": {
     "security/cors": {
       "allow_origins": [
-        "*"
+        "https://*", 
+        "http://*"
       ],
       "allow_methods": [
-        "GET",
-        "HEAD",
-        "POST"
+        "GET", 
+        "POST", 
+        "PUT", 
+        "DELETE", 
+        "OPTIONS"
       ],
       "expose_headers": [
         "Content-Length",
-        "Content-Type"
+        "Content-Type",
+        "Link"
       ],
       "allow_headers": [
-        "Accept-Language"
+        "Accept-Language",
+        "Accept", 
+        "Authorization", 
+        "Content-Type", 
+        "X-CSRF-Token"
       ],
       "max_age": "12h",
-      "allow_credentials": false,
+      "allow_credentials": true,
       "debug": false
     }
   },
