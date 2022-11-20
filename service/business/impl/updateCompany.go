@@ -2,6 +2,7 @@ package impl
 
 import (
 	"context"
+	"log"
 	"net/http"
 	"strconv"
 
@@ -24,7 +25,7 @@ func (a businessService) UpdateCompany(w http.ResponseWriter, r *http.Request) e
 	is_deleted, err := strconv.Atoi(req.IsDeleted)
 	if err != nil {
 		// ... handle error
-		panic(err)
+		log.Panic(err)
 	}
 
 	result, err := a.dbTrx.UpdateCompanyTrx(context.Background(), db.UpdateCompanyTrxParams{
