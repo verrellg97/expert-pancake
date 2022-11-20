@@ -20,16 +20,10 @@ func (a businessService) GetUserCompanyBranches(w http.ResponseWriter, r *http.R
 		return errors.NewClientError().WithDataMap(errMapRequest)
 	}
 
-	var keyword = "%"
-
-	if req.Keyword != "" {
-		keyword = keyword + req.Keyword + "%"
-	}
-
 	result, err := a.dbTrx.GetUserCompanyBranchesFilteredByName(context.Background(), db.GetUserCompanyBranchesFilteredByNameParams{
 		UserID:    req.AccountId,
 		CompanyID: req.CompanyId,
-		Name:      keyword,
+		Name:      wildCardString(req.Keyword),
 	})
 	if err != nil {
 		return errors.NewServerError(model.GetUserCompanyBranchesError, err.Error())

@@ -20,15 +20,9 @@ func (a businessService) GetUserCompanies(w http.ResponseWriter, r *http.Request
 		return errors.NewClientError().WithDataMap(errMapRequest)
 	}
 
-	var keyword = "%"
-
-	if req.Keyword != "" {
-		keyword = keyword + req.Keyword + "%"
-	}
-
 	result, err := a.dbTrx.GetUserCompaniesFilteredByName(context.Background(), db.GetUserCompaniesFilteredByNameParams{
 		UserID: req.AccountId,
-		Name:   keyword,
+		Name:   wildCardString(req.Keyword),
 	})
 	if err != nil {
 		return errors.NewServerError(model.GetUserCompaniesError, err.Error())
