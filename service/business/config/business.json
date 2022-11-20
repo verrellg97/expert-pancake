@@ -1,0 +1,17 @@
+{
+  "db": {
+    "host": "localhost:5432",
+    "db_name": "postgres",
+    "username": "postgres",
+    "password": "postgres",
+    "ssl": "disable"
+  },
+  "server": {
+    "port": "3000"
+  },
+  "token": {
+    "symmetric_key": "12345678901234567890123456789012",
+    "access_token_duration": "15m",
+    "refresh_token_duration": "24h"
+  }
+}
