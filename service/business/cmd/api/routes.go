@@ -45,6 +45,7 @@ func (c *component) Routes(accountService model.BusinessService) http.Handler {
 	mux.Method("POST", UpdateCompanyPath, httpHandler.New(accountService.UpdateCompany))
 	mux.Method("POST", GetUserCompaniesPath, httpHandler.New(accountService.GetUserCompanies))
 	mux.Method("POST", RegisterCompanyBranchPath, httpHandler.New(accountService.RegisterCompanyBranch))
+	mux.Method("POST", GetUserCompanyBranchesPath, httpHandler.New(accountService.GetUserCompanyBranches))
 
 	return mux
 }

@@ -14,6 +14,7 @@ type BusinessService interface {
 	GetUserCompanies(w http.ResponseWriter, r *http.Request) error
 
 	RegisterCompanyBranch(w http.ResponseWriter, r *http.Request) error
+	GetUserCompanyBranches(w http.ResponseWriter, r *http.Request) error
 }
 
 type Company struct {
@@ -75,4 +76,10 @@ type RegisterCompanyBranchRequest struct {
 
 type RegisterCompanyBranchResponse struct {
 	CompanyBranch
+}
+
+type UserCompanyBranchesRequest struct {
+	AccountId string `json:"account_id" validate:"required"`
+	CompanyId string `json:"company_id" validate:"required"`
+	Keyword   string `json:"keyword"`
 }
