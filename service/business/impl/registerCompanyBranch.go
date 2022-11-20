@@ -6,8 +6,9 @@ import (
 
 	"github.com/calvinkmts/expert-pancake/engine/errors"
 	"github.com/calvinkmts/expert-pancake/engine/httpHandler"
-	db "github.com/expert-pancake/service/business/db/transaction"
+	db "github.com/expert-pancake/service/business/db/sqlc"
 	"github.com/expert-pancake/service/business/model"
+	uuid "github.com/satori/go.uuid"
 )
 
 func (a businessService) RegisterCompanyBranch(w http.ResponseWriter, r *http.Request) error {
@@ -21,7 +22,10 @@ func (a businessService) RegisterCompanyBranch(w http.ResponseWriter, r *http.Re
 		return errors.NewClientError().WithDataMap(errMapRequest)
 	}
 
-	arg := db.CreateNewCompanyBranchTrxParams{
+	id := uuid.NewV4().String()
+
+	arg := db.UpsertCompanyBranchParams{
+		ID:          id,
 		UserID:      req.AccountId,
 		CompanyID:   req.CompanyId,
 		Name:        req.Name,
@@ -29,7 +33,7 @@ func (a businessService) RegisterCompanyBranch(w http.ResponseWriter, r *http.Re
 		PhoneNumber: req.PhoneNumber,
 	}
 
-	result, err := a.dbTrx.CreateNewCompanyBranchTrx(context.Background(), arg)
+	result, err := a.dbTrx.UpsertCompanyBranch(context.Background(), arg)
 	if err != nil {
 		return errors.NewServerError(model.CreateNewCompanyBranchTransactionError, err.Error())
 	}
@@ -38,7 +42,7 @@ func (a businessService) RegisterCompanyBranch(w http.ResponseWriter, r *http.Re
 		CompanyBranch: model.CompanyBranch{
 			AccountId:   result.UserID,
 			CompanyId:   result.CompanyID,
-			BranchId:    result.BranchID,
+			BranchId:    result.ID,
 			Name:        result.Name,
 			Address:     result.Address,
 			PhoneNumber: result.PhoneNumber,

@@ -10,9 +10,6 @@ import (
 
 type BusinessTrx interface {
 	Querier
-	CreateNewCompanyTrx(ctx context.Context, arg CreateNewCompanyTrxParams) (CreateNewCompanyTrxResult, error)
-	UpdateCompanyTrx(ctx context.Context, arg UpdateCompanyTrxParams) (UpdateCompanyTrxResult, error)
-	CreateNewCompanyBranchTrx(ctx context.Context, arg CreateNewCompanyBranchTrxParams) (CreateNewCompanyBranchTrxResult, error)
 }
 
 // Trx provides all functions to execute SQL queries and transactions

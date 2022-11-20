@@ -6,8 +6,9 @@ import (
 
 	"github.com/calvinkmts/expert-pancake/engine/errors"
 	"github.com/calvinkmts/expert-pancake/engine/httpHandler"
-	db "github.com/expert-pancake/service/business/db/transaction"
+	db "github.com/expert-pancake/service/business/db/sqlc"
 	"github.com/expert-pancake/service/business/model"
+	uuid "github.com/satori/go.uuid"
 )
 
 func (a businessService) RegisterCompany(w http.ResponseWriter, r *http.Request) error {
@@ -21,15 +22,19 @@ func (a businessService) RegisterCompany(w http.ResponseWriter, r *http.Request)
 		return errors.NewClientError().WithDataMap(errMapRequest)
 	}
 
-	arg := db.CreateNewCompanyTrxParams{
+	id := uuid.NewV4().String()
+
+	arg := db.UpsertCompanyParams{
+		ID:                id,
 		UserID:            req.AccountId,
 		Name:              req.Name,
 		InitialName:       req.InitialName,
 		Type:              req.Type,
 		ResponsiblePerson: req.ResponsiblePerson,
+		IsDeleted:         0,
 	}
 
-	result, err := a.dbTrx.CreateNewCompanyTrx(context.Background(), arg)
+	result, err := a.dbTrx.UpsertCompany(context.Background(), arg)
 	if err != nil {
 		return errors.NewServerError(model.CreateNewCompanyTransactionError, err.Error())
 	}
@@ -37,7 +42,7 @@ func (a businessService) RegisterCompany(w http.ResponseWriter, r *http.Request)
 	res := model.RegisterCompanyResponse{
 		Company: model.Company{
 			AccountId:         result.UserID,
-			CompanyId:         result.CompanyID,
+			CompanyId:         result.ID,
 			Name:              result.Name,
 			InitialName:       result.InitialName,
 			Type:              result.Type,
