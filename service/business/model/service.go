@@ -5,9 +5,6 @@ import (
 )
 
 type BusinessService interface {
-	HelloWorld(w http.ResponseWriter, r *http.Request) error
-	HelloError(w http.ResponseWriter, r *http.Request) error
-
 	RegisterCompany(w http.ResponseWriter, r *http.Request) error
 	GetCompanyTypes(w http.ResponseWriter, r *http.Request) error
 	UpdateCompany(w http.ResponseWriter, r *http.Request) error

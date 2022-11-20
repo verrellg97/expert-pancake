@@ -19,7 +19,7 @@ const (
 	GetUserCompanyBranchesPath = "/business/user/company/branch"
 )
 
-func (c *component) Routes(accountService model.BusinessService) http.Handler {
+func (c *component) Routes(businessService model.BusinessService) http.Handler {
 	mux := chi.NewRouter()
 
 	mux.Use(middleware.Logger)
@@ -35,17 +35,12 @@ func (c *component) Routes(accountService model.BusinessService) http.Handler {
 
 	mux.Use(middleware.Heartbeat("/ping"))
 
-	httpHandler.New(accountService.HelloWorld)
-
-	mux.Method("GET", "/hello-world", httpHandler.New(accountService.HelloWorld))
-	mux.Method("GET", "/hello-error", httpHandler.New(accountService.HelloError))
-
-	mux.Method("POST", RegisterCompanyPath, httpHandler.New(accountService.RegisterCompany))
-	mux.Method("GET", GetCompanyTypesPath, httpHandler.New(accountService.GetCompanyTypes))
-	mux.Method("POST", UpdateCompanyPath, httpHandler.New(accountService.UpdateCompany))
-	mux.Method("POST", GetUserCompaniesPath, httpHandler.New(accountService.GetUserCompanies))
-	mux.Method("POST", RegisterCompanyBranchPath, httpHandler.New(accountService.RegisterCompanyBranch))
-	mux.Method("POST", GetUserCompanyBranchesPath, httpHandler.New(accountService.GetUserCompanyBranches))
+	mux.Method("POST", RegisterCompanyPath, httpHandler.New(businessService.RegisterCompany))
+	mux.Method("GET", GetCompanyTypesPath, httpHandler.New(businessService.GetCompanyTypes))
+	mux.Method("POST", UpdateCompanyPath, httpHandler.New(businessService.UpdateCompany))
+	mux.Method("POST", GetUserCompaniesPath, httpHandler.New(businessService.GetUserCompanies))
+	mux.Method("POST", RegisterCompanyBranchPath, httpHandler.New(businessService.RegisterCompanyBranch))
+	mux.Method("POST", GetUserCompanyBranchesPath, httpHandler.New(businessService.GetUserCompanyBranches))
 
 	return mux
 }
