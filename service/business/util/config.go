@@ -2,14 +2,12 @@ package util
 
 import (
 	"github.com/calvinkmts/expert-pancake/engine/config"
-	"github.com/expert-pancake/service/business/token"
 	"github.com/spf13/viper"
 )
 
 type Config struct {
 	Db     config.PostgresqlConfig `mapstructure:"db"`
 	Server config.ServerConfig     `mapstructure:"server"`
-	Token  token.Config            `mapstructure:"token"`
 }
 
 var vp *viper.Viper

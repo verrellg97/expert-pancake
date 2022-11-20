@@ -9,7 +9,6 @@ import (
 	"github.com/calvinkmts/expert-pancake/engine/validator"
 	db "github.com/expert-pancake/service/business/db/transaction"
 	"github.com/expert-pancake/service/business/impl"
-	"github.com/expert-pancake/service/business/token"
 	"github.com/expert-pancake/service/business/util"
 	_ "github.com/lib/pq"
 )
@@ -35,12 +34,7 @@ func (c *component) New() error {
 
 	validator := validator.NewValidator()
 
-	tokenMaker, err := token.NewPasetoMaker(config.Token.SymmetricKey)
-	if err != nil {
-		log.Panic(err)
-	}
-
-	businessService := impl.NewBusinessService(config, validator, businessTrx, tokenMaker)
+	businessService := impl.NewBusinessService(config, validator, businessTrx)
 
 	server := &http.Server{
 		Addr:    fmt.Sprintf(":%s", config.Server.Port),
