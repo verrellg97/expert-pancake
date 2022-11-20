@@ -35,7 +35,7 @@ func (a businessService) RegisterCompanyBranch(w http.ResponseWriter, r *http.Re
 
 	result, err := a.dbTrx.UpsertCompanyBranch(context.Background(), arg)
 	if err != nil {
-		return errors.NewServerError(model.CreateNewCompanyBranchTransactionError, err.Error())
+		return errors.NewServerError(model.CreateNewCompanyBranchError, err.Error())
 	}
 
 	res := model.RegisterCompanyBranchResponse{

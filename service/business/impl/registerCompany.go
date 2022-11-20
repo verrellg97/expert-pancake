@@ -36,7 +36,7 @@ func (a businessService) RegisterCompany(w http.ResponseWriter, r *http.Request)
 
 	result, err := a.dbTrx.UpsertCompany(context.Background(), arg)
 	if err != nil {
-		return errors.NewServerError(model.CreateNewCompanyTransactionError, err.Error())
+		return errors.NewServerError(model.CreateNewCompanyError, err.Error())
 	}
 
 	res := model.RegisterCompanyResponse{
