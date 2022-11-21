@@ -7,6 +7,6 @@
     "ssl": "disable"
   },
   "server": {
-    "port": "40010"
+    "port": "4010"
   }
 }
