@@ -1,4 +1,5 @@
 ACCOUNT_BINARY=accountService
+BUSINESS_BINARY=businessService
 
 ## up: starts all containers in the background without forcing build
 up:
@@ -7,7 +8,7 @@ up:
 	@echo "Docker images started!"
 
 ## up_build: stops docker-compose (if running), builds all projects and starts docker compose
-up_build: build_account
+up_build: build_account build_business
 	@echo "Stopping docker images (if running...)"
 	docker compose down
 	@echo "Building (when required) and starting docker images..."
@@ -24,6 +25,12 @@ down:
 build_account:
 	@echo "Building acccount binary..."
 	cd ./service/account && env GOOS=linux CGO_ENABLED=0 go build -o ${ACCOUNT_BINARY} ./cmd/api
+	@echo "Done!"
+
+## build_business: builds the business binary as a linux executable
+build_business:
+	@echo "Building business binary..."
+	cd ./service/business && env GOOS=linux CGO_ENABLED=0 go build -o ${BUSINESS_BINARY} ./cmd/api
 	@echo "Done!"
 
 ## up_appwrite: starts appwrite in the background
