@@ -10,7 +10,7 @@ CREATE TABLE business.companies (
   "is_deleted" int DEFAULT 0 NOT NULL,
   "created_at" timestamptz DEFAULT (now()),
   "updated_at" timestamptz DEFAULT (now()),
-  PRIMARY KEY ("id", "user_id")
+  PRIMARY KEY ("id")
 );
 
 CREATE TABLE business.company_branches (
@@ -23,5 +23,5 @@ CREATE TABLE business.company_branches (
   "is_deleted" int DEFAULT 0 NOT NULL,
   "created_at" timestamptz DEFAULT (now()),
   "updated_at" timestamptz DEFAULT (now()),
-  PRIMARY KEY ("id", "user_id", "company_id")
+  PRIMARY KEY ("id")
 );
