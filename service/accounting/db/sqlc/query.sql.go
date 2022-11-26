@@ -69,3 +69,45 @@ func (q *Queries) GetCompanyChartOfAccounts(ctx context.Context, arg GetCompanyC
 	}
 	return items, nil
 }
+
+const upsertCompanyFiscalYear = `-- name: UpsertCompanyFiscalYear :one
+INSERT INTO accounting.company_fiscal_years(company_id, start_month, start_year, end_month, end_year)
+VALUES ($1, $2, $3, $4, $5)
+ON CONFLICT (company_id)
+DO UPDATE SET
+    start_month = EXCLUDED.start_month,
+    start_year = EXCLUDED.start_year,
+    end_month = EXCLUDED.end_month,
+    end_year = EXCLUDED.end_year,
+    updated_at = NOW()
+RETURNING company_id, start_month, start_year, end_month, end_year, created_at, updated_at
+`
+
+type UpsertCompanyFiscalYearParams struct {
+	CompanyID  string `db:"company_id"`
+	StartMonth int32  `db:"start_month"`
+	StartYear  int32  `db:"start_year"`
+	EndMonth   int32  `db:"end_month"`
+	EndYear    int32  `db:"end_year"`
+}
+
+func (q *Queries) UpsertCompanyFiscalYear(ctx context.Context, arg UpsertCompanyFiscalYearParams) (AccountingCompanyFiscalYear, error) {
+	row := q.db.QueryRowContext(ctx, upsertCompanyFiscalYear,
+		arg.CompanyID,
+		arg.StartMonth,
+		arg.StartYear,
+		arg.EndMonth,
+		arg.EndYear,
+	)
+	var i AccountingCompanyFiscalYear
+	err := row.Scan(
+		&i.CompanyID,
+		&i.StartMonth,
+		&i.StartYear,
+		&i.EndMonth,
+		&i.EndYear,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
