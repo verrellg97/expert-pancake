@@ -11,9 +11,10 @@ import (
 )
 
 const (
-	UpsertCompanyFiscalYearPath   = "/accounting/company/setting/fiscal-year"
-	GetAccountingBanksPath        = "/accounting/banks"
-	GetCompanyChartOfAccountsPath = "/accounting/company/chart-of-accounts"
+	UpsertCompanyFiscalYearPath    = "/accounting/company/setting/fiscal-year"
+	SetCompanyFirstBankAccountPath = "/accounting/company/setting/bank-account"
+	GetAccountingBanksPath         = "/accounting/banks"
+	GetCompanyChartOfAccountsPath  = "/accounting/company/chart-of-accounts"
 )
 
 func (c *component) Routes(accountingService model.AccountingService) http.Handler {
@@ -33,6 +34,7 @@ func (c *component) Routes(accountingService model.AccountingService) http.Handl
 	mux.Use(middleware.Heartbeat("/ping"))
 
 	mux.Method("POST", UpsertCompanyFiscalYearPath, httpHandler.New(accountingService.UpsertCompanyFiscalYear))
+	mux.Method("POST", SetCompanyFirstBankAccountPath, httpHandler.New(accountingService.SetCompanyFirstBankAccount))
 	mux.Method("GET", GetAccountingBanksPath, httpHandler.New(accountingService.GetAccountingBanks))
 	mux.Method("POST", GetCompanyChartOfAccountsPath, httpHandler.New(accountingService.GetCompanyChartOfAccounts))
 
