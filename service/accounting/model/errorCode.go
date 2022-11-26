@@ -3,5 +3,6 @@ package model
 const (
 	UpsertCompanyFiscalYearError    = 500001
 	SetCompanyFirstBankAccountError = 500002
-	GetCompanyChartOfAccountsError  = 500003
+	SetCompanyFirstCashAccountError = 500003
+	GetCompanyChartOfAccountsError  = 500004
 )

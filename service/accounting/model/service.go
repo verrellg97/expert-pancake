@@ -7,7 +7,9 @@ import (
 type AccountingService interface {
 	UpsertCompanyFiscalYear(w http.ResponseWriter, r *http.Request) error
 	SetCompanyFirstBankAccount(w http.ResponseWriter, r *http.Request) error
+	SetCompanyFirstCashAccount(w http.ResponseWriter, r *http.Request) error
 	GetAccountingBanks(w http.ResponseWriter, r *http.Request) error
+	GetAccountingChartOfAccountTypes(w http.ResponseWriter, r *http.Request) error
 	GetCompanyChartOfAccounts(w http.ResponseWriter, r *http.Request) error
 }
 
@@ -27,10 +29,10 @@ type ChartOfAccount struct {
 
 type UpsertCompanyFiscalYearRequestResponse struct {
 	CompanyId  string `json:"company_id" validate:"required"`
-	StartMonth int    `json:"start_month" validate:"required"`
-	StartYear  int    `json:"start_year" validate:"required"`
-	EndMonth   int    `json:"end_month" validate:"required"`
-	EndYear    int    `json:"end_year" validate:"required"`
+	StartMonth int32  `json:"start_month" validate:"required"`
+	StartYear  int32  `json:"start_year" validate:"required"`
+	EndMonth   int32  `json:"end_month" validate:"required"`
+	EndYear    int32  `json:"end_year" validate:"required"`
 }
 
 type SetCompanyFirstBankAccountRequest struct {
@@ -39,6 +41,12 @@ type SetCompanyFirstBankAccountRequest struct {
 	BankName          string `json:"bank_name" validate:"required"`
 	BankAccountNumber string `json:"bank_account_number" validate:"required"`
 	BankCode          string `json:"bank_code" validate:"required"`
+}
+
+type SetCompanyFirstCashAccountRequest struct {
+	CompanyId   string `json:"company_id" validate:"required"`
+	BranchId    string `json:"branch_id" validate:"required"`
+	AccountName string `json:"account_name" validate:"required"`
 }
 
 type UpsertCompanyChartOfAccountResponse struct {
@@ -51,6 +59,10 @@ type GetAccountingBanksRequest struct {
 
 type GetAccountingBanksResponse struct {
 	Banks []string `json:"banks"`
+}
+
+type GetAccountingChartOfAccountTypesResponse struct {
+	ChartOfAccountTypes []string `json:"types"`
 }
 
 type CompanyChartOfAccountsRequest struct {

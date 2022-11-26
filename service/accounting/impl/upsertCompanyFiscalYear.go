@@ -23,10 +23,10 @@ func (a accountingService) UpsertCompanyFiscalYear(w http.ResponseWriter, r *htt
 
 	arg := db.UpsertCompanyFiscalYearParams{
 		CompanyID:  req.CompanyId,
-		StartMonth: int32(req.StartMonth),
-		StartYear:  int32(req.StartYear),
-		EndMonth:   int32(req.EndMonth),
-		EndYear:    int32(req.EndYear),
+		StartMonth: req.StartMonth,
+		StartYear:  req.StartYear,
+		EndMonth:   req.EndMonth,
+		EndYear:    req.EndYear,
 	}
 
 	result, err := a.dbTrx.UpsertCompanyFiscalYear(context.Background(), arg)
@@ -36,10 +36,10 @@ func (a accountingService) UpsertCompanyFiscalYear(w http.ResponseWriter, r *htt
 
 	res := model.UpsertCompanyFiscalYearRequestResponse{
 		CompanyId:  result.CompanyID,
-		StartMonth: int(result.StartMonth),
-		StartYear:  int(result.StartYear),
-		EndMonth:   int(result.EndMonth),
-		EndYear:    int(result.EndYear),
+		StartMonth: result.StartMonth,
+		StartYear:  result.StartYear,
+		EndMonth:   result.EndMonth,
+		EndYear:    result.EndYear,
 	}
 
 	httpHandler.WriteResponse(w, res)
