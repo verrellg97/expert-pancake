@@ -1,7 +1,7 @@
 CREATE SCHEMA IF NOT EXISTS accounting;
 
 CREATE TABLE accounting.company_fiscal_years (
-  "company_id" text,
+  "company_id" text NOT NULL,
   "start_month" int NOT NULL DEFAULT 0,
   "start_year" int NOT NULL DEFAULT 0,
   "end_month" int NOT NULL DEFAULT 0,
