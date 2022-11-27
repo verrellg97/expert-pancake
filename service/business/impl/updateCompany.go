@@ -2,9 +2,7 @@ package impl
 
 import (
 	"context"
-	"log"
 	"net/http"
-	"strconv"
 
 	"github.com/calvinkmts/expert-pancake/engine/errors"
 	"github.com/calvinkmts/expert-pancake/engine/httpHandler"
@@ -22,12 +20,6 @@ func (a businessService) UpdateCompany(w http.ResponseWriter, r *http.Request) e
 		return errors.NewClientError().WithDataMap(errMapRequest)
 	}
 
-	is_deleted, err := strconv.ParseInt(req.IsDeleted, 10, 32)
-	if err != nil {
-		// ... handle error
-		log.Panic(err)
-	}
-
 	result, err := a.dbTrx.UpsertCompany(context.Background(), db.UpsertCompanyParams{
 		ID:                req.CompanyId,
 		UserID:            req.AccountId,
@@ -35,7 +27,7 @@ func (a businessService) UpdateCompany(w http.ResponseWriter, r *http.Request) e
 		InitialName:       req.InitialName,
 		Type:              req.Type,
 		ResponsiblePerson: req.ResponsiblePerson,
-		IsDeleted:         int32(is_deleted),
+		IsDeleted:         req.IsDeleted,
 	})
 	if err != nil {
 		return errors.NewServerError(model.UpdateCompanyError, err.Error())

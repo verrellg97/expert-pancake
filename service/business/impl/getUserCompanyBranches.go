@@ -29,7 +29,7 @@ func (a businessService) GetUserCompanyBranches(w http.ResponseWriter, r *http.R
 		return errors.NewServerError(model.GetUserCompanyBranchesError, err.Error())
 	}
 
-	var companyBranches []model.CompanyBranch
+	var companyBranches = make([]model.CompanyBranch, 0)
 
 	for _, d := range result {
 		var companyBranch = model.CompanyBranch{

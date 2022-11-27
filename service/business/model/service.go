@@ -55,7 +55,7 @@ type UpdateCompanyRequest struct {
 	InitialName       string `json:"initial_name" validate:"required"`
 	Type              string `json:"type" validate:"required"`
 	ResponsiblePerson string `json:"responsible_person" validate:"required"`
-	IsDeleted         string `json:"is_deleted" validate:"required"`
+	IsDeleted         int32  `json:"is_deleted" validate:"min=0,max=1"`
 }
 
 type UserCompaniesRequest struct {

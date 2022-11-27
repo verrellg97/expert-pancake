@@ -28,7 +28,7 @@ func (a businessService) GetUserCompanies(w http.ResponseWriter, r *http.Request
 		return errors.NewServerError(model.GetUserCompaniesError, err.Error())
 	}
 
-	var companies []model.Company
+	var companies = make([]model.Company, 0)
 
 	for _, d := range result {
 		var company = model.Company{
