@@ -13,6 +13,7 @@ type Querier interface {
 	GetUserCompaniesFilteredByName(ctx context.Context, arg GetUserCompaniesFilteredByNameParams) ([]GetUserCompaniesFilteredByNameRow, error)
 	GetUserCompanyBranches(ctx context.Context, arg GetUserCompanyBranchesParams) ([]GetUserCompanyBranchesRow, error)
 	GetUserCompanyBranchesFilteredByName(ctx context.Context, arg GetUserCompanyBranchesFilteredByNameParams) ([]GetUserCompanyBranchesFilteredByNameRow, error)
+	InsertCompanyBranch(ctx context.Context, arg InsertCompanyBranchParams) error
 	UpsertCompany(ctx context.Context, arg UpsertCompanyParams) (BusinessCompany, error)
 	UpsertCompanyBranch(ctx context.Context, arg UpsertCompanyBranchParams) (BusinessCompanyBranch, error)
 }

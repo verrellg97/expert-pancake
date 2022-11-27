@@ -19,9 +19,13 @@ WHERE user_id = $1 AND is_deleted = 0;
 SELECT id, user_id, name, initial_name, type, responsible_person FROM business.companies
 WHERE user_id = $1 AND is_deleted = 0 AND name LIKE $2;
 
+-- name: InsertCompanyBranch :exec
+INSERT INTO business.company_branches(id, user_id, company_id, name, address, phone_number, is_central, is_deleted)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8);
+
 -- name: UpsertCompanyBranch :one
-INSERT INTO business.company_branches(id, user_id, company_id, name, address, phone_number, is_deleted)
-VALUES ($1, $2, $3, $4, $5, $6, $7)
+INSERT INTO business.company_branches(id, user_id, company_id, name, address, phone_number, is_central, is_deleted)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
 ON CONFLICT (id)
 DO UPDATE SET
     name = EXCLUDED.name,

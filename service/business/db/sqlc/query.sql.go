@@ -201,6 +201,36 @@ func (q *Queries) GetUserCompanyBranchesFilteredByName(ctx context.Context, arg 
 	return items, nil
 }
 
+const insertCompanyBranch = `-- name: InsertCompanyBranch :exec
+INSERT INTO business.company_branches(id, user_id, company_id, name, address, phone_number, is_central, is_deleted)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+`
+
+type InsertCompanyBranchParams struct {
+	ID          string `db:"id"`
+	UserID      string `db:"user_id"`
+	CompanyID   string `db:"company_id"`
+	Name        string `db:"name"`
+	Address     string `db:"address"`
+	PhoneNumber string `db:"phone_number"`
+	IsCentral   int32  `db:"is_central"`
+	IsDeleted   int32  `db:"is_deleted"`
+}
+
+func (q *Queries) InsertCompanyBranch(ctx context.Context, arg InsertCompanyBranchParams) error {
+	_, err := q.db.ExecContext(ctx, insertCompanyBranch,
+		arg.ID,
+		arg.UserID,
+		arg.CompanyID,
+		arg.Name,
+		arg.Address,
+		arg.PhoneNumber,
+		arg.IsCentral,
+		arg.IsDeleted,
+	)
+	return err
+}
+
 const upsertCompany = `-- name: UpsertCompany :one
 INSERT INTO business.companies(id, user_id, name, initial_name, type, responsible_person, is_deleted)
 VALUES ($1, $2, $3, $4, $5, $6, $7)
@@ -251,8 +281,8 @@ func (q *Queries) UpsertCompany(ctx context.Context, arg UpsertCompanyParams) (B
 }
 
 const upsertCompanyBranch = `-- name: UpsertCompanyBranch :one
-INSERT INTO business.company_branches(id, user_id, company_id, name, address, phone_number, is_deleted)
-VALUES ($1, $2, $3, $4, $5, $6, $7)
+INSERT INTO business.company_branches(id, user_id, company_id, name, address, phone_number, is_central, is_deleted)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
 ON CONFLICT (id)
 DO UPDATE SET
     name = EXCLUDED.name,
@@ -260,7 +290,7 @@ DO UPDATE SET
     phone_number = EXCLUDED.phone_number,
     is_deleted = EXCLUDED.is_deleted, 
     updated_at = NOW()
-RETURNING id, user_id, company_id, name, address, phone_number, is_deleted, created_at, updated_at
+RETURNING id, user_id, company_id, name, address, phone_number, is_central, is_deleted, created_at, updated_at
 `
 
 type UpsertCompanyBranchParams struct {
@@ -270,6 +300,7 @@ type UpsertCompanyBranchParams struct {
 	Name        string `db:"name"`
 	Address     string `db:"address"`
 	PhoneNumber string `db:"phone_number"`
+	IsCentral   int32  `db:"is_central"`
 	IsDeleted   int32  `db:"is_deleted"`
 }
 
@@ -281,6 +312,7 @@ func (q *Queries) UpsertCompanyBranch(ctx context.Context, arg UpsertCompanyBran
 		arg.Name,
 		arg.Address,
 		arg.PhoneNumber,
+		arg.IsCentral,
 		arg.IsDeleted,
 	)
 	var i BusinessCompanyBranch
@@ -291,6 +323,7 @@ func (q *Queries) UpsertCompanyBranch(ctx context.Context, arg UpsertCompanyBran
 		&i.Name,
 		&i.Address,
 		&i.PhoneNumber,
+		&i.IsCentral,
 		&i.IsDeleted,
 		&i.CreatedAt,
 		&i.UpdatedAt,

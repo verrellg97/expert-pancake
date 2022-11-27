@@ -27,6 +27,7 @@ type BusinessCompanyBranch struct {
 	Name        string       `db:"name"`
 	Address     string       `db:"address"`
 	PhoneNumber string       `db:"phone_number"`
+	IsCentral   int32        `db:"is_central"`
 	IsDeleted   int32        `db:"is_deleted"`
 	CreatedAt   sql.NullTime `db:"created_at"`
 	UpdatedAt   sql.NullTime `db:"updated_at"`

@@ -20,6 +20,7 @@ CREATE TABLE business.company_branches (
   "name" text NOT NULL,
   "address" text NOT NULL,
   "phone_number" text NOT NULL,
+  "is_central" int DEFAULT 0 NOT NULL,
   "is_deleted" int DEFAULT 0 NOT NULL,
   "created_at" timestamptz DEFAULT (now()),
   "updated_at" timestamptz DEFAULT (now()),

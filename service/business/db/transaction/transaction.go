@@ -6,10 +6,12 @@ import (
 	"fmt"
 
 	. "github.com/expert-pancake/service/business/db/sqlc"
+	db "github.com/expert-pancake/service/business/db/sqlc"
 )
 
 type BusinessTrx interface {
 	Querier
+	CreateNewCompanyTrx(ctx context.Context, arg db.UpsertCompanyParams) (CreateNewCompanyTrxResult, error)
 }
 
 // Trx provides all functions to execute SQL queries and transactions
