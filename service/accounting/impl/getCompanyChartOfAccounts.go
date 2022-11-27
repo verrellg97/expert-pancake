@@ -41,6 +41,7 @@ func (a accountingService) GetCompanyChartOfAccounts(w http.ResponseWriter, r *h
 			BankName:          d.BankName,
 			BankAccountNumber: d.BankAccountNumber,
 			BankCode:          d.BankCode,
+			OpeningBalance:    d.OpeningBalance,
 			IsDeleted:         d.IsDeleted,
 		}
 		chart_of_accounts = append(chart_of_accounts, chart_of_account)

@@ -11,6 +11,7 @@ type AccountingService interface {
 	GetAccountingBanks(w http.ResponseWriter, r *http.Request) error
 	GetAccountingChartOfAccountTypes(w http.ResponseWriter, r *http.Request) error
 	GetCompanyChartOfAccounts(w http.ResponseWriter, r *http.Request) error
+	AddCompanyChartOfAccount(w http.ResponseWriter, r *http.Request) error
 }
 
 type ChartOfAccount struct {
@@ -68,4 +69,16 @@ type GetAccountingChartOfAccountTypesResponse struct {
 type CompanyChartOfAccountsRequest struct {
 	CompanyId string `json:"company_id" validate:"required"`
 	Keyword   string `json:"keyword"`
+}
+
+type AddCompanyChartOfAccountRequest struct {
+	CompanyId         string  `json:"company_id" validate:"required"`
+	BranchId          string  `json:"branch_id" validate:"required"`
+	AccountCode       string  `json:"account_code" validate:"required"`
+	AccountName       string  `json:"account_name" validate:"required"`
+	AccountGroup      string  `json:"account_group" validate:"required"`
+	BankName          string  `json:"bank_name" validate:"required"`
+	BankAccountNumber string  `json:"bank_account_number" validate:"required"`
+	BankCode          string  `json:"bank_code" validate:"required"`
+	OpeningBalance    float64 `json:"opening_balance" validate:"required"`
 }

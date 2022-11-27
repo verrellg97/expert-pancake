@@ -17,6 +17,7 @@ const (
 	GetAccountingBanksPath               = "/accounting/banks"
 	GetAccountingChartOfAccountTypesPath = "/accounting/chart-of-account/types"
 	GetCompanyChartOfAccountsPath        = "/accounting/company/chart-of-accounts"
+	AddCompanyChartOfAccountPath         = "/accounting/company/chart-of-account/add"
 )
 
 func (c *component) Routes(accountingService model.AccountingService) http.Handler {
@@ -41,6 +42,7 @@ func (c *component) Routes(accountingService model.AccountingService) http.Handl
 	mux.Method("GET", GetAccountingBanksPath, httpHandler.New(accountingService.GetAccountingBanks))
 	mux.Method("GET", GetAccountingChartOfAccountTypesPath, httpHandler.New(accountingService.GetAccountingChartOfAccountTypes))
 	mux.Method("POST", GetCompanyChartOfAccountsPath, httpHandler.New(accountingService.GetCompanyChartOfAccounts))
+	mux.Method("POST", AddCompanyChartOfAccountPath, httpHandler.New(accountingService.AddCompanyChartOfAccount))
 
 	return mux
 }
