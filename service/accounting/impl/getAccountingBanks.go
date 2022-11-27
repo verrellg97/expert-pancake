@@ -29,13 +29,15 @@ func (a accountingService) GetAccountingBanks(w http.ResponseWriter, r *http.Req
 		return errors.NewClientError().WithDataMap(errMapRequest)
 	}
 
+	var res = model.GetAccountingBanksResponse{Banks: []string{}}
+
 	if req.Type == "Indonesia" {
-		res := model.GetAccountingBanksResponse{Banks: defaultIndonesiaBanks}
-		httpHandler.WriteResponse(w, res)
+		res = model.GetAccountingBanksResponse{Banks: defaultIndonesiaBanks}
 	} else if req.Type == "Worldwide" {
-		res := model.GetAccountingBanksResponse{Banks: defaultWorldWideBanks}
-		httpHandler.WriteResponse(w, res)
+		res = model.GetAccountingBanksResponse{Banks: defaultWorldWideBanks}
 	}
+
+	httpHandler.WriteResponse(w, res)
 
 	return nil
 }

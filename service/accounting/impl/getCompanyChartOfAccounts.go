@@ -28,7 +28,7 @@ func (a accountingService) GetCompanyChartOfAccounts(w http.ResponseWriter, r *h
 		return errors.NewServerError(model.GetCompanyChartOfAccountsError, err.Error())
 	}
 
-	var chart_of_accounts []model.ChartOfAccount
+	var chart_of_accounts = make([]model.ChartOfAccount, 0)
 
 	for _, d := range result {
 		var chart_of_account = model.ChartOfAccount{
