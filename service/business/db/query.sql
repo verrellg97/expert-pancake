@@ -36,9 +36,11 @@ DO UPDATE SET
 RETURNING *;
 
 -- name: GetUserCompanyBranches :many
-SELECT id, user_id, company_id, name, address, phone_number FROM business.company_branches
+SELECT id, user_id, company_id, name, address, phone_number, is_central 
+FROM business.company_branches
 WHERE user_id = $1 AND company_id = $2 AND is_deleted = 0;
 
 -- name: GetUserCompanyBranchesFilteredByName :many
-SELECT id, user_id, company_id, name, address, phone_number FROM business.company_branches
+SELECT id, user_id, company_id, name, address, phone_number, is_central 
+FROM business.company_branches
 WHERE user_id = $1 AND company_id = $2 AND is_deleted = 0 AND name LIKE $3;

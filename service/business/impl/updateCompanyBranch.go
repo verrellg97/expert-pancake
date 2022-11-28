@@ -8,13 +8,11 @@ import (
 	"github.com/calvinkmts/expert-pancake/engine/httpHandler"
 	db "github.com/expert-pancake/service/business/db/sqlc"
 	"github.com/expert-pancake/service/business/model"
-	uuid "github.com/satori/go.uuid"
 )
 
-func (a businessService) RegisterCompanyBranch(w http.ResponseWriter, r *http.Request) error {
+func (a businessService) UpdateCompanyBranch(w http.ResponseWriter, r *http.Request) error {
 
-	var req model.RegisterCompanyBranchRequest
-
+	var req model.UpdateCompanyBranchRequest
 	httpHandler.ParseHTTPRequest(r, &req)
 
 	errMapRequest := a.validator.Validate(req)
@@ -22,20 +20,17 @@ func (a businessService) RegisterCompanyBranch(w http.ResponseWriter, r *http.Re
 		return errors.NewClientError().WithDataMap(errMapRequest)
 	}
 
-	id := uuid.NewV4().String()
-
-	arg := db.UpsertCompanyBranchParams{
-		ID:          id,
+	result, err := a.dbTrx.UpsertCompanyBranch(context.Background(), db.UpsertCompanyBranchParams{
+		ID:          req.BranchId,
 		UserID:      req.AccountId,
 		CompanyID:   req.CompanyId,
 		Name:        req.Name,
 		Address:     req.Address,
 		PhoneNumber: req.PhoneNumber,
-	}
-
-	result, err := a.dbTrx.UpsertCompanyBranch(context.Background(), arg)
+		IsDeleted:   req.IsDeleted,
+	})
 	if err != nil {
-		return errors.NewServerError(model.CreateNewCompanyBranchError, err.Error())
+		return errors.NewServerError(model.UpdateCompanyBranchError, err.Error())
 	}
 
 	res := model.RegisterCompanyBranchResponse{
@@ -49,7 +44,6 @@ func (a businessService) RegisterCompanyBranch(w http.ResponseWriter, r *http.Re
 			IsCentral:   result.IsCentral,
 		},
 	}
-
 	httpHandler.WriteResponse(w, res)
 
 	return nil

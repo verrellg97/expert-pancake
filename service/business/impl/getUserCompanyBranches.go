@@ -39,6 +39,7 @@ func (a businessService) GetUserCompanyBranches(w http.ResponseWriter, r *http.R
 			Name:        d.Name,
 			Address:     d.Address,
 			PhoneNumber: d.PhoneNumber,
+			IsCentral:   d.IsCentral,
 		}
 		companyBranches = append(companyBranches, companyBranch)
 	}

@@ -11,6 +11,7 @@ type BusinessService interface {
 	GetUserCompanies(w http.ResponseWriter, r *http.Request) error
 
 	RegisterCompanyBranch(w http.ResponseWriter, r *http.Request) error
+	UpdateCompanyBranch(w http.ResponseWriter, r *http.Request) error
 	GetUserCompanyBranches(w http.ResponseWriter, r *http.Request) error
 }
 
@@ -30,6 +31,7 @@ type CompanyBranch struct {
 	Name        string `json:"name" validate:"required"`
 	Address     string `json:"address" validate:"required"`
 	PhoneNumber string `json:"phone_number" validate:"required"`
+	IsCentral   int32  `json:"is_central" validate:"required"`
 }
 
 type RegisterCompanyRequest struct {
@@ -79,4 +81,14 @@ type UserCompanyBranchesRequest struct {
 	AccountId string `json:"account_id" validate:"required"`
 	CompanyId string `json:"company_id" validate:"required"`
 	Keyword   string `json:"keyword"`
+}
+
+type UpdateCompanyBranchRequest struct {
+	AccountId   string `json:"account_id" validate:"required"`
+	CompanyId   string `json:"company_id" validate:"required"`
+	BranchId    string `json:"branch_id" validate:"required"`
+	Name        string `json:"name" validate:"required"`
+	Address     string `json:"address" validate:"required"`
+	PhoneNumber string `json:"phone_number" validate:"required"`
+	IsDeleted   int32  `json:"is_deleted" validate:"min=0,max=1"`
 }

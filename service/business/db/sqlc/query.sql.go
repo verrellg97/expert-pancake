@@ -103,7 +103,8 @@ func (q *Queries) GetUserCompaniesFilteredByName(ctx context.Context, arg GetUse
 }
 
 const getUserCompanyBranches = `-- name: GetUserCompanyBranches :many
-SELECT id, user_id, company_id, name, address, phone_number FROM business.company_branches
+SELECT id, user_id, company_id, name, address, phone_number, is_central 
+FROM business.company_branches
 WHERE user_id = $1 AND company_id = $2 AND is_deleted = 0
 `
 
@@ -119,6 +120,7 @@ type GetUserCompanyBranchesRow struct {
 	Name        string `db:"name"`
 	Address     string `db:"address"`
 	PhoneNumber string `db:"phone_number"`
+	IsCentral   int32  `db:"is_central"`
 }
 
 func (q *Queries) GetUserCompanyBranches(ctx context.Context, arg GetUserCompanyBranchesParams) ([]GetUserCompanyBranchesRow, error) {
@@ -137,6 +139,7 @@ func (q *Queries) GetUserCompanyBranches(ctx context.Context, arg GetUserCompany
 			&i.Name,
 			&i.Address,
 			&i.PhoneNumber,
+			&i.IsCentral,
 		); err != nil {
 			return nil, err
 		}
@@ -152,7 +155,8 @@ func (q *Queries) GetUserCompanyBranches(ctx context.Context, arg GetUserCompany
 }
 
 const getUserCompanyBranchesFilteredByName = `-- name: GetUserCompanyBranchesFilteredByName :many
-SELECT id, user_id, company_id, name, address, phone_number FROM business.company_branches
+SELECT id, user_id, company_id, name, address, phone_number, is_central 
+FROM business.company_branches
 WHERE user_id = $1 AND company_id = $2 AND is_deleted = 0 AND name LIKE $3
 `
 
@@ -169,6 +173,7 @@ type GetUserCompanyBranchesFilteredByNameRow struct {
 	Name        string `db:"name"`
 	Address     string `db:"address"`
 	PhoneNumber string `db:"phone_number"`
+	IsCentral   int32  `db:"is_central"`
 }
 
 func (q *Queries) GetUserCompanyBranchesFilteredByName(ctx context.Context, arg GetUserCompanyBranchesFilteredByNameParams) ([]GetUserCompanyBranchesFilteredByNameRow, error) {
@@ -187,6 +192,7 @@ func (q *Queries) GetUserCompanyBranchesFilteredByName(ctx context.Context, arg 
 			&i.Name,
 			&i.Address,
 			&i.PhoneNumber,
+			&i.IsCentral,
 		); err != nil {
 			return nil, err
 		}
