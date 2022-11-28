@@ -6,4 +6,6 @@ ALTER TABLE "accounting"."company_chart_of_accounts" ALTER COLUMN is_deleted DRO
 ALTER TABLE "accounting"."company_chart_of_accounts" ALTER COLUMN is_deleted TYPE INT USING CASE WHEN is_deleted = FALSE THEN 0 ELSE 1 END;
 ALTER TABLE "accounting"."company_chart_of_accounts" ALTER COLUMN is_deleted SET DEFAULT 0;
 
+ALTER TABLE "accounting"."company_chart_of_accounts" ALTER COLUMN opening_balance TYPE FLOAT;
+
 COMMIT;

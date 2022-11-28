@@ -6,4 +6,6 @@ ALTER TABLE "accounting"."company_chart_of_accounts" ALTER COLUMN is_deleted DRO
 ALTER TABLE "accounting"."company_chart_of_accounts" ALTER COLUMN is_deleted TYPE BOOLEAN USING CASE WHEN is_deleted = 0 THEN FALSE ELSE TRUE END;
 ALTER TABLE "accounting"."company_chart_of_accounts" ALTER COLUMN is_deleted SET DEFAULT FALSE;
 
+ALTER TABLE "accounting"."company_chart_of_accounts" ALTER COLUMN opening_balance TYPE BIGINT;
+
 COMMIT;
