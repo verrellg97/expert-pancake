@@ -31,7 +31,6 @@ func (a businessService) RegisterCompany(w http.ResponseWriter, r *http.Request)
 		InitialName:       req.InitialName,
 		Type:              req.Type,
 		ResponsiblePerson: req.ResponsiblePerson,
-		IsDeleted:         0,
 	}
 
 	result, err := a.dbTrx.CreateNewCompanyTrx(context.Background(), arg)

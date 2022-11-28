@@ -31,7 +31,7 @@ type CompanyBranch struct {
 	Name        string `json:"name" validate:"required"`
 	Address     string `json:"address" validate:"required"`
 	PhoneNumber string `json:"phone_number" validate:"required"`
-	IsCentral   int32  `json:"is_central" validate:"required"`
+	IsCentral   bool   `json:"is_central" validate:"required"`
 }
 
 type RegisterCompanyRequest struct {
@@ -57,7 +57,7 @@ type UpdateCompanyRequest struct {
 	InitialName       string `json:"initial_name" validate:"required"`
 	Type              string `json:"type" validate:"required"`
 	ResponsiblePerson string `json:"responsible_person" validate:"required"`
-	IsDeleted         int32  `json:"is_deleted" validate:"min=0,max=1"`
+	IsDeleted         bool   `json:"is_deleted"`
 }
 
 type UserCompaniesRequest struct {
@@ -90,5 +90,5 @@ type UpdateCompanyBranchRequest struct {
 	Name        string `json:"name" validate:"required"`
 	Address     string `json:"address" validate:"required"`
 	PhoneNumber string `json:"phone_number" validate:"required"`
-	IsDeleted   int32  `json:"is_deleted" validate:"min=0,max=1"`
+	IsDeleted   bool   `json:"is_deleted"`
 }

@@ -120,7 +120,7 @@ type GetUserCompanyBranchesRow struct {
 	Name        string `db:"name"`
 	Address     string `db:"address"`
 	PhoneNumber string `db:"phone_number"`
-	IsCentral   int32  `db:"is_central"`
+	IsCentral   bool   `db:"is_central"`
 }
 
 func (q *Queries) GetUserCompanyBranches(ctx context.Context, arg GetUserCompanyBranchesParams) ([]GetUserCompanyBranchesRow, error) {
@@ -173,7 +173,7 @@ type GetUserCompanyBranchesFilteredByNameRow struct {
 	Name        string `db:"name"`
 	Address     string `db:"address"`
 	PhoneNumber string `db:"phone_number"`
-	IsCentral   int32  `db:"is_central"`
+	IsCentral   bool   `db:"is_central"`
 }
 
 func (q *Queries) GetUserCompanyBranchesFilteredByName(ctx context.Context, arg GetUserCompanyBranchesFilteredByNameParams) ([]GetUserCompanyBranchesFilteredByNameRow, error) {
@@ -219,8 +219,8 @@ type InsertCompanyBranchParams struct {
 	Name        string `db:"name"`
 	Address     string `db:"address"`
 	PhoneNumber string `db:"phone_number"`
-	IsCentral   int32  `db:"is_central"`
-	IsDeleted   int32  `db:"is_deleted"`
+	IsCentral   bool   `db:"is_central"`
+	IsDeleted   bool   `db:"is_deleted"`
 }
 
 func (q *Queries) InsertCompanyBranch(ctx context.Context, arg InsertCompanyBranchParams) error {
@@ -258,7 +258,7 @@ type UpsertCompanyParams struct {
 	InitialName       string `db:"initial_name"`
 	Type              string `db:"type"`
 	ResponsiblePerson string `db:"responsible_person"`
-	IsDeleted         int32  `db:"is_deleted"`
+	IsDeleted         bool   `db:"is_deleted"`
 }
 
 func (q *Queries) UpsertCompany(ctx context.Context, arg UpsertCompanyParams) (BusinessCompany, error) {
@@ -306,8 +306,8 @@ type UpsertCompanyBranchParams struct {
 	Name        string `db:"name"`
 	Address     string `db:"address"`
 	PhoneNumber string `db:"phone_number"`
-	IsCentral   int32  `db:"is_central"`
-	IsDeleted   int32  `db:"is_deleted"`
+	IsCentral   bool   `db:"is_central"`
+	IsDeleted   bool   `db:"is_deleted"`
 }
 
 func (q *Queries) UpsertCompanyBranch(ctx context.Context, arg UpsertCompanyBranchParams) (BusinessCompanyBranch, error) {

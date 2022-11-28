@@ -31,7 +31,6 @@ func (trx *Trx) CreateNewCompanyTrx(ctx context.Context, arg db.UpsertCompanyPar
 			InitialName:       arg.InitialName,
 			Type:              arg.Type,
 			ResponsiblePerson: arg.ResponsiblePerson,
-			IsDeleted:         0,
 		})
 		if err != nil {
 			return err
@@ -46,7 +45,7 @@ func (trx *Trx) CreateNewCompanyTrx(ctx context.Context, arg db.UpsertCompanyPar
 			Name:        "Pusat",
 			Address:     "",
 			PhoneNumber: "",
-			IsCentral:   1,
+			IsCentral:   true,
 		})
 		if err != nil {
 			return err
