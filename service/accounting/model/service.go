@@ -13,6 +13,11 @@ type AccountingService interface {
 	UpdateCompanyChartOfAccount(w http.ResponseWriter, r *http.Request) error
 }
 
+type Bank struct {
+	BankName string `json:"bank_name" validate:"required"`
+	BankCode string `json:"bank_code" validate:"required"`
+}
+
 type ChartOfAccount struct {
 	ChartOfAccountId  string `json:"chart_of_account_id" validate:"required"`
 	CompanyId         string `json:"company_id" validate:"required"`
@@ -58,7 +63,7 @@ type GetAccountingBanksRequest struct {
 }
 
 type GetAccountingBanksResponse struct {
-	Banks []string `json:"banks"`
+	Banks []Bank `json:"banks"`
 }
 
 type GetAccountingChartOfAccountTypesResponse struct {

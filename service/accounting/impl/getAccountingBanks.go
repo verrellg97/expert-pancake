@@ -8,15 +8,14 @@ import (
 	"github.com/expert-pancake/service/accounting/model"
 )
 
-var defaultIndonesiaBanks = []string{
-	"BCA",
-	"BNI",
-	"BRI",
-	"MANDIRI",
+var defaultIndonesiaBanks = []model.Bank{
+	{BankName: "BCA", BankCode: "64"},
+	{BankName: "BNI", BankCode: "65"},
+	{BankName: "BRI", BankCode: "66"},
 }
 
-var defaultWorldWideBanks = []string{
-	"PAYPAL",
+var defaultWorldWideBanks = []model.Bank{
+	{BankName: "PAYPAL", BankCode: "1"},
 }
 
 func (a accountingService) GetAccountingBanks(w http.ResponseWriter, r *http.Request) error {
@@ -29,7 +28,7 @@ func (a accountingService) GetAccountingBanks(w http.ResponseWriter, r *http.Req
 		return errors.NewClientError().WithDataMap(errMapRequest)
 	}
 
-	var res = model.GetAccountingBanksResponse{Banks: []string{}}
+	var res = model.GetAccountingBanksResponse{Banks: []model.Bank{}}
 
 	if req.Type == "Indonesia" {
 		res = model.GetAccountingBanksResponse{Banks: defaultIndonesiaBanks}
