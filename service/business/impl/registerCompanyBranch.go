@@ -24,7 +24,7 @@ func (a businessService) RegisterCompanyBranch(w http.ResponseWriter, r *http.Re
 
 	id := uuid.NewV4().String()
 
-	arg := db.UpsertCompanyBranchParams{
+	arg := db.InsertCompanyBranchParams{
 		ID:          id,
 		UserID:      req.AccountId,
 		CompanyID:   req.CompanyId,
@@ -33,7 +33,7 @@ func (a businessService) RegisterCompanyBranch(w http.ResponseWriter, r *http.Re
 		PhoneNumber: req.PhoneNumber,
 	}
 
-	result, err := a.dbTrx.UpsertCompanyBranch(context.Background(), arg)
+	result, err := a.dbTrx.InsertCompanyBranch(context.Background(), arg)
 	if err != nil {
 		return errors.NewServerError(model.CreateNewCompanyBranchError, err.Error())
 	}

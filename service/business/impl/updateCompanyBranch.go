@@ -20,10 +20,8 @@ func (a businessService) UpdateCompanyBranch(w http.ResponseWriter, r *http.Requ
 		return errors.NewClientError().WithDataMap(errMapRequest)
 	}
 
-	result, err := a.dbTrx.UpsertCompanyBranch(context.Background(), db.UpsertCompanyBranchParams{
+	result, err := a.dbTrx.UpdateCompanyBranch(context.Background(), db.UpdateCompanyBranchParams{
 		ID:          req.BranchId,
-		UserID:      req.AccountId,
-		CompanyID:   req.CompanyId,
 		Name:        req.Name,
 		Address:     req.Address,
 		PhoneNumber: req.PhoneNumber,

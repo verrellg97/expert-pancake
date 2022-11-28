@@ -24,7 +24,7 @@ func (a businessService) RegisterCompany(w http.ResponseWriter, r *http.Request)
 
 	id := uuid.NewV4().String()
 
-	arg := db.UpsertCompanyParams{
+	arg := db.InsertCompanyParams{
 		ID:                id,
 		UserID:            req.AccountId,
 		Name:              req.Name,

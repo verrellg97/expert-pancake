@@ -20,9 +20,8 @@ func (a businessService) UpdateCompany(w http.ResponseWriter, r *http.Request) e
 		return errors.NewClientError().WithDataMap(errMapRequest)
 	}
 
-	result, err := a.dbTrx.UpsertCompany(context.Background(), db.UpsertCompanyParams{
+	result, err := a.dbTrx.UpdateCompany(context.Background(), db.UpdateCompanyParams{
 		ID:                req.CompanyId,
-		UserID:            req.AccountId,
 		Name:              req.Name,
 		InitialName:       req.InitialName,
 		Type:              req.Type,

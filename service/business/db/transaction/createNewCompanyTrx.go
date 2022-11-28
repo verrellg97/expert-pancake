@@ -16,7 +16,7 @@ type CreateNewCompanyTrxResult struct {
 	ResponsiblePerson string
 }
 
-func (trx *Trx) CreateNewCompanyTrx(ctx context.Context, arg db.UpsertCompanyParams) (CreateNewCompanyTrxResult, error) {
+func (trx *Trx) CreateNewCompanyTrx(ctx context.Context, arg db.InsertCompanyParams) (CreateNewCompanyTrxResult, error) {
 	var result CreateNewCompanyTrxResult
 
 	err := trx.execTx(ctx, func(q *db.Queries) error {
@@ -24,7 +24,7 @@ func (trx *Trx) CreateNewCompanyTrx(ctx context.Context, arg db.UpsertCompanyPar
 
 		id := uuid.NewV4().String()
 
-		companyRes, err := q.UpsertCompany(ctx, db.UpsertCompanyParams{
+		companyRes, err := q.InsertCompany(ctx, db.InsertCompanyParams{
 			ID:                id,
 			UserID:            arg.UserID,
 			Name:              arg.Name,
@@ -38,7 +38,7 @@ func (trx *Trx) CreateNewCompanyTrx(ctx context.Context, arg db.UpsertCompanyPar
 
 		branchId := uuid.NewV4().String()
 
-		err = q.InsertCompanyBranch(ctx, db.InsertCompanyBranchParams{
+		_, err = q.InsertCompanyBranch(ctx, db.InsertCompanyBranchParams{
 			ID:          branchId,
 			UserID:      arg.UserID,
 			CompanyID:   id,

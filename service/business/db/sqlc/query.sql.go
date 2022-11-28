@@ -11,7 +11,7 @@ import (
 
 const getUserCompanies = `-- name: GetUserCompanies :many
 SELECT id, user_id, name, initial_name, type, responsible_person FROM business.companies
-WHERE user_id = $1 AND is_deleted = 0
+WHERE user_id = $1 AND is_deleted = false
 `
 
 type GetUserCompaniesRow struct {
@@ -55,7 +55,7 @@ func (q *Queries) GetUserCompanies(ctx context.Context, userID string) ([]GetUse
 
 const getUserCompaniesFilteredByName = `-- name: GetUserCompaniesFilteredByName :many
 SELECT id, user_id, name, initial_name, type, responsible_person FROM business.companies
-WHERE user_id = $1 AND is_deleted = 0 AND name LIKE $2
+WHERE user_id = $1 AND is_deleted = false AND name LIKE $2
 `
 
 type GetUserCompaniesFilteredByNameParams struct {
@@ -105,7 +105,7 @@ func (q *Queries) GetUserCompaniesFilteredByName(ctx context.Context, arg GetUse
 const getUserCompanyBranches = `-- name: GetUserCompanyBranches :many
 SELECT id, user_id, company_id, name, address, phone_number, is_central 
 FROM business.company_branches
-WHERE user_id = $1 AND company_id = $2 AND is_deleted = 0
+WHERE user_id = $1 AND company_id = $2 AND is_deleted = false
 `
 
 type GetUserCompanyBranchesParams struct {
@@ -157,7 +157,7 @@ func (q *Queries) GetUserCompanyBranches(ctx context.Context, arg GetUserCompany
 const getUserCompanyBranchesFilteredByName = `-- name: GetUserCompanyBranchesFilteredByName :many
 SELECT id, user_id, company_id, name, address, phone_number, is_central 
 FROM business.company_branches
-WHERE user_id = $1 AND company_id = $2 AND is_deleted = 0 AND name LIKE $3
+WHERE user_id = $1 AND company_id = $2 AND is_deleted = false AND name LIKE $3
 `
 
 type GetUserCompanyBranchesFilteredByNameParams struct {
@@ -207,51 +207,13 @@ func (q *Queries) GetUserCompanyBranchesFilteredByName(ctx context.Context, arg 
 	return items, nil
 }
 
-const insertCompanyBranch = `-- name: InsertCompanyBranch :exec
-INSERT INTO business.company_branches(id, user_id, company_id, name, address, phone_number, is_central, is_deleted)
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-`
-
-type InsertCompanyBranchParams struct {
-	ID          string `db:"id"`
-	UserID      string `db:"user_id"`
-	CompanyID   string `db:"company_id"`
-	Name        string `db:"name"`
-	Address     string `db:"address"`
-	PhoneNumber string `db:"phone_number"`
-	IsCentral   bool   `db:"is_central"`
-	IsDeleted   bool   `db:"is_deleted"`
-}
-
-func (q *Queries) InsertCompanyBranch(ctx context.Context, arg InsertCompanyBranchParams) error {
-	_, err := q.db.ExecContext(ctx, insertCompanyBranch,
-		arg.ID,
-		arg.UserID,
-		arg.CompanyID,
-		arg.Name,
-		arg.Address,
-		arg.PhoneNumber,
-		arg.IsCentral,
-		arg.IsDeleted,
-	)
-	return err
-}
-
-const upsertCompany = `-- name: UpsertCompany :one
+const insertCompany = `-- name: InsertCompany :one
 INSERT INTO business.companies(id, user_id, name, initial_name, type, responsible_person, is_deleted)
 VALUES ($1, $2, $3, $4, $5, $6, $7)
-ON CONFLICT (id)
-DO UPDATE SET
-    name = EXCLUDED.name,
-    initial_name = EXCLUDED.initial_name,
-    type = EXCLUDED.type,
-    responsible_person = EXCLUDED.responsible_person, 
-    is_deleted = EXCLUDED.is_deleted, 
-    updated_at = NOW()
 RETURNING id, user_id, name, initial_name, type, responsible_person, is_deleted, created_at, updated_at
 `
 
-type UpsertCompanyParams struct {
+type InsertCompanyParams struct {
 	ID                string `db:"id"`
 	UserID            string `db:"user_id"`
 	Name              string `db:"name"`
@@ -261,8 +223,8 @@ type UpsertCompanyParams struct {
 	IsDeleted         bool   `db:"is_deleted"`
 }
 
-func (q *Queries) UpsertCompany(ctx context.Context, arg UpsertCompanyParams) (BusinessCompany, error) {
-	row := q.db.QueryRowContext(ctx, upsertCompany,
+func (q *Queries) InsertCompany(ctx context.Context, arg InsertCompanyParams) (BusinessCompany, error) {
+	row := q.db.QueryRowContext(ctx, insertCompany,
 		arg.ID,
 		arg.UserID,
 		arg.Name,
@@ -286,20 +248,13 @@ func (q *Queries) UpsertCompany(ctx context.Context, arg UpsertCompanyParams) (B
 	return i, err
 }
 
-const upsertCompanyBranch = `-- name: UpsertCompanyBranch :one
+const insertCompanyBranch = `-- name: InsertCompanyBranch :one
 INSERT INTO business.company_branches(id, user_id, company_id, name, address, phone_number, is_central, is_deleted)
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-ON CONFLICT (id)
-DO UPDATE SET
-    name = EXCLUDED.name,
-    address = EXCLUDED.address,
-    phone_number = EXCLUDED.phone_number,
-    is_deleted = EXCLUDED.is_deleted, 
-    updated_at = NOW()
 RETURNING id, user_id, company_id, name, address, phone_number, is_central, is_deleted, created_at, updated_at
 `
 
-type UpsertCompanyBranchParams struct {
+type InsertCompanyBranchParams struct {
 	ID          string `db:"id"`
 	UserID      string `db:"user_id"`
 	CompanyID   string `db:"company_id"`
@@ -310,8 +265,8 @@ type UpsertCompanyBranchParams struct {
 	IsDeleted   bool   `db:"is_deleted"`
 }
 
-func (q *Queries) UpsertCompanyBranch(ctx context.Context, arg UpsertCompanyBranchParams) (BusinessCompanyBranch, error) {
-	row := q.db.QueryRowContext(ctx, upsertCompanyBranch,
+func (q *Queries) InsertCompanyBranch(ctx context.Context, arg InsertCompanyBranchParams) (BusinessCompanyBranch, error) {
+	row := q.db.QueryRowContext(ctx, insertCompanyBranch,
 		arg.ID,
 		arg.UserID,
 		arg.CompanyID,
@@ -319,6 +274,94 @@ func (q *Queries) UpsertCompanyBranch(ctx context.Context, arg UpsertCompanyBran
 		arg.Address,
 		arg.PhoneNumber,
 		arg.IsCentral,
+		arg.IsDeleted,
+	)
+	var i BusinessCompanyBranch
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.CompanyID,
+		&i.Name,
+		&i.Address,
+		&i.PhoneNumber,
+		&i.IsCentral,
+		&i.IsDeleted,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const updateCompany = `-- name: UpdateCompany :one
+UPDATE business.companies
+SET name = $2, 
+initial_name = $3, 
+type = $4, 
+responsible_person = $5, 
+is_deleted = $6, 
+updated_at = NOW()
+WHERE id = $1
+RETURNING id, user_id, name, initial_name, type, responsible_person, is_deleted, created_at, updated_at
+`
+
+type UpdateCompanyParams struct {
+	ID                string `db:"id"`
+	Name              string `db:"name"`
+	InitialName       string `db:"initial_name"`
+	Type              string `db:"type"`
+	ResponsiblePerson string `db:"responsible_person"`
+	IsDeleted         bool   `db:"is_deleted"`
+}
+
+func (q *Queries) UpdateCompany(ctx context.Context, arg UpdateCompanyParams) (BusinessCompany, error) {
+	row := q.db.QueryRowContext(ctx, updateCompany,
+		arg.ID,
+		arg.Name,
+		arg.InitialName,
+		arg.Type,
+		arg.ResponsiblePerson,
+		arg.IsDeleted,
+	)
+	var i BusinessCompany
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.Name,
+		&i.InitialName,
+		&i.Type,
+		&i.ResponsiblePerson,
+		&i.IsDeleted,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const updateCompanyBranch = `-- name: UpdateCompanyBranch :one
+UPDATE business.company_branches
+SET name = $2, 
+address = $3, 
+phone_number = $4, 
+is_deleted = $5, 
+updated_at = NOW()
+WHERE id = $1
+RETURNING id, user_id, company_id, name, address, phone_number, is_central, is_deleted, created_at, updated_at
+`
+
+type UpdateCompanyBranchParams struct {
+	ID          string `db:"id"`
+	Name        string `db:"name"`
+	Address     string `db:"address"`
+	PhoneNumber string `db:"phone_number"`
+	IsDeleted   bool   `db:"is_deleted"`
+}
+
+func (q *Queries) UpdateCompanyBranch(ctx context.Context, arg UpdateCompanyBranchParams) (BusinessCompanyBranch, error) {
+	row := q.db.QueryRowContext(ctx, updateCompanyBranch,
+		arg.ID,
+		arg.Name,
+		arg.Address,
+		arg.PhoneNumber,
 		arg.IsDeleted,
 	)
 	var i BusinessCompanyBranch
