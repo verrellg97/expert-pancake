@@ -35,7 +35,6 @@ func (a accountingService) SetCompanyFirstBankAccount(w http.ResponseWriter, r *
 		BankAccountNumber: req.BankAccountNumber,
 		BankCode:          req.BankCode,
 		OpeningBalance:    0,
-		IsDeleted:         0,
 	}
 
 	result, err := a.dbTrx.UpsertCompanyChartOfAccount(context.Background(), arg)

@@ -8,6 +8,7 @@ import (
 	"github.com/calvinkmts/expert-pancake/engine/httpHandler"
 	db "github.com/expert-pancake/service/accounting/db/sqlc"
 	"github.com/expert-pancake/service/accounting/model"
+	"github.com/expert-pancake/service/accounting/util"
 )
 
 func (a accountingService) GetCompanyChartOfAccounts(w http.ResponseWriter, r *http.Request) error {
@@ -22,7 +23,7 @@ func (a accountingService) GetCompanyChartOfAccounts(w http.ResponseWriter, r *h
 
 	result, err := a.dbTrx.GetCompanyChartOfAccounts(context.Background(), db.GetCompanyChartOfAccountsParams{
 		CompanyID:   req.CompanyId,
-		AccountName: wildCardString(req.Keyword),
+		AccountName: util.WildCardString(req.Keyword),
 	})
 	if err != nil {
 		return errors.NewServerError(model.GetCompanyChartOfAccountsError, err.Error())

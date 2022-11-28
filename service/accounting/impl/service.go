@@ -20,11 +20,3 @@ func NewAccountingService(config util.Config, validator validator.Validator, dbT
 		dbTrx:     dbTrx,
 	}
 }
-
-func wildCardString(keyword string) string {
-	if keyword != "" {
-		return "%" + keyword + "%"
-	} else {
-		return "%"
-	}
-}

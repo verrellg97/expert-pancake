@@ -33,7 +33,6 @@ func (a accountingService) AddCompanyChartOfAccount(w http.ResponseWriter, r *ht
 		BankAccountNumber: req.BankAccountNumber,
 		BankCode:          req.BankCode,
 		OpeningBalance:    req.OpeningBalance,
-		IsDeleted:         0,
 	}
 
 	result, err := a.dbTrx.UpsertCompanyChartOfAccount(context.Background(), arg)

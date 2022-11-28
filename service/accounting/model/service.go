@@ -16,17 +16,17 @@ type AccountingService interface {
 }
 
 type ChartOfAccount struct {
-	ChartOfAccountId  string  `json:"chart_of_account_id" validate:"required"`
-	CompanyId         string  `json:"company_id" validate:"required"`
-	BranchId          string  `json:"branch_id" validate:"required"`
-	AccountCode       string  `json:"account_code" validate:"required"`
-	AccountName       string  `json:"account_name" validate:"required"`
-	AccountGroup      string  `json:"account_group" validate:"required"`
-	BankName          string  `json:"bank_name" validate:"required"`
-	BankAccountNumber string  `json:"bank_account_number" validate:"required"`
-	BankCode          string  `json:"bank_code" validate:"required"`
-	OpeningBalance    float64 `json:"opening_balance" validate:"required"`
-	IsDeleted         int32   `json:"is_deleted" validate:"required"`
+	ChartOfAccountId  string `json:"chart_of_account_id" validate:"required"`
+	CompanyId         string `json:"company_id" validate:"required"`
+	BranchId          string `json:"branch_id" validate:"required"`
+	AccountCode       string `json:"account_code" validate:"required"`
+	AccountName       string `json:"account_name" validate:"required"`
+	AccountGroup      string `json:"account_group" validate:"required"`
+	BankName          string `json:"bank_name" validate:"required"`
+	BankAccountNumber string `json:"bank_account_number" validate:"required"`
+	BankCode          string `json:"bank_code" validate:"required"`
+	OpeningBalance    int64  `json:"opening_balance" validate:"required"`
+	IsDeleted         bool   `json:"is_deleted" validate:"required"`
 }
 
 type UpsertCompanyFiscalYearRequestResponse struct {
@@ -73,27 +73,27 @@ type CompanyChartOfAccountsRequest struct {
 }
 
 type AddCompanyChartOfAccountRequest struct {
-	CompanyId         string  `json:"company_id" validate:"required"`
-	BranchId          string  `json:"branch_id" validate:"required"`
-	AccountCode       string  `json:"account_code" validate:"required"`
-	AccountName       string  `json:"account_name" validate:"required"`
-	AccountGroup      string  `json:"account_group" validate:"required"`
-	BankName          string  `json:"bank_name" validate:"required"`
-	BankAccountNumber string  `json:"bank_account_number" validate:"required"`
-	BankCode          string  `json:"bank_code" validate:"required"`
-	OpeningBalance    float64 `json:"opening_balance" validate:"required"`
+	CompanyId         string `json:"company_id" validate:"required"`
+	BranchId          string `json:"branch_id" validate:"required"`
+	AccountCode       string `json:"account_code" validate:"required"`
+	AccountName       string `json:"account_name" validate:"required"`
+	AccountGroup      string `json:"account_group" validate:"required"`
+	BankName          string `json:"bank_name" validate:"required"`
+	BankAccountNumber string `json:"bank_account_number" validate:"required"`
+	BankCode          string `json:"bank_code" validate:"required"`
+	OpeningBalance    int64  `json:"opening_balance" validate:"required"`
 }
 
 type UpdateCompanyChartOfAccountRequest struct {
-	ChartOfAccountId  string  `json:"chart_of_account_id" validate:"required"`
-	CompanyId         string  `json:"company_id" validate:"required"`
-	BranchId          string  `json:"branch_id" validate:"required"`
-	AccountCode       string  `json:"account_code" validate:"required"`
-	AccountName       string  `json:"account_name" validate:"required"`
-	AccountGroup      string  `json:"account_group" validate:"required"`
-	BankName          string  `json:"bank_name" validate:"required"`
-	BankAccountNumber string  `json:"bank_account_number" validate:"required"`
-	BankCode          string  `json:"bank_code" validate:"required"`
-	OpeningBalance    float64 `json:"opening_balance" validate:"required"`
-	IsDeleted         int32   `json:"is_deleted" validate:"min=0,max=1"`
+	ChartOfAccountId  string `json:"chart_of_account_id" validate:"required"`
+	CompanyId         string `json:"company_id" validate:"required"`
+	BranchId          string `json:"branch_id" validate:"required"`
+	AccountCode       string `json:"account_code" validate:"required"`
+	AccountName       string `json:"account_name" validate:"required"`
+	AccountGroup      string `json:"account_group" validate:"required"`
+	BankName          string `json:"bank_name" validate:"required"`
+	BankAccountNumber string `json:"bank_account_number" validate:"required"`
+	BankCode          string `json:"bank_code" validate:"required"`
+	OpeningBalance    int64  `json:"opening_balance" validate:"required"`
+	IsDeleted         bool   `json:"is_deleted"`
 }

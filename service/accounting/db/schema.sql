@@ -21,8 +21,8 @@ CREATE TABLE accounting.company_chart_of_accounts (
   "bank_name" text NOT NULL,
   "bank_account_number" text NOT NULL,
   "bank_code" text NOT NULL,
-  "opening_balance" float NOT NULL DEFAULT 0,
-  "is_deleted" int NOT NULL DEFAULT 0,
+  "opening_balance" bigint NOT NULL DEFAULT 0,
+  "is_deleted" boolean NOT NULL DEFAULT FALSE,
   "created_at" timestamptz DEFAULT (now()),
   "updated_at" timestamptz DEFAULT (now()),
   PRIMARY KEY ("id")

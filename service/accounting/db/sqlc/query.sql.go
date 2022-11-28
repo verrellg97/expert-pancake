@@ -22,17 +22,17 @@ type GetCompanyChartOfAccountsParams struct {
 }
 
 type GetCompanyChartOfAccountsRow struct {
-	ID                string  `db:"id"`
-	CompanyID         string  `db:"company_id"`
-	BranchID          string  `db:"branch_id"`
-	AccountCode       string  `db:"account_code"`
-	AccountName       string  `db:"account_name"`
-	AccountGroup      string  `db:"account_group"`
-	BankName          string  `db:"bank_name"`
-	BankAccountNumber string  `db:"bank_account_number"`
-	BankCode          string  `db:"bank_code"`
-	OpeningBalance    float64 `db:"opening_balance"`
-	IsDeleted         int32   `db:"is_deleted"`
+	ID                string `db:"id"`
+	CompanyID         string `db:"company_id"`
+	BranchID          string `db:"branch_id"`
+	AccountCode       string `db:"account_code"`
+	AccountName       string `db:"account_name"`
+	AccountGroup      string `db:"account_group"`
+	BankName          string `db:"bank_name"`
+	BankAccountNumber string `db:"bank_account_number"`
+	BankCode          string `db:"bank_code"`
+	OpeningBalance    int64  `db:"opening_balance"`
+	IsDeleted         bool   `db:"is_deleted"`
 }
 
 func (q *Queries) GetCompanyChartOfAccounts(ctx context.Context, arg GetCompanyChartOfAccountsParams) ([]GetCompanyChartOfAccountsRow, error) {
@@ -90,17 +90,17 @@ RETURNING id, company_id, branch_id, account_code, account_name, account_group, 
 `
 
 type UpsertCompanyChartOfAccountParams struct {
-	ID                string  `db:"id"`
-	CompanyID         string  `db:"company_id"`
-	BranchID          string  `db:"branch_id"`
-	AccountCode       string  `db:"account_code"`
-	AccountName       string  `db:"account_name"`
-	AccountGroup      string  `db:"account_group"`
-	BankName          string  `db:"bank_name"`
-	BankAccountNumber string  `db:"bank_account_number"`
-	BankCode          string  `db:"bank_code"`
-	OpeningBalance    float64 `db:"opening_balance"`
-	IsDeleted         int32   `db:"is_deleted"`
+	ID                string `db:"id"`
+	CompanyID         string `db:"company_id"`
+	BranchID          string `db:"branch_id"`
+	AccountCode       string `db:"account_code"`
+	AccountName       string `db:"account_name"`
+	AccountGroup      string `db:"account_group"`
+	BankName          string `db:"bank_name"`
+	BankAccountNumber string `db:"bank_account_number"`
+	BankCode          string `db:"bank_code"`
+	OpeningBalance    int64  `db:"opening_balance"`
+	IsDeleted         bool   `db:"is_deleted"`
 }
 
 func (q *Queries) UpsertCompanyChartOfAccount(ctx context.Context, arg UpsertCompanyChartOfAccountParams) (AccountingCompanyChartOfAccount, error) {

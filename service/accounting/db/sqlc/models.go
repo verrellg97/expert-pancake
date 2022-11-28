@@ -18,8 +18,8 @@ type AccountingCompanyChartOfAccount struct {
 	BankName          string       `db:"bank_name"`
 	BankAccountNumber string       `db:"bank_account_number"`
 	BankCode          string       `db:"bank_code"`
-	OpeningBalance    float64      `db:"opening_balance"`
-	IsDeleted         int32        `db:"is_deleted"`
+	OpeningBalance    int64        `db:"opening_balance"`
+	IsDeleted         bool         `db:"is_deleted"`
 	CreatedAt         sql.NullTime `db:"created_at"`
 	UpdatedAt         sql.NullTime `db:"updated_at"`
 }
