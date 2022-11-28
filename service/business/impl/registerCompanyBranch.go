@@ -22,10 +22,8 @@ func (a businessService) RegisterCompanyBranch(w http.ResponseWriter, r *http.Re
 		return errors.NewClientError().WithDataMap(errMapRequest)
 	}
 
-	id := uuid.NewV4().String()
-
 	arg := db.InsertCompanyBranchParams{
-		ID:          id,
+		ID:          uuid.NewV4().String(),
 		UserID:      req.AccountId,
 		CompanyID:   req.CompanyId,
 		Name:        req.Name,

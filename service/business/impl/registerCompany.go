@@ -22,10 +22,8 @@ func (a businessService) RegisterCompany(w http.ResponseWriter, r *http.Request)
 		return errors.NewClientError().WithDataMap(errMapRequest)
 	}
 
-	id := uuid.NewV4().String()
-
 	arg := db.InsertCompanyParams{
-		ID:                id,
+		ID:                uuid.NewV4().String(),
 		UserID:            req.AccountId,
 		Name:              req.Name,
 		InitialName:       req.InitialName,
