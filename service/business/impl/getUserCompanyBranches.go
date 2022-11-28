@@ -8,6 +8,7 @@ import (
 	"github.com/calvinkmts/expert-pancake/engine/httpHandler"
 	db "github.com/expert-pancake/service/business/db/sqlc"
 	"github.com/expert-pancake/service/business/model"
+	"github.com/expert-pancake/service/business/util"
 )
 
 func (a businessService) GetUserCompanyBranches(w http.ResponseWriter, r *http.Request) error {
@@ -23,7 +24,7 @@ func (a businessService) GetUserCompanyBranches(w http.ResponseWriter, r *http.R
 	result, err := a.dbTrx.GetUserCompanyBranchesFilteredByName(context.Background(), db.GetUserCompanyBranchesFilteredByNameParams{
 		UserID:    req.AccountId,
 		CompanyID: req.CompanyId,
-		Name:      wildCardString(req.Keyword),
+		Name:      util.WildCardString(req.Keyword),
 	})
 	if err != nil {
 		return errors.NewServerError(model.GetUserCompanyBranchesError, err.Error())

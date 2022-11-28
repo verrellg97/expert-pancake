@@ -20,11 +20,3 @@ func NewBusinessService(config util.Config, validator validator.Validator, dbTrx
 		dbTrx:     dbTrx,
 	}
 }
-
-func wildCardString(keyword string) string {
-	if keyword != "" {
-		return "%" + keyword + "%"
-	} else {
-		return "%"
-	}
-}
