@@ -6,8 +6,6 @@ import (
 
 type AccountingService interface {
 	UpsertCompanyFiscalYear(w http.ResponseWriter, r *http.Request) error
-	SetCompanyFirstBankAccount(w http.ResponseWriter, r *http.Request) error
-	SetCompanyFirstCashAccount(w http.ResponseWriter, r *http.Request) error
 	GetAccountingBanks(w http.ResponseWriter, r *http.Request) error
 	GetAccountingChartOfAccountTypes(w http.ResponseWriter, r *http.Request) error
 	GetCompanyChartOfAccounts(w http.ResponseWriter, r *http.Request) error

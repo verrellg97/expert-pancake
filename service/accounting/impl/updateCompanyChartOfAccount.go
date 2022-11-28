@@ -21,10 +21,8 @@ func (a accountingService) UpdateCompanyChartOfAccount(w http.ResponseWriter, r 
 		return errors.NewClientError().WithDataMap(errMapRequest)
 	}
 
-	arg := db.UpsertCompanyChartOfAccountParams{
+	arg := db.UpdateCompanyChartOfAccountParams{
 		ID:                req.ChartOfAccountId,
-		CompanyID:         req.CompanyId,
-		BranchID:          req.BranchId,
 		AccountCode:       req.AccountCode,
 		AccountName:       req.AccountName,
 		AccountGroup:      req.AccountGroup,
@@ -35,7 +33,7 @@ func (a accountingService) UpdateCompanyChartOfAccount(w http.ResponseWriter, r 
 		IsDeleted:         req.IsDeleted,
 	}
 
-	result, err := a.dbTrx.UpsertCompanyChartOfAccount(context.Background(), arg)
+	result, err := a.dbTrx.UpdateCompanyChartOfAccount(context.Background(), arg)
 	if err != nil {
 		return errors.NewServerError(model.UpdateCompanyChartOfAccountError, err.Error())
 	}

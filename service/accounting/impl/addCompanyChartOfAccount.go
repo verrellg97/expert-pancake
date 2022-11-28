@@ -22,7 +22,7 @@ func (a accountingService) AddCompanyChartOfAccount(w http.ResponseWriter, r *ht
 		return errors.NewClientError().WithDataMap(errMapRequest)
 	}
 
-	arg := db.UpsertCompanyChartOfAccountParams{
+	arg := db.InsertCompanyChartOfAccountParams{
 		ID:                uuid.NewV4().String(),
 		CompanyID:         req.CompanyId,
 		BranchID:          req.BranchId,
@@ -35,7 +35,7 @@ func (a accountingService) AddCompanyChartOfAccount(w http.ResponseWriter, r *ht
 		OpeningBalance:    req.OpeningBalance,
 	}
 
-	result, err := a.dbTrx.UpsertCompanyChartOfAccount(context.Background(), arg)
+	result, err := a.dbTrx.InsertCompanyChartOfAccount(context.Background(), arg)
 	if err != nil {
 		return errors.NewServerError(model.AddCompanyChartOfAccountError, err.Error())
 	}
