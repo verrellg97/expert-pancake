@@ -22,10 +22,8 @@ func (a accountingService) AddCompanyChartOfAccount(w http.ResponseWriter, r *ht
 		return errors.NewClientError().WithDataMap(errMapRequest)
 	}
 
-	id := uuid.NewV4().String()
-
 	arg := db.UpsertCompanyChartOfAccountParams{
-		ID:                id,
+		ID:                uuid.NewV4().String(),
 		CompanyID:         req.CompanyId,
 		BranchID:          req.BranchId,
 		AccountCode:       req.AccountCode,

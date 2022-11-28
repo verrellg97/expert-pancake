@@ -6,7 +6,7 @@ CREATE SCHEMA IF NOT EXISTS business;
 
 CREATE TABLE "business"."companies" (
   "id" text NOT NULL,
-  "user_id" text NOT NULL,
+  "user_id" text,
   "name" text NOT NULL,
   "initial_name" text NOT NULL,
   "type" text NOT NULL,
@@ -19,8 +19,8 @@ CREATE TABLE "business"."companies" (
 
 CREATE TABLE "business"."company_branches" (
   "id" text NOT NULL,
-  "user_id" text NOT NULL,
-  "company_id" text NOT NULL,
+  "user_id" text,
+  "company_id" text,
   "name" text NOT NULL,
   "address" text NOT NULL,
   "phone_number" text NOT NULL,
