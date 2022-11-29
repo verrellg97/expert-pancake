@@ -13,8 +13,10 @@ type Querier interface {
 	GetUserCompaniesFilteredByName(ctx context.Context, arg GetUserCompaniesFilteredByNameParams) ([]GetUserCompaniesFilteredByNameRow, error)
 	GetUserCompanyBranches(ctx context.Context, arg GetUserCompanyBranchesParams) ([]GetUserCompanyBranchesRow, error)
 	GetUserCompanyBranchesFilteredByName(ctx context.Context, arg GetUserCompanyBranchesFilteredByNameParams) ([]GetUserCompanyBranchesFilteredByNameRow, error)
-	UpsertCompany(ctx context.Context, arg UpsertCompanyParams) (BusinessCompany, error)
-	UpsertCompanyBranch(ctx context.Context, arg UpsertCompanyBranchParams) (BusinessCompanyBranch, error)
+	InsertCompany(ctx context.Context, arg InsertCompanyParams) (BusinessCompany, error)
+	InsertCompanyBranch(ctx context.Context, arg InsertCompanyBranchParams) (BusinessCompanyBranch, error)
+	UpdateCompany(ctx context.Context, arg UpdateCompanyParams) (BusinessCompany, error)
+	UpdateCompanyBranch(ctx context.Context, arg UpdateCompanyBranchParams) (BusinessCompanyBranch, error)
 }
 
 var _ Querier = (*Queries)(nil)

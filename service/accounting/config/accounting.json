@@ -1,0 +1,12 @@
+{
+  "db": {
+    "host": "postgres",
+    "db_name": "accounting",
+    "username": "postgres",
+    "password": "changeme",
+    "ssl": "disable"
+  },
+  "server": {
+    "port": "4020"
+  }
+}

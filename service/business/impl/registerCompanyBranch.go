@@ -22,10 +22,8 @@ func (a businessService) RegisterCompanyBranch(w http.ResponseWriter, r *http.Re
 		return errors.NewClientError().WithDataMap(errMapRequest)
 	}
 
-	id := uuid.NewV4().String()
-
-	arg := db.UpsertCompanyBranchParams{
-		ID:          id,
+	arg := db.InsertCompanyBranchParams{
+		ID:          uuid.NewV4().String(),
 		UserID:      req.AccountId,
 		CompanyID:   req.CompanyId,
 		Name:        req.Name,
@@ -33,7 +31,7 @@ func (a businessService) RegisterCompanyBranch(w http.ResponseWriter, r *http.Re
 		PhoneNumber: req.PhoneNumber,
 	}
 
-	result, err := a.dbTrx.UpsertCompanyBranch(context.Background(), arg)
+	result, err := a.dbTrx.InsertCompanyBranch(context.Background(), arg)
 	if err != nil {
 		return errors.NewServerError(model.CreateNewCompanyBranchError, err.Error())
 	}
@@ -46,6 +44,7 @@ func (a businessService) RegisterCompanyBranch(w http.ResponseWriter, r *http.Re
 			Name:        result.Name,
 			Address:     result.Address,
 			PhoneNumber: result.PhoneNumber,
+			IsCentral:   result.IsCentral,
 		},
 	}
 

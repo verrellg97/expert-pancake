@@ -25,6 +25,18 @@ services:
     deploy:
       mode: replicated
       replicas: 1
+  accounting-service:
+    build:
+      context: ./service/accounting
+      dockerfile: Dockerfile
+    networks:
+      - postgres
+    restart: always
+    ports:
+      - "4020:4020"
+    deploy:
+      mode: replicated
+      replicas: 1
 
   postgres:
     container_name: postgres_container

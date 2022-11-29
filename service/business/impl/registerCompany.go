@@ -22,27 +22,24 @@ func (a businessService) RegisterCompany(w http.ResponseWriter, r *http.Request)
 		return errors.NewClientError().WithDataMap(errMapRequest)
 	}
 
-	id := uuid.NewV4().String()
-
-	arg := db.UpsertCompanyParams{
-		ID:                id,
+	arg := db.InsertCompanyParams{
+		ID:                uuid.NewV4().String(),
 		UserID:            req.AccountId,
 		Name:              req.Name,
 		InitialName:       req.InitialName,
 		Type:              req.Type,
 		ResponsiblePerson: req.ResponsiblePerson,
-		IsDeleted:         0,
 	}
 
-	result, err := a.dbTrx.UpsertCompany(context.Background(), arg)
+	result, err := a.dbTrx.CreateNewCompanyTrx(context.Background(), arg)
 	if err != nil {
 		return errors.NewServerError(model.CreateNewCompanyError, err.Error())
 	}
 
 	res := model.RegisterCompanyResponse{
 		Company: model.Company{
-			AccountId:         result.UserID,
-			CompanyId:         result.ID,
+			AccountId:         result.AccountId,
+			CompanyId:         result.CompanyId,
 			Name:              result.Name,
 			InitialName:       result.InitialName,
 			Type:              result.Type,
