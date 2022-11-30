@@ -8,6 +8,7 @@ import (
 	"github.com/calvinkmts/expert-pancake/engine/httpHandler"
 	db "github.com/expert-pancake/service/accounting/db/sqlc"
 	"github.com/expert-pancake/service/accounting/model"
+	"github.com/expert-pancake/service/accounting/util"
 )
 
 func (a accountingService) UpsertCompanyFiscalYear(w http.ResponseWriter, r *http.Request) error {
@@ -22,11 +23,9 @@ func (a accountingService) UpsertCompanyFiscalYear(w http.ResponseWriter, r *htt
 	}
 
 	arg := db.UpsertCompanyFiscalYearParams{
-		CompanyID:  req.CompanyId,
-		StartMonth: req.StartMonth,
-		StartYear:  req.StartYear,
-		EndMonth:   req.EndMonth,
-		EndYear:    req.EndYear,
+		CompanyID:   req.CompanyId,
+		StartPeriod: util.StringToDate(req.StartPeriod),
+		EndPeriod:   util.StringToDate(req.EndPeriod),
 	}
 
 	result, err := a.dbTrx.UpsertCompanyFiscalYear(context.Background(), arg)
@@ -35,11 +34,9 @@ func (a accountingService) UpsertCompanyFiscalYear(w http.ResponseWriter, r *htt
 	}
 
 	res := model.UpsertCompanyFiscalYearRequestResponse{
-		CompanyId:  result.CompanyID,
-		StartMonth: result.StartMonth,
-		StartYear:  result.StartYear,
-		EndMonth:   result.EndMonth,
-		EndYear:    result.EndYear,
+		CompanyId:   result.CompanyID,
+		StartPeriod: result.StartPeriod.String(),
+		EndPeriod:   result.EndPeriod.String(),
 	}
 
 	httpHandler.WriteResponse(w, res)

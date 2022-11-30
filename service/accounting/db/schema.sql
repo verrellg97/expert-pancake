@@ -2,10 +2,8 @@ CREATE SCHEMA IF NOT EXISTS accounting;
 
 CREATE TABLE accounting.company_fiscal_years (
   "company_id" text NOT NULL,
-  "start_month" int NOT NULL DEFAULT 0,
-  "start_year" int NOT NULL DEFAULT 0,
-  "end_month" int NOT NULL DEFAULT 0,
-  "end_year" int NOT NULL DEFAULT 0,
+  "start_period" date NOT NULL DEFAULT CURRENT_DATE,
+  "end_period" date NOT NULL DEFAULT CURRENT_DATE,
   "created_at" timestamptz DEFAULT (now()),
   "updated_at" timestamptz DEFAULT (now()),
   PRIMARY KEY ("company_id")

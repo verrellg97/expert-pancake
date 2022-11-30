@@ -6,6 +6,7 @@ import (
 	"github.com/calvinkmts/expert-pancake/engine/errors"
 	"github.com/calvinkmts/expert-pancake/engine/httpHandler"
 	"github.com/expert-pancake/service/accounting/model"
+	"github.com/gorilla/schema"
 )
 
 var defaultIndonesiaBanks = []model.Bank{
@@ -21,7 +22,7 @@ var defaultWorldWideBanks = []model.Bank{
 func (a accountingService) GetAccountingBanks(w http.ResponseWriter, r *http.Request) error {
 
 	var req model.GetAccountingBanksRequest
-	httpHandler.ParseHTTPRequest(r, &req)
+	schema.NewDecoder().Decode(&req, r.URL.Query())
 
 	errMapRequest := a.validator.Validate(req)
 	if errMapRequest != nil {

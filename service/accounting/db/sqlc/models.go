@@ -6,6 +6,7 @@ package db
 
 import (
 	"database/sql"
+	"time"
 )
 
 type AccountingCompanyChartOfAccount struct {
@@ -25,11 +26,9 @@ type AccountingCompanyChartOfAccount struct {
 }
 
 type AccountingCompanyFiscalYear struct {
-	CompanyID  string       `db:"company_id"`
-	StartMonth int32        `db:"start_month"`
-	StartYear  int32        `db:"start_year"`
-	EndMonth   int32        `db:"end_month"`
-	EndYear    int32        `db:"end_year"`
-	CreatedAt  sql.NullTime `db:"created_at"`
-	UpdatedAt  sql.NullTime `db:"updated_at"`
+	CompanyID   string       `db:"company_id"`
+	StartPeriod time.Time    `db:"start_period"`
+	EndPeriod   time.Time    `db:"end_period"`
+	CreatedAt   sql.NullTime `db:"created_at"`
+	UpdatedAt   sql.NullTime `db:"updated_at"`
 }
