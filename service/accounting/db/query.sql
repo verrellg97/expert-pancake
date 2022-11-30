@@ -1,12 +1,10 @@
 -- name: UpsertCompanyFiscalYear :one
-INSERT INTO accounting.company_fiscal_years(company_id, start_month, start_year, end_month, end_year)
-VALUES ($1, $2, $3, $4, $5)
+INSERT INTO accounting.company_fiscal_years(company_id, start_period, end_period)
+VALUES ($1, $2, $3)
 ON CONFLICT (company_id)
 DO UPDATE SET
-    start_month = EXCLUDED.start_month,
-    start_year = EXCLUDED.start_year,
-    end_month = EXCLUDED.end_month,
-    end_year = EXCLUDED.end_year,
+    start_period = EXCLUDED.start_period,
+    end_period = EXCLUDED.end_period,
     updated_at = NOW()
 RETURNING *;
 

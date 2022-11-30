@@ -7,6 +7,7 @@ package db
 
 import (
 	"context"
+	"time"
 )
 
 const getCompanyChartOfAccounts = `-- name: GetCompanyChartOfAccounts :many
@@ -184,41 +185,29 @@ func (q *Queries) UpdateCompanyChartOfAccount(ctx context.Context, arg UpdateCom
 }
 
 const upsertCompanyFiscalYear = `-- name: UpsertCompanyFiscalYear :one
-INSERT INTO accounting.company_fiscal_years(company_id, start_month, start_year, end_month, end_year)
-VALUES ($1, $2, $3, $4, $5)
+INSERT INTO accounting.company_fiscal_years(company_id, start_period, end_period)
+VALUES ($1, $2, $3)
 ON CONFLICT (company_id)
 DO UPDATE SET
-    start_month = EXCLUDED.start_month,
-    start_year = EXCLUDED.start_year,
-    end_month = EXCLUDED.end_month,
-    end_year = EXCLUDED.end_year,
+    start_period = EXCLUDED.start_period,
+    end_period = EXCLUDED.end_period,
     updated_at = NOW()
-RETURNING company_id, start_month, start_year, end_month, end_year, created_at, updated_at
+RETURNING company_id, start_period, end_period, created_at, updated_at
 `
 
 type UpsertCompanyFiscalYearParams struct {
-	CompanyID  string `db:"company_id"`
-	StartMonth int32  `db:"start_month"`
-	StartYear  int32  `db:"start_year"`
-	EndMonth   int32  `db:"end_month"`
-	EndYear    int32  `db:"end_year"`
+	CompanyID   string    `db:"company_id"`
+	StartPeriod time.Time `db:"start_period"`
+	EndPeriod   time.Time `db:"end_period"`
 }
 
 func (q *Queries) UpsertCompanyFiscalYear(ctx context.Context, arg UpsertCompanyFiscalYearParams) (AccountingCompanyFiscalYear, error) {
-	row := q.db.QueryRowContext(ctx, upsertCompanyFiscalYear,
-		arg.CompanyID,
-		arg.StartMonth,
-		arg.StartYear,
-		arg.EndMonth,
-		arg.EndYear,
-	)
+	row := q.db.QueryRowContext(ctx, upsertCompanyFiscalYear, arg.CompanyID, arg.StartPeriod, arg.EndPeriod)
 	var i AccountingCompanyFiscalYear
 	err := row.Scan(
 		&i.CompanyID,
-		&i.StartMonth,
-		&i.StartYear,
-		&i.EndMonth,
-		&i.EndYear,
+		&i.StartPeriod,
+		&i.EndPeriod,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
