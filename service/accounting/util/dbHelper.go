@@ -12,6 +12,6 @@ func WildCardString(keyword string) string {
 
 func StringToDate(value string) time.Time {
 	var dateValue time.Time
-	dateValue, _ = time.Parse("2006-01-02", value)
+	dateValue, _ = time.Parse("2006-01-31", value)
 	return dateValue
 }
