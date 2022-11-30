@@ -65,9 +65,9 @@ type AddCompanyChartOfAccountRequest struct {
 	AccountCode       string `json:"account_code" validate:"required"`
 	AccountName       string `json:"account_name" validate:"required"`
 	AccountGroup      string `json:"account_group" validate:"required"`
-	BankName          string `json:"bank_name" validate:"required"`
-	BankAccountNumber string `json:"bank_account_number" validate:"required"`
-	BankCode          string `json:"bank_code" validate:"required"`
+	BankName          string `json:"bank_name"`
+	BankAccountNumber string `json:"bank_account_number"`
+	BankCode          string `json:"bank_code"`
 	OpeningBalance    int64  `json:"opening_balance"`
 }
 
@@ -78,9 +78,9 @@ type UpdateCompanyChartOfAccountRequest struct {
 	AccountCode       string `json:"account_code" validate:"required"`
 	AccountName       string `json:"account_name" validate:"required"`
 	AccountGroup      string `json:"account_group" validate:"required"`
-	BankName          string `json:"bank_name" validate:"required"`
-	BankAccountNumber string `json:"bank_account_number" validate:"required"`
-	BankCode          string `json:"bank_code" validate:"required"`
+	BankName          string `json:"bank_name"`
+	BankAccountNumber string `json:"bank_account_number"`
+	BankCode          string `json:"bank_code"`
 	OpeningBalance    int64  `json:"opening_balance"`
 	IsDeleted         bool   `json:"is_deleted"`
 }
