@@ -35,8 +35,8 @@ func (a accountingService) UpsertCompanyFiscalYear(w http.ResponseWriter, r *htt
 
 	res := model.UpsertCompanyFiscalYearRequestResponse{
 		CompanyId:   result.CompanyID,
-		StartPeriod: util.DateToString(result.StartPeriod),
-		EndPeriod:   util.DateToString(result.EndPeriod),
+		StartPeriod: result.StartPeriod.Format(util.DateLayoutYMD),
+		EndPeriod:   result.EndPeriod.Format(util.DateLayoutYMD),
 	}
 
 	httpHandler.WriteResponse(w, res)

@@ -3,12 +3,12 @@ package impl
 import (
 	"context"
 	"net/http"
+	"strconv"
 
 	"github.com/calvinkmts/expert-pancake/engine/errors"
 	"github.com/calvinkmts/expert-pancake/engine/httpHandler"
 	db "github.com/expert-pancake/service/accounting/db/sqlc"
 	"github.com/expert-pancake/service/accounting/model"
-	"github.com/expert-pancake/service/accounting/util"
 )
 
 func (a accountingService) UpdateCompanyChartOfAccount(w http.ResponseWriter, r *http.Request) error {
@@ -22,6 +22,7 @@ func (a accountingService) UpdateCompanyChartOfAccount(w http.ResponseWriter, r 
 		return errors.NewClientError().WithDataMap(errMapRequest)
 	}
 
+	openingBalance, _ := strconv.ParseInt(req.OpeningBalance, 10, 64)
 	arg := db.UpdateCompanyChartOfAccountParams{
 		ID:                req.ChartOfAccountId,
 		AccountCode:       req.AccountCode,
@@ -30,7 +31,7 @@ func (a accountingService) UpdateCompanyChartOfAccount(w http.ResponseWriter, r 
 		BankName:          req.BankName,
 		BankAccountNumber: req.BankAccountNumber,
 		BankCode:          req.BankCode,
-		OpeningBalance:    util.StringToBigInt(req.OpeningBalance),
+		OpeningBalance:    openingBalance,
 		IsDeleted:         req.IsDeleted,
 	}
 
@@ -50,7 +51,7 @@ func (a accountingService) UpdateCompanyChartOfAccount(w http.ResponseWriter, r 
 			BankName:          result.BankName,
 			BankAccountNumber: result.BankAccountNumber,
 			BankCode:          result.BankCode,
-			OpeningBalance:    util.BigIntToString(result.OpeningBalance),
+			OpeningBalance:    strconv.FormatInt(result.OpeningBalance, 10),
 			IsDeleted:         result.IsDeleted,
 		},
 	}

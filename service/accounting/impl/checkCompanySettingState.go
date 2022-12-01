@@ -3,6 +3,7 @@ package impl
 import (
 	"context"
 	"net/http"
+	"strconv"
 
 	"github.com/calvinkmts/expert-pancake/engine/errors"
 	"github.com/calvinkmts/expert-pancake/engine/httpHandler"
@@ -30,8 +31,8 @@ func (a accountingService) CheckCompanySettingState(w http.ResponseWriter, r *ht
 	if errFiscal == nil {
 		res.FiscalYear = &model.FiscalYear{
 			CompanyId:   resultFiscal.CompanyID,
-			StartPeriod: util.DateToString(resultFiscal.StartPeriod),
-			EndPeriod:   util.DateToString(resultFiscal.EndPeriod),
+			StartPeriod: resultFiscal.StartPeriod.Format(util.DateLayoutYMD),
+			EndPeriod:   resultFiscal.EndPeriod.Format(util.DateLayoutYMD),
 		}
 	}
 
@@ -47,7 +48,7 @@ func (a accountingService) CheckCompanySettingState(w http.ResponseWriter, r *ht
 			BankName:          resultBank.BankName,
 			BankAccountNumber: resultBank.BankAccountNumber,
 			BankCode:          resultBank.BankCode,
-			OpeningBalance:    util.BigIntToString(resultBank.OpeningBalance),
+			OpeningBalance:    strconv.FormatInt(resultBank.OpeningBalance, 10),
 			IsDeleted:         resultBank.IsDeleted,
 		}
 	}
@@ -64,7 +65,7 @@ func (a accountingService) CheckCompanySettingState(w http.ResponseWriter, r *ht
 			BankName:          resultCash.BankName,
 			BankAccountNumber: resultCash.BankAccountNumber,
 			BankCode:          resultCash.BankCode,
-			OpeningBalance:    util.BigIntToString(resultCash.OpeningBalance),
+			OpeningBalance:    strconv.FormatInt(resultCash.OpeningBalance, 10),
 			IsDeleted:         resultCash.IsDeleted,
 		}
 	}

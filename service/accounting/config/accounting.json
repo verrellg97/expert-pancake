@@ -1,12 +1,12 @@
 {
   "db": {
-    "host": "postgres",
-    "db_name": "accounting",
+    "host": "localhost:5432",
+    "db_name": "postgres",
     "username": "postgres",
-    "password": "changeme",
+    "password": "postgres",
     "ssl": "disable"
   },
   "server": {
-    "port": "4020"
+    "port": "3000"
   }
 }
