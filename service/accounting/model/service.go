@@ -11,11 +11,19 @@ type AccountingService interface {
 	GetCompanyChartOfAccounts(w http.ResponseWriter, r *http.Request) error
 	AddCompanyChartOfAccount(w http.ResponseWriter, r *http.Request) error
 	UpdateCompanyChartOfAccount(w http.ResponseWriter, r *http.Request) error
+	CheckCompanySettingState(w http.ResponseWriter, r *http.Request) error
+	GetAccountingTransactionTypes(w http.ResponseWriter, r *http.Request) error
 }
 
 type Bank struct {
 	BankName string `json:"bank_name" validate:"required"`
 	BankCode string `json:"bank_code" validate:"required"`
+}
+
+type FiscalYear struct {
+	CompanyId   string `json:"company_id" validate:"required"`
+	StartPeriod string `json:"start_period" validate:"required"`
+	EndPeriod   string `json:"end_period" validate:"required"`
 }
 
 type ChartOfAccount struct {
@@ -28,7 +36,7 @@ type ChartOfAccount struct {
 	BankName          string `json:"bank_name" validate:"required"`
 	BankAccountNumber string `json:"bank_account_number" validate:"required"`
 	BankCode          string `json:"bank_code" validate:"required"`
-	OpeningBalance    int64  `json:"opening_balance" validate:"required"`
+	OpeningBalance    string `json:"opening_balance" validate:"required"`
 	IsDeleted         bool   `json:"is_deleted" validate:"required"`
 }
 
@@ -68,7 +76,7 @@ type AddCompanyChartOfAccountRequest struct {
 	BankName          string `json:"bank_name"`
 	BankAccountNumber string `json:"bank_account_number"`
 	BankCode          string `json:"bank_code"`
-	OpeningBalance    int64  `json:"opening_balance"`
+	OpeningBalance    string `json:"opening_balance" validate:"required"`
 }
 
 type UpdateCompanyChartOfAccountRequest struct {
@@ -81,6 +89,24 @@ type UpdateCompanyChartOfAccountRequest struct {
 	BankName          string `json:"bank_name"`
 	BankAccountNumber string `json:"bank_account_number"`
 	BankCode          string `json:"bank_code"`
-	OpeningBalance    int64  `json:"opening_balance"`
+	OpeningBalance    string `json:"opening_balance" validate:"required"`
 	IsDeleted         bool   `json:"is_deleted"`
+}
+
+type CheckCompanySettingStateRequest struct {
+	CompanyId string `json:"company_id" validate:"required"`
+}
+
+type CheckCompanySettingStateResponse struct {
+	FiscalYear  *FiscalYear     `json:"fiscal_year"`
+	BankAccount *ChartOfAccount `json:"bank_account"`
+	CashAccount *ChartOfAccount `json:"cash_account"`
+}
+
+type GetAccountingTransactionTypesRequest struct {
+	Type string `json:"type" validate:"required" schema:"type"`
+}
+
+type GetAccountingTransactionTypesResponse struct {
+	TransactionTypes []string `json:"types"`
 }

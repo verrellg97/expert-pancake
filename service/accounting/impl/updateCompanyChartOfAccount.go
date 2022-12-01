@@ -8,6 +8,7 @@ import (
 	"github.com/calvinkmts/expert-pancake/engine/httpHandler"
 	db "github.com/expert-pancake/service/accounting/db/sqlc"
 	"github.com/expert-pancake/service/accounting/model"
+	"github.com/expert-pancake/service/accounting/util"
 )
 
 func (a accountingService) UpdateCompanyChartOfAccount(w http.ResponseWriter, r *http.Request) error {
@@ -29,7 +30,7 @@ func (a accountingService) UpdateCompanyChartOfAccount(w http.ResponseWriter, r 
 		BankName:          req.BankName,
 		BankAccountNumber: req.BankAccountNumber,
 		BankCode:          req.BankCode,
-		OpeningBalance:    req.OpeningBalance,
+		OpeningBalance:    util.StringToBigInt(req.OpeningBalance),
 		IsDeleted:         req.IsDeleted,
 	}
 
@@ -49,7 +50,7 @@ func (a accountingService) UpdateCompanyChartOfAccount(w http.ResponseWriter, r 
 			BankName:          result.BankName,
 			BankAccountNumber: result.BankAccountNumber,
 			BankCode:          result.BankCode,
-			OpeningBalance:    result.OpeningBalance,
+			OpeningBalance:    util.BigIntToString(result.OpeningBalance),
 			IsDeleted:         result.IsDeleted,
 		},
 	}
