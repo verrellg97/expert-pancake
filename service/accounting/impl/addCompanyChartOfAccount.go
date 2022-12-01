@@ -3,6 +3,7 @@ package impl
 import (
 	"context"
 	"net/http"
+	"strconv"
 
 	"github.com/calvinkmts/expert-pancake/engine/errors"
 	"github.com/calvinkmts/expert-pancake/engine/httpHandler"
@@ -22,6 +23,7 @@ func (a accountingService) AddCompanyChartOfAccount(w http.ResponseWriter, r *ht
 		return errors.NewClientError().WithDataMap(errMapRequest)
 	}
 
+	openingBalance, _ := strconv.ParseInt(req.OpeningBalance, 10, 64)
 	arg := db.InsertCompanyChartOfAccountParams{
 		ID:                uuid.NewV4().String(),
 		CompanyID:         req.CompanyId,
@@ -32,7 +34,7 @@ func (a accountingService) AddCompanyChartOfAccount(w http.ResponseWriter, r *ht
 		BankName:          req.BankName,
 		BankAccountNumber: req.BankAccountNumber,
 		BankCode:          req.BankCode,
-		OpeningBalance:    req.OpeningBalance,
+		OpeningBalance:    openingBalance,
 	}
 
 	result, err := a.dbTrx.InsertCompanyChartOfAccount(context.Background(), arg)
@@ -51,7 +53,7 @@ func (a accountingService) AddCompanyChartOfAccount(w http.ResponseWriter, r *ht
 			BankName:          result.BankName,
 			BankAccountNumber: result.BankAccountNumber,
 			BankCode:          result.BankCode,
-			OpeningBalance:    result.OpeningBalance,
+			OpeningBalance:    strconv.FormatInt(result.OpeningBalance, 10),
 			IsDeleted:         result.IsDeleted,
 		},
 	}

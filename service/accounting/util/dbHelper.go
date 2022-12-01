@@ -1,6 +1,8 @@
 package util
 
-import "time"
+import (
+	"time"
+)
 
 func WildCardString(keyword string) string {
 	if keyword != "" {
@@ -12,6 +14,6 @@ func WildCardString(keyword string) string {
 
 func StringToDate(value string) time.Time {
 	var dateValue time.Time
-	dateValue, _ = time.Parse("2006-01-31", value)
+	dateValue, _ = time.Parse(DateLayoutYMD, value)
 	return dateValue
 }

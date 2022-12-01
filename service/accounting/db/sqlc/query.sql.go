@@ -71,6 +71,109 @@ func (q *Queries) GetCompanyChartOfAccounts(ctx context.Context, arg GetCompanyC
 	return items, nil
 }
 
+const getCompanySettingBank = `-- name: GetCompanySettingBank :one
+SELECT id, company_id, branch_id, account_code, account_name, account_group, bank_name, 
+bank_account_number, bank_code, opening_balance, is_deleted
+FROM accounting.company_chart_of_accounts
+WHERE company_id = $1 
+AND account_group = 'BANK'
+ORDER BY created_at LIMIT 1
+`
+
+type GetCompanySettingBankRow struct {
+	ID                string `db:"id"`
+	CompanyID         string `db:"company_id"`
+	BranchID          string `db:"branch_id"`
+	AccountCode       string `db:"account_code"`
+	AccountName       string `db:"account_name"`
+	AccountGroup      string `db:"account_group"`
+	BankName          string `db:"bank_name"`
+	BankAccountNumber string `db:"bank_account_number"`
+	BankCode          string `db:"bank_code"`
+	OpeningBalance    int64  `db:"opening_balance"`
+	IsDeleted         bool   `db:"is_deleted"`
+}
+
+func (q *Queries) GetCompanySettingBank(ctx context.Context, companyID string) (GetCompanySettingBankRow, error) {
+	row := q.db.QueryRowContext(ctx, getCompanySettingBank, companyID)
+	var i GetCompanySettingBankRow
+	err := row.Scan(
+		&i.ID,
+		&i.CompanyID,
+		&i.BranchID,
+		&i.AccountCode,
+		&i.AccountName,
+		&i.AccountGroup,
+		&i.BankName,
+		&i.BankAccountNumber,
+		&i.BankCode,
+		&i.OpeningBalance,
+		&i.IsDeleted,
+	)
+	return i, err
+}
+
+const getCompanySettingCash = `-- name: GetCompanySettingCash :one
+SELECT id, company_id, branch_id, account_code, account_name, account_group, bank_name, 
+bank_account_number, bank_code, opening_balance, is_deleted
+FROM accounting.company_chart_of_accounts
+WHERE company_id = $1 
+AND account_group = 'KAS'
+ORDER BY created_at LIMIT 1
+`
+
+type GetCompanySettingCashRow struct {
+	ID                string `db:"id"`
+	CompanyID         string `db:"company_id"`
+	BranchID          string `db:"branch_id"`
+	AccountCode       string `db:"account_code"`
+	AccountName       string `db:"account_name"`
+	AccountGroup      string `db:"account_group"`
+	BankName          string `db:"bank_name"`
+	BankAccountNumber string `db:"bank_account_number"`
+	BankCode          string `db:"bank_code"`
+	OpeningBalance    int64  `db:"opening_balance"`
+	IsDeleted         bool   `db:"is_deleted"`
+}
+
+func (q *Queries) GetCompanySettingCash(ctx context.Context, companyID string) (GetCompanySettingCashRow, error) {
+	row := q.db.QueryRowContext(ctx, getCompanySettingCash, companyID)
+	var i GetCompanySettingCashRow
+	err := row.Scan(
+		&i.ID,
+		&i.CompanyID,
+		&i.BranchID,
+		&i.AccountCode,
+		&i.AccountName,
+		&i.AccountGroup,
+		&i.BankName,
+		&i.BankAccountNumber,
+		&i.BankCode,
+		&i.OpeningBalance,
+		&i.IsDeleted,
+	)
+	return i, err
+}
+
+const getCompanySettingFiscalYear = `-- name: GetCompanySettingFiscalYear :one
+SELECT company_id, start_period, end_period
+FROM accounting.company_fiscal_years
+WHERE company_id = $1
+`
+
+type GetCompanySettingFiscalYearRow struct {
+	CompanyID   string    `db:"company_id"`
+	StartPeriod time.Time `db:"start_period"`
+	EndPeriod   time.Time `db:"end_period"`
+}
+
+func (q *Queries) GetCompanySettingFiscalYear(ctx context.Context, companyID string) (GetCompanySettingFiscalYearRow, error) {
+	row := q.db.QueryRowContext(ctx, getCompanySettingFiscalYear, companyID)
+	var i GetCompanySettingFiscalYearRow
+	err := row.Scan(&i.CompanyID, &i.StartPeriod, &i.EndPeriod)
+	return i, err
+}
+
 const insertCompanyChartOfAccount = `-- name: InsertCompanyChartOfAccount :one
 INSERT INTO accounting.company_chart_of_accounts(id, company_id, branch_id, 
 account_code, account_name, account_group, 

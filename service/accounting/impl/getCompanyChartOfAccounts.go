@@ -3,6 +3,7 @@ package impl
 import (
 	"context"
 	"net/http"
+	"strconv"
 
 	"github.com/calvinkmts/expert-pancake/engine/errors"
 	"github.com/calvinkmts/expert-pancake/engine/httpHandler"
@@ -42,7 +43,7 @@ func (a accountingService) GetCompanyChartOfAccounts(w http.ResponseWriter, r *h
 			BankName:          d.BankName,
 			BankAccountNumber: d.BankAccountNumber,
 			BankCode:          d.BankCode,
-			OpeningBalance:    d.OpeningBalance,
+			OpeningBalance:    strconv.FormatInt(d.OpeningBalance, 10),
 			IsDeleted:         d.IsDeleted,
 		}
 		chart_of_accounts = append(chart_of_accounts, chart_of_account)
