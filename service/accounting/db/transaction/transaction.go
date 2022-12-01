@@ -6,10 +6,12 @@ import (
 	"fmt"
 
 	. "github.com/expert-pancake/service/accounting/db/sqlc"
+	db "github.com/expert-pancake/service/accounting/db/sqlc"
 )
 
 type AccountingTrx interface {
 	Querier
+	CreateNewCashTransactionTrx(ctx context.Context, arg db.InsertCashTransactionParams) (CreateNewCashTransactionTrxResult, error)
 }
 
 // Trx provides all functions to execute SQL queries and transactions

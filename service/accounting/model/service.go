@@ -13,6 +13,9 @@ type AccountingService interface {
 	UpdateCompanyChartOfAccount(w http.ResponseWriter, r *http.Request) error
 	CheckCompanySettingState(w http.ResponseWriter, r *http.Request) error
 	GetAccountingTransactionTypes(w http.ResponseWriter, r *http.Request) error
+	AddCashTransaction(w http.ResponseWriter, r *http.Request) error
+	GetCashTransactions(w http.ResponseWriter, r *http.Request) error
+	GetCashTransactionsGroupByDate(w http.ResponseWriter, r *http.Request) error
 }
 
 type Bank struct {
@@ -40,6 +43,29 @@ type ChartOfAccount struct {
 	IsDeleted         bool   `json:"is_deleted" validate:"required"`
 }
 
+type ChartOfAccountIdName struct {
+	ChartOfAccountId string `json:"chart_of_account_id" validate:"required"`
+	AccountName      string `json:"account_name" validate:"required"`
+}
+
+type CashTransaction struct {
+	CompanyId            string               `json:"company_id" validate:"required"`
+	BranchId             string               `json:"branch_id" validate:"required"`
+	TransactionId        string               `json:"transaction_id" validate:"required"`
+	TransactionDate      string               `json:"transaction_date" validate:"required"`
+	TransactionType      string               `json:"transaction_type" validate:"required"`
+	Type                 string               `json:"type" validate:"required"`
+	MainChartOfAccount   ChartOfAccountIdName `json:"main_chart_of_account" validate:"required"`
+	ContraChartOfAccount ChartOfAccountIdName `json:"contra_chart_of_account"`
+	Amount               string               `json:"amount" validate:"required"`
+	Description          string               `json:"description" validate:"required"`
+}
+
+type CashInCashOut struct {
+	CashIn  string `json:"cash_in" validate:"required"`
+	CashOut string `json:"cash_out" validate:"required"`
+}
+
 type UpsertCompanyFiscalYearRequestResponse struct {
 	CompanyId   string `json:"company_id" validate:"required"`
 	StartPeriod string `json:"start_period" validate:"required"`
@@ -62,9 +88,11 @@ type GetAccountingChartOfAccountTypesResponse struct {
 	ChartOfAccountTypes []string `json:"types"`
 }
 
-type CompanyChartOfAccountsRequest struct {
-	CompanyId string `json:"company_id" validate:"required"`
-	Keyword   string `json:"keyword"`
+type GetCompanyChartOfAccountsRequest struct {
+	CompanyId       string `json:"company_id" validate:"required"`
+	Keyword         string `json:"keyword"`
+	GroupFilter     string `json:"group_filter"`
+	IsDeletedFilter string `json:"is_deleted_filter"`
 }
 
 type AddCompanyChartOfAccountRequest struct {
@@ -109,4 +137,36 @@ type GetAccountingTransactionTypesRequest struct {
 
 type GetAccountingTransactionTypesResponse struct {
 	TransactionTypes []string `json:"types"`
+}
+
+type AddCashTransactionRequest struct {
+	CompanyId              string `json:"company_id" validate:"required"`
+	BranchId               string `json:"branch_id" validate:"required"`
+	TransactionDate        string `json:"transaction_date" validate:"required"`
+	TransactionType        string `json:"transaction_type" validate:"required"`
+	Type                   string `json:"type" validate:"required"`
+	MainChartOfAccountId   string `json:"main_chart_of_account_id" validate:"required"`
+	ContraChartOfAccountId string `json:"contra_chart_of_account_id"`
+	Amount                 string `json:"amount" validate:"required"`
+	Description            string `json:"description" validate:"required"`
+}
+
+type AddCashTransactionResponse struct {
+	CashTransaction
+}
+
+type GetCashTransactionsRequest struct {
+	CompanyId string `json:"company_id" validate:"required"`
+	BranchId  string `json:"branch_id"  validate:"required"`
+	Type      string `json:"type"`
+}
+
+type GetCashTransactionsGroupByDateRequest struct {
+	CompanyId string `json:"company_id" validate:"required"`
+	BranchId  string `json:"branch_id"  validate:"required"`
+}
+
+type GetCompanyCashTransactionsGroupByDateResponse struct {
+	TransactionDate string        `json:"transaction_date" validate:"required"`
+	Amount          CashInCashOut `json:"amount" validate:"required"`
 }

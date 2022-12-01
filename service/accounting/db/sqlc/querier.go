@@ -9,11 +9,16 @@ import (
 )
 
 type Querier interface {
+	GetCashTransactions(ctx context.Context, arg GetCashTransactionsParams) ([]GetCashTransactionsRow, error)
+	GetCashTransactionsGroupByDate(ctx context.Context, arg GetCashTransactionsGroupByDateParams) ([]GetCashTransactionsGroupByDateRow, error)
+	GetCompanyChartOfAccount(ctx context.Context, id string) (AccountingCompanyChartOfAccount, error)
 	GetCompanyChartOfAccounts(ctx context.Context, arg GetCompanyChartOfAccountsParams) ([]GetCompanyChartOfAccountsRow, error)
 	GetCompanySettingBank(ctx context.Context, companyID string) (GetCompanySettingBankRow, error)
 	GetCompanySettingCash(ctx context.Context, companyID string) (GetCompanySettingCashRow, error)
 	GetCompanySettingFiscalYear(ctx context.Context, companyID string) (GetCompanySettingFiscalYearRow, error)
+	InsertCashTransaction(ctx context.Context, arg InsertCashTransactionParams) (AccountingCashTransaction, error)
 	InsertCompanyChartOfAccount(ctx context.Context, arg InsertCompanyChartOfAccountParams) (AccountingCompanyChartOfAccount, error)
+	InsertTransactionJournal(ctx context.Context, arg InsertTransactionJournalParams) (AccountingTransactionsJournal, error)
 	UpdateCompanyChartOfAccount(ctx context.Context, arg UpdateCompanyChartOfAccountParams) (AccountingCompanyChartOfAccount, error)
 	UpsertCompanyFiscalYear(ctx context.Context, arg UpsertCompanyFiscalYearParams) (AccountingCompanyFiscalYear, error)
 }

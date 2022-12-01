@@ -14,7 +14,7 @@ import (
 
 func (a accountingService) GetCompanyChartOfAccounts(w http.ResponseWriter, r *http.Request) error {
 
-	var req model.CompanyChartOfAccountsRequest
+	var req model.GetCompanyChartOfAccountsRequest
 	httpHandler.ParseHTTPRequest(r, &req)
 
 	errMapRequest := a.validator.Validate(req)
@@ -23,8 +23,10 @@ func (a accountingService) GetCompanyChartOfAccounts(w http.ResponseWriter, r *h
 	}
 
 	result, err := a.dbTrx.GetCompanyChartOfAccounts(context.Background(), db.GetCompanyChartOfAccountsParams{
-		CompanyID:   req.CompanyId,
-		AccountName: util.WildCardString(req.Keyword),
+		CompanyID:    req.CompanyId,
+		AccountName:  util.WildCardString(req.Keyword),
+		AccountGroup: util.WildCardString(req.GroupFilter),
+		Column4:      req.IsDeletedFilter,
 	})
 	if err != nil {
 		return errors.NewServerError(model.GetCompanyChartOfAccountsError, err.Error())

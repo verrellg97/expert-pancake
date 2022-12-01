@@ -19,6 +19,9 @@ const (
 	UpdateCompanyChartOfAccountPath      = "/accounting/company/chart-of-account/update"
 	CheckCompanySettingStatePath         = "/accounting/company/setting/state"
 	GetAccountingTransactionTypesPath    = "/accounting/transaction/types"
+	AddCashTransactionPath               = "/accounting/transaction/cash/add"
+	GetCashTransactionsPath              = "/accounting/transaction/cash/list"
+	GetCashTransactionsGroupByDatePath   = "/accounting/transaction/cash/list/group-by-date"
 )
 
 func (c *component) Routes(accountingService model.AccountingService) http.Handler {
@@ -45,6 +48,9 @@ func (c *component) Routes(accountingService model.AccountingService) http.Handl
 	mux.Method("POST", UpdateCompanyChartOfAccountPath, httpHandler.New(accountingService.UpdateCompanyChartOfAccount))
 	mux.Method("POST", CheckCompanySettingStatePath, httpHandler.New(accountingService.CheckCompanySettingState))
 	mux.Method("GET", GetAccountingTransactionTypesPath, httpHandler.New(accountingService.GetAccountingTransactionTypes))
+	mux.Method("POST", AddCashTransactionPath, httpHandler.New(accountingService.AddCashTransaction))
+	mux.Method("POST", GetCashTransactionsPath, httpHandler.New(accountingService.GetCashTransactions))
+	mux.Method("POST", GetCashTransactionsGroupByDatePath, httpHandler.New(accountingService.GetCashTransactionsGroupByDate))
 
 	return mux
 }

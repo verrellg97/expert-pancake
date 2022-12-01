@@ -9,6 +9,21 @@ import (
 	"time"
 )
 
+type AccountingCashTransaction struct {
+	ID                     string       `db:"id"`
+	CompanyID              string       `db:"company_id"`
+	BranchID               string       `db:"branch_id"`
+	TransactionDate        time.Time    `db:"transaction_date"`
+	TransactionType        string       `db:"transaction_type"`
+	Type                   string       `db:"type"`
+	MainChartOfAccountID   string       `db:"main_chart_of_account_id"`
+	ContraChartOfAccountID string       `db:"contra_chart_of_account_id"`
+	Amount                 int64        `db:"amount"`
+	Description            string       `db:"description"`
+	CreatedAt              sql.NullTime `db:"created_at"`
+	UpdatedAt              sql.NullTime `db:"updated_at"`
+}
+
 type AccountingCompanyChartOfAccount struct {
 	ID                string       `db:"id"`
 	CompanyID         string       `db:"company_id"`
@@ -31,4 +46,17 @@ type AccountingCompanyFiscalYear struct {
 	EndPeriod   time.Time    `db:"end_period"`
 	CreatedAt   sql.NullTime `db:"created_at"`
 	UpdatedAt   sql.NullTime `db:"updated_at"`
+}
+
+type AccountingTransactionsJournal struct {
+	CompanyID            string       `db:"company_id"`
+	BranchID             string       `db:"branch_id"`
+	TransactionID        string       `db:"transaction_id"`
+	TransactionDate      time.Time    `db:"transaction_date"`
+	TransactionReference string       `db:"transaction_reference"`
+	TransactionType      string       `db:"transaction_type"`
+	ChartOfAccountID     string       `db:"chart_of_account_id"`
+	Amount               int64        `db:"amount"`
+	Description          string       `db:"description"`
+	CreatedAt            sql.NullTime `db:"created_at"`
 }
