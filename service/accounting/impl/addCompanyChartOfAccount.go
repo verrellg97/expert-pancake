@@ -8,6 +8,7 @@ import (
 	"github.com/calvinkmts/expert-pancake/engine/httpHandler"
 	db "github.com/expert-pancake/service/accounting/db/sqlc"
 	"github.com/expert-pancake/service/accounting/model"
+	"github.com/expert-pancake/service/accounting/util"
 	uuid "github.com/satori/go.uuid"
 )
 
@@ -32,7 +33,7 @@ func (a accountingService) AddCompanyChartOfAccount(w http.ResponseWriter, r *ht
 		BankName:          req.BankName,
 		BankAccountNumber: req.BankAccountNumber,
 		BankCode:          req.BankCode,
-		OpeningBalance:    req.OpeningBalance,
+		OpeningBalance:    util.StringToBigInt(req.OpeningBalance),
 	}
 
 	result, err := a.dbTrx.InsertCompanyChartOfAccount(context.Background(), arg)
@@ -51,7 +52,7 @@ func (a accountingService) AddCompanyChartOfAccount(w http.ResponseWriter, r *ht
 			BankName:          result.BankName,
 			BankAccountNumber: result.BankAccountNumber,
 			BankCode:          result.BankCode,
-			OpeningBalance:    result.OpeningBalance,
+			OpeningBalance:    util.BigIntToString(result.OpeningBalance),
 			IsDeleted:         result.IsDeleted,
 		},
 	}

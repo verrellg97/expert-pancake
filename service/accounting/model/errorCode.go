@@ -5,4 +5,5 @@ const (
 	GetCompanyChartOfAccountsError   = 500002
 	AddCompanyChartOfAccountError    = 500003
 	UpdateCompanyChartOfAccountError = 500004
+	CheckCompanySettingStateError    = 500005
 )
