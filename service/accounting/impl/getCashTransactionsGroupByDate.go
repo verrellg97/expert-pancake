@@ -30,10 +30,10 @@ func (a accountingService) GetCashTransactionsGroupByDate(w http.ResponseWriter,
 		return errors.NewServerError(model.GetCashTransactionsGroupByDateError, err.Error())
 	}
 
-	var cash_transactions = make([]model.GetCompanyCashTransactionsGroupByDateResponse, 0)
+	var cash_transactions = make([]model.GetCashTransactionsGroupByDateResponse, 0)
 
 	for _, d := range result {
-		var cash_transaction = model.GetCompanyCashTransactionsGroupByDateResponse{
+		var cash_transaction = model.GetCashTransactionsGroupByDateResponse{
 			TransactionDate: d.TransactionDate.Format(util.DateLayoutYMD),
 			Amount: model.CashInCashOut{
 				CashIn:  strconv.FormatInt(d.CashIn, 10),
