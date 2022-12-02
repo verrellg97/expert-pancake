@@ -26,7 +26,7 @@ func (a accountingService) GetCompanyChartOfAccounts(w http.ResponseWriter, r *h
 		CompanyID:    req.CompanyId,
 		AccountName:  util.WildCardString(req.Keyword),
 		AccountGroup: util.WildCardString(req.GroupFilter),
-		Column4:      req.IsDeletedFilter,
+		Column4:      &req.IsDeletedFilter,
 	})
 	if err != nil {
 		return errors.NewServerError(model.GetCompanyChartOfAccountsError, err.Error())

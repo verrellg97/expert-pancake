@@ -92,7 +92,7 @@ type GetCompanyChartOfAccountsRequest struct {
 	CompanyId       string `json:"company_id" validate:"required"`
 	Keyword         string `json:"keyword"`
 	GroupFilter     string `json:"group_filter"`
-	IsDeletedFilter string `json:"is_deleted_filter"`
+	IsDeletedFilter *bool  `json:"is_deleted_filter"`
 }
 
 type AddCompanyChartOfAccountRequest struct {

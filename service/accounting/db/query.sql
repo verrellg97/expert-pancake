@@ -36,8 +36,8 @@ bank_account_number, bank_code, opening_balance, is_deleted
 FROM accounting.company_chart_of_accounts
 WHERE company_id = $1 AND account_name LIKE $2
 AND account_group LIKE $3 
-AND CASE WHEN $4 = '0' THEN is_deleted = FALSE 
-WHEN $4 = '1' THEN is_deleted = TRUE ELSE 1=1 END;
+AND CASE WHEN $4 = TRUE OR $4 = FALSE THEN is_deleted = $4 
+ELSE is_deleted = is_deleted END;
 
 -- name: GetCompanySettingFiscalYear :one
 SELECT company_id, start_period, end_period
