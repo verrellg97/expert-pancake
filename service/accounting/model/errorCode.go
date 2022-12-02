@@ -7,5 +7,5 @@ const (
 	UpdateCompanyChartOfAccountError    = 500004
 	CreateNewCashTransactionError       = 500005
 	GetCashTransactionsError            = 500006
-	GetCashTransactionsGroupByDateError = 500006
+	GetCashTransactionsGroupByDateError = 500007
 )
