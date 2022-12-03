@@ -22,12 +22,25 @@ func (a accountingService) GetCompanyChartOfAccounts(w http.ResponseWriter, r *h
 		return errors.NewClientError().WithDataMap(errMapRequest)
 	}
 
+	var isFilterJournalGroup = false
+	var accountGroups []string
+	if req.JournalGroupFilter != nil {
+		if *req.JournalGroupFilter == "DEBET" {
+			isFilterJournalGroup = true
+			accountGroups = append(accountGroups, "KAS", "BANK")
+		} else if *req.JournalGroupFilter == "KREDIT" {
+			isFilterJournalGroup = true
+			accountGroups = append(accountGroups, "BEBAN USAHA", "BEBAN LAIN-LAIN")
+		}
+	}
+
 	result, err := a.dbTrx.GetCompanyChartOfAccounts(context.Background(), db.GetCompanyChartOfAccountsParams{
-		CompanyID:    req.CompanyId,
-		AccountName:  util.WildCardString(req.Keyword),
-		AccountGroup: util.WildCardString(req.GroupFilter),
-		Column4:      &req.IsDeletedFilter,
-		Column5:      &req.JournalGroupFilter,
+		CompanyID:            req.CompanyId,
+		AccountName:          util.WildCardString(req.Keyword),
+		AccountGroup:         util.WildCardString(req.GroupFilter),
+		IsDeletedFilter:      &req.IsDeletedFilter,
+		IsFilterJournalGroup: isFilterJournalGroup,
+		AccountGroups:        accountGroups,
 	})
 	if err != nil {
 		return errors.NewServerError(model.GetCompanyChartOfAccountsError, err.Error())

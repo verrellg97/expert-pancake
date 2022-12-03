@@ -9,6 +9,8 @@ import (
 	"context"
 	"database/sql"
 	"time"
+
+	"github.com/lib/pq"
 )
 
 const getCashTransactions = `-- name: GetCashTransactions :many
@@ -151,29 +153,26 @@ func (q *Queries) GetCompanyChartOfAccount(ctx context.Context, id string) (Acco
 }
 
 const getCompanyChartOfAccounts = `-- name: GetCompanyChartOfAccounts :many
-SELECT id, company_id, branch_id, account_code, account_name, account_group, bank_name, 
+SELECT id, company_id, branch_id, account_code, account_name, account_group, bank_name,
 bank_account_number, bank_code, opening_balance, is_deleted
 FROM accounting.company_chart_of_accounts
-WHERE company_id = $1 
+WHERE company_id = $1
 AND account_name LIKE $2
-AND CASE 
-WHEN $5 = 'DEBET' THEN 
-is_deleted = FALSE AND (account_group = 'KAS' OR account_group = 'BANK')
-WHEN $5 = 'KREDIT' THEN 
-is_deleted = FALSE AND (account_group = 'BEBAN USAHA' OR account_group = 'BEBAN LAIN-LAIN')
-ELSE
-account_group LIKE $3 
-AND CASE WHEN $4 = TRUE OR $4 = FALSE THEN is_deleted = $4 
-ELSE is_deleted = is_deleted END
-END
+AND CASE WHEN $4::bool
+THEN account_group = ANY($5::text[]) AND is_deleted = FALSE
+ELSE account_group LIKE $3
+AND CASE WHEN $6 = TRUE OR $6 = FALSE
+THEN is_deleted = $6
+ELSE TRUE END END
 `
 
 type GetCompanyChartOfAccountsParams struct {
-	CompanyID    string      `db:"company_id"`
-	AccountName  string      `db:"account_name"`
-	AccountGroup string      `db:"account_group"`
-	Column4      interface{} `db:"column_4"`
-	Column5      interface{} `db:"column_5"`
+	CompanyID            string      `db:"company_id"`
+	AccountName          string      `db:"account_name"`
+	AccountGroup         string      `db:"account_group"`
+	IsFilterJournalGroup bool        `db:"is_filter_journal_group"`
+	AccountGroups        []string    `db:"account_groups"`
+	IsDeletedFilter      interface{} `db:"is_deleted_filter"`
 }
 
 type GetCompanyChartOfAccountsRow struct {
@@ -195,8 +194,9 @@ func (q *Queries) GetCompanyChartOfAccounts(ctx context.Context, arg GetCompanyC
 		arg.CompanyID,
 		arg.AccountName,
 		arg.AccountGroup,
-		arg.Column4,
-		arg.Column5,
+		arg.IsFilterJournalGroup,
+		pq.Array(arg.AccountGroups),
+		arg.IsDeletedFilter,
 	)
 	if err != nil {
 		return nil, err

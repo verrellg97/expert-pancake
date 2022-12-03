@@ -31,21 +31,17 @@ WHERE id = $1
 RETURNING *;
 
 -- name: GetCompanyChartOfAccounts :many
-SELECT id, company_id, branch_id, account_code, account_name, account_group, bank_name, 
+SELECT id, company_id, branch_id, account_code, account_name, account_group, bank_name,
 bank_account_number, bank_code, opening_balance, is_deleted
 FROM accounting.company_chart_of_accounts
-WHERE company_id = $1 
+WHERE company_id = $1
 AND account_name LIKE $2
-AND CASE 
-WHEN $5 = 'DEBET' THEN 
-is_deleted = FALSE AND (account_group = 'KAS' OR account_group = 'BANK')
-WHEN $5 = 'KREDIT' THEN 
-is_deleted = FALSE AND (account_group = 'BEBAN USAHA' OR account_group = 'BEBAN LAIN-LAIN')
-ELSE
-account_group LIKE $3 
-AND CASE WHEN $4 = TRUE OR $4 = FALSE THEN is_deleted = $4 
-ELSE is_deleted = is_deleted END
-END;
+AND CASE WHEN @is_filter_journal_group::bool
+THEN account_group = ANY(@account_groups::text[]) AND is_deleted = FALSE
+ELSE account_group LIKE $3
+AND CASE WHEN @is_deleted_filter = TRUE OR @is_deleted_filter = FALSE
+THEN is_deleted = @is_deleted_filter
+ELSE TRUE END END;
 
 -- name: GetCompanySettingFiscalYear :one
 SELECT company_id, start_period, end_period
