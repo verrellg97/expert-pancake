@@ -38,6 +38,8 @@ func (a accountingService) GetCompanyChartOfAccounts(w http.ResponseWriter, r *h
 			accountGroups = append(accountGroups, "BANK", "KAS")
 		case "KREDIT":
 			accountGroups = append(accountGroups, "BEBAN USAHA", "BEBAN LAIN-LAIN")
+		case "":
+			isFilterJournalGroup = false
 		default:
 			accountGroups = append(accountGroups, *req.GroupFilter)
 		}
