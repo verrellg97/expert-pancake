@@ -37,11 +37,9 @@ FROM accounting.company_chart_of_accounts
 WHERE company_id = $1
 AND account_name LIKE $2
 AND CASE WHEN @is_filter_journal_group::bool
-THEN account_group = ANY(@account_groups::text[]) AND is_deleted = FALSE
-ELSE account_group LIKE $3
-AND CASE WHEN @is_deleted_filter = TRUE OR @is_deleted_filter = FALSE
-THEN is_deleted = @is_deleted_filter
-ELSE TRUE END END;
+THEN account_group = ANY(@account_groups::text[]) ELSE TRUE END
+AND CASE WHEN @is_deleted_filter::bool
+THEN is_deleted = $3 ELSE TRUE END;
 
 -- name: GetCompanySettingFiscalYear :one
 SELECT company_id, start_period, end_period

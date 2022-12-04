@@ -159,20 +159,18 @@ FROM accounting.company_chart_of_accounts
 WHERE company_id = $1
 AND account_name LIKE $2
 AND CASE WHEN $4::bool
-THEN account_group = ANY($5::text[]) AND is_deleted = FALSE
-ELSE account_group LIKE $3
-AND CASE WHEN $6 = TRUE OR $6 = FALSE
-THEN is_deleted = $6
-ELSE TRUE END END
+THEN account_group = ANY($5::text[]) ELSE TRUE END
+AND CASE WHEN $6::bool
+THEN is_deleted = $3 ELSE TRUE END
 `
 
 type GetCompanyChartOfAccountsParams struct {
-	CompanyID            string      `db:"company_id"`
-	AccountName          string      `db:"account_name"`
-	AccountGroup         string      `db:"account_group"`
-	IsFilterJournalGroup bool        `db:"is_filter_journal_group"`
-	AccountGroups        []string    `db:"account_groups"`
-	IsDeletedFilter      interface{} `db:"is_deleted_filter"`
+	CompanyID            string   `db:"company_id"`
+	AccountName          string   `db:"account_name"`
+	IsDeleted            bool     `db:"is_deleted"`
+	IsFilterJournalGroup bool     `db:"is_filter_journal_group"`
+	AccountGroups        []string `db:"account_groups"`
+	IsDeletedFilter      bool     `db:"is_deleted_filter"`
 }
 
 type GetCompanyChartOfAccountsRow struct {
@@ -193,7 +191,7 @@ func (q *Queries) GetCompanyChartOfAccounts(ctx context.Context, arg GetCompanyC
 	rows, err := q.db.QueryContext(ctx, getCompanyChartOfAccounts,
 		arg.CompanyID,
 		arg.AccountName,
-		arg.AccountGroup,
+		arg.IsDeleted,
 		arg.IsFilterJournalGroup,
 		pq.Array(arg.AccountGroups),
 		arg.IsDeletedFilter,

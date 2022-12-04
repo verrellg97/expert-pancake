@@ -87,11 +87,10 @@ type GetAccountingChartOfAccountTypesResponse struct {
 }
 
 type GetCompanyChartOfAccountsRequest struct {
-	CompanyId          string  `json:"company_id" validate:"required"`
-	Keyword            string  `json:"keyword"`
-	GroupFilter        string  `json:"group_filter"`
-	JournalGroupFilter *string `json:"journal_group_filter"`
-	IsDeletedFilter    *bool   `json:"is_deleted_filter"`
+	CompanyId       string  `json:"company_id" validate:"required"`
+	Keyword         string  `json:"keyword"`
+	GroupFilter     *string `json:"group_filter"`
+	IsDeletedFilter *bool   `json:"is_deleted_filter"`
 }
 
 type AddCompanyChartOfAccountRequest struct {
