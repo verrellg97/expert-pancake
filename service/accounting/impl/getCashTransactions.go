@@ -39,7 +39,6 @@ func (a accountingService) GetCashTransactions(w http.ResponseWriter, r *http.Re
 			BranchId:        d.BranchID,
 			TransactionId:   d.ID,
 			TransactionDate: d.TransactionDate.Format(util.DateLayoutYMD),
-			TransactionType: d.TransactionType,
 			Type:            d.Type,
 			MainChartOfAccount: model.ChartOfAccountIdName{
 				ChartOfAccountId: d.MainChartOfAccountID,

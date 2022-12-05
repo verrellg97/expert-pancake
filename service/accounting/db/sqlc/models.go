@@ -14,7 +14,6 @@ type AccountingCashTransaction struct {
 	CompanyID              string       `db:"company_id"`
 	BranchID               string       `db:"branch_id"`
 	TransactionDate        time.Time    `db:"transaction_date"`
-	TransactionType        string       `db:"transaction_type"`
 	Type                   string       `db:"type"`
 	MainChartOfAccountID   string       `db:"main_chart_of_account_id"`
 	ContraChartOfAccountID string       `db:"contra_chart_of_account_id"`
@@ -54,7 +53,6 @@ type AccountingTransactionsJournal struct {
 	TransactionID        string       `db:"transaction_id"`
 	TransactionDate      time.Time    `db:"transaction_date"`
 	TransactionReference string       `db:"transaction_reference"`
-	TransactionType      string       `db:"transaction_type"`
 	ChartOfAccountID     string       `db:"chart_of_account_id"`
 	Amount               int64        `db:"amount"`
 	Description          string       `db:"description"`

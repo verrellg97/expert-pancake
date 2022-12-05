@@ -22,11 +22,36 @@ func (a accountingService) GetCompanyChartOfAccounts(w http.ResponseWriter, r *h
 		return errors.NewClientError().WithDataMap(errMapRequest)
 	}
 
+	var isDeletedFilter = false
+	if req.IsDeletedFilter != nil {
+		isDeletedFilter = true
+	} else {
+		req.IsDeletedFilter = &isDeletedFilter
+	}
+
+	var isFilterJournalGroup = false
+	var accountGroups []string
+	if req.GroupFilter != nil {
+		isFilterJournalGroup = true
+		switch *req.GroupFilter {
+		case "DEBET":
+			accountGroups = append(accountGroups, "BANK", "KAS")
+		case "KREDIT":
+			accountGroups = append(accountGroups, "BEBAN USAHA", "BEBAN LAIN-LAIN")
+		case "":
+			isFilterJournalGroup = false
+		default:
+			accountGroups = append(accountGroups, *req.GroupFilter)
+		}
+	}
+
 	result, err := a.dbTrx.GetCompanyChartOfAccounts(context.Background(), db.GetCompanyChartOfAccountsParams{
-		CompanyID:    req.CompanyId,
-		AccountName:  util.WildCardString(req.Keyword),
-		AccountGroup: util.WildCardString(req.GroupFilter),
-		Column4:      &req.IsDeletedFilter,
+		CompanyID:            req.CompanyId,
+		AccountName:          util.WildCardString(req.Keyword),
+		IsDeletedFilter:      isDeletedFilter,
+		IsDeleted:            *req.IsDeletedFilter,
+		IsFilterJournalGroup: isFilterJournalGroup,
+		AccountGroups:        accountGroups,
 	})
 	if err != nil {
 		return errors.NewServerError(model.GetCompanyChartOfAccountsError, err.Error())

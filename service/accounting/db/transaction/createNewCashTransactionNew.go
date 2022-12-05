@@ -14,7 +14,6 @@ type CreateNewCashTransactionTrxResult struct {
 	BranchId               string
 	TransactionId          string
 	TransactionDate        string
-	TransactionType        string
 	Type                   string
 	MainChartOfAccountId   string
 	ContraChartOfAccountId string
@@ -35,7 +34,6 @@ func (trx *Trx) CreateNewCashTransactionTrx(ctx context.Context, arg db.InsertCa
 			CompanyID:              arg.CompanyID,
 			BranchID:               arg.BranchID,
 			TransactionDate:        arg.TransactionDate,
-			TransactionType:        arg.TransactionType,
 			Type:                   arg.Type,
 			MainChartOfAccountID:   arg.MainChartOfAccountID,
 			ContraChartOfAccountID: arg.ContraChartOfAccountID,
@@ -56,7 +54,6 @@ func (trx *Trx) CreateNewCashTransactionTrx(ctx context.Context, arg db.InsertCa
 			TransactionID:        id,
 			TransactionDate:      arg.TransactionDate,
 			TransactionReference: "CASH " + arg.Type,
-			TransactionType:      arg.TransactionType,
 			ChartOfAccountID:     arg.MainChartOfAccountID,
 			Amount:               mainAmount,
 			Description:          arg.Description,
@@ -71,7 +68,6 @@ func (trx *Trx) CreateNewCashTransactionTrx(ctx context.Context, arg db.InsertCa
 				TransactionID:        id,
 				TransactionDate:      arg.TransactionDate,
 				TransactionReference: "CASH " + arg.Type,
-				TransactionType:      arg.TransactionType,
 				ChartOfAccountID:     arg.ContraChartOfAccountID,
 				Amount:               arg.Amount,
 				Description:          arg.Description,
@@ -85,7 +81,6 @@ func (trx *Trx) CreateNewCashTransactionTrx(ctx context.Context, arg db.InsertCa
 		result.BranchId = transRes.BranchID
 		result.TransactionId = id
 		result.TransactionDate = transRes.TransactionDate.Format(util.DateLayoutYMD)
-		result.TransactionType = transRes.TransactionType
 		result.Type = transRes.Type
 		result.MainChartOfAccountId = transRes.MainChartOfAccountID
 		result.ContraChartOfAccountId = transRes.ContraChartOfAccountID
