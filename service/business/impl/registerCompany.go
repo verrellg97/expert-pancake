@@ -44,6 +44,7 @@ func (a businessService) RegisterCompany(w http.ResponseWriter, r *http.Request)
 			InitialName:       result.InitialName,
 			Type:              result.Type,
 			ResponsiblePerson: result.ResponsiblePerson,
+			Branches:          result.Branches,
 		},
 	}
 

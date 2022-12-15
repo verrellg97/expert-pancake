@@ -8,6 +8,7 @@ import (
 	"github.com/calvinkmts/expert-pancake/engine/httpHandler"
 	db "github.com/expert-pancake/service/business/db/sqlc"
 	"github.com/expert-pancake/service/business/model"
+	"github.com/expert-pancake/service/business/util"
 )
 
 func (a businessService) UpdateCompany(w http.ResponseWriter, r *http.Request) error {
@@ -26,10 +27,17 @@ func (a businessService) UpdateCompany(w http.ResponseWriter, r *http.Request) e
 		InitialName:       req.InitialName,
 		Type:              req.Type,
 		ResponsiblePerson: req.ResponsiblePerson,
-		IsDeleted:         req.IsDeleted,
 	})
 	if err != nil {
 		return errors.NewServerError(model.UpdateCompanyError, err.Error())
+	}
+
+	resultBranches, err := a.dbTrx.GetUserCompanyBranches(context.Background(), db.GetUserCompanyBranchesParams{
+		UserID:    req.AccountId,
+		CompanyID: req.CompanyId,
+	})
+	if err != nil {
+		return errors.NewServerError(model.GetUserCompanyBranchesError, err.Error())
 	}
 
 	res := model.RegisterCompanyResponse{
@@ -40,6 +48,7 @@ func (a businessService) UpdateCompany(w http.ResponseWriter, r *http.Request) e
 			InitialName:       result.InitialName,
 			Type:              result.Type,
 			ResponsiblePerson: result.ResponsiblePerson,
+			Branches:          util.CompanyBranchDbToApi(resultBranches),
 		},
 	}
 	httpHandler.WriteResponse(w, res)

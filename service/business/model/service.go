@@ -8,20 +8,23 @@ type BusinessService interface {
 	RegisterCompany(w http.ResponseWriter, r *http.Request) error
 	GetCompanyTypes(w http.ResponseWriter, r *http.Request) error
 	UpdateCompany(w http.ResponseWriter, r *http.Request) error
+	DeleteCompany(w http.ResponseWriter, r *http.Request) error
 	GetUserCompanies(w http.ResponseWriter, r *http.Request) error
 
 	RegisterCompanyBranch(w http.ResponseWriter, r *http.Request) error
 	UpdateCompanyBranch(w http.ResponseWriter, r *http.Request) error
+	DeleteCompanyBranch(w http.ResponseWriter, r *http.Request) error
 	GetUserCompanyBranches(w http.ResponseWriter, r *http.Request) error
 }
 
 type Company struct {
-	AccountId         string `json:"account_id" validate:"required"`
-	CompanyId         string `json:"company_id" validate:"required"`
-	Name              string `json:"name" validate:"required"`
-	InitialName       string `json:"initial_name" validate:"required"`
-	Type              string `json:"type" validate:"required"`
-	ResponsiblePerson string `json:"responsible_person" validate:"required"`
+	AccountId         string          `json:"account_id" validate:"required"`
+	CompanyId         string          `json:"company_id" validate:"required"`
+	Name              string          `json:"name" validate:"required"`
+	InitialName       string          `json:"initial_name" validate:"required"`
+	Type              string          `json:"type" validate:"required"`
+	ResponsiblePerson string          `json:"responsible_person" validate:"required"`
+	Branches          []CompanyBranch `json:"branches" validate:"required"`
 }
 
 type CompanyBranch struct {
@@ -57,7 +60,10 @@ type UpdateCompanyRequest struct {
 	InitialName       string `json:"initial_name" validate:"required"`
 	Type              string `json:"type" validate:"required"`
 	ResponsiblePerson string `json:"responsible_person" validate:"required"`
-	IsDeleted         bool   `json:"is_deleted"`
+}
+
+type DeleteCompanyRequest struct {
+	CompanyId string `json:"company_id" validate:"required"`
 }
 
 type UserCompaniesRequest struct {
@@ -90,5 +96,12 @@ type UpdateCompanyBranchRequest struct {
 	Name        string `json:"name" validate:"required"`
 	Address     string `json:"address" validate:"required"`
 	PhoneNumber string `json:"phone_number" validate:"required"`
-	IsDeleted   bool   `json:"is_deleted"`
+}
+
+type DeleteCompanyBranchRequest struct {
+	BranchId string `json:"branch_id" validate:"required"`
+}
+
+type DeleteDataResponse struct {
+	Message string `json:"message"`
 }

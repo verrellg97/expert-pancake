@@ -12,6 +12,7 @@ import (
 type AccountingTrx interface {
 	Querier
 	CreateNewCashTransactionTrx(ctx context.Context, arg db.InsertCashTransactionParams) (CreateNewCashTransactionTrxResult, error)
+	AddDefaultCompanyChartOfAccountTransactionTrx(ctx context.Context, arg AddDefaultCompanyChartOfAccountTrxParams) error
 }
 
 // Trx provides all functions to execute SQL queries and transactions

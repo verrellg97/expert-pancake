@@ -7,6 +7,7 @@ import (
 
 	"github.com/calvinkmts/expert-pancake/engine/errors"
 	"github.com/calvinkmts/expert-pancake/engine/httpHandler"
+	db "github.com/expert-pancake/service/accounting/db/transaction"
 	"github.com/expert-pancake/service/accounting/model"
 	"github.com/expert-pancake/service/accounting/util"
 )
@@ -19,6 +20,14 @@ func (a accountingService) CheckCompanySettingState(w http.ResponseWriter, r *ht
 	errMapRequest := a.validator.Validate(req)
 	if errMapRequest != nil {
 		return errors.NewClientError().WithDataMap(errMapRequest)
+	}
+
+	_, errCOA := a.dbTrx.GetCompanyChartOfAccount(context.Background(), req.CompanyId)
+	if errCOA != nil {
+		arg := db.AddDefaultCompanyChartOfAccountTrxParams{
+			CompanyId: req.CompanyId,
+		}
+		_ = a.dbTrx.AddDefaultCompanyChartOfAccountTransactionTrx(context.Background(), arg)
 	}
 
 	res := model.CheckCompanySettingStateResponse{

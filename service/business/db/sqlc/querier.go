@@ -9,6 +9,9 @@ import (
 )
 
 type Querier interface {
+	DeleteCompany(ctx context.Context, id string) error
+	DeleteCompanyBranch(ctx context.Context, id string) error
+	DeleteCompanyBranchesByCompanyId(ctx context.Context, companyID string) error
 	GetUserCompanies(ctx context.Context, userID string) ([]GetUserCompaniesRow, error)
 	GetUserCompaniesFilteredByName(ctx context.Context, arg GetUserCompaniesFilteredByNameParams) ([]GetUserCompaniesFilteredByNameRow, error)
 	GetUserCompanyBranches(ctx context.Context, arg GetUserCompanyBranchesParams) ([]GetUserCompanyBranchesRow, error)
