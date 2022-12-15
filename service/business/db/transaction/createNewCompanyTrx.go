@@ -4,6 +4,7 @@ import (
 	"context"
 
 	db "github.com/expert-pancake/service/business/db/sqlc"
+	"github.com/expert-pancake/service/business/model"
 	uuid "github.com/satori/go.uuid"
 )
 
@@ -14,6 +15,7 @@ type CreateNewCompanyTrxResult struct {
 	InitialName       string
 	Type              string
 	ResponsiblePerson string
+	Branches          []model.CompanyBranch
 }
 
 func (trx *Trx) CreateNewCompanyTrx(ctx context.Context, arg db.InsertCompanyParams) (CreateNewCompanyTrxResult, error) {
@@ -57,6 +59,17 @@ func (trx *Trx) CreateNewCompanyTrx(ctx context.Context, arg db.InsertCompanyPar
 		result.InitialName = companyRes.InitialName
 		result.Type = companyRes.Type
 		result.ResponsiblePerson = companyRes.ResponsiblePerson
+		result.Branches = []model.CompanyBranch{
+			{
+				AccountId:   arg.ID,
+				CompanyId:   id,
+				BranchId:    branchId,
+				Name:        "Pusat",
+				Address:     "",
+				PhoneNumber: "",
+				IsCentral:   true,
+			},
+		}
 
 		return err
 	})

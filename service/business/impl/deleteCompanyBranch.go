@@ -1,0 +1,33 @@
+package impl
+
+import (
+	"context"
+	"net/http"
+
+	"github.com/calvinkmts/expert-pancake/engine/errors"
+	"github.com/calvinkmts/expert-pancake/engine/httpHandler"
+	"github.com/expert-pancake/service/business/model"
+)
+
+func (a businessService) DeleteCompanyBranch(w http.ResponseWriter, r *http.Request) error {
+
+	var req model.DeleteCompanyBranchRequest
+	httpHandler.ParseHTTPRequest(r, &req)
+
+	errMapRequest := a.validator.Validate(req)
+	if errMapRequest != nil {
+		return errors.NewClientError().WithDataMap(errMapRequest)
+	}
+
+	err := a.dbTrx.DeleteCompanyBranch(context.Background(), req.BranchId)
+	if err != nil {
+		return errors.NewServerError(model.DeleteCompanyBranchError, err.Error())
+	}
+
+	res := model.DeleteDataResponse{
+		Message: "OK",
+	}
+	httpHandler.WriteResponse(w, res)
+
+	return nil
+}

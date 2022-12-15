@@ -25,7 +25,6 @@ func (a businessService) UpdateCompanyBranch(w http.ResponseWriter, r *http.Requ
 		Name:        req.Name,
 		Address:     req.Address,
 		PhoneNumber: req.PhoneNumber,
-		IsDeleted:   req.IsDeleted,
 	})
 	if err != nil {
 		return errors.NewServerError(model.UpdateCompanyBranchError, err.Error())

@@ -9,10 +9,15 @@ SET name = $2,
 initial_name = $3, 
 type = $4, 
 responsible_person = $5, 
-is_deleted = $6, 
 updated_at = NOW()
 WHERE id = $1
 RETURNING *;
+
+-- name: DeleteCompany :exec
+UPDATE business.companies
+SET is_deleted = true, 
+updated_at = NOW()
+WHERE id = $1;
 
 -- name: GetUserCompanies :many
 SELECT id, user_id, name, initial_name, type, responsible_person FROM business.companies
@@ -32,10 +37,15 @@ UPDATE business.company_branches
 SET name = $2, 
 address = $3, 
 phone_number = $4, 
-is_deleted = $5, 
 updated_at = NOW()
 WHERE id = $1
 RETURNING *;
+
+-- name: DeleteCompanyBranch :exec
+UPDATE business.company_branches
+SET is_deleted = true, 
+updated_at = NOW()
+WHERE id = $1;
 
 -- name: GetUserCompanyBranches :many
 SELECT id, user_id, company_id, name, address, phone_number, is_central 

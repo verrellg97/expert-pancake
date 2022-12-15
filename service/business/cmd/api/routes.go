@@ -15,9 +15,11 @@ const (
 	GetCompanyTypesPath        = "/business/company/types"
 	GetUserCompaniesPath       = "/business/user/company"
 	UpdateCompanyPath          = "/business/company/update"
+	DeleteCompanyPath          = "/business/company/delete"
 	RegisterCompanyBranchPath  = "/business/company/branch/register"
 	GetUserCompanyBranchesPath = "/business/user/company/branch"
 	UpdateCompanyBranchPath    = "/business/company/branch/update"
+	DeleteCompanyBranchPath    = "/business/company/branch/delete"
 )
 
 func (c *component) Routes(businessService model.BusinessService) http.Handler {
@@ -39,10 +41,12 @@ func (c *component) Routes(businessService model.BusinessService) http.Handler {
 	mux.Method("POST", RegisterCompanyPath, httpHandler.New(businessService.RegisterCompany))
 	mux.Method("GET", GetCompanyTypesPath, httpHandler.New(businessService.GetCompanyTypes))
 	mux.Method("POST", UpdateCompanyPath, httpHandler.New(businessService.UpdateCompany))
+	mux.Method("POST", DeleteCompanyPath, httpHandler.New(businessService.DeleteCompany))
 	mux.Method("POST", GetUserCompaniesPath, httpHandler.New(businessService.GetUserCompanies))
 	mux.Method("POST", RegisterCompanyBranchPath, httpHandler.New(businessService.RegisterCompanyBranch))
 	mux.Method("POST", GetUserCompanyBranchesPath, httpHandler.New(businessService.GetUserCompanyBranches))
 	mux.Method("POST", UpdateCompanyBranchPath, httpHandler.New(businessService.UpdateCompanyBranch))
+	mux.Method("POST", DeleteCompanyBranchPath, httpHandler.New(businessService.DeleteCompanyBranch))
 
 	return mux
 }

@@ -9,6 +9,30 @@ import (
 	"context"
 )
 
+const deleteCompany = `-- name: DeleteCompany :exec
+UPDATE business.companies
+SET is_deleted = true, 
+updated_at = NOW()
+WHERE id = $1
+`
+
+func (q *Queries) DeleteCompany(ctx context.Context, id string) error {
+	_, err := q.db.ExecContext(ctx, deleteCompany, id)
+	return err
+}
+
+const deleteCompanyBranch = `-- name: DeleteCompanyBranch :exec
+UPDATE business.company_branches
+SET is_deleted = true, 
+updated_at = NOW()
+WHERE id = $1
+`
+
+func (q *Queries) DeleteCompanyBranch(ctx context.Context, id string) error {
+	_, err := q.db.ExecContext(ctx, deleteCompanyBranch, id)
+	return err
+}
+
 const getUserCompanies = `-- name: GetUserCompanies :many
 SELECT id, user_id, name, initial_name, type, responsible_person FROM business.companies
 WHERE user_id = $1 AND is_deleted = false
@@ -298,7 +322,6 @@ SET name = $2,
 initial_name = $3, 
 type = $4, 
 responsible_person = $5, 
-is_deleted = $6, 
 updated_at = NOW()
 WHERE id = $1
 RETURNING id, user_id, name, initial_name, type, responsible_person, is_deleted, created_at, updated_at
@@ -310,7 +333,6 @@ type UpdateCompanyParams struct {
 	InitialName       string `db:"initial_name"`
 	Type              string `db:"type"`
 	ResponsiblePerson string `db:"responsible_person"`
-	IsDeleted         bool   `db:"is_deleted"`
 }
 
 func (q *Queries) UpdateCompany(ctx context.Context, arg UpdateCompanyParams) (BusinessCompany, error) {
@@ -320,7 +342,6 @@ func (q *Queries) UpdateCompany(ctx context.Context, arg UpdateCompanyParams) (B
 		arg.InitialName,
 		arg.Type,
 		arg.ResponsiblePerson,
-		arg.IsDeleted,
 	)
 	var i BusinessCompany
 	err := row.Scan(
@@ -342,7 +363,6 @@ UPDATE business.company_branches
 SET name = $2, 
 address = $3, 
 phone_number = $4, 
-is_deleted = $5, 
 updated_at = NOW()
 WHERE id = $1
 RETURNING id, user_id, company_id, name, address, phone_number, is_central, is_deleted, created_at, updated_at
@@ -353,7 +373,6 @@ type UpdateCompanyBranchParams struct {
 	Name        string `db:"name"`
 	Address     string `db:"address"`
 	PhoneNumber string `db:"phone_number"`
-	IsDeleted   bool   `db:"is_deleted"`
 }
 
 func (q *Queries) UpdateCompanyBranch(ctx context.Context, arg UpdateCompanyBranchParams) (BusinessCompanyBranch, error) {
@@ -362,7 +381,6 @@ func (q *Queries) UpdateCompanyBranch(ctx context.Context, arg UpdateCompanyBran
 		arg.Name,
 		arg.Address,
 		arg.PhoneNumber,
-		arg.IsDeleted,
 	)
 	var i BusinessCompanyBranch
 	err := row.Scan(
