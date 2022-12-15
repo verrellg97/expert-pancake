@@ -47,6 +47,12 @@ SET is_deleted = true,
 updated_at = NOW()
 WHERE id = $1;
 
+-- name: DeleteCompanyBranchesByCompanyId :exec
+UPDATE business.company_branches
+SET is_deleted = true, 
+updated_at = NOW()
+WHERE company_id = $1;
+
 -- name: GetUserCompanyBranches :many
 SELECT id, user_id, company_id, name, address, phone_number, is_central 
 FROM business.company_branches

@@ -32,7 +32,6 @@ func (a businessService) GetUserCompanies(w http.ResponseWriter, r *http.Request
 	var companies = make([]model.Company, 0)
 
 	for _, d := range result {
-		var companyBranches = make([]model.CompanyBranch, 0)
 		resultBranches, err := a.dbTrx.GetUserCompanyBranches(context.Background(), db.GetUserCompanyBranchesParams{
 			UserID:    req.AccountId,
 			CompanyID: d.ID,
@@ -41,18 +40,6 @@ func (a businessService) GetUserCompanies(w http.ResponseWriter, r *http.Request
 			return errors.NewServerError(model.GetUserCompanyBranchesError, err.Error())
 		}
 
-		for _, e := range resultBranches {
-			var companyBranch = model.CompanyBranch{
-				AccountId:   e.UserID,
-				CompanyId:   e.CompanyID,
-				BranchId:    e.ID,
-				Name:        e.Name,
-				Address:     e.Address,
-				PhoneNumber: e.PhoneNumber,
-				IsCentral:   e.IsCentral,
-			}
-			companyBranches = append(companyBranches, companyBranch)
-		}
 		var company = model.Company{
 			AccountId:         d.UserID,
 			CompanyId:         d.ID,
@@ -60,7 +47,7 @@ func (a businessService) GetUserCompanies(w http.ResponseWriter, r *http.Request
 			InitialName:       d.InitialName,
 			Type:              d.Type,
 			ResponsiblePerson: d.ResponsiblePerson,
-			Branches:          companyBranches,
+			Branches:          util.CompanyBranchDbToApi(resultBranches),
 		}
 		companies = append(companies, company)
 	}

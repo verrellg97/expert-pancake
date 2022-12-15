@@ -24,6 +24,11 @@ func (a businessService) DeleteCompany(w http.ResponseWriter, r *http.Request) e
 		return errors.NewServerError(model.DeleteCompanyError, err.Error())
 	}
 
+	errCompanyBranch := a.dbTrx.DeleteCompanyBranchesByCompanyId(context.Background(), req.CompanyId)
+	if errCompanyBranch != nil {
+		return errors.NewServerError(model.DeleteCompanyError, err.Error())
+	}
+
 	res := model.DeleteDataResponse{
 		Message: "OK",
 	}

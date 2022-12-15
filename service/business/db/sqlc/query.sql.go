@@ -33,6 +33,18 @@ func (q *Queries) DeleteCompanyBranch(ctx context.Context, id string) error {
 	return err
 }
 
+const deleteCompanyBranchesByCompanyId = `-- name: DeleteCompanyBranchesByCompanyId :exec
+UPDATE business.company_branches
+SET is_deleted = true, 
+updated_at = NOW()
+WHERE company_id = $1
+`
+
+func (q *Queries) DeleteCompanyBranchesByCompanyId(ctx context.Context, companyID string) error {
+	_, err := q.db.ExecContext(ctx, deleteCompanyBranchesByCompanyId, companyID)
+	return err
+}
+
 const getUserCompanies = `-- name: GetUserCompanies :many
 SELECT id, user_id, name, initial_name, type, responsible_person FROM business.companies
 WHERE user_id = $1 AND is_deleted = false
