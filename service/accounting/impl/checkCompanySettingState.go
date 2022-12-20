@@ -3,7 +3,6 @@ package impl
 import (
 	"context"
 	"net/http"
-	"strconv"
 
 	"github.com/calvinkmts/expert-pancake/engine/errors"
 	"github.com/calvinkmts/expert-pancake/engine/httpHandler"
@@ -50,14 +49,12 @@ func (a accountingService) CheckCompanySettingState(w http.ResponseWriter, r *ht
 		res.BankAccount = &model.ChartOfAccount{
 			ChartOfAccountId:  resultBank.ID,
 			CompanyId:         resultBank.CompanyID,
-			BranchId:          resultBank.BranchID,
 			AccountCode:       resultBank.AccountCode,
 			AccountName:       resultBank.AccountName,
 			AccountGroup:      resultBank.AccountGroup,
 			BankName:          resultBank.BankName,
 			BankAccountNumber: resultBank.BankAccountNumber,
 			BankCode:          resultBank.BankCode,
-			OpeningBalance:    strconv.FormatInt(resultBank.OpeningBalance, 10),
 			IsDeleted:         resultBank.IsDeleted,
 		}
 	}
@@ -67,14 +64,12 @@ func (a accountingService) CheckCompanySettingState(w http.ResponseWriter, r *ht
 		res.CashAccount = &model.ChartOfAccount{
 			ChartOfAccountId:  resultCash.ID,
 			CompanyId:         resultCash.CompanyID,
-			BranchId:          resultCash.BranchID,
 			AccountCode:       resultCash.AccountCode,
 			AccountName:       resultCash.AccountName,
 			AccountGroup:      resultCash.AccountGroup,
 			BankName:          resultCash.BankName,
 			BankAccountNumber: resultCash.BankAccountNumber,
 			BankCode:          resultCash.BankCode,
-			OpeningBalance:    strconv.FormatInt(resultCash.OpeningBalance, 10),
 			IsDeleted:         resultCash.IsDeleted,
 		}
 	}

@@ -28,18 +28,31 @@ type FiscalYear struct {
 	EndPeriod   string `json:"end_period" validate:"required"`
 }
 
+type ChartOfAccountType struct {
+	ReportType  string `json:"report_type" validate:"required"`
+	AccountType string `json:"account_type" validate:"required"`
+}
+
 type ChartOfAccount struct {
-	ChartOfAccountId  string `json:"chart_of_account_id" validate:"required"`
-	CompanyId         string `json:"company_id" validate:"required"`
-	BranchId          string `json:"branch_id" validate:"required"`
-	AccountCode       string `json:"account_code" validate:"required"`
-	AccountName       string `json:"account_name" validate:"required"`
-	AccountGroup      string `json:"account_group" validate:"required"`
-	BankName          string `json:"bank_name" validate:"required"`
-	BankAccountNumber string `json:"bank_account_number" validate:"required"`
-	BankCode          string `json:"bank_code" validate:"required"`
-	OpeningBalance    string `json:"opening_balance" validate:"required"`
-	IsDeleted         bool   `json:"is_deleted" validate:"required"`
+	ChartOfAccountId  string   `json:"chart_of_account_id" validate:"required"`
+	CompanyId         string   `json:"company_id" validate:"required"`
+	CurrencyCode      string   `json:"currency_code" validate:"required"`
+	ReportType        string   `json:"report_type" validate:"required"`
+	AccountType       string   `json:"account_type" validate:"required"`
+	AccountGroup      string   `json:"account_group" validate:"required"`
+	AccountCode       string   `json:"account_code" validate:"required"`
+	AccountName       string   `json:"account_name" validate:"required"`
+	BankName          string   `json:"bank_name" validate:"required"`
+	BankAccountNumber string   `json:"bank_account_number" validate:"required"`
+	BankCode          string   `json:"bank_code" validate:"required"`
+	IsAllBranches     bool     `json:"is_all_branches" validate:"required"`
+	Branches          []string `json:"branches" validate:"required"`
+	IsDeleted         bool     `json:"is_deleted" validate:"required"`
+}
+
+type ChartOfAccountBranch struct {
+	ChartOfAccountId string `json:"chart_of_account_id" validate:"required"`
+	BranchId         string `json:"branch_id" validate:"required"`
 }
 
 type ChartOfAccountIdName struct {
@@ -83,40 +96,46 @@ type GetAccountingBanksResponse struct {
 }
 
 type GetAccountingChartOfAccountTypesResponse struct {
-	ChartOfAccountTypes []string `json:"types"`
+	ChartOfAccountTypes []ChartOfAccountType `json:"types"`
 }
 
 type GetCompanyChartOfAccountsRequest struct {
 	CompanyId       string  `json:"company_id" validate:"required"`
 	Keyword         string  `json:"keyword"`
-	GroupFilter     *string `json:"group_filter"`
+	TypeFilter      *string `json:"type_filter"`
 	IsDeletedFilter *bool   `json:"is_deleted_filter"`
 }
 
 type AddCompanyChartOfAccountRequest struct {
-	CompanyId         string `json:"company_id" validate:"required"`
-	BranchId          string `json:"branch_id" validate:"required"`
-	AccountCode       string `json:"account_code" validate:"required"`
-	AccountName       string `json:"account_name" validate:"required"`
-	AccountGroup      string `json:"account_group" validate:"required"`
-	BankName          string `json:"bank_name"`
-	BankAccountNumber string `json:"bank_account_number"`
-	BankCode          string `json:"bank_code"`
-	OpeningBalance    string `json:"opening_balance" validate:"required"`
+	CompanyId         string   `json:"company_id" validate:"required"`
+	CurrencyCode      string   `json:"currency_code" validate:"required"`
+	ReportType        string   `json:"report_type" validate:"required"`
+	AccountType       string   `json:"account_type" validate:"required"`
+	AccountGroup      string   `json:"account_group" validate:"required"`
+	AccountCode       string   `json:"account_code" validate:"required"`
+	AccountName       string   `json:"account_name" validate:"required"`
+	BankName          string   `json:"bank_name"`
+	BankAccountNumber string   `json:"bank_account_number"`
+	BankCode          string   `json:"bank_code"`
+	IsAllBranches     bool     `json:"is_all_branches"`
+	Branches          []string `json:"branches"`
 }
 
 type UpdateCompanyChartOfAccountRequest struct {
-	ChartOfAccountId  string `json:"chart_of_account_id" validate:"required"`
-	CompanyId         string `json:"company_id" validate:"required"`
-	BranchId          string `json:"branch_id" validate:"required"`
-	AccountCode       string `json:"account_code" validate:"required"`
-	AccountName       string `json:"account_name" validate:"required"`
-	AccountGroup      string `json:"account_group" validate:"required"`
-	BankName          string `json:"bank_name"`
-	BankAccountNumber string `json:"bank_account_number"`
-	BankCode          string `json:"bank_code"`
-	OpeningBalance    string `json:"opening_balance" validate:"required"`
-	IsDeleted         bool   `json:"is_deleted"`
+	ChartOfAccountId  string   `json:"chart_of_account_id" validate:"required"`
+	CompanyId         string   `json:"company_id" validate:"required"`
+	CurrencyCode      string   `json:"currency_code" validate:"required"`
+	ReportType        string   `json:"report_type" validate:"required"`
+	AccountType       string   `json:"account_type" validate:"required"`
+	AccountGroup      string   `json:"account_group" validate:"required"`
+	AccountCode       string   `json:"account_code" validate:"required"`
+	AccountName       string   `json:"account_name" validate:"required"`
+	BankName          string   `json:"bank_name"`
+	BankAccountNumber string   `json:"bank_account_number"`
+	BankCode          string   `json:"bank_code"`
+	IsAllBranches     bool     `json:"is_all_branches"`
+	Branches          []string `json:"branches"`
+	IsDeleted         bool     `json:"is_deleted"`
 }
 
 type CheckCompanySettingStateRequest struct {

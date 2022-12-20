@@ -3,7 +3,6 @@ package impl
 import (
 	"context"
 	"net/http"
-	"strconv"
 
 	"github.com/calvinkmts/expert-pancake/engine/errors"
 	"github.com/calvinkmts/expert-pancake/engine/httpHandler"
@@ -29,29 +28,29 @@ func (a accountingService) GetCompanyChartOfAccounts(w http.ResponseWriter, r *h
 		req.IsDeletedFilter = &isDeletedFilter
 	}
 
-	var isFilterJournalGroup = false
-	var accountGroups []string
-	if req.GroupFilter != nil {
-		isFilterJournalGroup = true
-		switch *req.GroupFilter {
+	var isFilterJournalType = false
+	var accountTypes []string
+	if req.TypeFilter != nil {
+		isFilterJournalType = true
+		switch *req.TypeFilter {
 		case "DEBET":
-			accountGroups = append(accountGroups, "BANK", "KAS")
+			accountTypes = append(accountTypes, "CASH & EQUALS")
 		case "KREDIT":
-			accountGroups = append(accountGroups, "BEBAN USAHA", "BEBAN LAIN-LAIN")
+			accountTypes = append(accountTypes, "MAIN COST OF REVENUE", "OTHER COST OF REVENUE", "EXPENSE")
 		case "":
-			isFilterJournalGroup = false
+			isFilterJournalType = false
 		default:
-			accountGroups = append(accountGroups, *req.GroupFilter)
+			accountTypes = append(accountTypes, *req.TypeFilter)
 		}
 	}
 
 	result, err := a.dbTrx.GetCompanyChartOfAccounts(context.Background(), db.GetCompanyChartOfAccountsParams{
-		CompanyID:            req.CompanyId,
-		AccountName:          util.WildCardString(req.Keyword),
-		IsDeletedFilter:      isDeletedFilter,
-		IsDeleted:            *req.IsDeletedFilter,
-		IsFilterJournalGroup: isFilterJournalGroup,
-		AccountGroups:        accountGroups,
+		CompanyID:           req.CompanyId,
+		AccountName:         util.WildCardString(req.Keyword),
+		IsDeletedFilter:     isDeletedFilter,
+		IsDeleted:           *req.IsDeletedFilter,
+		IsFilterJournalType: isFilterJournalType,
+		AccountTypes:        accountTypes,
 	})
 	if err != nil {
 		return errors.NewServerError(model.GetCompanyChartOfAccountsError, err.Error())
@@ -60,17 +59,24 @@ func (a accountingService) GetCompanyChartOfAccounts(w http.ResponseWriter, r *h
 	var chart_of_accounts = make([]model.ChartOfAccount, 0)
 
 	for _, d := range result {
+		resultBranches, err := a.dbTrx.GetChartOfAccountBranches(context.Background(), d.ID)
+		if err != nil {
+			return errors.NewServerError(model.GetCompanyChartOfAccountsError, err.Error())
+		}
 		var chart_of_account = model.ChartOfAccount{
 			ChartOfAccountId:  d.ID,
 			CompanyId:         d.CompanyID,
-			BranchId:          d.BranchID,
+			CurrencyCode:      d.CurrencyCode,
+			ReportType:        d.ReportType,
+			AccountType:       d.AccountType,
+			AccountGroup:      d.AccountGroup,
 			AccountCode:       d.AccountCode,
 			AccountName:       d.AccountName,
-			AccountGroup:      d.AccountGroup,
 			BankName:          d.BankName,
 			BankAccountNumber: d.BankAccountNumber,
 			BankCode:          d.BankCode,
-			OpeningBalance:    strconv.FormatInt(d.OpeningBalance, 10),
+			IsAllBranches:     d.IsAllBranches,
+			Branches:          util.ChartOfAccountBranchDbToApi(resultBranches),
 			IsDeleted:         d.IsDeleted,
 		}
 		chart_of_accounts = append(chart_of_accounts, chart_of_account)
