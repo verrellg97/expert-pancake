@@ -168,6 +168,49 @@ func (q *Queries) GetChartOfAccountBranches(ctx context.Context, chartOfAccountI
 	return items, nil
 }
 
+const getChartOfAccountGroups = `-- name: GetChartOfAccountGroups :many
+SELECT id, company_id, report_type, account_type, account_group_name 
+FROM accounting.chart_of_account_groups
+WHERE company_id = $1
+`
+
+type GetChartOfAccountGroupsRow struct {
+	ID               string `db:"id"`
+	CompanyID        string `db:"company_id"`
+	ReportType       string `db:"report_type"`
+	AccountType      string `db:"account_type"`
+	AccountGroupName string `db:"account_group_name"`
+}
+
+func (q *Queries) GetChartOfAccountGroups(ctx context.Context, companyID string) ([]GetChartOfAccountGroupsRow, error) {
+	rows, err := q.db.QueryContext(ctx, getChartOfAccountGroups, companyID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetChartOfAccountGroupsRow
+	for rows.Next() {
+		var i GetChartOfAccountGroupsRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.CompanyID,
+			&i.ReportType,
+			&i.AccountType,
+			&i.AccountGroupName,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getCompanyChartOfAccount = `-- name: GetCompanyChartOfAccount :one
 SELECT id, company_id, currency_code, report_type, account_type, account_group, account_code, account_name, bank_name, bank_account_number, bank_code, is_deleted, is_all_branches, created_at, updated_at
 FROM accounting.company_chart_of_accounts
@@ -442,6 +485,42 @@ func (q *Queries) InsertChartOfAccountBranches(ctx context.Context, arg InsertCh
 	return err
 }
 
+const insertChartOfAccountGroup = `-- name: InsertChartOfAccountGroup :one
+INSERT INTO accounting.chart_of_account_groups(id, company_id, 
+report_type, account_type, account_group_name)
+VALUES ($1, $2, $3, $4, $5)
+RETURNING id, company_id, report_type, account_type, account_group_name, created_at, updated_at
+`
+
+type InsertChartOfAccountGroupParams struct {
+	ID               string `db:"id"`
+	CompanyID        string `db:"company_id"`
+	ReportType       string `db:"report_type"`
+	AccountType      string `db:"account_type"`
+	AccountGroupName string `db:"account_group_name"`
+}
+
+func (q *Queries) InsertChartOfAccountGroup(ctx context.Context, arg InsertChartOfAccountGroupParams) (AccountingChartOfAccountGroup, error) {
+	row := q.db.QueryRowContext(ctx, insertChartOfAccountGroup,
+		arg.ID,
+		arg.CompanyID,
+		arg.ReportType,
+		arg.AccountType,
+		arg.AccountGroupName,
+	)
+	var i AccountingChartOfAccountGroup
+	err := row.Scan(
+		&i.ID,
+		&i.CompanyID,
+		&i.ReportType,
+		&i.AccountType,
+		&i.AccountGroupName,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
 const insertCompanyChartOfAccount = `-- name: InsertCompanyChartOfAccount :one
 INSERT INTO accounting.company_chart_of_accounts(id, company_id, currency_code, 
 report_type, account_type, account_group, account_code, account_name, 
@@ -542,6 +621,44 @@ func (q *Queries) InsertTransactionJournal(ctx context.Context, arg InsertTransa
 		&i.Amount,
 		&i.Description,
 		&i.CreatedAt,
+	)
+	return i, err
+}
+
+const updateChartOfAccountGroup = `-- name: UpdateChartOfAccountGroup :one
+UPDATE accounting.chart_of_account_groups
+SET 
+    report_type = $2,
+    account_type = $3,
+    account_group_name = $4,
+    updated_at = NOW()
+WHERE id = $1
+RETURNING id, company_id, report_type, account_type, account_group_name, created_at, updated_at
+`
+
+type UpdateChartOfAccountGroupParams struct {
+	ID               string `db:"id"`
+	ReportType       string `db:"report_type"`
+	AccountType      string `db:"account_type"`
+	AccountGroupName string `db:"account_group_name"`
+}
+
+func (q *Queries) UpdateChartOfAccountGroup(ctx context.Context, arg UpdateChartOfAccountGroupParams) (AccountingChartOfAccountGroup, error) {
+	row := q.db.QueryRowContext(ctx, updateChartOfAccountGroup,
+		arg.ID,
+		arg.ReportType,
+		arg.AccountType,
+		arg.AccountGroupName,
+	)
+	var i AccountingChartOfAccountGroup
+	err := row.Scan(
+		&i.ID,
+		&i.CompanyID,
+		&i.ReportType,
+		&i.AccountType,
+		&i.AccountGroupName,
+		&i.CreatedAt,
+		&i.UpdatedAt,
 	)
 	return i, err
 }

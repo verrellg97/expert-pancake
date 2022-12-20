@@ -9,6 +9,17 @@ CREATE TABLE accounting.company_fiscal_years (
   PRIMARY KEY ("company_id")
 );
 
+CREATE TABLE accounting.chart_of_account_groups (
+  "id" text NOT NULL,
+  "company_id" text NOT NULL,
+  "report_type" text NOT NULL,
+  "account_type" text NOT NULL,
+  "account_group_name" text NOT NULL,
+  "created_at" timestamptz DEFAULT (now()),
+  "updated_at" timestamptz DEFAULT (now()),
+  PRIMARY KEY ("id")
+);
+
 CREATE TABLE accounting.company_chart_of_accounts (
   "id" text NOT NULL,
   "company_id" text NOT NULL,

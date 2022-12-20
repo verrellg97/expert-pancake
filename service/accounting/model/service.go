@@ -8,6 +8,9 @@ type AccountingService interface {
 	UpsertCompanyFiscalYear(w http.ResponseWriter, r *http.Request) error
 	GetAccountingBanks(w http.ResponseWriter, r *http.Request) error
 	GetAccountingChartOfAccountTypes(w http.ResponseWriter, r *http.Request) error
+	GetChartOfAccountGroups(w http.ResponseWriter, r *http.Request) error
+	AddChartOfAccountGroup(w http.ResponseWriter, r *http.Request) error
+	UpdateChartOfAccountGroup(w http.ResponseWriter, r *http.Request) error
 	GetCompanyChartOfAccounts(w http.ResponseWriter, r *http.Request) error
 	AddCompanyChartOfAccount(w http.ResponseWriter, r *http.Request) error
 	UpdateCompanyChartOfAccount(w http.ResponseWriter, r *http.Request) error
@@ -31,6 +34,36 @@ type FiscalYear struct {
 type ChartOfAccountType struct {
 	ReportType  string `json:"report_type" validate:"required"`
 	AccountType string `json:"account_type" validate:"required"`
+}
+
+type ChartOfAccountGroup struct {
+	ChartOfAccountGroupId string `json:"chart_of_account_group_id" validate:"required"`
+	CompanyId             string `json:"company_id" validate:"required"`
+	ReportType            string `json:"report_type" validate:"required"`
+	AccountType           string `json:"account_type" validate:"required"`
+	AccountGroupName      string `json:"account_group_name" validate:"required"`
+}
+
+type GetChartOfAccountGroupsRequest struct {
+	CompanyId string `json:"company_id" validate:"required"`
+}
+
+type AddChartOfAccounGroupRequest struct {
+	CompanyId        string `json:"company_id" validate:"required"`
+	ReportType       string `json:"report_type" validate:"required"`
+	AccountType      string `json:"account_type" validate:"required"`
+	AccountGroupName string `json:"account_group_name" validate:"required"`
+}
+
+type UpdateChartOfAccounGroupRequest struct {
+	ChartOfAccountGroupId string `json:"chart_of_account_group_id" validate:"required"`
+	ReportType            string `json:"report_type" validate:"required"`
+	AccountType           string `json:"account_type" validate:"required"`
+	AccountGroupName      string `json:"account_group_name" validate:"required"`
+}
+
+type UpsertChartOfAccountGroupResponse struct {
+	ChartOfAccountGroup
 }
 
 type ChartOfAccount struct {

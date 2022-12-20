@@ -14,6 +14,9 @@ const (
 	UpsertCompanyFiscalYearPath          = "/accounting/company/setting/fiscal-year"
 	GetAccountingBanksPath               = "/accounting/banks"
 	GetAccountingChartOfAccountTypesPath = "/accounting/chart-of-account/types"
+	GetChartOfAccountGroupsPath          = "/accounting/company/chart-of-account-groups"
+	AddChartOfAccountGroupPath           = "/accounting/company/chart-of-account-groups/add"
+	UpdateChartOfAccountGroupPath        = "/accounting/company/chart-of-account-groups/update"
 	GetCompanyChartOfAccountsPath        = "/accounting/company/chart-of-accounts"
 	AddCompanyChartOfAccountPath         = "/accounting/company/chart-of-account/add"
 	UpdateCompanyChartOfAccountPath      = "/accounting/company/chart-of-account/update"
@@ -42,6 +45,9 @@ func (c *component) Routes(accountingService model.AccountingService) http.Handl
 	mux.Method("POST", UpsertCompanyFiscalYearPath, httpHandler.New(accountingService.UpsertCompanyFiscalYear))
 	mux.Method("GET", GetAccountingBanksPath, httpHandler.New(accountingService.GetAccountingBanks))
 	mux.Method("GET", GetAccountingChartOfAccountTypesPath, httpHandler.New(accountingService.GetAccountingChartOfAccountTypes))
+	mux.Method("POST", GetChartOfAccountGroupsPath, httpHandler.New(accountingService.GetChartOfAccountGroups))
+	mux.Method("POST", AddChartOfAccountGroupPath, httpHandler.New(accountingService.AddChartOfAccountGroup))
+	mux.Method("POST", UpdateChartOfAccountGroupPath, httpHandler.New(accountingService.UpdateChartOfAccountGroup))
 	mux.Method("POST", GetCompanyChartOfAccountsPath, httpHandler.New(accountingService.GetCompanyChartOfAccounts))
 	mux.Method("POST", AddCompanyChartOfAccountPath, httpHandler.New(accountingService.AddCompanyChartOfAccount))
 	mux.Method("POST", UpdateCompanyChartOfAccountPath, httpHandler.New(accountingService.UpdateCompanyChartOfAccount))
