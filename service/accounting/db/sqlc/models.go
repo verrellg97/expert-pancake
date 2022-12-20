@@ -23,18 +23,27 @@ type AccountingCashTransaction struct {
 	UpdatedAt              sql.NullTime `db:"updated_at"`
 }
 
+type AccountingChartOfAccountBranch struct {
+	ChartOfAccountID string       `db:"chart_of_account_id"`
+	BranchID         string       `db:"branch_id"`
+	CreatedAt        sql.NullTime `db:"created_at"`
+	UpdatedAt        sql.NullTime `db:"updated_at"`
+}
+
 type AccountingCompanyChartOfAccount struct {
 	ID                string       `db:"id"`
 	CompanyID         string       `db:"company_id"`
-	BranchID          string       `db:"branch_id"`
+	CurrencyCode      string       `db:"currency_code"`
+	ReportType        string       `db:"report_type"`
+	AccountType       string       `db:"account_type"`
+	AccountGroup      string       `db:"account_group"`
 	AccountCode       string       `db:"account_code"`
 	AccountName       string       `db:"account_name"`
-	AccountGroup      string       `db:"account_group"`
 	BankName          string       `db:"bank_name"`
 	BankAccountNumber string       `db:"bank_account_number"`
 	BankCode          string       `db:"bank_code"`
-	OpeningBalance    int64        `db:"opening_balance"`
 	IsDeleted         bool         `db:"is_deleted"`
+	IsAllBranches     bool         `db:"is_all_branches"`
 	CreatedAt         sql.NullTime `db:"created_at"`
 	UpdatedAt         sql.NullTime `db:"updated_at"`
 }

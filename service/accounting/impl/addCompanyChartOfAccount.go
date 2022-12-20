@@ -3,11 +3,10 @@ package impl
 import (
 	"context"
 	"net/http"
-	"strconv"
 
 	"github.com/calvinkmts/expert-pancake/engine/errors"
 	"github.com/calvinkmts/expert-pancake/engine/httpHandler"
-	db "github.com/expert-pancake/service/accounting/db/sqlc"
+	db "github.com/expert-pancake/service/accounting/db/transaction"
 	"github.com/expert-pancake/service/accounting/model"
 	uuid "github.com/satori/go.uuid"
 )
@@ -23,37 +22,47 @@ func (a accountingService) AddCompanyChartOfAccount(w http.ResponseWriter, r *ht
 		return errors.NewClientError().WithDataMap(errMapRequest)
 	}
 
-	openingBalance, _ := strconv.ParseInt(req.OpeningBalance, 10, 64)
-	arg := db.InsertCompanyChartOfAccountParams{
+	var branches = make([]string, 0)
+	if req.Branches != nil {
+		branches = req.Branches
+	}
+
+	arg := db.CreateNewChartOfAccountTrxParams{
 		ID:                uuid.NewV4().String(),
 		CompanyID:         req.CompanyId,
-		BranchID:          req.BranchId,
+		CurrencyCode:      req.CurrencyCode,
+		ReportType:        req.ReportType,
+		AccountType:       req.AccountType,
+		AccountGroup:      req.AccountGroup,
 		AccountCode:       req.AccountCode,
 		AccountName:       req.AccountName,
-		AccountGroup:      req.AccountGroup,
 		BankName:          req.BankName,
 		BankAccountNumber: req.BankAccountNumber,
 		BankCode:          req.BankCode,
-		OpeningBalance:    openingBalance,
+		IsAllBranches:     req.IsAllBranches,
+		Branches:          branches,
 	}
 
-	result, err := a.dbTrx.InsertCompanyChartOfAccount(context.Background(), arg)
+	result, err := a.dbTrx.CreateNewChartOfAccountTrx(context.Background(), arg)
 	if err != nil {
 		return errors.NewServerError(model.AddCompanyChartOfAccountError, err.Error())
 	}
 
 	res := model.UpsertCompanyChartOfAccountResponse{
 		ChartOfAccount: model.ChartOfAccount{
-			ChartOfAccountId:  result.ID,
-			CompanyId:         result.CompanyID,
-			BranchId:          result.BranchID,
+			ChartOfAccountId:  result.ChartOfAccountId,
+			CompanyId:         result.CompanyId,
+			CurrencyCode:      result.CurrencyCode,
+			ReportType:        result.ReportType,
+			AccountType:       result.AccountType,
+			AccountGroup:      result.AccountGroup,
 			AccountCode:       result.AccountCode,
 			AccountName:       result.AccountName,
-			AccountGroup:      result.AccountGroup,
 			BankName:          result.BankName,
 			BankAccountNumber: result.BankAccountNumber,
 			BankCode:          result.BankCode,
-			OpeningBalance:    strconv.FormatInt(result.OpeningBalance, 10),
+			IsAllBranches:     result.IsAllBranches,
+			Branches:          result.Branches,
 			IsDeleted:         result.IsDeleted,
 		},
 	}
