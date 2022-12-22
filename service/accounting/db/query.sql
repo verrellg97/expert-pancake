@@ -8,6 +8,27 @@ DO UPDATE SET
     updated_at = NOW()
 RETURNING *;
 
+-- name: InsertChartOfAccountGroup :one
+INSERT INTO accounting.chart_of_account_groups(id, company_id, 
+report_type, account_type, account_group_name)
+VALUES ($1, $2, $3, $4, $5)
+RETURNING *;
+
+-- name: UpdateChartOfAccountGroup :one
+UPDATE accounting.chart_of_account_groups
+SET 
+    report_type = $2,
+    account_type = $3,
+    account_group_name = $4,
+    updated_at = NOW()
+WHERE id = $1
+RETURNING *;
+
+-- name: GetChartOfAccountGroups :many
+SELECT id, company_id, report_type, account_type, account_group_name 
+FROM accounting.chart_of_account_groups
+WHERE company_id = $1;
+
 -- name: InsertCompanyChartOfAccount :one
 INSERT INTO accounting.company_chart_of_accounts(id, company_id, currency_code, 
 report_type, account_type, account_group, account_code, account_name, 

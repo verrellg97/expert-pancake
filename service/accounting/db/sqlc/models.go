@@ -30,6 +30,16 @@ type AccountingChartOfAccountBranch struct {
 	UpdatedAt        sql.NullTime `db:"updated_at"`
 }
 
+type AccountingChartOfAccountGroup struct {
+	ID               string       `db:"id"`
+	CompanyID        string       `db:"company_id"`
+	ReportType       string       `db:"report_type"`
+	AccountType      string       `db:"account_type"`
+	AccountGroupName string       `db:"account_group_name"`
+	CreatedAt        sql.NullTime `db:"created_at"`
+	UpdatedAt        sql.NullTime `db:"updated_at"`
+}
+
 type AccountingCompanyChartOfAccount struct {
 	ID                string       `db:"id"`
 	CompanyID         string       `db:"company_id"`
