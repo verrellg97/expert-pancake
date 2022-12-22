@@ -8,4 +8,7 @@ const (
 	CreateNewCashTransactionError       = 500005
 	GetCashTransactionsError            = 500006
 	GetCashTransactionsGroupByDateError = 500007
+	GetChartOfAccountGroupsError        = 500008
+	AddChartOfAccountGroupError         = 500009
+	UpdateChartOfAccountGroupError      = 500010
 )
