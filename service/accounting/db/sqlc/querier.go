@@ -13,6 +13,8 @@ type Querier interface {
 	GetCashTransactions(ctx context.Context, arg GetCashTransactionsParams) ([]GetCashTransactionsRow, error)
 	GetCashTransactionsGroupByDate(ctx context.Context, arg GetCashTransactionsGroupByDateParams) ([]GetCashTransactionsGroupByDateRow, error)
 	GetChartOfAccountBranches(ctx context.Context, chartOfAccountID string) ([]GetChartOfAccountBranchesRow, error)
+	GetChartOfAccountGroup(ctx context.Context, id string) (GetChartOfAccountGroupRow, error)
+	GetChartOfAccountGroupByAccTypeAccGroup(ctx context.Context, arg GetChartOfAccountGroupByAccTypeAccGroupParams) (GetChartOfAccountGroupByAccTypeAccGroupRow, error)
 	GetChartOfAccountGroups(ctx context.Context, companyID string) ([]GetChartOfAccountGroupsRow, error)
 	GetCompanyChartOfAccount(ctx context.Context, companyID string) (AccountingCompanyChartOfAccount, error)
 	GetCompanyChartOfAccounts(ctx context.Context, arg GetCompanyChartOfAccountsParams) ([]GetCompanyChartOfAccountsRow, error)

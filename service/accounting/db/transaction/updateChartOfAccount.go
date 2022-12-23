@@ -7,20 +7,18 @@ import (
 )
 
 type UpdateChartOfAccountTrxParams struct {
-	ID                string
-	CompanyID         string
-	CurrencyCode      string
-	ReportType        string
-	AccountType       string
-	AccountGroup      string
-	AccountCode       string
-	AccountName       string
-	BankName          string
-	BankAccountNumber string
-	BankCode          string
-	IsAllBranches     bool
-	Branches          []string
-	IsDeleted         bool
+	Id                    string
+	CompanyId             string
+	CurrencyCode          string
+	ChartOfAccountGroupId string
+	AccountCode           string
+	AccountName           string
+	BankName              string
+	BankAccountNumber     string
+	BankCode              string
+	IsAllBranches         bool
+	Branches              []string
+	IsDeleted             bool
 }
 
 func (trx *Trx) UpdateChartOfAccountTrx(ctx context.Context, arg UpdateChartOfAccountTrxParams) (CreateNewChartOfAccountTrxResult, error) {
@@ -30,24 +28,22 @@ func (trx *Trx) UpdateChartOfAccountTrx(ctx context.Context, arg UpdateChartOfAc
 		var err error
 
 		transRes, err := q.UpdateCompanyChartOfAccount(ctx, db.UpdateCompanyChartOfAccountParams{
-			ID:                arg.ID,
-			CurrencyCode:      arg.CurrencyCode,
-			ReportType:        arg.ReportType,
-			AccountType:       arg.AccountType,
-			AccountGroup:      arg.AccountGroup,
-			AccountCode:       arg.AccountCode,
-			AccountName:       arg.AccountName,
-			BankName:          arg.BankName,
-			BankAccountNumber: arg.BankAccountNumber,
-			BankCode:          arg.BankCode,
-			IsAllBranches:     arg.IsAllBranches,
-			IsDeleted:         arg.IsDeleted,
+			ID:                    arg.Id,
+			CurrencyCode:          arg.CurrencyCode,
+			ChartOfAccountGroupID: arg.ChartOfAccountGroupId,
+			AccountCode:           arg.AccountCode,
+			AccountName:           arg.AccountName,
+			BankName:              arg.BankName,
+			BankAccountNumber:     arg.BankAccountNumber,
+			BankCode:              arg.BankCode,
+			IsAllBranches:         arg.IsAllBranches,
+			IsDeleted:             arg.IsDeleted,
 		})
 		if err != nil {
 			return err
 		}
 
-		err = q.DeleteChartOfAccountBranches(ctx, arg.ID)
+		err = q.DeleteChartOfAccountBranches(ctx, arg.Id)
 		if err != nil {
 			return err
 		}
@@ -55,7 +51,7 @@ func (trx *Trx) UpdateChartOfAccountTrx(ctx context.Context, arg UpdateChartOfAc
 		if !arg.IsAllBranches {
 			for _, d := range arg.Branches {
 				err = q.InsertChartOfAccountBranches(ctx, db.InsertChartOfAccountBranchesParams{
-					ChartOfAccountID: arg.ID,
+					ChartOfAccountID: arg.Id,
 					BranchID:         d,
 				})
 				if err != nil {
@@ -67,9 +63,7 @@ func (trx *Trx) UpdateChartOfAccountTrx(ctx context.Context, arg UpdateChartOfAc
 		result.ChartOfAccountId = transRes.ID
 		result.CompanyId = transRes.CompanyID
 		result.CurrencyCode = transRes.CurrencyCode
-		result.ReportType = transRes.ReportType
-		result.AccountType = transRes.AccountType
-		result.AccountGroup = transRes.AccountGroup
+		result.ChartOfAccountGroupId = transRes.ChartOfAccountGroupID
 		result.AccountCode = transRes.AccountCode
 		result.AccountName = transRes.AccountName
 		result.BankName = transRes.BankName
