@@ -168,6 +168,66 @@ func (q *Queries) GetChartOfAccountBranches(ctx context.Context, chartOfAccountI
 	return items, nil
 }
 
+const getChartOfAccountGroup = `-- name: GetChartOfAccountGroup :one
+SELECT id, company_id, report_type, account_type, account_group_name 
+FROM accounting.chart_of_account_groups
+WHERE id = $1
+`
+
+type GetChartOfAccountGroupRow struct {
+	ID               string `db:"id"`
+	CompanyID        string `db:"company_id"`
+	ReportType       string `db:"report_type"`
+	AccountType      string `db:"account_type"`
+	AccountGroupName string `db:"account_group_name"`
+}
+
+func (q *Queries) GetChartOfAccountGroup(ctx context.Context, id string) (GetChartOfAccountGroupRow, error) {
+	row := q.db.QueryRowContext(ctx, getChartOfAccountGroup, id)
+	var i GetChartOfAccountGroupRow
+	err := row.Scan(
+		&i.ID,
+		&i.CompanyID,
+		&i.ReportType,
+		&i.AccountType,
+		&i.AccountGroupName,
+	)
+	return i, err
+}
+
+const getChartOfAccountGroupByAccTypeAccGroup = `-- name: GetChartOfAccountGroupByAccTypeAccGroup :one
+SELECT id, company_id, report_type, account_type, account_group_name 
+FROM accounting.chart_of_account_groups
+WHERE company_id = $1 AND account_type = $2 AND account_group_name = $3
+`
+
+type GetChartOfAccountGroupByAccTypeAccGroupParams struct {
+	CompanyID        string `db:"company_id"`
+	AccountType      string `db:"account_type"`
+	AccountGroupName string `db:"account_group_name"`
+}
+
+type GetChartOfAccountGroupByAccTypeAccGroupRow struct {
+	ID               string `db:"id"`
+	CompanyID        string `db:"company_id"`
+	ReportType       string `db:"report_type"`
+	AccountType      string `db:"account_type"`
+	AccountGroupName string `db:"account_group_name"`
+}
+
+func (q *Queries) GetChartOfAccountGroupByAccTypeAccGroup(ctx context.Context, arg GetChartOfAccountGroupByAccTypeAccGroupParams) (GetChartOfAccountGroupByAccTypeAccGroupRow, error) {
+	row := q.db.QueryRowContext(ctx, getChartOfAccountGroupByAccTypeAccGroup, arg.CompanyID, arg.AccountType, arg.AccountGroupName)
+	var i GetChartOfAccountGroupByAccTypeAccGroupRow
+	err := row.Scan(
+		&i.ID,
+		&i.CompanyID,
+		&i.ReportType,
+		&i.AccountType,
+		&i.AccountGroupName,
+	)
+	return i, err
+}
+
 const getChartOfAccountGroups = `-- name: GetChartOfAccountGroups :many
 SELECT id, company_id, report_type, account_type, account_group_name 
 FROM accounting.chart_of_account_groups
@@ -212,7 +272,7 @@ func (q *Queries) GetChartOfAccountGroups(ctx context.Context, companyID string)
 }
 
 const getCompanyChartOfAccount = `-- name: GetCompanyChartOfAccount :one
-SELECT id, company_id, currency_code, report_type, account_type, account_group, account_code, account_name, bank_name, bank_account_number, bank_code, is_deleted, is_all_branches, created_at, updated_at
+SELECT id, company_id, currency_code, chart_of_account_group_id, account_code, account_name, bank_name, bank_account_number, bank_code, is_deleted, is_all_branches, created_at, updated_at
 FROM accounting.company_chart_of_accounts
 WHERE company_id = $1
 `
@@ -224,9 +284,7 @@ func (q *Queries) GetCompanyChartOfAccount(ctx context.Context, companyID string
 		&i.ID,
 		&i.CompanyID,
 		&i.CurrencyCode,
-		&i.ReportType,
-		&i.AccountType,
-		&i.AccountGroup,
+		&i.ChartOfAccountGroupID,
 		&i.AccountCode,
 		&i.AccountName,
 		&i.BankName,
@@ -241,16 +299,17 @@ func (q *Queries) GetCompanyChartOfAccount(ctx context.Context, companyID string
 }
 
 const getCompanyChartOfAccounts = `-- name: GetCompanyChartOfAccounts :many
-SELECT id, company_id, currency_code, 
-report_type, account_type, account_group, account_code, account_name,
-bank_name, bank_account_number, bank_code, is_all_branches, is_deleted
-FROM accounting.company_chart_of_accounts
-WHERE company_id = $1
-AND account_name LIKE $2
+SELECT a.id, a.company_id, a.currency_code, a.chart_of_account_group_id,
+b.report_type, b.account_type, b.account_group_name, a.account_code, a.account_name,
+a.bank_name, a.bank_account_number, a.bank_code, a.is_all_branches, a.is_deleted
+FROM accounting.company_chart_of_accounts a
+JOIN accounting.chart_of_account_groups b ON a.chart_of_account_group_id = b.id
+WHERE a.company_id = $1
+AND a.account_name LIKE $2
 AND CASE WHEN $4::bool
-THEN account_type = ANY($5::text[]) ELSE TRUE END
+THEN b.account_type = ANY($5::text[]) ELSE TRUE END
 AND CASE WHEN $6::bool
-THEN is_deleted = $3 ELSE TRUE END
+THEN a.is_deleted = $3 ELSE TRUE END
 `
 
 type GetCompanyChartOfAccountsParams struct {
@@ -263,19 +322,20 @@ type GetCompanyChartOfAccountsParams struct {
 }
 
 type GetCompanyChartOfAccountsRow struct {
-	ID                string `db:"id"`
-	CompanyID         string `db:"company_id"`
-	CurrencyCode      string `db:"currency_code"`
-	ReportType        string `db:"report_type"`
-	AccountType       string `db:"account_type"`
-	AccountGroup      string `db:"account_group"`
-	AccountCode       string `db:"account_code"`
-	AccountName       string `db:"account_name"`
-	BankName          string `db:"bank_name"`
-	BankAccountNumber string `db:"bank_account_number"`
-	BankCode          string `db:"bank_code"`
-	IsAllBranches     bool   `db:"is_all_branches"`
-	IsDeleted         bool   `db:"is_deleted"`
+	ID                    string `db:"id"`
+	CompanyID             string `db:"company_id"`
+	CurrencyCode          string `db:"currency_code"`
+	ChartOfAccountGroupID string `db:"chart_of_account_group_id"`
+	ReportType            string `db:"report_type"`
+	AccountType           string `db:"account_type"`
+	AccountGroupName      string `db:"account_group_name"`
+	AccountCode           string `db:"account_code"`
+	AccountName           string `db:"account_name"`
+	BankName              string `db:"bank_name"`
+	BankAccountNumber     string `db:"bank_account_number"`
+	BankCode              string `db:"bank_code"`
+	IsAllBranches         bool   `db:"is_all_branches"`
+	IsDeleted             bool   `db:"is_deleted"`
 }
 
 func (q *Queries) GetCompanyChartOfAccounts(ctx context.Context, arg GetCompanyChartOfAccountsParams) ([]GetCompanyChartOfAccountsRow, error) {
@@ -298,9 +358,10 @@ func (q *Queries) GetCompanyChartOfAccounts(ctx context.Context, arg GetCompanyC
 			&i.ID,
 			&i.CompanyID,
 			&i.CurrencyCode,
+			&i.ChartOfAccountGroupID,
 			&i.ReportType,
 			&i.AccountType,
-			&i.AccountGroup,
+			&i.AccountGroupName,
 			&i.AccountCode,
 			&i.AccountName,
 			&i.BankName,
@@ -323,7 +384,7 @@ func (q *Queries) GetCompanyChartOfAccounts(ctx context.Context, arg GetCompanyC
 }
 
 const getCompanySettingBank = `-- name: GetCompanySettingBank :one
-SELECT id, company_id, account_type, account_group, account_code, account_name,
+SELECT id, company_id, chart_of_account_group_id, account_code, account_name,
 bank_name, bank_account_number, bank_code, is_deleted
 FROM accounting.company_chart_of_accounts
 WHERE company_id = $1 
@@ -332,16 +393,15 @@ ORDER BY created_at LIMIT 1
 `
 
 type GetCompanySettingBankRow struct {
-	ID                string `db:"id"`
-	CompanyID         string `db:"company_id"`
-	AccountType       string `db:"account_type"`
-	AccountGroup      string `db:"account_group"`
-	AccountCode       string `db:"account_code"`
-	AccountName       string `db:"account_name"`
-	BankName          string `db:"bank_name"`
-	BankAccountNumber string `db:"bank_account_number"`
-	BankCode          string `db:"bank_code"`
-	IsDeleted         bool   `db:"is_deleted"`
+	ID                    string `db:"id"`
+	CompanyID             string `db:"company_id"`
+	ChartOfAccountGroupID string `db:"chart_of_account_group_id"`
+	AccountCode           string `db:"account_code"`
+	AccountName           string `db:"account_name"`
+	BankName              string `db:"bank_name"`
+	BankAccountNumber     string `db:"bank_account_number"`
+	BankCode              string `db:"bank_code"`
+	IsDeleted             bool   `db:"is_deleted"`
 }
 
 func (q *Queries) GetCompanySettingBank(ctx context.Context, companyID string) (GetCompanySettingBankRow, error) {
@@ -350,8 +410,7 @@ func (q *Queries) GetCompanySettingBank(ctx context.Context, companyID string) (
 	err := row.Scan(
 		&i.ID,
 		&i.CompanyID,
-		&i.AccountType,
-		&i.AccountGroup,
+		&i.ChartOfAccountGroupID,
 		&i.AccountCode,
 		&i.AccountName,
 		&i.BankName,
@@ -363,7 +422,7 @@ func (q *Queries) GetCompanySettingBank(ctx context.Context, companyID string) (
 }
 
 const getCompanySettingCash = `-- name: GetCompanySettingCash :one
-SELECT id, company_id, account_type, account_group, account_code, account_name,
+SELECT id, company_id, chart_of_account_group_id, account_code, account_name,
 bank_name, bank_account_number, bank_code, is_deleted
 FROM accounting.company_chart_of_accounts
 WHERE company_id = $1 
@@ -372,16 +431,15 @@ ORDER BY created_at LIMIT 1
 `
 
 type GetCompanySettingCashRow struct {
-	ID                string `db:"id"`
-	CompanyID         string `db:"company_id"`
-	AccountType       string `db:"account_type"`
-	AccountGroup      string `db:"account_group"`
-	AccountCode       string `db:"account_code"`
-	AccountName       string `db:"account_name"`
-	BankName          string `db:"bank_name"`
-	BankAccountNumber string `db:"bank_account_number"`
-	BankCode          string `db:"bank_code"`
-	IsDeleted         bool   `db:"is_deleted"`
+	ID                    string `db:"id"`
+	CompanyID             string `db:"company_id"`
+	ChartOfAccountGroupID string `db:"chart_of_account_group_id"`
+	AccountCode           string `db:"account_code"`
+	AccountName           string `db:"account_name"`
+	BankName              string `db:"bank_name"`
+	BankAccountNumber     string `db:"bank_account_number"`
+	BankCode              string `db:"bank_code"`
+	IsDeleted             bool   `db:"is_deleted"`
 }
 
 func (q *Queries) GetCompanySettingCash(ctx context.Context, companyID string) (GetCompanySettingCashRow, error) {
@@ -390,8 +448,7 @@ func (q *Queries) GetCompanySettingCash(ctx context.Context, companyID string) (
 	err := row.Scan(
 		&i.ID,
 		&i.CompanyID,
-		&i.AccountType,
-		&i.AccountGroup,
+		&i.ChartOfAccountGroupID,
 		&i.AccountCode,
 		&i.AccountName,
 		&i.BankName,
@@ -523,25 +580,23 @@ func (q *Queries) InsertChartOfAccountGroup(ctx context.Context, arg InsertChart
 
 const insertCompanyChartOfAccount = `-- name: InsertCompanyChartOfAccount :one
 INSERT INTO accounting.company_chart_of_accounts(id, company_id, currency_code, 
-report_type, account_type, account_group, account_code, account_name, 
+chart_of_account_group_id, account_code, account_name, 
 bank_name, bank_account_number, bank_code, is_all_branches)
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
-RETURNING id, company_id, currency_code, report_type, account_type, account_group, account_code, account_name, bank_name, bank_account_number, bank_code, is_deleted, is_all_branches, created_at, updated_at
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+RETURNING id, company_id, currency_code, chart_of_account_group_id, account_code, account_name, bank_name, bank_account_number, bank_code, is_deleted, is_all_branches, created_at, updated_at
 `
 
 type InsertCompanyChartOfAccountParams struct {
-	ID                string `db:"id"`
-	CompanyID         string `db:"company_id"`
-	CurrencyCode      string `db:"currency_code"`
-	ReportType        string `db:"report_type"`
-	AccountType       string `db:"account_type"`
-	AccountGroup      string `db:"account_group"`
-	AccountCode       string `db:"account_code"`
-	AccountName       string `db:"account_name"`
-	BankName          string `db:"bank_name"`
-	BankAccountNumber string `db:"bank_account_number"`
-	BankCode          string `db:"bank_code"`
-	IsAllBranches     bool   `db:"is_all_branches"`
+	ID                    string `db:"id"`
+	CompanyID             string `db:"company_id"`
+	CurrencyCode          string `db:"currency_code"`
+	ChartOfAccountGroupID string `db:"chart_of_account_group_id"`
+	AccountCode           string `db:"account_code"`
+	AccountName           string `db:"account_name"`
+	BankName              string `db:"bank_name"`
+	BankAccountNumber     string `db:"bank_account_number"`
+	BankCode              string `db:"bank_code"`
+	IsAllBranches         bool   `db:"is_all_branches"`
 }
 
 func (q *Queries) InsertCompanyChartOfAccount(ctx context.Context, arg InsertCompanyChartOfAccountParams) (AccountingCompanyChartOfAccount, error) {
@@ -549,9 +604,7 @@ func (q *Queries) InsertCompanyChartOfAccount(ctx context.Context, arg InsertCom
 		arg.ID,
 		arg.CompanyID,
 		arg.CurrencyCode,
-		arg.ReportType,
-		arg.AccountType,
-		arg.AccountGroup,
+		arg.ChartOfAccountGroupID,
 		arg.AccountCode,
 		arg.AccountName,
 		arg.BankName,
@@ -564,9 +617,7 @@ func (q *Queries) InsertCompanyChartOfAccount(ctx context.Context, arg InsertCom
 		&i.ID,
 		&i.CompanyID,
 		&i.CurrencyCode,
-		&i.ReportType,
-		&i.AccountType,
-		&i.AccountGroup,
+		&i.ChartOfAccountGroupID,
 		&i.AccountCode,
 		&i.AccountName,
 		&i.BankName,
@@ -667,43 +718,37 @@ const updateCompanyChartOfAccount = `-- name: UpdateCompanyChartOfAccount :one
 UPDATE accounting.company_chart_of_accounts
 SET 
     currency_code = $2,
-    report_type = $3,
-    account_type = $4,
-    account_group = $5,
-    account_code = $6,
-    account_name = $7,
-    bank_name = $8,
-    bank_account_number = $9,
-    bank_code = $10,
-    is_all_branches = $11,
-    is_deleted = $12,
+    chart_of_account_group_id = $3,
+    account_code = $4,
+    account_name = $5,
+    bank_name = $6,
+    bank_account_number = $7,
+    bank_code = $8,
+    is_all_branches = $9,
+    is_deleted = $10,
     updated_at = NOW()
 WHERE id = $1
-RETURNING id, company_id, currency_code, report_type, account_type, account_group, account_code, account_name, bank_name, bank_account_number, bank_code, is_deleted, is_all_branches, created_at, updated_at
+RETURNING id, company_id, currency_code, chart_of_account_group_id, account_code, account_name, bank_name, bank_account_number, bank_code, is_deleted, is_all_branches, created_at, updated_at
 `
 
 type UpdateCompanyChartOfAccountParams struct {
-	ID                string `db:"id"`
-	CurrencyCode      string `db:"currency_code"`
-	ReportType        string `db:"report_type"`
-	AccountType       string `db:"account_type"`
-	AccountGroup      string `db:"account_group"`
-	AccountCode       string `db:"account_code"`
-	AccountName       string `db:"account_name"`
-	BankName          string `db:"bank_name"`
-	BankAccountNumber string `db:"bank_account_number"`
-	BankCode          string `db:"bank_code"`
-	IsAllBranches     bool   `db:"is_all_branches"`
-	IsDeleted         bool   `db:"is_deleted"`
+	ID                    string `db:"id"`
+	CurrencyCode          string `db:"currency_code"`
+	ChartOfAccountGroupID string `db:"chart_of_account_group_id"`
+	AccountCode           string `db:"account_code"`
+	AccountName           string `db:"account_name"`
+	BankName              string `db:"bank_name"`
+	BankAccountNumber     string `db:"bank_account_number"`
+	BankCode              string `db:"bank_code"`
+	IsAllBranches         bool   `db:"is_all_branches"`
+	IsDeleted             bool   `db:"is_deleted"`
 }
 
 func (q *Queries) UpdateCompanyChartOfAccount(ctx context.Context, arg UpdateCompanyChartOfAccountParams) (AccountingCompanyChartOfAccount, error) {
 	row := q.db.QueryRowContext(ctx, updateCompanyChartOfAccount,
 		arg.ID,
 		arg.CurrencyCode,
-		arg.ReportType,
-		arg.AccountType,
-		arg.AccountGroup,
+		arg.ChartOfAccountGroupID,
 		arg.AccountCode,
 		arg.AccountName,
 		arg.BankName,
@@ -717,9 +762,7 @@ func (q *Queries) UpdateCompanyChartOfAccount(ctx context.Context, arg UpdateCom
 		&i.ID,
 		&i.CompanyID,
 		&i.CurrencyCode,
-		&i.ReportType,
-		&i.AccountType,
-		&i.AccountGroup,
+		&i.ChartOfAccountGroupID,
 		&i.AccountCode,
 		&i.AccountName,
 		&i.BankName,

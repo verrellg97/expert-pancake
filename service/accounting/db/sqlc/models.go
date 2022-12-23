@@ -41,21 +41,19 @@ type AccountingChartOfAccountGroup struct {
 }
 
 type AccountingCompanyChartOfAccount struct {
-	ID                string       `db:"id"`
-	CompanyID         string       `db:"company_id"`
-	CurrencyCode      string       `db:"currency_code"`
-	ReportType        string       `db:"report_type"`
-	AccountType       string       `db:"account_type"`
-	AccountGroup      string       `db:"account_group"`
-	AccountCode       string       `db:"account_code"`
-	AccountName       string       `db:"account_name"`
-	BankName          string       `db:"bank_name"`
-	BankAccountNumber string       `db:"bank_account_number"`
-	BankCode          string       `db:"bank_code"`
-	IsDeleted         bool         `db:"is_deleted"`
-	IsAllBranches     bool         `db:"is_all_branches"`
-	CreatedAt         sql.NullTime `db:"created_at"`
-	UpdatedAt         sql.NullTime `db:"updated_at"`
+	ID                    string       `db:"id"`
+	CompanyID             string       `db:"company_id"`
+	CurrencyCode          string       `db:"currency_code"`
+	ChartOfAccountGroupID string       `db:"chart_of_account_group_id"`
+	AccountCode           string       `db:"account_code"`
+	AccountName           string       `db:"account_name"`
+	BankName              string       `db:"bank_name"`
+	BankAccountNumber     string       `db:"bank_account_number"`
+	BankCode              string       `db:"bank_code"`
+	IsDeleted             bool         `db:"is_deleted"`
+	IsAllBranches         bool         `db:"is_all_branches"`
+	CreatedAt             sql.NullTime `db:"created_at"`
+	UpdatedAt             sql.NullTime `db:"updated_at"`
 }
 
 type AccountingCompanyFiscalYear struct {
