@@ -8,36 +8,32 @@ import (
 )
 
 type CreateNewChartOfAccountTrxParams struct {
-	ID                string
-	CompanyID         string
-	CurrencyCode      string
-	ReportType        string
-	AccountType       string
-	AccountGroup      string
-	AccountCode       string
-	AccountName       string
-	BankName          string
-	BankAccountNumber string
-	BankCode          string
-	IsAllBranches     bool
-	Branches          []string
+	Id                    string
+	CompanyId             string
+	CurrencyCode          string
+	ChartOfAccountGroupId string
+	AccountCode           string
+	AccountName           string
+	BankName              string
+	BankAccountNumber     string
+	BankCode              string
+	IsAllBranches         bool
+	Branches              []string
 }
 
 type CreateNewChartOfAccountTrxResult struct {
-	ChartOfAccountId  string
-	CompanyId         string
-	CurrencyCode      string
-	ReportType        string
-	AccountType       string
-	AccountGroup      string
-	AccountCode       string
-	AccountName       string
-	BankName          string
-	BankAccountNumber string
-	BankCode          string
-	IsAllBranches     bool
-	Branches          []string
-	IsDeleted         bool
+	ChartOfAccountId      string
+	CompanyId             string
+	CurrencyCode          string
+	ChartOfAccountGroupId string
+	AccountCode           string
+	AccountName           string
+	BankName              string
+	BankAccountNumber     string
+	BankCode              string
+	IsAllBranches         bool
+	Branches              []string
+	IsDeleted             bool
 }
 
 func (trx *Trx) CreateNewChartOfAccountTrx(ctx context.Context, arg CreateNewChartOfAccountTrxParams) (CreateNewChartOfAccountTrxResult, error) {
@@ -49,18 +45,16 @@ func (trx *Trx) CreateNewChartOfAccountTrx(ctx context.Context, arg CreateNewCha
 		id := uuid.NewV4().String()
 
 		transRes, err := q.InsertCompanyChartOfAccount(ctx, db.InsertCompanyChartOfAccountParams{
-			ID:                id,
-			CompanyID:         arg.CompanyID,
-			CurrencyCode:      arg.CurrencyCode,
-			ReportType:        arg.ReportType,
-			AccountType:       arg.AccountType,
-			AccountGroup:      arg.AccountGroup,
-			AccountCode:       arg.AccountCode,
-			AccountName:       arg.AccountName,
-			BankName:          arg.BankName,
-			BankAccountNumber: arg.BankAccountNumber,
-			BankCode:          arg.BankCode,
-			IsAllBranches:     arg.IsAllBranches,
+			ID:                    id,
+			CompanyID:             arg.CompanyId,
+			CurrencyCode:          arg.CurrencyCode,
+			ChartOfAccountGroupID: arg.ChartOfAccountGroupId,
+			AccountCode:           arg.AccountCode,
+			AccountName:           arg.AccountName,
+			BankName:              arg.BankName,
+			BankAccountNumber:     arg.BankAccountNumber,
+			BankCode:              arg.BankCode,
+			IsAllBranches:         arg.IsAllBranches,
 		})
 		if err != nil {
 			return err
@@ -81,9 +75,7 @@ func (trx *Trx) CreateNewChartOfAccountTrx(ctx context.Context, arg CreateNewCha
 		result.ChartOfAccountId = transRes.ID
 		result.CompanyId = transRes.CompanyID
 		result.CurrencyCode = transRes.CurrencyCode
-		result.ReportType = transRes.ReportType
-		result.AccountType = transRes.AccountType
-		result.AccountGroup = transRes.AccountGroup
+		result.ChartOfAccountGroupId = transRes.ChartOfAccountGroupID
 		result.AccountCode = transRes.AccountCode
 		result.AccountName = transRes.AccountName
 		result.BankName = transRes.BankName

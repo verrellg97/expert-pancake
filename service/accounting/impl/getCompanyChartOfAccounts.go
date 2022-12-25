@@ -64,20 +64,21 @@ func (a accountingService) GetCompanyChartOfAccounts(w http.ResponseWriter, r *h
 			return errors.NewServerError(model.GetCompanyChartOfAccountsError, err.Error())
 		}
 		var chart_of_account = model.ChartOfAccount{
-			ChartOfAccountId:  d.ID,
-			CompanyId:         d.CompanyID,
-			CurrencyCode:      d.CurrencyCode,
-			ReportType:        d.ReportType,
-			AccountType:       d.AccountType,
-			AccountGroup:      d.AccountGroup,
-			AccountCode:       d.AccountCode,
-			AccountName:       d.AccountName,
-			BankName:          d.BankName,
-			BankAccountNumber: d.BankAccountNumber,
-			BankCode:          d.BankCode,
-			IsAllBranches:     d.IsAllBranches,
-			Branches:          util.ChartOfAccountBranchDbToApi(resultBranches),
-			IsDeleted:         d.IsDeleted,
+			ChartOfAccountId:      d.ID,
+			CompanyId:             d.CompanyID,
+			CurrencyCode:          d.CurrencyCode,
+			ChartOfAccountGroupId: d.ChartOfAccountGroupID,
+			ReportType:            d.ReportType,
+			AccountType:           d.AccountType,
+			AccountGroup:          d.AccountGroupName,
+			AccountCode:           d.AccountCode,
+			AccountName:           d.AccountName,
+			BankName:              d.BankName,
+			BankAccountNumber:     d.BankAccountNumber,
+			BankCode:              d.BankCode,
+			IsAllBranches:         d.IsAllBranches,
+			Branches:              util.ChartOfAccountBranchDbToApi(resultBranches),
+			IsDeleted:             d.IsDeleted,
 		}
 		chart_of_accounts = append(chart_of_accounts, chart_of_account)
 	}

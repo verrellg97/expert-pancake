@@ -29,11 +29,21 @@ SELECT id, company_id, report_type, account_type, account_group_name
 FROM accounting.chart_of_account_groups
 WHERE company_id = $1;
 
+-- name: GetChartOfAccountGroup :one
+SELECT id, company_id, report_type, account_type, account_group_name 
+FROM accounting.chart_of_account_groups
+WHERE id = $1;
+
+-- name: GetChartOfAccountGroupByAccTypeAccGroup :one
+SELECT id, company_id, report_type, account_type, account_group_name 
+FROM accounting.chart_of_account_groups
+WHERE company_id = $1 AND account_type = $2 AND account_group_name = $3;
+
 -- name: InsertCompanyChartOfAccount :one
 INSERT INTO accounting.company_chart_of_accounts(id, company_id, currency_code, 
-report_type, account_type, account_group, account_code, account_name, 
+chart_of_account_group_id, account_code, account_name, 
 bank_name, bank_account_number, bank_code, is_all_branches)
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
 RETURNING *;
 
 -- name: InsertChartOfAccountBranches :exec
@@ -52,31 +62,30 @@ WHERE chart_of_account_id = $1;
 UPDATE accounting.company_chart_of_accounts
 SET 
     currency_code = $2,
-    report_type = $3,
-    account_type = $4,
-    account_group = $5,
-    account_code = $6,
-    account_name = $7,
-    bank_name = $8,
-    bank_account_number = $9,
-    bank_code = $10,
-    is_all_branches = $11,
-    is_deleted = $12,
+    chart_of_account_group_id = $3,
+    account_code = $4,
+    account_name = $5,
+    bank_name = $6,
+    bank_account_number = $7,
+    bank_code = $8,
+    is_all_branches = $9,
+    is_deleted = $10,
     updated_at = NOW()
 WHERE id = $1
 RETURNING *;
 
 -- name: GetCompanyChartOfAccounts :many
-SELECT id, company_id, currency_code, 
-report_type, account_type, account_group, account_code, account_name,
-bank_name, bank_account_number, bank_code, is_all_branches, is_deleted
-FROM accounting.company_chart_of_accounts
-WHERE company_id = $1
-AND account_name LIKE $2
+SELECT a.id, a.company_id, a.currency_code, a.chart_of_account_group_id,
+b.report_type, b.account_type, b.account_group_name, a.account_code, a.account_name,
+a.bank_name, a.bank_account_number, a.bank_code, a.is_all_branches, a.is_deleted
+FROM accounting.company_chart_of_accounts a
+JOIN accounting.chart_of_account_groups b ON a.chart_of_account_group_id = b.id
+WHERE a.company_id = $1
+AND a.account_name LIKE $2
 AND CASE WHEN @is_filter_journal_type::bool
-THEN account_type = ANY(@account_types::text[]) ELSE TRUE END
+THEN b.account_type = ANY(@account_types::text[]) ELSE TRUE END
 AND CASE WHEN @is_deleted_filter::bool
-THEN is_deleted = $3 ELSE TRUE END;
+THEN a.is_deleted = $3 ELSE TRUE END;
 
 -- name: GetCompanySettingFiscalYear :one
 SELECT company_id, start_period, end_period
@@ -84,7 +93,7 @@ FROM accounting.company_fiscal_years
 WHERE company_id = $1;
 
 -- name: GetCompanySettingBank :one
-SELECT id, company_id, account_type, account_group, account_code, account_name,
+SELECT id, company_id, chart_of_account_group_id, account_code, account_name,
 bank_name, bank_account_number, bank_code, is_deleted
 FROM accounting.company_chart_of_accounts
 WHERE company_id = $1 
@@ -92,7 +101,7 @@ AND account_group = 'BANK'
 ORDER BY created_at LIMIT 1;
 
 -- name: GetCompanySettingCash :one
-SELECT id, company_id, account_type, account_group, account_code, account_name,
+SELECT id, company_id, chart_of_account_group_id, account_code, account_name,
 bank_name, bank_account_number, bank_code, is_deleted
 FROM accounting.company_chart_of_accounts
 WHERE company_id = $1 

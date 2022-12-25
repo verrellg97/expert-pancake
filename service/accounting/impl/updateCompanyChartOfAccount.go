@@ -27,19 +27,17 @@ func (a accountingService) UpdateCompanyChartOfAccount(w http.ResponseWriter, r 
 	}
 
 	arg := db.UpdateChartOfAccountTrxParams{
-		ID:                req.ChartOfAccountId,
-		CurrencyCode:      req.CurrencyCode,
-		ReportType:        req.ReportType,
-		AccountType:       req.AccountType,
-		AccountGroup:      req.AccountGroup,
-		AccountCode:       req.AccountCode,
-		AccountName:       req.AccountName,
-		BankName:          req.BankName,
-		BankAccountNumber: req.BankAccountNumber,
-		BankCode:          req.BankCode,
-		IsAllBranches:     req.IsAllBranches,
-		Branches:          branches,
-		IsDeleted:         req.IsDeleted,
+		Id:                    req.ChartOfAccountId,
+		CurrencyCode:          req.CurrencyCode,
+		ChartOfAccountGroupId: req.ChartOfAccountGroupId,
+		AccountCode:           req.AccountCode,
+		AccountName:           req.AccountName,
+		BankName:              req.BankName,
+		BankAccountNumber:     req.BankAccountNumber,
+		BankCode:              req.BankCode,
+		IsAllBranches:         req.IsAllBranches,
+		Branches:              branches,
+		IsDeleted:             req.IsDeleted,
 	}
 
 	result, err := a.dbTrx.UpdateChartOfAccountTrx(context.Background(), arg)
@@ -47,22 +45,28 @@ func (a accountingService) UpdateCompanyChartOfAccount(w http.ResponseWriter, r 
 		return errors.NewServerError(model.UpdateCompanyChartOfAccountError, err.Error())
 	}
 
+	resultGroup, err := a.dbTrx.GetChartOfAccountGroup(context.Background(), arg.ChartOfAccountGroupId)
+	if err != nil {
+		return errors.NewServerError(model.UpdateCompanyChartOfAccountError, err.Error())
+	}
+
 	res := model.UpsertCompanyChartOfAccountResponse{
 		ChartOfAccount: model.ChartOfAccount{
-			ChartOfAccountId:  result.ChartOfAccountId,
-			CompanyId:         result.CompanyId,
-			CurrencyCode:      result.CurrencyCode,
-			ReportType:        result.ReportType,
-			AccountType:       result.AccountType,
-			AccountGroup:      result.AccountGroup,
-			AccountCode:       result.AccountCode,
-			AccountName:       result.AccountName,
-			BankName:          result.BankName,
-			BankAccountNumber: result.BankAccountNumber,
-			BankCode:          result.BankCode,
-			IsAllBranches:     result.IsAllBranches,
-			Branches:          result.Branches,
-			IsDeleted:         result.IsDeleted,
+			ChartOfAccountId:      result.ChartOfAccountId,
+			CompanyId:             result.CompanyId,
+			CurrencyCode:          result.CurrencyCode,
+			ChartOfAccountGroupId: result.ChartOfAccountGroupId,
+			ReportType:            resultGroup.ReportType,
+			AccountType:           resultGroup.AccountType,
+			AccountGroup:          resultGroup.AccountGroupName,
+			AccountCode:           result.AccountCode,
+			AccountName:           result.AccountName,
+			BankName:              result.BankName,
+			BankAccountNumber:     result.BankAccountNumber,
+			BankCode:              result.BankCode,
+			IsAllBranches:         result.IsAllBranches,
+			Branches:              result.Branches,
+			IsDeleted:             result.IsDeleted,
 		},
 	}
 
