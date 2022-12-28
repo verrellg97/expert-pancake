@@ -4,6 +4,7 @@ import (
 	"context"
 
 	db "github.com/expert-pancake/service/business/db/sqlc"
+	"github.com/expert-pancake/service/business/impl/client"
 	"github.com/expert-pancake/service/business/model"
 	uuid "github.com/satori/go.uuid"
 )
@@ -49,6 +50,14 @@ func (trx *Trx) CreateNewCompanyTrx(ctx context.Context, arg db.InsertCompanyPar
 			PhoneNumber: "",
 			IsCentral:   true,
 		})
+		if err != nil {
+			return err
+		}
+
+		err = client.AddDefaultCompanyChartOfAccount(
+			client.AddDefaultCompanyChartOfAccountRequest{
+				CompanyId: id,
+			})
 		if err != nil {
 			return err
 		}
