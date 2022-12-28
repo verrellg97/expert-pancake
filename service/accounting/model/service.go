@@ -5,6 +5,7 @@ import (
 )
 
 type AccountingService interface {
+	AddDefaultCompanyChartOfAccount(w http.ResponseWriter, r *http.Request) error
 	UpsertCompanyFiscalYear(w http.ResponseWriter, r *http.Request) error
 	GetAccountingBanks(w http.ResponseWriter, r *http.Request) error
 	GetAccountingChartOfAccountTypes(w http.ResponseWriter, r *http.Request) error
@@ -168,12 +169,15 @@ type UpdateCompanyChartOfAccountRequest struct {
 	IsDeleted             bool     `json:"is_deleted"`
 }
 
+type AddDefaultCompanyChartOfAccountRequest struct {
+	CompanyId string `json:"company_id" validate:"required"`
+}
+
 type CheckCompanySettingStateRequest struct {
 	CompanyId string `json:"company_id" validate:"required"`
 }
 
 type CheckCompanySettingStateResponse struct {
-	FiscalYear  *FiscalYear     `json:"fiscal_year"`
 	BankAccount *ChartOfAccount `json:"bank_account"`
 	CashAccount *ChartOfAccount `json:"cash_account"`
 }
@@ -207,4 +211,8 @@ type GetCashTransactionsGroupByDateRequest struct {
 type GetCashTransactionsGroupByDateResponse struct {
 	TransactionDate string        `json:"transaction_date" validate:"required"`
 	Amount          CashInCashOut `json:"amount" validate:"required"`
+}
+
+type AddDefaultDataResponse struct {
+	Message string `json:"message"`
 }

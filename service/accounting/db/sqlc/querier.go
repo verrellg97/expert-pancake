@@ -18,8 +18,7 @@ type Querier interface {
 	GetChartOfAccountGroups(ctx context.Context, companyID string) ([]GetChartOfAccountGroupsRow, error)
 	GetCompanyChartOfAccount(ctx context.Context, companyID string) (AccountingCompanyChartOfAccount, error)
 	GetCompanyChartOfAccounts(ctx context.Context, arg GetCompanyChartOfAccountsParams) ([]GetCompanyChartOfAccountsRow, error)
-	GetCompanySettingBank(ctx context.Context, companyID string) (GetCompanySettingBankRow, error)
-	GetCompanySettingCash(ctx context.Context, companyID string) (GetCompanySettingCashRow, error)
+	GetCompanySettingChartOfAccount(ctx context.Context, arg GetCompanySettingChartOfAccountParams) (GetCompanySettingChartOfAccountRow, error)
 	GetCompanySettingFiscalYear(ctx context.Context, companyID string) (GetCompanySettingFiscalYearRow, error)
 	InsertCashTransaction(ctx context.Context, arg InsertCashTransactionParams) (AccountingCashTransaction, error)
 	InsertChartOfAccountBranches(ctx context.Context, arg InsertChartOfAccountBranchesParams) error

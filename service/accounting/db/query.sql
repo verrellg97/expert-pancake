@@ -92,21 +92,15 @@ SELECT company_id, start_period, end_period
 FROM accounting.company_fiscal_years
 WHERE company_id = $1;
 
--- name: GetCompanySettingBank :one
-SELECT id, company_id, chart_of_account_group_id, account_code, account_name,
-bank_name, bank_account_number, bank_code, is_deleted
-FROM accounting.company_chart_of_accounts
-WHERE company_id = $1 
-AND account_group = 'BANK'
-ORDER BY created_at LIMIT 1;
-
--- name: GetCompanySettingCash :one
-SELECT id, company_id, chart_of_account_group_id, account_code, account_name,
-bank_name, bank_account_number, bank_code, is_deleted
-FROM accounting.company_chart_of_accounts
-WHERE company_id = $1 
-AND account_group = 'KAS'
-ORDER BY created_at LIMIT 1;
+-- name: GetCompanySettingChartOfAccount :one
+SELECT a.id, a.company_id, a.currency_code, a.chart_of_account_group_id,
+b.report_type, b.account_type, b.account_group_name, a.account_code, a.account_name,
+a.bank_name, a.bank_account_number, a.bank_code, a.is_all_branches, a.is_deleted
+FROM accounting.company_chart_of_accounts a
+JOIN accounting.chart_of_account_groups b ON a.chart_of_account_group_id = b.id
+WHERE a.company_id = $1
+AND b.account_group_name = $2
+ORDER BY a.created_at LIMIT 1;
 
 -- name: InsertCashTransaction :one
 INSERT INTO accounting.cash_transactions(id, company_id, branch_id, transaction_date, 
