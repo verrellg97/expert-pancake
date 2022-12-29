@@ -1,5 +1,5 @@
 package client
 
-type AddDefaultDataResponse struct {
+type AddDefaultCompanyChartOfAccountResponse struct {
 	Message string `json:"message"`
 }

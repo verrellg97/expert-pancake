@@ -3,6 +3,7 @@ package client
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"net/http"
 )
 
@@ -10,9 +11,13 @@ func AddDefaultCompanyChartOfAccount(req AddDefaultCompanyChartOfAccountRequest)
 
 	reqJSON, err := json.Marshal(req)
 
-	_, err = http.Post(RootPath+AddDefaultCompanyChartOfAccountPath, "application/json", bytes.NewBuffer(reqJSON))
+	res, err := http.Post(RootPath+AddDefaultCompanyChartOfAccountPath, "application/json", bytes.NewBuffer(reqJSON))
 	if err != nil {
 		return err
+	}
+	if res.StatusCode != http.StatusOK {
+		// You may read / inspect response body
+		return errors.New(res.Status)
 	}
 
 	return nil
