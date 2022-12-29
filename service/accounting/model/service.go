@@ -6,7 +6,6 @@ import (
 
 type AccountingService interface {
 	AddDefaultCompanyChartOfAccount(w http.ResponseWriter, r *http.Request) error
-	UpsertCompanyFiscalYear(w http.ResponseWriter, r *http.Request) error
 	GetAccountingBanks(w http.ResponseWriter, r *http.Request) error
 	GetAccountingChartOfAccountTypes(w http.ResponseWriter, r *http.Request) error
 	GetChartOfAccountGroups(w http.ResponseWriter, r *http.Request) error
@@ -16,6 +15,8 @@ type AccountingService interface {
 	AddCompanyChartOfAccount(w http.ResponseWriter, r *http.Request) error
 	UpdateCompanyChartOfAccount(w http.ResponseWriter, r *http.Request) error
 	CheckCompanySettingState(w http.ResponseWriter, r *http.Request) error
+	GetJournalBooks(w http.ResponseWriter, r *http.Request) error
+	AddJournalBook(w http.ResponseWriter, r *http.Request) error
 	AddCashTransaction(w http.ResponseWriter, r *http.Request) error
 	GetCashTransactions(w http.ResponseWriter, r *http.Request) error
 	GetCashTransactionsGroupByDate(w http.ResponseWriter, r *http.Request) error
@@ -24,12 +25,6 @@ type AccountingService interface {
 type Bank struct {
 	BankName string `json:"bank_name" validate:"required"`
 	BankCode string `json:"bank_code" validate:"required"`
-}
-
-type FiscalYear struct {
-	CompanyId   string `json:"company_id" validate:"required"`
-	StartPeriod string `json:"start_period" validate:"required"`
-	EndPeriod   string `json:"end_period" validate:"required"`
 }
 
 type ChartOfAccountType struct {
@@ -49,14 +44,14 @@ type GetChartOfAccountGroupsRequest struct {
 	CompanyId string `json:"company_id" validate:"required"`
 }
 
-type AddChartOfAccounGroupRequest struct {
+type AddChartOfAccountGroupRequest struct {
 	CompanyId        string `json:"company_id" validate:"required"`
 	ReportType       string `json:"report_type" validate:"required"`
 	AccountType      string `json:"account_type" validate:"required"`
 	AccountGroupName string `json:"account_group_name" validate:"required"`
 }
 
-type UpdateChartOfAccounGroupRequest struct {
+type UpdateChartOfAccountGroupRequest struct {
 	ChartOfAccountGroupId string `json:"chart_of_account_group_id" validate:"required"`
 	ReportType            string `json:"report_type" validate:"required"`
 	AccountType           string `json:"account_type" validate:"required"`
@@ -95,6 +90,24 @@ type ChartOfAccountIdName struct {
 	AccountName      string `json:"account_name" validate:"required"`
 }
 
+type JournalBook struct {
+	JournalBookId   string               `json:"journal_book_id" validate:"required"`
+	CompanyId       string               `json:"company_id" validate:"required"`
+	Name            string               `json:"name" validate:"required"`
+	StartPeriod     string               `json:"start_period" validate:"required"`
+	EndPeriod       string               `json:"end_period" validate:"required"`
+	IsClosed        bool                 `json:"is_closed" validate:"required"`
+	ChartOfAccounts []JournalBookAccount `json:"chart_of_accounts" validate:"required"`
+}
+
+type JournalBookAccount struct {
+	ChartOfAccountId string `json:"chart_of_account_id" validate:"required"`
+	AccountType      string `json:"account_type" validate:"required"`
+	AccountGroup     string `json:"account_group" validate:"required"`
+	AccountName      string `json:"account_name" validate:"required"`
+	Amount           string `json:"amount" validate:"required"`
+}
+
 type CashTransaction struct {
 	CompanyId            string               `json:"company_id" validate:"required"`
 	BranchId             string               `json:"branch_id" validate:"required"`
@@ -110,12 +123,6 @@ type CashTransaction struct {
 type CashInCashOut struct {
 	CashIn  string `json:"cash_in" validate:"required"`
 	CashOut string `json:"cash_out" validate:"required"`
-}
-
-type UpsertCompanyFiscalYearRequestResponse struct {
-	CompanyId   string `json:"company_id" validate:"required"`
-	StartPeriod string `json:"start_period" validate:"required"`
-	EndPeriod   string `json:"end_period" validate:"required"`
 }
 
 type UpsertCompanyChartOfAccountResponse struct {
@@ -215,4 +222,25 @@ type GetCashTransactionsGroupByDateResponse struct {
 
 type AddDefaultDataResponse struct {
 	Message string `json:"message"`
+}
+
+type GetJournalGroupsRequest struct {
+	CompanyId string `json:"company_id" validate:"required"`
+}
+
+type AddJournalBookAccountRequest struct {
+	ChartOfAccountId string `json:"chart_of_account_id" validate:"required"`
+	Amount           string `json:"amount" validate:"required"`
+}
+
+type AddJournalBookRequest struct {
+	CompanyId       string                         `json:"company_id" validate:"required"`
+	Name            string                         `json:"name" validate:"required"`
+	StartPeriod     string                         `json:"start_period" validate:"required"`
+	EndPeriod       string                         `json:"end_period" validate:"required"`
+	ChartOfAccounts []AddJournalBookAccountRequest `json:"chart_of_accounts" validate:"required"`
+}
+
+type AddJournalBookResponse struct {
+	JournalBook
 }

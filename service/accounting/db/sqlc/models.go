@@ -56,12 +56,23 @@ type AccountingCompanyChartOfAccount struct {
 	UpdatedAt             sql.NullTime `db:"updated_at"`
 }
 
-type AccountingCompanyFiscalYear struct {
+type AccountingJournalBook struct {
+	ID          string       `db:"id"`
 	CompanyID   string       `db:"company_id"`
+	Name        string       `db:"name"`
 	StartPeriod time.Time    `db:"start_period"`
 	EndPeriod   time.Time    `db:"end_period"`
+	IsClosed    bool         `db:"is_closed"`
 	CreatedAt   sql.NullTime `db:"created_at"`
 	UpdatedAt   sql.NullTime `db:"updated_at"`
+}
+
+type AccountingJournalBookAccount struct {
+	JournalBookID    string       `db:"journal_book_id"`
+	ChartOfAccountID string       `db:"chart_of_account_id"`
+	Amount           int64        `db:"amount"`
+	CreatedAt        sql.NullTime `db:"created_at"`
+	UpdatedAt        sql.NullTime `db:"updated_at"`
 }
 
 type AccountingTransactionsJournal struct {

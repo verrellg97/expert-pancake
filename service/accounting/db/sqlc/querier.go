@@ -19,15 +19,17 @@ type Querier interface {
 	GetCompanyChartOfAccount(ctx context.Context, companyID string) (AccountingCompanyChartOfAccount, error)
 	GetCompanyChartOfAccounts(ctx context.Context, arg GetCompanyChartOfAccountsParams) ([]GetCompanyChartOfAccountsRow, error)
 	GetCompanySettingChartOfAccount(ctx context.Context, arg GetCompanySettingChartOfAccountParams) (GetCompanySettingChartOfAccountRow, error)
-	GetCompanySettingFiscalYear(ctx context.Context, companyID string) (GetCompanySettingFiscalYearRow, error)
+	GetJournalBookAccounts(ctx context.Context, journalBookID string) ([]GetJournalBookAccountsRow, error)
+	GetJournalBooks(ctx context.Context, companyID string) ([]AccountingJournalBook, error)
 	InsertCashTransaction(ctx context.Context, arg InsertCashTransactionParams) (AccountingCashTransaction, error)
 	InsertChartOfAccountBranches(ctx context.Context, arg InsertChartOfAccountBranchesParams) error
 	InsertChartOfAccountGroup(ctx context.Context, arg InsertChartOfAccountGroupParams) (AccountingChartOfAccountGroup, error)
 	InsertCompanyChartOfAccount(ctx context.Context, arg InsertCompanyChartOfAccountParams) (AccountingCompanyChartOfAccount, error)
+	InsertJournalBook(ctx context.Context, arg InsertJournalBookParams) (AccountingJournalBook, error)
+	InsertJournalBookAccount(ctx context.Context, arg InsertJournalBookAccountParams) error
 	InsertTransactionJournal(ctx context.Context, arg InsertTransactionJournalParams) (AccountingTransactionsJournal, error)
 	UpdateChartOfAccountGroup(ctx context.Context, arg UpdateChartOfAccountGroupParams) (AccountingChartOfAccountGroup, error)
 	UpdateCompanyChartOfAccount(ctx context.Context, arg UpdateCompanyChartOfAccountParams) (AccountingCompanyChartOfAccount, error)
-	UpsertCompanyFiscalYear(ctx context.Context, arg UpsertCompanyFiscalYearParams) (AccountingCompanyFiscalYear, error)
 }
 
 var _ Querier = (*Queries)(nil)
