@@ -13,7 +13,7 @@ import (
 
 func (a accountingService) AddChartOfAccountGroup(w http.ResponseWriter, r *http.Request) error {
 
-	var req model.AddChartOfAccounGroupRequest
+	var req model.AddChartOfAccountGroupRequest
 
 	httpHandler.ParseHTTPRequest(r, &req)
 

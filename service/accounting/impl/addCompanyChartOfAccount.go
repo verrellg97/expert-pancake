@@ -8,7 +8,6 @@ import (
 	"github.com/calvinkmts/expert-pancake/engine/httpHandler"
 	db "github.com/expert-pancake/service/accounting/db/transaction"
 	"github.com/expert-pancake/service/accounting/model"
-	uuid "github.com/satori/go.uuid"
 )
 
 func (a accountingService) AddCompanyChartOfAccount(w http.ResponseWriter, r *http.Request) error {
@@ -28,7 +27,6 @@ func (a accountingService) AddCompanyChartOfAccount(w http.ResponseWriter, r *ht
 	}
 
 	arg := db.CreateNewChartOfAccountTrxParams{
-		Id:                    uuid.NewV4().String(),
 		CompanyId:             req.CompanyId,
 		CurrencyCode:          req.CurrencyCode,
 		ChartOfAccountGroupId: req.ChartOfAccountGroupId,

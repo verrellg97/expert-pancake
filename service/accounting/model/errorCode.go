@@ -1,7 +1,7 @@
 package model
 
 const (
-	UpsertCompanyFiscalYearError         = 500001
+	AddDefaultCompanyChartOfAccountError = 500001
 	GetCompanyChartOfAccountsError       = 500002
 	AddCompanyChartOfAccountError        = 500003
 	UpdateCompanyChartOfAccountError     = 500004
@@ -11,5 +11,6 @@ const (
 	GetChartOfAccountGroupsError         = 500008
 	AddChartOfAccountGroupError          = 500009
 	UpdateChartOfAccountGroupError       = 500010
-	AddDefaultCompanyChartOfAccountError = 500011
+	GetJournalBooksError                 = 500011
+	AddJournalBookError                  = 500012
 )

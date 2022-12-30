@@ -8,7 +8,6 @@ import (
 )
 
 type CreateNewChartOfAccountTrxParams struct {
-	Id                    string
 	CompanyId             string
 	CurrencyCode          string
 	ChartOfAccountGroupId string

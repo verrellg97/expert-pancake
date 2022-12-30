@@ -37,6 +37,8 @@ func (a accountingService) GetCompanyChartOfAccounts(w http.ResponseWriter, r *h
 			accountTypes = append(accountTypes, "CASH & EQUALS")
 		case "KREDIT":
 			accountTypes = append(accountTypes, "MAIN COST OF REVENUE", "OTHER COST OF REVENUE", "EXPENSE")
+		case "BUKU":
+			accountTypes = append(accountTypes, "CASH & EQUALS", "INVENTORY")
 		case "":
 			isFilterJournalType = false
 		default:

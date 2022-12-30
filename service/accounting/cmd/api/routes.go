@@ -12,7 +12,6 @@ import (
 
 const (
 	AddDefaultCompanyChartOfAccountPath  = "/accounting/company/setting/chart-of-account"
-	UpsertCompanyFiscalYearPath          = "/accounting/company/setting/fiscal-year"
 	GetAccountingBanksPath               = "/accounting/banks"
 	GetAccountingChartOfAccountTypesPath = "/accounting/chart-of-account/types"
 	GetChartOfAccountGroupsPath          = "/accounting/company/chart-of-account-groups"
@@ -22,6 +21,8 @@ const (
 	AddCompanyChartOfAccountPath         = "/accounting/company/chart-of-account/add"
 	UpdateCompanyChartOfAccountPath      = "/accounting/company/chart-of-account/update"
 	CheckCompanySettingStatePath         = "/accounting/company/setting/state"
+	GetJournalBooksPath                  = "/accounting/company/journal-books"
+	AddJournalBookPath                   = "/accounting/company/journal-book/add"
 	AddCashTransactionPath               = "/accounting/transaction/cash/add"
 	GetCashTransactionsPath              = "/accounting/transaction/cash/list"
 	GetCashTransactionsGroupByDatePath   = "/accounting/transaction/cash/list/group-by-date"
@@ -44,7 +45,6 @@ func (c *component) Routes(accountingService model.AccountingService) http.Handl
 	mux.Use(middleware.Heartbeat("/ping"))
 
 	mux.Method("POST", AddDefaultCompanyChartOfAccountPath, httpHandler.New(accountingService.AddDefaultCompanyChartOfAccount))
-	mux.Method("POST", UpsertCompanyFiscalYearPath, httpHandler.New(accountingService.UpsertCompanyFiscalYear))
 	mux.Method("GET", GetAccountingBanksPath, httpHandler.New(accountingService.GetAccountingBanks))
 	mux.Method("GET", GetAccountingChartOfAccountTypesPath, httpHandler.New(accountingService.GetAccountingChartOfAccountTypes))
 	mux.Method("POST", GetChartOfAccountGroupsPath, httpHandler.New(accountingService.GetChartOfAccountGroups))
@@ -54,6 +54,8 @@ func (c *component) Routes(accountingService model.AccountingService) http.Handl
 	mux.Method("POST", AddCompanyChartOfAccountPath, httpHandler.New(accountingService.AddCompanyChartOfAccount))
 	mux.Method("POST", UpdateCompanyChartOfAccountPath, httpHandler.New(accountingService.UpdateCompanyChartOfAccount))
 	mux.Method("POST", CheckCompanySettingStatePath, httpHandler.New(accountingService.CheckCompanySettingState))
+	mux.Method("POST", GetJournalBooksPath, httpHandler.New(accountingService.GetJournalBooks))
+	mux.Method("POST", AddJournalBookPath, httpHandler.New(accountingService.AddJournalBook))
 	mux.Method("POST", AddCashTransactionPath, httpHandler.New(accountingService.AddCashTransaction))
 	mux.Method("POST", GetCashTransactionsPath, httpHandler.New(accountingService.GetCashTransactions))
 	mux.Method("POST", GetCashTransactionsGroupByDatePath, httpHandler.New(accountingService.GetCashTransactionsGroupByDate))
