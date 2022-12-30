@@ -1,13 +1,3 @@
--- name: UpsertCompanyFiscalYear :one
-INSERT INTO accounting.company_fiscal_years(company_id, start_period, end_period)
-VALUES ($1, $2, $3)
-ON CONFLICT (company_id)
-DO UPDATE SET
-    start_period = EXCLUDED.start_period,
-    end_period = EXCLUDED.end_period,
-    updated_at = NOW()
-RETURNING *;
-
 -- name: InsertChartOfAccountGroup :one
 INSERT INTO accounting.chart_of_account_groups(id, company_id, 
 report_type, account_type, account_group_name)
@@ -87,9 +77,9 @@ THEN b.account_type = ANY(@account_types::text[]) ELSE TRUE END
 AND CASE WHEN @is_deleted_filter::bool
 THEN a.is_deleted = $3 ELSE TRUE END;
 
--- name: GetCompanySettingFiscalYear :one
-SELECT company_id, start_period, end_period
-FROM accounting.company_fiscal_years
+-- name: GetCompanyChartOfAccount :one
+SELECT *
+FROM accounting.company_chart_of_accounts
 WHERE company_id = $1;
 
 -- name: GetCompanySettingChartOfAccount :one
@@ -101,6 +91,30 @@ JOIN accounting.chart_of_account_groups b ON a.chart_of_account_group_id = b.id
 WHERE a.company_id = $1
 AND b.account_group_name = $2
 ORDER BY a.created_at LIMIT 1;
+
+-- name: InsertJournalBook :one
+INSERT INTO accounting.journal_books(id, company_id, 
+name, start_period, end_period)
+VALUES ($1, $2, $3, $4, $5)
+RETURNING *;
+
+-- name: GetJournalBooks :many
+SELECT *
+FROM accounting.journal_books
+WHERE company_id = $1;
+
+-- name: InsertJournalBookAccount :exec
+INSERT INTO accounting.journal_book_accounts(journal_book_id, chart_of_account_id, 
+amount)
+VALUES ($1, $2, $3);
+
+-- name: GetJournalBookAccounts :many
+SELECT a.journal_book_id, a.chart_of_account_id, 
+c.account_type, c.account_group_name, b.account_name, a.amount
+FROM accounting.journal_book_accounts a
+JOIN accounting.company_chart_of_accounts b ON a.chart_of_account_id = b.id
+JOIN accounting.chart_of_account_groups c ON b.chart_of_account_group_id = c.id
+WHERE journal_book_id = $1;
 
 -- name: InsertCashTransaction :one
 INSERT INTO accounting.cash_transactions(id, company_id, branch_id, transaction_date, 
@@ -127,11 +141,6 @@ LEFT JOIN accounting.company_chart_of_accounts c ON a.contra_chart_of_account_id
 WHERE a.company_id = $1
 AND a.branch_id = $2 
 AND a.type LIKE $3;
-
--- name: GetCompanyChartOfAccount :one
-SELECT *
-FROM accounting.company_chart_of_accounts
-WHERE company_id = $1;
 
 -- name: GetCashTransactionsGroupByDate :many
 SELECT transaction_date, 

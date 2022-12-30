@@ -438,23 +438,90 @@ func (q *Queries) GetCompanySettingChartOfAccount(ctx context.Context, arg GetCo
 	return i, err
 }
 
-const getCompanySettingFiscalYear = `-- name: GetCompanySettingFiscalYear :one
-SELECT company_id, start_period, end_period
-FROM accounting.company_fiscal_years
+const getJournalBookAccounts = `-- name: GetJournalBookAccounts :many
+SELECT a.journal_book_id, a.chart_of_account_id, 
+c.account_type, c.account_group_name, b.account_name, a.amount
+FROM accounting.journal_book_accounts a
+JOIN accounting.company_chart_of_accounts b ON a.chart_of_account_id = b.id
+JOIN accounting.chart_of_account_groups c ON b.chart_of_account_group_id = c.id
+WHERE journal_book_id = $1
+`
+
+type GetJournalBookAccountsRow struct {
+	JournalBookID    string `db:"journal_book_id"`
+	ChartOfAccountID string `db:"chart_of_account_id"`
+	AccountType      string `db:"account_type"`
+	AccountGroupName string `db:"account_group_name"`
+	AccountName      string `db:"account_name"`
+	Amount           int64  `db:"amount"`
+}
+
+func (q *Queries) GetJournalBookAccounts(ctx context.Context, journalBookID string) ([]GetJournalBookAccountsRow, error) {
+	rows, err := q.db.QueryContext(ctx, getJournalBookAccounts, journalBookID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetJournalBookAccountsRow
+	for rows.Next() {
+		var i GetJournalBookAccountsRow
+		if err := rows.Scan(
+			&i.JournalBookID,
+			&i.ChartOfAccountID,
+			&i.AccountType,
+			&i.AccountGroupName,
+			&i.AccountName,
+			&i.Amount,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getJournalBooks = `-- name: GetJournalBooks :many
+SELECT id, company_id, name, start_period, end_period, is_closed, created_at, updated_at
+FROM accounting.journal_books
 WHERE company_id = $1
 `
 
-type GetCompanySettingFiscalYearRow struct {
-	CompanyID   string    `db:"company_id"`
-	StartPeriod time.Time `db:"start_period"`
-	EndPeriod   time.Time `db:"end_period"`
-}
-
-func (q *Queries) GetCompanySettingFiscalYear(ctx context.Context, companyID string) (GetCompanySettingFiscalYearRow, error) {
-	row := q.db.QueryRowContext(ctx, getCompanySettingFiscalYear, companyID)
-	var i GetCompanySettingFiscalYearRow
-	err := row.Scan(&i.CompanyID, &i.StartPeriod, &i.EndPeriod)
-	return i, err
+func (q *Queries) GetJournalBooks(ctx context.Context, companyID string) ([]AccountingJournalBook, error) {
+	rows, err := q.db.QueryContext(ctx, getJournalBooks, companyID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []AccountingJournalBook
+	for rows.Next() {
+		var i AccountingJournalBook
+		if err := rows.Scan(
+			&i.ID,
+			&i.CompanyID,
+			&i.Name,
+			&i.StartPeriod,
+			&i.EndPeriod,
+			&i.IsClosed,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const insertCashTransaction = `-- name: InsertCashTransaction :one
@@ -610,6 +677,60 @@ func (q *Queries) InsertCompanyChartOfAccount(ctx context.Context, arg InsertCom
 	return i, err
 }
 
+const insertJournalBook = `-- name: InsertJournalBook :one
+INSERT INTO accounting.journal_books(id, company_id, 
+name, start_period, end_period)
+VALUES ($1, $2, $3, $4, $5)
+RETURNING id, company_id, name, start_period, end_period, is_closed, created_at, updated_at
+`
+
+type InsertJournalBookParams struct {
+	ID          string    `db:"id"`
+	CompanyID   string    `db:"company_id"`
+	Name        string    `db:"name"`
+	StartPeriod time.Time `db:"start_period"`
+	EndPeriod   time.Time `db:"end_period"`
+}
+
+func (q *Queries) InsertJournalBook(ctx context.Context, arg InsertJournalBookParams) (AccountingJournalBook, error) {
+	row := q.db.QueryRowContext(ctx, insertJournalBook,
+		arg.ID,
+		arg.CompanyID,
+		arg.Name,
+		arg.StartPeriod,
+		arg.EndPeriod,
+	)
+	var i AccountingJournalBook
+	err := row.Scan(
+		&i.ID,
+		&i.CompanyID,
+		&i.Name,
+		&i.StartPeriod,
+		&i.EndPeriod,
+		&i.IsClosed,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const insertJournalBookAccount = `-- name: InsertJournalBookAccount :exec
+INSERT INTO accounting.journal_book_accounts(journal_book_id, chart_of_account_id, 
+amount)
+VALUES ($1, $2, $3)
+`
+
+type InsertJournalBookAccountParams struct {
+	JournalBookID    string `db:"journal_book_id"`
+	ChartOfAccountID string `db:"chart_of_account_id"`
+	Amount           int64  `db:"amount"`
+}
+
+func (q *Queries) InsertJournalBookAccount(ctx context.Context, arg InsertJournalBookAccountParams) error {
+	_, err := q.db.ExecContext(ctx, insertJournalBookAccount, arg.JournalBookID, arg.ChartOfAccountID, arg.Amount)
+	return err
+}
+
 const insertTransactionJournal = `-- name: InsertTransactionJournal :one
 INSERT INTO accounting.transactions_journal(company_id, branch_id, transaction_id, 
 transaction_date, transaction_reference , chart_of_account_id, 
@@ -749,36 +870,6 @@ func (q *Queries) UpdateCompanyChartOfAccount(ctx context.Context, arg UpdateCom
 		&i.BankCode,
 		&i.IsDeleted,
 		&i.IsAllBranches,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-	)
-	return i, err
-}
-
-const upsertCompanyFiscalYear = `-- name: UpsertCompanyFiscalYear :one
-INSERT INTO accounting.company_fiscal_years(company_id, start_period, end_period)
-VALUES ($1, $2, $3)
-ON CONFLICT (company_id)
-DO UPDATE SET
-    start_period = EXCLUDED.start_period,
-    end_period = EXCLUDED.end_period,
-    updated_at = NOW()
-RETURNING company_id, start_period, end_period, created_at, updated_at
-`
-
-type UpsertCompanyFiscalYearParams struct {
-	CompanyID   string    `db:"company_id"`
-	StartPeriod time.Time `db:"start_period"`
-	EndPeriod   time.Time `db:"end_period"`
-}
-
-func (q *Queries) UpsertCompanyFiscalYear(ctx context.Context, arg UpsertCompanyFiscalYearParams) (AccountingCompanyFiscalYear, error) {
-	row := q.db.QueryRowContext(ctx, upsertCompanyFiscalYear, arg.CompanyID, arg.StartPeriod, arg.EndPeriod)
-	var i AccountingCompanyFiscalYear
-	err := row.Scan(
-		&i.CompanyID,
-		&i.StartPeriod,
-		&i.EndPeriod,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
