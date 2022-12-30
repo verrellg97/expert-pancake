@@ -116,6 +116,31 @@ JOIN accounting.company_chart_of_accounts b ON a.chart_of_account_id = b.id
 JOIN accounting.chart_of_account_groups c ON b.chart_of_account_group_id = c.id
 WHERE journal_book_id = $1;
 
+-- name: InsertMemorialJournal :one
+INSERT INTO accounting.memorial_journals(id, company_id, 
+transaction_date, description)
+VALUES ($1, $2, $3, $4)
+RETURNING *;
+
+-- name: GetMemorialJournals :many
+SELECT *
+FROM accounting.memorial_journals
+WHERE company_id = $1;
+
+-- name: InsertMemorialJournalAccount :exec
+INSERT INTO accounting.memorial_journal_accounts(memorial_journal_id, chart_of_account_id, 
+debit_amount, credit_amount, description)
+VALUES ($1, $2, $3, $4, $5);
+
+-- name: GetMemorialJournalAccounts :many
+SELECT a.memorial_journal_id, a.chart_of_account_id, 
+c.account_type, c.account_group_name, b.account_name, 
+a.debit_amount, a.credit_amount, a.description
+FROM accounting.memorial_journal_accounts a
+JOIN accounting.company_chart_of_accounts b ON a.chart_of_account_id = b.id
+JOIN accounting.chart_of_account_groups c ON b.chart_of_account_group_id = c.id
+WHERE memorial_journal_id = $1;
+
 -- name: InsertCashTransaction :one
 INSERT INTO accounting.cash_transactions(id, company_id, branch_id, transaction_date, 
 type, main_chart_of_account_id, contra_chart_of_account_id, 

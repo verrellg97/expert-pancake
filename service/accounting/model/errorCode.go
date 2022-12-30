@@ -13,4 +13,6 @@ const (
 	UpdateChartOfAccountGroupError       = 500010
 	GetJournalBooksError                 = 500011
 	AddJournalBookError                  = 500012
+	GetMemorialJournalsError             = 500013
+	AddMemorialJournalError              = 500014
 )

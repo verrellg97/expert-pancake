@@ -17,7 +17,7 @@ func ChartOfAccountBranchDbToApi(data []db.GetChartOfAccountBranchesRow) []strin
 	return chartOfAccountBranches
 }
 
-func JournalGroupAccountDbToApi(data []db.GetJournalBookAccountsRow) []model.JournalBookAccount {
+func JournalBookAccountDbToApi(data []db.GetJournalBookAccountsRow) []model.JournalBookAccount {
 	var journalBookAccounts = make([]model.JournalBookAccount, 0)
 
 	for _, d := range data {
@@ -31,4 +31,22 @@ func JournalGroupAccountDbToApi(data []db.GetJournalBookAccountsRow) []model.Jou
 	}
 
 	return journalBookAccounts
+}
+
+func MemorialJournalAccountDbToApi(data []db.GetMemorialJournalAccountsRow) []model.MemorialJournalAccount {
+	var memorialJournalAccounts = make([]model.MemorialJournalAccount, 0)
+
+	for _, d := range data {
+		memorialJournalAccounts = append(memorialJournalAccounts, model.MemorialJournalAccount{
+			ChartOfAccountId: d.ChartOfAccountID,
+			AccountType:      d.AccountType,
+			AccountGroup:     d.AccountGroupName,
+			AccountName:      d.AccountName,
+			DebitAmount:      strconv.FormatInt(d.DebitAmount, 10),
+			CreditAmount:     strconv.FormatInt(d.CreditAmount, 10),
+			Description:      d.Description,
+		})
+	}
+
+	return memorialJournalAccounts
 }

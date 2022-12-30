@@ -524,6 +524,95 @@ func (q *Queries) GetJournalBooks(ctx context.Context, companyID string) ([]Acco
 	return items, nil
 }
 
+const getMemorialJournalAccounts = `-- name: GetMemorialJournalAccounts :many
+SELECT a.memorial_journal_id, a.chart_of_account_id, 
+c.account_type, c.account_group_name, b.account_name, 
+a.debit_amount, a.credit_amount, a.description
+FROM accounting.memorial_journal_accounts a
+JOIN accounting.company_chart_of_accounts b ON a.chart_of_account_id = b.id
+JOIN accounting.chart_of_account_groups c ON b.chart_of_account_group_id = c.id
+WHERE memorial_journal_id = $1
+`
+
+type GetMemorialJournalAccountsRow struct {
+	MemorialJournalID string `db:"memorial_journal_id"`
+	ChartOfAccountID  string `db:"chart_of_account_id"`
+	AccountType       string `db:"account_type"`
+	AccountGroupName  string `db:"account_group_name"`
+	AccountName       string `db:"account_name"`
+	DebitAmount       int64  `db:"debit_amount"`
+	CreditAmount      int64  `db:"credit_amount"`
+	Description       string `db:"description"`
+}
+
+func (q *Queries) GetMemorialJournalAccounts(ctx context.Context, memorialJournalID string) ([]GetMemorialJournalAccountsRow, error) {
+	rows, err := q.db.QueryContext(ctx, getMemorialJournalAccounts, memorialJournalID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetMemorialJournalAccountsRow
+	for rows.Next() {
+		var i GetMemorialJournalAccountsRow
+		if err := rows.Scan(
+			&i.MemorialJournalID,
+			&i.ChartOfAccountID,
+			&i.AccountType,
+			&i.AccountGroupName,
+			&i.AccountName,
+			&i.DebitAmount,
+			&i.CreditAmount,
+			&i.Description,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getMemorialJournals = `-- name: GetMemorialJournals :many
+SELECT id, company_id, transaction_date, description, created_at, updated_at
+FROM accounting.memorial_journals
+WHERE company_id = $1
+`
+
+func (q *Queries) GetMemorialJournals(ctx context.Context, companyID string) ([]AccountingMemorialJournal, error) {
+	rows, err := q.db.QueryContext(ctx, getMemorialJournals, companyID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []AccountingMemorialJournal
+	for rows.Next() {
+		var i AccountingMemorialJournal
+		if err := rows.Scan(
+			&i.ID,
+			&i.CompanyID,
+			&i.TransactionDate,
+			&i.Description,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const insertCashTransaction = `-- name: InsertCashTransaction :one
 INSERT INTO accounting.cash_transactions(id, company_id, branch_id, transaction_date, 
 type, main_chart_of_account_id, contra_chart_of_account_id, 
@@ -728,6 +817,64 @@ type InsertJournalBookAccountParams struct {
 
 func (q *Queries) InsertJournalBookAccount(ctx context.Context, arg InsertJournalBookAccountParams) error {
 	_, err := q.db.ExecContext(ctx, insertJournalBookAccount, arg.JournalBookID, arg.ChartOfAccountID, arg.Amount)
+	return err
+}
+
+const insertMemorialJournal = `-- name: InsertMemorialJournal :one
+INSERT INTO accounting.memorial_journals(id, company_id, 
+transaction_date, description)
+VALUES ($1, $2, $3, $4)
+RETURNING id, company_id, transaction_date, description, created_at, updated_at
+`
+
+type InsertMemorialJournalParams struct {
+	ID              string    `db:"id"`
+	CompanyID       string    `db:"company_id"`
+	TransactionDate time.Time `db:"transaction_date"`
+	Description     string    `db:"description"`
+}
+
+func (q *Queries) InsertMemorialJournal(ctx context.Context, arg InsertMemorialJournalParams) (AccountingMemorialJournal, error) {
+	row := q.db.QueryRowContext(ctx, insertMemorialJournal,
+		arg.ID,
+		arg.CompanyID,
+		arg.TransactionDate,
+		arg.Description,
+	)
+	var i AccountingMemorialJournal
+	err := row.Scan(
+		&i.ID,
+		&i.CompanyID,
+		&i.TransactionDate,
+		&i.Description,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const insertMemorialJournalAccount = `-- name: InsertMemorialJournalAccount :exec
+INSERT INTO accounting.memorial_journal_accounts(memorial_journal_id, chart_of_account_id, 
+debit_amount, credit_amount, description)
+VALUES ($1, $2, $3, $4, $5)
+`
+
+type InsertMemorialJournalAccountParams struct {
+	MemorialJournalID string `db:"memorial_journal_id"`
+	ChartOfAccountID  string `db:"chart_of_account_id"`
+	DebitAmount       int64  `db:"debit_amount"`
+	CreditAmount      int64  `db:"credit_amount"`
+	Description       string `db:"description"`
+}
+
+func (q *Queries) InsertMemorialJournalAccount(ctx context.Context, arg InsertMemorialJournalAccountParams) error {
+	_, err := q.db.ExecContext(ctx, insertMemorialJournalAccount,
+		arg.MemorialJournalID,
+		arg.ChartOfAccountID,
+		arg.DebitAmount,
+		arg.CreditAmount,
+		arg.Description,
+	)
 	return err
 }
 
