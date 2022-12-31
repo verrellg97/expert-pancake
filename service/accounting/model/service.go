@@ -17,6 +17,8 @@ type AccountingService interface {
 	CheckCompanySettingState(w http.ResponseWriter, r *http.Request) error
 	GetJournalBooks(w http.ResponseWriter, r *http.Request) error
 	AddJournalBook(w http.ResponseWriter, r *http.Request) error
+	GetMemorialJournals(w http.ResponseWriter, r *http.Request) error
+	AddMemorialJournal(w http.ResponseWriter, r *http.Request) error
 	AddCashTransaction(w http.ResponseWriter, r *http.Request) error
 	GetCashTransactions(w http.ResponseWriter, r *http.Request) error
 	GetCashTransactionsGroupByDate(w http.ResponseWriter, r *http.Request) error
@@ -106,6 +108,24 @@ type JournalBookAccount struct {
 	AccountGroup     string `json:"account_group" validate:"required"`
 	AccountName      string `json:"account_name" validate:"required"`
 	Amount           string `json:"amount" validate:"required"`
+}
+
+type MemorialJournal struct {
+	MemorialJournalId string                   `json:"memorial_journal_id" validate:"required"`
+	CompanyId         string                   `json:"company_id" validate:"required"`
+	TransactionDate   string                   `json:"transaction_date" validate:"required"`
+	Description       string                   `json:"description" validate:"required"`
+	ChartOfAccounts   []MemorialJournalAccount `json:"chart_of_accounts" validate:"required"`
+}
+
+type MemorialJournalAccount struct {
+	ChartOfAccountId string `json:"chart_of_account_id" validate:"required"`
+	AccountType      string `json:"account_type" validate:"required"`
+	AccountGroup     string `json:"account_group" validate:"required"`
+	AccountName      string `json:"account_name" validate:"required"`
+	DebitAmount      string `json:"debit_amount" validate:"required"`
+	CreditAmount     string `json:"credit_amount" validate:"required"`
+	Description      string `json:"description" validate:"required"`
 }
 
 type CashTransaction struct {
@@ -224,7 +244,7 @@ type AddDefaultDataResponse struct {
 	Message string `json:"message"`
 }
 
-type GetJournalGroupsRequest struct {
+type GetJournalBooksRequest struct {
 	CompanyId string `json:"company_id" validate:"required"`
 }
 
@@ -243,4 +263,26 @@ type AddJournalBookRequest struct {
 
 type AddJournalBookResponse struct {
 	JournalBook
+}
+
+type GetMemorialJournalsRequest struct {
+	CompanyId string `json:"company_id" validate:"required"`
+}
+
+type AddMemorialJournalAccountRequest struct {
+	ChartOfAccountId string `json:"chart_of_account_id" validate:"required"`
+	DebitAmount      string `json:"debit_amount" validate:"required"`
+	CreditAmount     string `json:"credit_amount" validate:"required"`
+	Description      string `json:"description"`
+}
+
+type AddMemorialJournalRequest struct {
+	CompanyId       string                             `json:"company_id" validate:"required"`
+	TransactionDate string                             `json:"transaction_date" validate:"required"`
+	Description     string                             `json:"description"`
+	ChartOfAccounts []AddMemorialJournalAccountRequest `json:"chart_of_accounts" validate:"required"`
+}
+
+type AddMemorialJournalResponse struct {
+	MemorialJournal
 }

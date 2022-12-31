@@ -45,7 +45,7 @@ func (a accountingService) AddJournalBook(w http.ResponseWriter, r *http.Request
 			StartPeriod:     result.StartPeriod,
 			EndPeriod:       result.EndPeriod,
 			IsClosed:        result.IsClosed,
-			ChartOfAccounts: util.JournalGroupAccountDbToApi(resultChartOfAccounts),
+			ChartOfAccounts: util.JournalBookAccountDbToApi(resultChartOfAccounts),
 		},
 	}
 
