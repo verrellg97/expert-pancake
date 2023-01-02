@@ -12,7 +12,7 @@ import (
 
 func (a accountingService) GetJournalBooks(w http.ResponseWriter, r *http.Request) error {
 
-	var req model.GetJournalGroupsRequest
+	var req model.GetJournalBooksRequest
 	httpHandler.ParseHTTPRequest(r, &req)
 
 	errMapRequest := a.validator.Validate(req)
@@ -39,7 +39,7 @@ func (a accountingService) GetJournalBooks(w http.ResponseWriter, r *http.Reques
 			StartPeriod:     d.StartPeriod.Format(util.DateLayoutYMD),
 			EndPeriod:       d.EndPeriod.Format(util.DateLayoutYMD),
 			IsClosed:        d.IsClosed,
-			ChartOfAccounts: util.JournalGroupAccountDbToApi(resultChartOfAccounts),
+			ChartOfAccounts: util.JournalBookAccountDbToApi(resultChartOfAccounts),
 		}
 		journal_books = append(journal_books, journal_book)
 	}

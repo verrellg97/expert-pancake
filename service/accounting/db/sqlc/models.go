@@ -75,6 +75,25 @@ type AccountingJournalBookAccount struct {
 	UpdatedAt        sql.NullTime `db:"updated_at"`
 }
 
+type AccountingMemorialJournal struct {
+	ID              string       `db:"id"`
+	CompanyID       string       `db:"company_id"`
+	TransactionDate time.Time    `db:"transaction_date"`
+	Description     string       `db:"description"`
+	CreatedAt       sql.NullTime `db:"created_at"`
+	UpdatedAt       sql.NullTime `db:"updated_at"`
+}
+
+type AccountingMemorialJournalAccount struct {
+	MemorialJournalID string       `db:"memorial_journal_id"`
+	ChartOfAccountID  string       `db:"chart_of_account_id"`
+	DebitAmount       int64        `db:"debit_amount"`
+	CreditAmount      int64        `db:"credit_amount"`
+	Description       string       `db:"description"`
+	CreatedAt         sql.NullTime `db:"created_at"`
+	UpdatedAt         sql.NullTime `db:"updated_at"`
+}
+
 type AccountingTransactionsJournal struct {
 	CompanyID            string       `db:"company_id"`
 	BranchID             string       `db:"branch_id"`
