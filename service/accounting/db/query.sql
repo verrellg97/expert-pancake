@@ -104,14 +104,15 @@ FROM accounting.journal_books
 WHERE company_id = $1;
 
 -- name: InsertJournalBookAccount :exec
-INSERT INTO accounting.journal_book_accounts(journal_book_id, chart_of_account_id, 
-amount)
-VALUES ($1, $2, $3);
+INSERT INTO accounting.memorial_journal_accounts(journal_book_id, chart_of_account_id, 
+debit_amount, credit_amount, description)
+VALUES ($1, $2, $3, $4, $5);
 
 -- name: GetJournalBookAccounts :many
 SELECT a.journal_book_id, a.chart_of_account_id, 
-c.account_type, c.account_group_name, b.account_name, a.amount
-FROM accounting.journal_book_accounts a
+c.account_type, c.account_group_name, b.account_name, 
+a.debit_amount, a.credit_amount, a.description
+FROM accounting.memorial_journal_accounts a
 JOIN accounting.company_chart_of_accounts b ON a.chart_of_account_id = b.id
 JOIN accounting.chart_of_account_groups c ON b.chart_of_account_group_id = c.id
 WHERE journal_book_id = $1;

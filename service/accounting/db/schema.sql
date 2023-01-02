@@ -47,14 +47,6 @@ CREATE TABLE accounting.journal_books (
   PRIMARY KEY ("id")
 );
 
-CREATE TABLE accounting.journal_book_accounts (
-  "journal_book_id" text NOT NULL,
-  "chart_of_account_id" text NOT NULL,
-  "amount" bigint NOT NULL DEFAULT 0,
-  "created_at" timestamptz DEFAULT (now()),
-  "updated_at" timestamptz DEFAULT (now())
-);
-
 CREATE TABLE accounting.memorial_journals (
   "id" text NOT NULL,
   "company_id" text NOT NULL,
@@ -66,6 +58,7 @@ CREATE TABLE accounting.memorial_journals (
 );
 
 CREATE TABLE accounting.memorial_journal_accounts (
+  "journal_book_id" text NOT NULL,
   "memorial_journal_id" text NOT NULL,
   "chart_of_account_id" text NOT NULL,
   "debit_amount" bigint NOT NULL DEFAULT 0,
