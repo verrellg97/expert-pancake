@@ -11,3 +11,4 @@
 20221222_alter_table_chart_of_accounts 2022-12-22T19:44:30Z Verrell <verrell@Verrells-MacBook-Air.local> # Alter table chart_of_accounts
 20221229_drop_table_fiscal_years_add_table_journal_books 2022-12-29T16:06:11Z Verrell <verrell@Verrells-MacBook-Air.local> # Drop table fiscal_years and add table journal_books.
 20221230_add_table_memorial_journals 2022-12-30T17:54:03Z Verrell <verrell@Verrells-MacBook-Air.local> # Add table memorial_journals.
+20230102_drop_table_journal_book_accounts_alter_table_memorial_journal_accounts 2023-01-02T19:12:56Z Verrell <verrell@Verrells-MacBook-Air.local> # Drop table journal_book_accounts and alter table memorial_journal_accounts.
