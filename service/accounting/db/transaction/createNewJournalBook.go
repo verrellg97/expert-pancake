@@ -48,14 +48,21 @@ func (trx *Trx) CreateNewJournalBookTrx(ctx context.Context, arg CreateNewJourna
 		}
 
 		for _, d := range arg.ChartOfAccounts {
-			amount, _ := strconv.ParseInt(d.Amount, 10, 64)
+			debit_amount, _ := strconv.ParseInt(d.DebitAmount, 10, 64)
+			credit_amount, _ := strconv.ParseInt(d.CreditAmount, 10, 64)
 			err = q.InsertJournalBookAccount(ctx, db.InsertJournalBookAccountParams{
 				JournalBookID:    id,
 				ChartOfAccountID: d.ChartOfAccountId,
-				Amount:           amount,
+				DebitAmount:      debit_amount,
+				CreditAmount:     credit_amount,
+				Description:      d.Description,
 			})
 			if err != nil {
 				return err
+			}
+			amount := debit_amount
+			if debit_amount == 0 {
+				amount = -1 * credit_amount
 			}
 			_, err = q.InsertTransactionJournal(ctx, db.InsertTransactionJournalParams{
 				CompanyID:            arg.CompanyId,

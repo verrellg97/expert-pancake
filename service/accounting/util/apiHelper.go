@@ -26,7 +26,9 @@ func JournalBookAccountDbToApi(data []db.GetJournalBookAccountsRow) []model.Jour
 			AccountType:      d.AccountType,
 			AccountGroup:     d.AccountGroupName,
 			AccountName:      d.AccountName,
-			Amount:           strconv.FormatInt(d.Amount, 10),
+			DebitAmount:      strconv.FormatInt(d.DebitAmount, 10),
+			CreditAmount:     strconv.FormatInt(d.CreditAmount, 10),
+			Description:      d.Description,
 		})
 	}
 
