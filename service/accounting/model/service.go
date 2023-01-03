@@ -107,7 +107,9 @@ type JournalBookAccount struct {
 	AccountType      string `json:"account_type" validate:"required"`
 	AccountGroup     string `json:"account_group" validate:"required"`
 	AccountName      string `json:"account_name" validate:"required"`
-	Amount           string `json:"amount" validate:"required"`
+	DebitAmount      string `json:"debit_amount" validate:"required"`
+	CreditAmount     string `json:"credit_amount" validate:"required"`
+	Description      string `json:"description" validate:"required"`
 }
 
 type MemorialJournal struct {
@@ -250,7 +252,9 @@ type GetJournalBooksRequest struct {
 
 type AddJournalBookAccountRequest struct {
 	ChartOfAccountId string `json:"chart_of_account_id" validate:"required"`
-	Amount           string `json:"amount" validate:"required"`
+	DebitAmount      string `json:"debit_amount" validate:"required"`
+	CreditAmount     string `json:"credit_amount" validate:"required"`
+	Description      string `json:"description"`
 }
 
 type AddJournalBookRequest struct {

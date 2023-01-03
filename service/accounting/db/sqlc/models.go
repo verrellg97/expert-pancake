@@ -67,14 +67,6 @@ type AccountingJournalBook struct {
 	UpdatedAt   sql.NullTime `db:"updated_at"`
 }
 
-type AccountingJournalBookAccount struct {
-	JournalBookID    string       `db:"journal_book_id"`
-	ChartOfAccountID string       `db:"chart_of_account_id"`
-	Amount           int64        `db:"amount"`
-	CreatedAt        sql.NullTime `db:"created_at"`
-	UpdatedAt        sql.NullTime `db:"updated_at"`
-}
-
 type AccountingMemorialJournal struct {
 	ID              string       `db:"id"`
 	CompanyID       string       `db:"company_id"`
@@ -85,6 +77,7 @@ type AccountingMemorialJournal struct {
 }
 
 type AccountingMemorialJournalAccount struct {
+	JournalBookID     string       `db:"journal_book_id"`
 	MemorialJournalID string       `db:"memorial_journal_id"`
 	ChartOfAccountID  string       `db:"chart_of_account_id"`
 	DebitAmount       int64        `db:"debit_amount"`

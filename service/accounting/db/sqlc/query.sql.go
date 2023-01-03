@@ -440,8 +440,9 @@ func (q *Queries) GetCompanySettingChartOfAccount(ctx context.Context, arg GetCo
 
 const getJournalBookAccounts = `-- name: GetJournalBookAccounts :many
 SELECT a.journal_book_id, a.chart_of_account_id, 
-c.account_type, c.account_group_name, b.account_name, a.amount
-FROM accounting.journal_book_accounts a
+c.account_type, c.account_group_name, b.account_name, 
+a.debit_amount, a.credit_amount, a.description
+FROM accounting.memorial_journal_accounts a
 JOIN accounting.company_chart_of_accounts b ON a.chart_of_account_id = b.id
 JOIN accounting.chart_of_account_groups c ON b.chart_of_account_group_id = c.id
 WHERE journal_book_id = $1
@@ -453,7 +454,9 @@ type GetJournalBookAccountsRow struct {
 	AccountType      string `db:"account_type"`
 	AccountGroupName string `db:"account_group_name"`
 	AccountName      string `db:"account_name"`
-	Amount           int64  `db:"amount"`
+	DebitAmount      int64  `db:"debit_amount"`
+	CreditAmount     int64  `db:"credit_amount"`
+	Description      string `db:"description"`
 }
 
 func (q *Queries) GetJournalBookAccounts(ctx context.Context, journalBookID string) ([]GetJournalBookAccountsRow, error) {
@@ -471,7 +474,9 @@ func (q *Queries) GetJournalBookAccounts(ctx context.Context, journalBookID stri
 			&i.AccountType,
 			&i.AccountGroupName,
 			&i.AccountName,
-			&i.Amount,
+			&i.DebitAmount,
+			&i.CreditAmount,
+			&i.Description,
 		); err != nil {
 			return nil, err
 		}
@@ -804,19 +809,27 @@ func (q *Queries) InsertJournalBook(ctx context.Context, arg InsertJournalBookPa
 }
 
 const insertJournalBookAccount = `-- name: InsertJournalBookAccount :exec
-INSERT INTO accounting.journal_book_accounts(journal_book_id, chart_of_account_id, 
-amount)
-VALUES ($1, $2, $3)
+INSERT INTO accounting.memorial_journal_accounts(journal_book_id, chart_of_account_id, 
+debit_amount, credit_amount, description)
+VALUES ($1, $2, $3, $4, $5)
 `
 
 type InsertJournalBookAccountParams struct {
 	JournalBookID    string `db:"journal_book_id"`
 	ChartOfAccountID string `db:"chart_of_account_id"`
-	Amount           int64  `db:"amount"`
+	DebitAmount      int64  `db:"debit_amount"`
+	CreditAmount     int64  `db:"credit_amount"`
+	Description      string `db:"description"`
 }
 
 func (q *Queries) InsertJournalBookAccount(ctx context.Context, arg InsertJournalBookAccountParams) error {
-	_, err := q.db.ExecContext(ctx, insertJournalBookAccount, arg.JournalBookID, arg.ChartOfAccountID, arg.Amount)
+	_, err := q.db.ExecContext(ctx, insertJournalBookAccount,
+		arg.JournalBookID,
+		arg.ChartOfAccountID,
+		arg.DebitAmount,
+		arg.CreditAmount,
+		arg.Description,
+	)
 	return err
 }
 
