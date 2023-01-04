@@ -23,6 +23,7 @@ const (
 	CheckCompanySettingStatePath         = "/accounting/company/setting/state"
 	GetJournalBooksPath                  = "/accounting/company/journal-books"
 	AddJournalBookPath                   = "/accounting/company/journal-book/add"
+	CloseJournalBookPath                 = "/accounting/company/journal-book/close"
 	GetMemorialJournalsPath              = "/accounting/company/memorial-journals"
 	AddMemorialJournalPath               = "/accounting/company/memorial-journal/add"
 	AddCashTransactionPath               = "/accounting/transaction/cash/add"
@@ -58,6 +59,7 @@ func (c *component) Routes(accountingService model.AccountingService) http.Handl
 	mux.Method("POST", CheckCompanySettingStatePath, httpHandler.New(accountingService.CheckCompanySettingState))
 	mux.Method("POST", GetJournalBooksPath, httpHandler.New(accountingService.GetJournalBooks))
 	mux.Method("POST", AddJournalBookPath, httpHandler.New(accountingService.AddJournalBook))
+	mux.Method("POST", CloseJournalBookPath, httpHandler.New(accountingService.CloseJournalBook))
 	mux.Method("POST", GetMemorialJournalsPath, httpHandler.New(accountingService.GetMemorialJournals))
 	mux.Method("POST", AddMemorialJournalPath, httpHandler.New(accountingService.AddMemorialJournal))
 	mux.Method("POST", AddCashTransactionPath, httpHandler.New(accountingService.AddCashTransaction))

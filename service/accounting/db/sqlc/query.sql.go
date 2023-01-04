@@ -13,6 +13,19 @@ import (
 	"github.com/lib/pq"
 )
 
+const closeJournalBook = `-- name: CloseJournalBook :exec
+UPDATE accounting.journal_books
+SET 
+    is_closed = TRUE, 
+    updated_at = NOW()
+WHERE id = $1 AND is_closed = FALSE
+`
+
+func (q *Queries) CloseJournalBook(ctx context.Context, id string) error {
+	_, err := q.db.ExecContext(ctx, closeJournalBook, id)
+	return err
+}
+
 const deleteChartOfAccountBranches = `-- name: DeleteChartOfAccountBranches :exec
 DELETE FROM accounting.chart_of_account_branches
 WHERE chart_of_account_id = $1
@@ -298,6 +311,48 @@ func (q *Queries) GetCompanyChartOfAccount(ctx context.Context, companyID string
 	return i, err
 }
 
+const getCompanyChartOfAccountBalance = `-- name: GetCompanyChartOfAccountBalance :many
+SELECT chart_of_account_id, SUM(amount) AS balance
+FROM accounting.transactions_journal 
+WHERE company_id = $1
+AND transaction_date BETWEEN $2 AND $3
+GROUP BY chart_of_account_id
+`
+
+type GetCompanyChartOfAccountBalanceParams struct {
+	CompanyID   string    `db:"company_id"`
+	StartPeriod time.Time `db:"start_period"`
+	EndPeriod   time.Time `db:"end_period"`
+}
+
+type GetCompanyChartOfAccountBalanceRow struct {
+	ChartOfAccountID string `db:"chart_of_account_id"`
+	Balance          int64  `db:"balance"`
+}
+
+func (q *Queries) GetCompanyChartOfAccountBalance(ctx context.Context, arg GetCompanyChartOfAccountBalanceParams) ([]GetCompanyChartOfAccountBalanceRow, error) {
+	rows, err := q.db.QueryContext(ctx, getCompanyChartOfAccountBalance, arg.CompanyID, arg.StartPeriod, arg.EndPeriod)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetCompanyChartOfAccountBalanceRow
+	for rows.Next() {
+		var i GetCompanyChartOfAccountBalanceRow
+		if err := rows.Scan(&i.ChartOfAccountID, &i.Balance); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getCompanyChartOfAccounts = `-- name: GetCompanyChartOfAccounts :many
 SELECT a.id, a.company_id, a.currency_code, a.chart_of_account_group_id,
 b.report_type, b.account_type, b.account_group_name, a.account_code, a.account_name,
@@ -434,6 +489,28 @@ func (q *Queries) GetCompanySettingChartOfAccount(ctx context.Context, arg GetCo
 		&i.BankCode,
 		&i.IsAllBranches,
 		&i.IsDeleted,
+	)
+	return i, err
+}
+
+const getJournalBook = `-- name: GetJournalBook :one
+SELECT id, company_id, name, start_period, end_period, is_closed, created_at, updated_at
+FROM accounting.journal_books
+WHERE id = $1
+`
+
+func (q *Queries) GetJournalBook(ctx context.Context, id string) (AccountingJournalBook, error) {
+	row := q.db.QueryRowContext(ctx, getJournalBook, id)
+	var i AccountingJournalBook
+	err := row.Scan(
+		&i.ID,
+		&i.CompanyID,
+		&i.Name,
+		&i.StartPeriod,
+		&i.EndPeriod,
+		&i.IsClosed,
+		&i.CreatedAt,
+		&i.UpdatedAt,
 	)
 	return i, err
 }

@@ -103,6 +103,18 @@ SELECT *
 FROM accounting.journal_books
 WHERE company_id = $1;
 
+-- name: GetJournalBook :one
+SELECT *
+FROM accounting.journal_books
+WHERE id = $1;
+
+-- name: CloseJournalBook :exec
+UPDATE accounting.journal_books
+SET 
+    is_closed = TRUE, 
+    updated_at = NOW()
+WHERE id = $1 AND is_closed = FALSE;
+
 -- name: InsertJournalBookAccount :exec
 INSERT INTO accounting.memorial_journal_accounts(journal_book_id, chart_of_account_id, 
 debit_amount, credit_amount, description)
@@ -176,3 +188,10 @@ FROM accounting.cash_transactions
 WHERE company_id = $1
 AND branch_id = $2
 GROUP BY transaction_date;
+
+-- name: GetCompanyChartOfAccountBalance :many
+SELECT chart_of_account_id, SUM(amount) AS balance
+FROM accounting.transactions_journal 
+WHERE company_id = $1
+AND transaction_date BETWEEN @start_period AND @end_period
+GROUP BY chart_of_account_id;
