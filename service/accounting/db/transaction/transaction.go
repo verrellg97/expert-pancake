@@ -16,6 +16,7 @@ type AccountingTrx interface {
 	CreateNewChartOfAccountTrx(ctx context.Context, arg CreateNewChartOfAccountTrxParams) (CreateNewChartOfAccountTrxResult, error)
 	UpdateChartOfAccountTrx(ctx context.Context, arg UpdateChartOfAccountTrxParams) (CreateNewChartOfAccountTrxResult, error)
 	CreateNewJournalBookTrx(ctx context.Context, arg CreateNewJournalBookTrxParams) (CreateNewJournalBookTrxResult, error)
+	CloseJournalBookTrx(ctx context.Context, arg string) (CloseJournalBookTrxResult, error)
 	CreateNewMemorialJournalTrx(ctx context.Context, arg CreateNewMemorialJournalTrxParams) (CreateNewMemorialJournalTrxResult, error)
 }
 

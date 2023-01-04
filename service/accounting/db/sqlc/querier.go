@@ -9,6 +9,7 @@ import (
 )
 
 type Querier interface {
+	CloseJournalBook(ctx context.Context, id string) error
 	DeleteChartOfAccountBranches(ctx context.Context, chartOfAccountID string) error
 	GetCashTransactions(ctx context.Context, arg GetCashTransactionsParams) ([]GetCashTransactionsRow, error)
 	GetCashTransactionsGroupByDate(ctx context.Context, arg GetCashTransactionsGroupByDateParams) ([]GetCashTransactionsGroupByDateRow, error)
@@ -17,8 +18,10 @@ type Querier interface {
 	GetChartOfAccountGroupByAccTypeAccGroup(ctx context.Context, arg GetChartOfAccountGroupByAccTypeAccGroupParams) (GetChartOfAccountGroupByAccTypeAccGroupRow, error)
 	GetChartOfAccountGroups(ctx context.Context, companyID string) ([]GetChartOfAccountGroupsRow, error)
 	GetCompanyChartOfAccount(ctx context.Context, companyID string) (AccountingCompanyChartOfAccount, error)
+	GetCompanyChartOfAccountBalance(ctx context.Context, arg GetCompanyChartOfAccountBalanceParams) ([]GetCompanyChartOfAccountBalanceRow, error)
 	GetCompanyChartOfAccounts(ctx context.Context, arg GetCompanyChartOfAccountsParams) ([]GetCompanyChartOfAccountsRow, error)
 	GetCompanySettingChartOfAccount(ctx context.Context, arg GetCompanySettingChartOfAccountParams) (GetCompanySettingChartOfAccountRow, error)
+	GetJournalBook(ctx context.Context, id string) (AccountingJournalBook, error)
 	GetJournalBookAccounts(ctx context.Context, journalBookID string) ([]GetJournalBookAccountsRow, error)
 	GetJournalBooks(ctx context.Context, companyID string) ([]AccountingJournalBook, error)
 	GetMemorialJournalAccounts(ctx context.Context, memorialJournalID string) ([]GetMemorialJournalAccountsRow, error)

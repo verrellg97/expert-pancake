@@ -17,6 +17,7 @@ type AccountingService interface {
 	CheckCompanySettingState(w http.ResponseWriter, r *http.Request) error
 	GetJournalBooks(w http.ResponseWriter, r *http.Request) error
 	AddJournalBook(w http.ResponseWriter, r *http.Request) error
+	CloseJournalBook(w http.ResponseWriter, r *http.Request) error
 	GetMemorialJournals(w http.ResponseWriter, r *http.Request) error
 	AddMemorialJournal(w http.ResponseWriter, r *http.Request) error
 	AddCashTransaction(w http.ResponseWriter, r *http.Request) error
@@ -267,6 +268,10 @@ type AddJournalBookRequest struct {
 
 type AddJournalBookResponse struct {
 	JournalBook
+}
+
+type CloseJournalBookRequest struct {
+	JournalBookId string `json:"journal_book_id" validate:"required"`
 }
 
 type GetMemorialJournalsRequest struct {
