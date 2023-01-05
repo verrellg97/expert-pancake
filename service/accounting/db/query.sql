@@ -98,6 +98,16 @@ name, start_period, end_period)
 VALUES ($1, $2, $3, $4, $5)
 RETURNING *;
 
+-- name: UpdateJournalBook :one
+UPDATE accounting.journal_books
+SET
+    name = $2,
+    start_period = $3,
+    end_period = $4,
+    updated_at = NOW()
+WHERE id = $1
+RETURNING *;
+
 -- name: GetJournalBooks :many
 SELECT *
 FROM accounting.journal_books
@@ -120,6 +130,10 @@ INSERT INTO accounting.memorial_journal_accounts(journal_book_id, chart_of_accou
 debit_amount, credit_amount, description)
 VALUES ($1, $2, $3, $4, $5);
 
+-- name: DeleteJournalBookAccount :exec
+DELETE FROM accounting.memorial_journal_accounts
+WHERE journal_book_id = $1;
+
 -- name: GetJournalBookAccounts :many
 SELECT a.journal_book_id, a.chart_of_account_id, 
 c.account_type, c.account_group_name, b.account_name, 
@@ -135,6 +149,15 @@ transaction_date, description)
 VALUES ($1, $2, $3, $4)
 RETURNING *;
 
+-- name: UpdateMemorialJournal :one
+UPDATE accounting.memorial_journals
+SET
+    transaction_date = $2,
+    description = $3,
+    updated_at = NOW()
+WHERE id = $1
+RETURNING *;
+
 -- name: GetMemorialJournals :many
 SELECT *
 FROM accounting.memorial_journals
@@ -144,6 +167,10 @@ WHERE company_id = $1;
 INSERT INTO accounting.memorial_journal_accounts(memorial_journal_id, chart_of_account_id, 
 debit_amount, credit_amount, description)
 VALUES ($1, $2, $3, $4, $5);
+
+-- name: DeleteMemorialJournalAccount :exec
+DELETE FROM accounting.memorial_journal_accounts
+WHERE memorial_journal_id = $1;
 
 -- name: GetMemorialJournalAccounts :many
 SELECT a.memorial_journal_id, a.chart_of_account_id, 
@@ -167,6 +194,10 @@ transaction_date, transaction_reference , chart_of_account_id,
 amount, description)
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
 RETURNING *;
+
+-- name: DeleteTransactionJournalByIdRef :exec
+DELETE FROM accounting.transactions_journal
+WHERE transaction_id = $1 AND transaction_reference = $2;
 
 -- name: GetCashTransactions :many
 SELECT a.id, a.company_id, a.branch_id, a.transaction_date, 

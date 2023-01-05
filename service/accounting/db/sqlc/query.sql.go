@@ -36,6 +36,41 @@ func (q *Queries) DeleteChartOfAccountBranches(ctx context.Context, chartOfAccou
 	return err
 }
 
+const deleteJournalBookAccount = `-- name: DeleteJournalBookAccount :exec
+DELETE FROM accounting.memorial_journal_accounts
+WHERE journal_book_id = $1
+`
+
+func (q *Queries) DeleteJournalBookAccount(ctx context.Context, journalBookID string) error {
+	_, err := q.db.ExecContext(ctx, deleteJournalBookAccount, journalBookID)
+	return err
+}
+
+const deleteMemorialJournalAccount = `-- name: DeleteMemorialJournalAccount :exec
+DELETE FROM accounting.memorial_journal_accounts
+WHERE memorial_journal_id = $1
+`
+
+func (q *Queries) DeleteMemorialJournalAccount(ctx context.Context, memorialJournalID string) error {
+	_, err := q.db.ExecContext(ctx, deleteMemorialJournalAccount, memorialJournalID)
+	return err
+}
+
+const deleteTransactionJournalByIdRef = `-- name: DeleteTransactionJournalByIdRef :exec
+DELETE FROM accounting.transactions_journal
+WHERE transaction_id = $1 AND transaction_reference = $2
+`
+
+type DeleteTransactionJournalByIdRefParams struct {
+	TransactionID        string `db:"transaction_id"`
+	TransactionReference string `db:"transaction_reference"`
+}
+
+func (q *Queries) DeleteTransactionJournalByIdRef(ctx context.Context, arg DeleteTransactionJournalByIdRefParams) error {
+	_, err := q.db.ExecContext(ctx, deleteTransactionJournalByIdRef, arg.TransactionID, arg.TransactionReference)
+	return err
+}
+
 const getCashTransactions = `-- name: GetCashTransactions :many
 SELECT a.id, a.company_id, a.branch_id, a.transaction_date, 
 a.type, a.main_chart_of_account_id, a.contra_chart_of_account_id, 
@@ -1107,6 +1142,75 @@ func (q *Queries) UpdateCompanyChartOfAccount(ctx context.Context, arg UpdateCom
 		&i.BankCode,
 		&i.IsDeleted,
 		&i.IsAllBranches,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const updateJournalBook = `-- name: UpdateJournalBook :one
+UPDATE accounting.journal_books
+SET
+    name = $2,
+    start_period = $3,
+    end_period = $4,
+    updated_at = NOW()
+WHERE id = $1
+RETURNING id, company_id, name, start_period, end_period, is_closed, created_at, updated_at
+`
+
+type UpdateJournalBookParams struct {
+	ID          string    `db:"id"`
+	Name        string    `db:"name"`
+	StartPeriod time.Time `db:"start_period"`
+	EndPeriod   time.Time `db:"end_period"`
+}
+
+func (q *Queries) UpdateJournalBook(ctx context.Context, arg UpdateJournalBookParams) (AccountingJournalBook, error) {
+	row := q.db.QueryRowContext(ctx, updateJournalBook,
+		arg.ID,
+		arg.Name,
+		arg.StartPeriod,
+		arg.EndPeriod,
+	)
+	var i AccountingJournalBook
+	err := row.Scan(
+		&i.ID,
+		&i.CompanyID,
+		&i.Name,
+		&i.StartPeriod,
+		&i.EndPeriod,
+		&i.IsClosed,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const updateMemorialJournal = `-- name: UpdateMemorialJournal :one
+UPDATE accounting.memorial_journals
+SET
+    transaction_date = $2,
+    description = $3,
+    updated_at = NOW()
+WHERE id = $1
+RETURNING id, company_id, transaction_date, description, created_at, updated_at
+`
+
+type UpdateMemorialJournalParams struct {
+	ID              string    `db:"id"`
+	TransactionDate time.Time `db:"transaction_date"`
+	Description     string    `db:"description"`
+}
+
+func (q *Queries) UpdateMemorialJournal(ctx context.Context, arg UpdateMemorialJournalParams) (AccountingMemorialJournal, error) {
+	row := q.db.QueryRowContext(ctx, updateMemorialJournal, arg.ID, arg.TransactionDate, arg.Description)
+	var i AccountingMemorialJournal
+	err := row.Scan(
+		&i.ID,
+		&i.CompanyID,
+		&i.TransactionDate,
+		&i.Description,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
