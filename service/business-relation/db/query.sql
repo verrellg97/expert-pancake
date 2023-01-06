@@ -10,3 +10,8 @@ SET
     updated_at = NOW()
 WHERE id = $1
 RETURNING *;
+
+-- name: GetContactGroups :many
+SELECT id, company_id, name
+FROM business_relation.contact_groups
+WHERE company_id = $1;

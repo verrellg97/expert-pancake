@@ -9,6 +9,7 @@ import (
 )
 
 type Querier interface {
+	GetContactGroups(ctx context.Context, companyID string) ([]GetContactGroupsRow, error)
 	InsertContactGroup(ctx context.Context, arg InsertContactGroupParams) (BusinessRelationContactGroup, error)
 	UpdateContactGroup(ctx context.Context, arg UpdateContactGroupParams) (BusinessRelationContactGroup, error)
 }
