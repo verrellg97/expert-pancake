@@ -11,6 +11,9 @@ import (
 type Querier interface {
 	CloseJournalBook(ctx context.Context, id string) error
 	DeleteChartOfAccountBranches(ctx context.Context, chartOfAccountID string) error
+	DeleteJournalBookAccount(ctx context.Context, journalBookID string) error
+	DeleteMemorialJournalAccount(ctx context.Context, memorialJournalID string) error
+	DeleteTransactionJournalByIdRef(ctx context.Context, arg DeleteTransactionJournalByIdRefParams) error
 	GetCashTransactions(ctx context.Context, arg GetCashTransactionsParams) ([]GetCashTransactionsRow, error)
 	GetCashTransactionsGroupByDate(ctx context.Context, arg GetCashTransactionsGroupByDateParams) ([]GetCashTransactionsGroupByDateRow, error)
 	GetChartOfAccountBranches(ctx context.Context, chartOfAccountID string) ([]GetChartOfAccountBranchesRow, error)
@@ -37,6 +40,8 @@ type Querier interface {
 	InsertTransactionJournal(ctx context.Context, arg InsertTransactionJournalParams) (AccountingTransactionsJournal, error)
 	UpdateChartOfAccountGroup(ctx context.Context, arg UpdateChartOfAccountGroupParams) (AccountingChartOfAccountGroup, error)
 	UpdateCompanyChartOfAccount(ctx context.Context, arg UpdateCompanyChartOfAccountParams) (AccountingCompanyChartOfAccount, error)
+	UpdateJournalBook(ctx context.Context, arg UpdateJournalBookParams) (AccountingJournalBook, error)
+	UpdateMemorialJournal(ctx context.Context, arg UpdateMemorialJournalParams) (AccountingMemorialJournal, error)
 }
 
 var _ Querier = (*Queries)(nil)

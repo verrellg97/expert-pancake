@@ -13,7 +13,9 @@ const (
 	UpdateChartOfAccountGroupError       = 500010
 	GetJournalBooksError                 = 500011
 	AddJournalBookError                  = 500012
-	CloseJournalBookError                = 500013
-	GetMemorialJournalsError             = 500014
-	AddMemorialJournalError              = 500015
+	UpdateJournalBookError               = 500013
+	CloseJournalBookError                = 500014
+	GetMemorialJournalsError             = 500015
+	AddMemorialJournalError              = 500016
+	UpdateMemorialJournalError           = 500017
 )
