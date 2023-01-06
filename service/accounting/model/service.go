@@ -268,7 +268,7 @@ type AddJournalBookRequest struct {
 	ChartOfAccounts []AddJournalBookAccountRequest `json:"chart_of_accounts" validate:"required"`
 }
 
-type UpsertJournalBookResponse struct {
+type AddJournalBookResponse struct {
 	JournalBook
 }
 
@@ -278,6 +278,10 @@ type UpdateJournalBookRequest struct {
 	StartPeriod     string                         `json:"start_period" validate:"required"`
 	EndPeriod       string                         `json:"end_period" validate:"required"`
 	ChartOfAccounts []AddJournalBookAccountRequest `json:"chart_of_accounts" validate:"required"`
+}
+
+type UpdateJournalBookResponse struct {
+	JournalBook
 }
 
 type CloseJournalBookRequest struct {
@@ -302,7 +306,7 @@ type AddMemorialJournalRequest struct {
 	ChartOfAccounts []AddMemorialJournalAccountRequest `json:"chart_of_accounts" validate:"required"`
 }
 
-type UpsertMemorialJournalResponse struct {
+type AddMemorialJournalResponse struct {
 	MemorialJournal
 }
 
@@ -311,4 +315,8 @@ type UpdateMemorialJournalRequest struct {
 	TransactionDate   string                             `json:"transaction_date" validate:"required"`
 	Description       string                             `json:"description"`
 	ChartOfAccounts   []AddMemorialJournalAccountRequest `json:"chart_of_accounts" validate:"required"`
+}
+
+type UpdateMemorialJournalResponse struct {
+	MemorialJournal
 }
