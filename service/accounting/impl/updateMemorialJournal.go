@@ -36,7 +36,7 @@ func (a accountingService) UpdateMemorialJournal(w http.ResponseWriter, r *http.
 
 	resultChartOfAccounts, err := a.dbTrx.GetMemorialJournalAccounts(context.Background(), result.MemorialJournalId)
 
-	res := model.AddMemorialJournalResponse{
+	res := model.UpsertMemorialJournalResponse{
 		MemorialJournal: model.MemorialJournal{
 			MemorialJournalId: result.MemorialJournalId,
 			CompanyId:         result.CompanyId,

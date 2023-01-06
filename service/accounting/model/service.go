@@ -268,7 +268,7 @@ type AddJournalBookRequest struct {
 	ChartOfAccounts []AddJournalBookAccountRequest `json:"chart_of_accounts" validate:"required"`
 }
 
-type AddJournalBookResponse struct {
+type UpsertJournalBookResponse struct {
 	JournalBook
 }
 
@@ -302,7 +302,7 @@ type AddMemorialJournalRequest struct {
 	ChartOfAccounts []AddMemorialJournalAccountRequest `json:"chart_of_accounts" validate:"required"`
 }
 
-type AddMemorialJournalResponse struct {
+type UpsertMemorialJournalResponse struct {
 	MemorialJournal
 }
 

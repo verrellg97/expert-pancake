@@ -37,7 +37,7 @@ func (a accountingService) UpdateJournalBook(w http.ResponseWriter, r *http.Requ
 
 	resultChartOfAccounts, err := a.dbTrx.GetJournalBookAccounts(context.Background(), result.JournalBookId)
 
-	res := model.AddJournalBookResponse{
+	res := model.UpsertJournalBookResponse{
 		JournalBook: model.JournalBook{
 			JournalBookId:   result.JournalBookId,
 			CompanyId:       result.CompanyId,
