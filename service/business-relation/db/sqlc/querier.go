@@ -10,6 +10,11 @@ import (
 
 type Querier interface {
 	GetContactGroups(ctx context.Context, companyID string) ([]GetContactGroupsRow, error)
+	InsertContactBook(ctx context.Context, arg InsertContactBookParams) (BusinessRelationContactBook, error)
+	InsertContactBookAdditionalInfo(ctx context.Context, arg InsertContactBookAdditionalInfoParams) error
+	InsertContactBookBranch(ctx context.Context, arg InsertContactBookBranchParams) error
+	InsertContactBookMailingAddress(ctx context.Context, arg InsertContactBookMailingAddressParams) error
+	InsertContactBookShippingAddress(ctx context.Context, arg InsertContactBookShippingAddressParams) error
 	InsertContactGroup(ctx context.Context, arg InsertContactGroupParams) (BusinessRelationContactGroup, error)
 	UpdateContactGroup(ctx context.Context, arg UpdateContactGroupParams) (BusinessRelationContactGroup, error)
 }
