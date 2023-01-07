@@ -10,6 +10,7 @@ import (
 
 type Querier interface {
 	InsertContactGroup(ctx context.Context, arg InsertContactGroupParams) (BusinessRelationContactGroup, error)
+	UpdateContactGroup(ctx context.Context, arg UpdateContactGroupParams) (BusinessRelationContactGroup, error)
 }
 
 var _ Querier = (*Queries)(nil)
