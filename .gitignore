@@ -20,4 +20,5 @@
 service/account/accountService
 service/business/businessService
 service/accounting/accountingService
+service/business-relation/businessRelationService
 .DS_Store
