@@ -11,7 +11,8 @@ import (
 )
 
 const (
-	AddContactGroupPath = "/business-relation/contact-group/add"
+	AddContactGroupPath    = "/business-relation/contact-group/add"
+	UpdateContactGroupPath = "/business-relation/contact-group/update"
 )
 
 func (c *component) Routes(businessRelationService model.BusinessRelationService) http.Handler {
@@ -31,6 +32,7 @@ func (c *component) Routes(businessRelationService model.BusinessRelationService
 	mux.Use(middleware.Heartbeat("/ping"))
 
 	mux.Method("POST", AddContactGroupPath, httpHandler.New(businessRelationService.AddContactGroup))
+	mux.Method("POST", UpdateContactGroupPath, httpHandler.New(businessRelationService.UpdateContactGroup))
 
 	return mux
 }

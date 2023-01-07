@@ -33,3 +33,30 @@ func (q *Queries) InsertContactGroup(ctx context.Context, arg InsertContactGroup
 	)
 	return i, err
 }
+
+const updateContactGroup = `-- name: UpdateContactGroup :one
+UPDATE business_relation.contact_groups
+SET 
+    name = $2,
+    updated_at = NOW()
+WHERE id = $1
+RETURNING id, company_id, name, created_at, updated_at
+`
+
+type UpdateContactGroupParams struct {
+	ID   string `db:"id"`
+	Name string `db:"name"`
+}
+
+func (q *Queries) UpdateContactGroup(ctx context.Context, arg UpdateContactGroupParams) (BusinessRelationContactGroup, error) {
+	row := q.db.QueryRowContext(ctx, updateContactGroup, arg.ID, arg.Name)
+	var i BusinessRelationContactGroup
+	err := row.Scan(
+		&i.ID,
+		&i.CompanyID,
+		&i.Name,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
