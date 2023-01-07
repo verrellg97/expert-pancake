@@ -9,6 +9,16 @@ import (
 	"context"
 )
 
+const deleteContactBookBranches = `-- name: DeleteContactBookBranches :exec
+DELETE FROM business_relation.contact_book_branches
+WHERE contact_book_id = $1
+`
+
+func (q *Queries) DeleteContactBookBranches(ctx context.Context, contactBookID string) error {
+	_, err := q.db.ExecContext(ctx, deleteContactBookBranches, contactBookID)
+	return err
+}
+
 const getContactGroups = `-- name: GetContactGroups :many
 SELECT id, company_id, name
 FROM business_relation.contact_groups
@@ -221,6 +231,165 @@ func (q *Queries) InsertContactGroup(ctx context.Context, arg InsertContactGroup
 		&i.UpdatedAt,
 	)
 	return i, err
+}
+
+const updateContactBook = `-- name: UpdateContactBook :one
+UPDATE business_relation.contact_books
+SET 
+    contact_group_id = $2,
+    name = $3,
+    email = $4,
+    phone = $5,
+    mobile = $6,
+    web = $7,
+    is_all_branches = $8,
+    is_customer = $9,
+    is_supplier = $10,
+    updated_at = NOW()
+WHERE id = $1
+RETURNING id, primary_company_id, secondary_company_id, contact_group_id, name, email, phone, mobile, web, is_all_branches, is_customer, is_supplier, is_tax, tax_id, is_deleted, created_at, updated_at
+`
+
+type UpdateContactBookParams struct {
+	ID             string `db:"id"`
+	ContactGroupID string `db:"contact_group_id"`
+	Name           string `db:"name"`
+	Email          string `db:"email"`
+	Phone          string `db:"phone"`
+	Mobile         string `db:"mobile"`
+	Web            string `db:"web"`
+	IsAllBranches  bool   `db:"is_all_branches"`
+	IsCustomer     bool   `db:"is_customer"`
+	IsSupplier     bool   `db:"is_supplier"`
+}
+
+func (q *Queries) UpdateContactBook(ctx context.Context, arg UpdateContactBookParams) (BusinessRelationContactBook, error) {
+	row := q.db.QueryRowContext(ctx, updateContactBook,
+		arg.ID,
+		arg.ContactGroupID,
+		arg.Name,
+		arg.Email,
+		arg.Phone,
+		arg.Mobile,
+		arg.Web,
+		arg.IsAllBranches,
+		arg.IsCustomer,
+		arg.IsSupplier,
+	)
+	var i BusinessRelationContactBook
+	err := row.Scan(
+		&i.ID,
+		&i.PrimaryCompanyID,
+		&i.SecondaryCompanyID,
+		&i.ContactGroupID,
+		&i.Name,
+		&i.Email,
+		&i.Phone,
+		&i.Mobile,
+		&i.Web,
+		&i.IsAllBranches,
+		&i.IsCustomer,
+		&i.IsSupplier,
+		&i.IsTax,
+		&i.TaxID,
+		&i.IsDeleted,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const updateContactBookAdditionalInfo = `-- name: UpdateContactBookAdditionalInfo :exec
+UPDATE business_relation.contact_book_additional_infos
+SET 
+    nickname = $2,
+    tag = $3,
+    note = $4,
+    updated_at = NOW()
+WHERE contact_book_id = $1
+`
+
+type UpdateContactBookAdditionalInfoParams struct {
+	ContactBookID string `db:"contact_book_id"`
+	Nickname      string `db:"nickname"`
+	Tag           string `db:"tag"`
+	Note          string `db:"note"`
+}
+
+func (q *Queries) UpdateContactBookAdditionalInfo(ctx context.Context, arg UpdateContactBookAdditionalInfoParams) error {
+	_, err := q.db.ExecContext(ctx, updateContactBookAdditionalInfo,
+		arg.ContactBookID,
+		arg.Nickname,
+		arg.Tag,
+		arg.Note,
+	)
+	return err
+}
+
+const updateContactBookMailingAddress = `-- name: UpdateContactBookMailingAddress :exec
+UPDATE business_relation.contact_book_mailing_addresses
+SET 
+    province = $2,
+    regency = $3,
+    district = $4,
+    postal_code = $5,
+    full_address = $6,
+    updated_at = NOW()
+WHERE contact_book_id = $1
+`
+
+type UpdateContactBookMailingAddressParams struct {
+	ContactBookID string `db:"contact_book_id"`
+	Province      string `db:"province"`
+	Regency       string `db:"regency"`
+	District      string `db:"district"`
+	PostalCode    string `db:"postal_code"`
+	FullAddress   string `db:"full_address"`
+}
+
+func (q *Queries) UpdateContactBookMailingAddress(ctx context.Context, arg UpdateContactBookMailingAddressParams) error {
+	_, err := q.db.ExecContext(ctx, updateContactBookMailingAddress,
+		arg.ContactBookID,
+		arg.Province,
+		arg.Regency,
+		arg.District,
+		arg.PostalCode,
+		arg.FullAddress,
+	)
+	return err
+}
+
+const updateContactBookShippingAddress = `-- name: UpdateContactBookShippingAddress :exec
+UPDATE business_relation.contact_book_shipping_addresses
+SET 
+    province = $2,
+    regency = $3,
+    district = $4,
+    postal_code = $5,
+    full_address = $6,
+    updated_at = NOW()
+WHERE contact_book_id = $1
+`
+
+type UpdateContactBookShippingAddressParams struct {
+	ContactBookID string `db:"contact_book_id"`
+	Province      string `db:"province"`
+	Regency       string `db:"regency"`
+	District      string `db:"district"`
+	PostalCode    string `db:"postal_code"`
+	FullAddress   string `db:"full_address"`
+}
+
+func (q *Queries) UpdateContactBookShippingAddress(ctx context.Context, arg UpdateContactBookShippingAddressParams) error {
+	_, err := q.db.ExecContext(ctx, updateContactBookShippingAddress,
+		arg.ContactBookID,
+		arg.Province,
+		arg.Regency,
+		arg.District,
+		arg.PostalCode,
+		arg.FullAddress,
+	)
+	return err
 }
 
 const updateContactGroup = `-- name: UpdateContactGroup :one
