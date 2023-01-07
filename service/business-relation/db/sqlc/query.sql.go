@@ -9,6 +9,41 @@ import (
 	"context"
 )
 
+const getContactGroups = `-- name: GetContactGroups :many
+SELECT id, company_id, name
+FROM business_relation.contact_groups
+WHERE company_id = $1
+`
+
+type GetContactGroupsRow struct {
+	ID        string `db:"id"`
+	CompanyID string `db:"company_id"`
+	Name      string `db:"name"`
+}
+
+func (q *Queries) GetContactGroups(ctx context.Context, companyID string) ([]GetContactGroupsRow, error) {
+	rows, err := q.db.QueryContext(ctx, getContactGroups, companyID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetContactGroupsRow
+	for rows.Next() {
+		var i GetContactGroupsRow
+		if err := rows.Scan(&i.ID, &i.CompanyID, &i.Name); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const insertContactGroup = `-- name: InsertContactGroup :one
 INSERT INTO business_relation.contact_groups(id, company_id, name)
 VALUES ($1, $2, $3)

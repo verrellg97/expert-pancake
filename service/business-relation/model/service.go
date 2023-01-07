@@ -7,6 +7,7 @@ import (
 type BusinessRelationService interface {
 	AddContactGroup(w http.ResponseWriter, r *http.Request) error
 	UpdateContactGroup(w http.ResponseWriter, r *http.Request) error
+	GetContactGroups(w http.ResponseWriter, r *http.Request) error
 }
 
 type ContactGroup struct {
@@ -31,4 +32,8 @@ type UpdateContactGroupRequest struct {
 
 type UpdateContactGroupResponse struct {
 	ContactGroup
+}
+
+type GetContactGroupsRequest struct {
+	CompanyId string `json:"company_id" validate:"required"`
 }
