@@ -37,6 +37,18 @@ services:
     deploy:
       mode: replicated
       replicas: 1
+  business-relation-service:
+    build:
+      context: ./service/business-relation
+      dockerfile: Dockerfile
+    networks:
+      - postgres
+    restart: always
+    ports:
+      - "4030:4030"
+    deploy:
+      mode: replicated
+      replicas: 1
 
   postgres:
     container_name: postgres_container
