@@ -52,6 +52,59 @@ func (q *Queries) GetContactBookBranches(ctx context.Context, contactBookID stri
 	return items, nil
 }
 
+const getContactBookById = `-- name: GetContactBookById :one
+SELECT a.id, a.primary_company_id, a.secondary_company_id,
+a.contact_group_id, b.name AS contact_group_name, a.name, a.email,
+a.phone, a.mobile, a.web, a.is_all_branches, a.is_customer, a.is_supplier,
+is_tax, tax_id, is_deleted
+FROM business_relation.contact_books a
+JOIN business_relation.contact_groups b ON a.contact_group_id = b.id
+WHERE a.id = $1
+`
+
+type GetContactBookByIdRow struct {
+	ID                 string `db:"id"`
+	PrimaryCompanyID   string `db:"primary_company_id"`
+	SecondaryCompanyID string `db:"secondary_company_id"`
+	ContactGroupID     string `db:"contact_group_id"`
+	ContactGroupName   string `db:"contact_group_name"`
+	Name               string `db:"name"`
+	Email              string `db:"email"`
+	Phone              string `db:"phone"`
+	Mobile             string `db:"mobile"`
+	Web                string `db:"web"`
+	IsAllBranches      bool   `db:"is_all_branches"`
+	IsCustomer         bool   `db:"is_customer"`
+	IsSupplier         bool   `db:"is_supplier"`
+	IsTax              bool   `db:"is_tax"`
+	TaxID              string `db:"tax_id"`
+	IsDeleted          bool   `db:"is_deleted"`
+}
+
+func (q *Queries) GetContactBookById(ctx context.Context, id string) (GetContactBookByIdRow, error) {
+	row := q.db.QueryRowContext(ctx, getContactBookById, id)
+	var i GetContactBookByIdRow
+	err := row.Scan(
+		&i.ID,
+		&i.PrimaryCompanyID,
+		&i.SecondaryCompanyID,
+		&i.ContactGroupID,
+		&i.ContactGroupName,
+		&i.Name,
+		&i.Email,
+		&i.Phone,
+		&i.Mobile,
+		&i.Web,
+		&i.IsAllBranches,
+		&i.IsCustomer,
+		&i.IsSupplier,
+		&i.IsTax,
+		&i.TaxID,
+		&i.IsDeleted,
+	)
+	return i, err
+}
+
 const getContactBooks = `-- name: GetContactBooks :many
 SELECT a.id, a.primary_company_id, a.secondary_company_id, 
 a.contact_group_id, a.name, a.email, a.phone, a.mobile, a.web,
@@ -520,6 +573,26 @@ func (q *Queries) UpdateContactBookShippingAddress(ctx context.Context, arg Upda
 	return err
 }
 
+const updateContactBookTaxInfo = `-- name: UpdateContactBookTaxInfo :exec
+UPDATE business_relation.contact_books
+SET 
+    is_tax = $2,
+    tax_id = $3,
+    updated_at = NOW()
+WHERE id = $1
+`
+
+type UpdateContactBookTaxInfoParams struct {
+	ID    string `db:"id"`
+	IsTax bool   `db:"is_tax"`
+	TaxID string `db:"tax_id"`
+}
+
+func (q *Queries) UpdateContactBookTaxInfo(ctx context.Context, arg UpdateContactBookTaxInfoParams) error {
+	_, err := q.db.ExecContext(ctx, updateContactBookTaxInfo, arg.ID, arg.IsTax, arg.TaxID)
+	return err
+}
+
 const updateContactGroup = `-- name: UpdateContactGroup :one
 UPDATE business_relation.contact_groups
 SET 
@@ -545,4 +618,32 @@ func (q *Queries) UpdateContactGroup(ctx context.Context, arg UpdateContactGroup
 		&i.UpdatedAt,
 	)
 	return i, err
+}
+
+const upsertCustomerInfo = `-- name: UpsertCustomerInfo :exec
+INSERT INTO business_relation.contact_book_customer_infos(contact_book_id, pic, credit_limit, payment_term)
+VALUES ($1, $2, $3, $4)
+ON CONFLICT (contact_book_id)
+DO UPDATE SET
+    pic = EXCLUDED.pic,
+    credit_limit = EXCLUDED.credit_limit,
+    payment_term = EXCLUDED.payment_term,
+    updated_at = NOW()
+`
+
+type UpsertCustomerInfoParams struct {
+	ContactBookID string `db:"contact_book_id"`
+	Pic           string `db:"pic"`
+	CreditLimit   int64  `db:"credit_limit"`
+	PaymentTerm   int32  `db:"payment_term"`
+}
+
+func (q *Queries) UpsertCustomerInfo(ctx context.Context, arg UpsertCustomerInfoParams) error {
+	_, err := q.db.ExecContext(ctx, upsertCustomerInfo,
+		arg.ContactBookID,
+		arg.Pic,
+		arg.CreditLimit,
+		arg.PaymentTerm,
+	)
+	return err
 }
