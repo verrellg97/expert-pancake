@@ -44,6 +44,160 @@ func (q *Queries) GetContactGroups(ctx context.Context, companyID string) ([]Get
 	return items, nil
 }
 
+const insertContactBook = `-- name: InsertContactBook :one
+INSERT INTO business_relation.contact_books(id, primary_company_id, secondary_company_id,
+contact_group_id, name, email, phone, mobile, web,
+is_all_branches, is_customer, is_supplier)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9,
+$10, $11, $12)
+RETURNING id, primary_company_id, secondary_company_id, contact_group_id, name, email, phone, mobile, web, is_all_branches, is_customer, is_supplier, is_tax, tax_id, is_deleted, created_at, updated_at
+`
+
+type InsertContactBookParams struct {
+	ID                 string `db:"id"`
+	PrimaryCompanyID   string `db:"primary_company_id"`
+	SecondaryCompanyID string `db:"secondary_company_id"`
+	ContactGroupID     string `db:"contact_group_id"`
+	Name               string `db:"name"`
+	Email              string `db:"email"`
+	Phone              string `db:"phone"`
+	Mobile             string `db:"mobile"`
+	Web                string `db:"web"`
+	IsAllBranches      bool   `db:"is_all_branches"`
+	IsCustomer         bool   `db:"is_customer"`
+	IsSupplier         bool   `db:"is_supplier"`
+}
+
+func (q *Queries) InsertContactBook(ctx context.Context, arg InsertContactBookParams) (BusinessRelationContactBook, error) {
+	row := q.db.QueryRowContext(ctx, insertContactBook,
+		arg.ID,
+		arg.PrimaryCompanyID,
+		arg.SecondaryCompanyID,
+		arg.ContactGroupID,
+		arg.Name,
+		arg.Email,
+		arg.Phone,
+		arg.Mobile,
+		arg.Web,
+		arg.IsAllBranches,
+		arg.IsCustomer,
+		arg.IsSupplier,
+	)
+	var i BusinessRelationContactBook
+	err := row.Scan(
+		&i.ID,
+		&i.PrimaryCompanyID,
+		&i.SecondaryCompanyID,
+		&i.ContactGroupID,
+		&i.Name,
+		&i.Email,
+		&i.Phone,
+		&i.Mobile,
+		&i.Web,
+		&i.IsAllBranches,
+		&i.IsCustomer,
+		&i.IsSupplier,
+		&i.IsTax,
+		&i.TaxID,
+		&i.IsDeleted,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const insertContactBookAdditionalInfo = `-- name: InsertContactBookAdditionalInfo :exec
+INSERT INTO business_relation.contact_book_additional_infos(contact_book_id,
+nickname, tag, note)
+VALUES ($1, $2, $3, $4)
+`
+
+type InsertContactBookAdditionalInfoParams struct {
+	ContactBookID string `db:"contact_book_id"`
+	Nickname      string `db:"nickname"`
+	Tag           string `db:"tag"`
+	Note          string `db:"note"`
+}
+
+func (q *Queries) InsertContactBookAdditionalInfo(ctx context.Context, arg InsertContactBookAdditionalInfoParams) error {
+	_, err := q.db.ExecContext(ctx, insertContactBookAdditionalInfo,
+		arg.ContactBookID,
+		arg.Nickname,
+		arg.Tag,
+		arg.Note,
+	)
+	return err
+}
+
+const insertContactBookBranch = `-- name: InsertContactBookBranch :exec
+INSERT INTO business_relation.contact_book_branches(contact_book_id, company_branch_id)
+VALUES ($1, $2)
+`
+
+type InsertContactBookBranchParams struct {
+	ContactBookID   string `db:"contact_book_id"`
+	CompanyBranchID string `db:"company_branch_id"`
+}
+
+func (q *Queries) InsertContactBookBranch(ctx context.Context, arg InsertContactBookBranchParams) error {
+	_, err := q.db.ExecContext(ctx, insertContactBookBranch, arg.ContactBookID, arg.CompanyBranchID)
+	return err
+}
+
+const insertContactBookMailingAddress = `-- name: InsertContactBookMailingAddress :exec
+INSERT INTO business_relation.contact_book_mailing_addresses(contact_book_id,
+province, regency, district, postal_code, full_address)
+VALUES ($1, $2, $3, $4, $5, $6)
+`
+
+type InsertContactBookMailingAddressParams struct {
+	ContactBookID string `db:"contact_book_id"`
+	Province      string `db:"province"`
+	Regency       string `db:"regency"`
+	District      string `db:"district"`
+	PostalCode    string `db:"postal_code"`
+	FullAddress   string `db:"full_address"`
+}
+
+func (q *Queries) InsertContactBookMailingAddress(ctx context.Context, arg InsertContactBookMailingAddressParams) error {
+	_, err := q.db.ExecContext(ctx, insertContactBookMailingAddress,
+		arg.ContactBookID,
+		arg.Province,
+		arg.Regency,
+		arg.District,
+		arg.PostalCode,
+		arg.FullAddress,
+	)
+	return err
+}
+
+const insertContactBookShippingAddress = `-- name: InsertContactBookShippingAddress :exec
+INSERT INTO business_relation.contact_book_shipping_addresses(contact_book_id,
+province, regency, district, postal_code, full_address)
+VALUES ($1, $2, $3, $4, $5, $6)
+`
+
+type InsertContactBookShippingAddressParams struct {
+	ContactBookID string `db:"contact_book_id"`
+	Province      string `db:"province"`
+	Regency       string `db:"regency"`
+	District      string `db:"district"`
+	PostalCode    string `db:"postal_code"`
+	FullAddress   string `db:"full_address"`
+}
+
+func (q *Queries) InsertContactBookShippingAddress(ctx context.Context, arg InsertContactBookShippingAddressParams) error {
+	_, err := q.db.ExecContext(ctx, insertContactBookShippingAddress,
+		arg.ContactBookID,
+		arg.Province,
+		arg.Regency,
+		arg.District,
+		arg.PostalCode,
+		arg.FullAddress,
+	)
+	return err
+}
+
 const insertContactGroup = `-- name: InsertContactGroup :one
 INSERT INTO business_relation.contact_groups(id, company_id, name)
 VALUES ($1, $2, $3)

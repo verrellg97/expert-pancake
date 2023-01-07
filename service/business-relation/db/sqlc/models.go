@@ -8,6 +8,82 @@ import (
 	"database/sql"
 )
 
+type BusinessRelationContactBook struct {
+	ID                 string       `db:"id"`
+	PrimaryCompanyID   string       `db:"primary_company_id"`
+	SecondaryCompanyID string       `db:"secondary_company_id"`
+	ContactGroupID     string       `db:"contact_group_id"`
+	Name               string       `db:"name"`
+	Email              string       `db:"email"`
+	Phone              string       `db:"phone"`
+	Mobile             string       `db:"mobile"`
+	Web                string       `db:"web"`
+	IsAllBranches      bool         `db:"is_all_branches"`
+	IsCustomer         bool         `db:"is_customer"`
+	IsSupplier         bool         `db:"is_supplier"`
+	IsTax              bool         `db:"is_tax"`
+	TaxID              string       `db:"tax_id"`
+	IsDeleted          bool         `db:"is_deleted"`
+	CreatedAt          sql.NullTime `db:"created_at"`
+	UpdatedAt          sql.NullTime `db:"updated_at"`
+}
+
+type BusinessRelationContactBookAdditionalInfo struct {
+	ContactBookID string       `db:"contact_book_id"`
+	Nickname      string       `db:"nickname"`
+	Tag           string       `db:"tag"`
+	Note          string       `db:"note"`
+	CreatedAt     sql.NullTime `db:"created_at"`
+	UpdatedAt     sql.NullTime `db:"updated_at"`
+}
+
+type BusinessRelationContactBookBranch struct {
+	ContactBookID   string       `db:"contact_book_id"`
+	CompanyBranchID string       `db:"company_branch_id"`
+	CreatedAt       sql.NullTime `db:"created_at"`
+	UpdatedAt       sql.NullTime `db:"updated_at"`
+}
+
+type BusinessRelationContactBookCustomerInfo struct {
+	ContactBookID string       `db:"contact_book_id"`
+	Pic           string       `db:"pic"`
+	CreditLimit   int64        `db:"credit_limit"`
+	PaymentTerm   int32        `db:"payment_term"`
+	CreatedAt     sql.NullTime `db:"created_at"`
+	UpdatedAt     sql.NullTime `db:"updated_at"`
+}
+
+type BusinessRelationContactBookMailingAddress struct {
+	ContactBookID string       `db:"contact_book_id"`
+	Province      string       `db:"province"`
+	Regency       string       `db:"regency"`
+	District      string       `db:"district"`
+	PostalCode    string       `db:"postal_code"`
+	FullAddress   string       `db:"full_address"`
+	CreatedAt     sql.NullTime `db:"created_at"`
+	UpdatedAt     sql.NullTime `db:"updated_at"`
+}
+
+type BusinessRelationContactBookShippingAddress struct {
+	ContactBookID string       `db:"contact_book_id"`
+	Province      string       `db:"province"`
+	Regency       string       `db:"regency"`
+	District      string       `db:"district"`
+	PostalCode    string       `db:"postal_code"`
+	FullAddress   string       `db:"full_address"`
+	CreatedAt     sql.NullTime `db:"created_at"`
+	UpdatedAt     sql.NullTime `db:"updated_at"`
+}
+
+type BusinessRelationContactBookSupplierInfo struct {
+	ContactBookID string       `db:"contact_book_id"`
+	Pic           string       `db:"pic"`
+	CreditLimit   int64        `db:"credit_limit"`
+	PaymentTerm   int32        `db:"payment_term"`
+	CreatedAt     sql.NullTime `db:"created_at"`
+	UpdatedAt     sql.NullTime `db:"updated_at"`
+}
+
 type BusinessRelationContactGroup struct {
 	ID        string       `db:"id"`
 	CompanyID string       `db:"company_id"`
