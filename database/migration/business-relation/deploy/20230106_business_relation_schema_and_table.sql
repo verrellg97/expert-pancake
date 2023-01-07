@@ -2,6 +2,8 @@
 
 BEGIN;
 
+CREATE SCHEMA IF NOT EXISTS business_relation;
+
 CREATE TABLE "business_relation"."contact_groups" (
   "id" text NOT NULL,
   "company_id" text NOT NULL,
