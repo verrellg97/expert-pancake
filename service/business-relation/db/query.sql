@@ -40,6 +40,23 @@ SET
 WHERE id = $1
 RETURNING *;
 
+-- name: GetContactBooks :many
+SELECT a.id, a.primary_company_id, a.secondary_company_id, 
+a.contact_group_id, a.name, a.email, a.phone, a.mobile, a.web,
+a.is_all_branches, a.is_customer, a.is_supplier,
+b.nickname, b.tag, b.note,
+c.province AS mailing_province, c.regency AS mailing_regency,
+c.district AS mailing_district, c.postal_code AS mailing_postal_code,
+c.full_address AS mailing_full_address,
+d.province AS shipping_province, d.regency AS shipping_regency,
+d.district AS shipping_district, d.postal_code AS shipping_postal_code,
+d.full_address AS shipping_full_address
+FROM business_relation.contact_books a
+JOIN business_relation.contact_book_additional_infos b ON a.id = b.contact_book_id
+JOIN business_relation.contact_book_mailing_addresses c ON a.id = c.contact_book_id
+JOIN business_relation.contact_book_shipping_addresses d ON a.id = d.contact_book_id
+WHERE a.primary_company_id = $1;
+
 -- name: InsertContactBookAdditionalInfo :exec
 INSERT INTO business_relation.contact_book_additional_infos(contact_book_id,
 nickname, tag, note)
@@ -92,4 +109,8 @@ VALUES ($1, $2);
 
 -- name: DeleteContactBookBranches :exec
 DELETE FROM business_relation.contact_book_branches
+WHERE contact_book_id = $1;
+
+-- name: GetContactBookBranches :many
+SELECT contact_book_id, company_branch_id FROM business_relation.contact_book_branches
 WHERE contact_book_id = $1;

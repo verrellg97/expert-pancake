@@ -16,6 +16,7 @@ const (
 	GetContactGroupsPath   = "/business-relation/contact-groups"
 	AddContactBookPath     = "/business-relation/contact-book/add"
 	UpdateContactBookPath  = "/business-relation/contact-book/update"
+	GetContactBooksPath    = "/business-relation/contact-books"
 )
 
 func (c *component) Routes(businessRelationService model.BusinessRelationService) http.Handler {
@@ -39,6 +40,7 @@ func (c *component) Routes(businessRelationService model.BusinessRelationService
 	mux.Method("POST", GetContactGroupsPath, httpHandler.New(businessRelationService.GetContactGroups))
 	mux.Method("POST", AddContactBookPath, httpHandler.New(businessRelationService.AddContactBook))
 	mux.Method("POST", UpdateContactBookPath, httpHandler.New(businessRelationService.UpdateContactBook))
+	mux.Method("POST", GetContactBooksPath, httpHandler.New(businessRelationService.GetContactBooks))
 
 	return mux
 }
