@@ -10,6 +10,7 @@ import (
 
 type BusinessRelationTrx interface {
 	Querier
+	CreateNewContactBookTrx(ctx context.Context, arg CreateNewContactBookTrxParams) (CreateNewContactBookTrxResult, error)
 }
 
 // Trx provides all functions to execute SQL queries and transactions
