@@ -11,6 +11,7 @@ type BusinessRelationService interface {
 
 	AddContactBook(w http.ResponseWriter, r *http.Request) error
 	UpdateContactBook(w http.ResponseWriter, r *http.Request) error
+	GetContactBooks(w http.ResponseWriter, r *http.Request) error
 }
 
 type ContactGroup struct {
@@ -116,4 +117,8 @@ type UpdateContactBookRequest struct {
 
 type UpdateContactBookResponse struct {
 	ContactBook
+}
+
+type GetContactBooksRequest struct {
+	CompanyId string `json:"company_id" validate:"required"`
 }

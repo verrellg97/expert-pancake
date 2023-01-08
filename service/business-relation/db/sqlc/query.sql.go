@@ -19,6 +19,134 @@ func (q *Queries) DeleteContactBookBranches(ctx context.Context, contactBookID s
 	return err
 }
 
+const getContactBookBranches = `-- name: GetContactBookBranches :many
+SELECT contact_book_id, company_branch_id FROM business_relation.contact_book_branches
+WHERE contact_book_id = $1
+`
+
+type GetContactBookBranchesRow struct {
+	ContactBookID   string `db:"contact_book_id"`
+	CompanyBranchID string `db:"company_branch_id"`
+}
+
+func (q *Queries) GetContactBookBranches(ctx context.Context, contactBookID string) ([]GetContactBookBranchesRow, error) {
+	rows, err := q.db.QueryContext(ctx, getContactBookBranches, contactBookID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetContactBookBranchesRow
+	for rows.Next() {
+		var i GetContactBookBranchesRow
+		if err := rows.Scan(&i.ContactBookID, &i.CompanyBranchID); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getContactBooks = `-- name: GetContactBooks :many
+SELECT a.id, a.primary_company_id, a.secondary_company_id, 
+a.contact_group_id, a.name, a.email, a.phone, a.mobile, a.web,
+a.is_all_branches, a.is_customer, a.is_supplier,
+b.nickname, b.tag, b.note,
+c.province AS mailing_province, c.regency AS mailing_regency,
+c.district AS mailing_district, c.postal_code AS mailing_postal_code,
+c.full_address AS mailing_full_address,
+d.province AS shipping_province, d.regency AS shipping_regency,
+d.district AS shipping_district, d.postal_code AS shipping_postal_code,
+d.full_address AS shipping_full_address
+FROM business_relation.contact_books a
+JOIN business_relation.contact_book_additional_infos b ON a.id = b.contact_book_id
+JOIN business_relation.contact_book_mailing_addresses c ON a.id = c.contact_book_id
+JOIN business_relation.contact_book_shipping_addresses d ON a.id = d.contact_book_id
+WHERE a.primary_company_id = $1
+`
+
+type GetContactBooksRow struct {
+	ID                  string `db:"id"`
+	PrimaryCompanyID    string `db:"primary_company_id"`
+	SecondaryCompanyID  string `db:"secondary_company_id"`
+	ContactGroupID      string `db:"contact_group_id"`
+	Name                string `db:"name"`
+	Email               string `db:"email"`
+	Phone               string `db:"phone"`
+	Mobile              string `db:"mobile"`
+	Web                 string `db:"web"`
+	IsAllBranches       bool   `db:"is_all_branches"`
+	IsCustomer          bool   `db:"is_customer"`
+	IsSupplier          bool   `db:"is_supplier"`
+	Nickname            string `db:"nickname"`
+	Tag                 string `db:"tag"`
+	Note                string `db:"note"`
+	MailingProvince     string `db:"mailing_province"`
+	MailingRegency      string `db:"mailing_regency"`
+	MailingDistrict     string `db:"mailing_district"`
+	MailingPostalCode   string `db:"mailing_postal_code"`
+	MailingFullAddress  string `db:"mailing_full_address"`
+	ShippingProvince    string `db:"shipping_province"`
+	ShippingRegency     string `db:"shipping_regency"`
+	ShippingDistrict    string `db:"shipping_district"`
+	ShippingPostalCode  string `db:"shipping_postal_code"`
+	ShippingFullAddress string `db:"shipping_full_address"`
+}
+
+func (q *Queries) GetContactBooks(ctx context.Context, primaryCompanyID string) ([]GetContactBooksRow, error) {
+	rows, err := q.db.QueryContext(ctx, getContactBooks, primaryCompanyID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetContactBooksRow
+	for rows.Next() {
+		var i GetContactBooksRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.PrimaryCompanyID,
+			&i.SecondaryCompanyID,
+			&i.ContactGroupID,
+			&i.Name,
+			&i.Email,
+			&i.Phone,
+			&i.Mobile,
+			&i.Web,
+			&i.IsAllBranches,
+			&i.IsCustomer,
+			&i.IsSupplier,
+			&i.Nickname,
+			&i.Tag,
+			&i.Note,
+			&i.MailingProvince,
+			&i.MailingRegency,
+			&i.MailingDistrict,
+			&i.MailingPostalCode,
+			&i.MailingFullAddress,
+			&i.ShippingProvince,
+			&i.ShippingRegency,
+			&i.ShippingDistrict,
+			&i.ShippingPostalCode,
+			&i.ShippingFullAddress,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getContactGroups = `-- name: GetContactGroups :many
 SELECT id, company_id, name
 FROM business_relation.contact_groups
