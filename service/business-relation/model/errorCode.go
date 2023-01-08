@@ -5,4 +5,5 @@ const (
 	UpdateContactGroupError = 600002
 	GetContactGroupsError   = 600003
 	AddNewContactBookError  = 600004
+	UpdateContactBookError  = 600005
 )
