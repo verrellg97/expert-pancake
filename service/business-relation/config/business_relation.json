@@ -1,7 +1,7 @@
 {
   "db": {
     "host": "postgres",
-    "db_name": "business_relation",
+    "db_name": "business-relation",
     "username": "postgres",
     "password": "changeme",
     "ssl": "disable"
