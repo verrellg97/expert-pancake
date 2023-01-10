@@ -722,3 +722,31 @@ func (q *Queries) UpsertCustomerInfo(ctx context.Context, arg UpsertCustomerInfo
 	)
 	return err
 }
+
+const upsertSupplierInfo = `-- name: UpsertSupplierInfo :exec
+INSERT INTO business_relation.contact_book_supplier_infos(contact_book_id, pic, credit_limit, payment_term)
+VALUES ($1, $2, $3, $4)
+ON CONFLICT (contact_book_id)
+DO UPDATE SET
+    pic = EXCLUDED.pic,
+    credit_limit = EXCLUDED.credit_limit,
+    payment_term = EXCLUDED.payment_term,
+    updated_at = NOW()
+`
+
+type UpsertSupplierInfoParams struct {
+	ContactBookID string `db:"contact_book_id"`
+	Pic           string `db:"pic"`
+	CreditLimit   int64  `db:"credit_limit"`
+	PaymentTerm   int32  `db:"payment_term"`
+}
+
+func (q *Queries) UpsertSupplierInfo(ctx context.Context, arg UpsertSupplierInfoParams) error {
+	_, err := q.db.ExecContext(ctx, upsertSupplierInfo,
+		arg.ContactBookID,
+		arg.Pic,
+		arg.CreditLimit,
+		arg.PaymentTerm,
+	)
+	return err
+}

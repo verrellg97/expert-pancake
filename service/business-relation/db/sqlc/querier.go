@@ -28,6 +28,7 @@ type Querier interface {
 	UpdateContactBookTaxInfo(ctx context.Context, arg UpdateContactBookTaxInfoParams) error
 	UpdateContactGroup(ctx context.Context, arg UpdateContactGroupParams) (BusinessRelationContactGroup, error)
 	UpsertCustomerInfo(ctx context.Context, arg UpsertCustomerInfoParams) error
+	UpsertSupplierInfo(ctx context.Context, arg UpsertSupplierInfoParams) error
 }
 
 var _ Querier = (*Queries)(nil)

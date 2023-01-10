@@ -9,4 +9,5 @@ const (
 	GetContactBooksError    = 600006
 	UpdateCustomerError     = 600007
 	GetCustomersError       = 600008
+	UpdateSupplierError     = 600009
 )
