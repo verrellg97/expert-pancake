@@ -40,6 +40,14 @@ SET
 WHERE id = $1
 RETURNING *;
 
+-- name: UpdateContactBookTaxInfo :exec
+UPDATE business_relation.contact_books
+SET 
+    is_tax = $2,
+    tax_id = $3,
+    updated_at = NOW()
+WHERE id = $1;
+
 -- name: GetContactBooks :many
 SELECT a.id, a.primary_company_id, a.secondary_company_id, 
 a.contact_group_id, a.name, a.email, a.phone, a.mobile, a.web,
@@ -56,6 +64,15 @@ JOIN business_relation.contact_book_additional_infos b ON a.id = b.contact_book_
 JOIN business_relation.contact_book_mailing_addresses c ON a.id = c.contact_book_id
 JOIN business_relation.contact_book_shipping_addresses d ON a.id = d.contact_book_id
 WHERE a.primary_company_id = $1;
+
+-- name: GetContactBookById :one
+SELECT a.id, a.primary_company_id, a.secondary_company_id,
+a.contact_group_id, b.name AS contact_group_name, a.name, a.email,
+a.phone, a.mobile, a.web, a.is_all_branches, a.is_customer, a.is_supplier,
+a.is_tax, a.tax_id, a.is_deleted
+FROM business_relation.contact_books a
+JOIN business_relation.contact_groups b ON a.contact_group_id = b.id
+WHERE a.id = $1;
 
 -- name: InsertContactBookAdditionalInfo :exec
 INSERT INTO business_relation.contact_book_additional_infos(contact_book_id,
@@ -114,3 +131,13 @@ WHERE contact_book_id = $1;
 -- name: GetContactBookBranches :many
 SELECT contact_book_id, company_branch_id FROM business_relation.contact_book_branches
 WHERE contact_book_id = $1;
+
+-- name: UpsertCustomerInfo :exec
+INSERT INTO business_relation.contact_book_customer_infos(contact_book_id, pic, credit_limit, payment_term)
+VALUES ($1, $2, $3, $4)
+ON CONFLICT (contact_book_id)
+DO UPDATE SET
+    pic = EXCLUDED.pic,
+    credit_limit = EXCLUDED.credit_limit,
+    payment_term = EXCLUDED.payment_term,
+    updated_at = NOW();
