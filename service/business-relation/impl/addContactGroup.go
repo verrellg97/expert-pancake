@@ -23,9 +23,11 @@ func (a businessRelationService) AddContactGroup(w http.ResponseWriter, r *http.
 	}
 
 	arg := db.InsertContactGroupParams{
-		ID:        uuid.NewV4().String(),
-		CompanyID: req.CompanyId,
-		Name:      req.Name,
+		ID:          uuid.NewV4().String(),
+		CompanyID:   req.CompanyId,
+		ImageUrl:    req.ImageUrl,
+		Name:        req.Name,
+		Description: req.Description,
 	}
 
 	result, err := a.dbTrx.InsertContactGroup(context.Background(), arg)
@@ -35,9 +37,11 @@ func (a businessRelationService) AddContactGroup(w http.ResponseWriter, r *http.
 
 	res := model.AddContactGroupResponse{
 		ContactGroup: model.ContactGroup{
-			GroupId:   result.ID,
-			CompanyId: result.CompanyID,
-			Name:      result.Name,
+			GroupId:     result.ID,
+			CompanyId:   result.CompanyID,
+			ImageUrl:    result.ImageUrl,
+			Name:        result.Name,
+			Description: result.Description,
 		},
 	}
 
