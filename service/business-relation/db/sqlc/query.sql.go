@@ -310,6 +310,81 @@ func (q *Queries) GetCustomers(ctx context.Context, primaryCompanyID string) ([]
 	return items, nil
 }
 
+const getSuppliers = `-- name: GetSuppliers :many
+SELECT a.id, a.primary_company_id, a.contact_group_id,
+COALESCE(b.name, '') AS contact_group_name, a.name, a.email, a.phone,
+a.mobile, a.web, a.is_all_branches, a.is_customer, a.is_supplier,
+a.is_tax, a.tax_id, a.is_deleted, COALESCE(c.pic, '') AS pic,
+COALESCE(c.credit_limit, 0) AS credit_limit, COALESCE(c.payment_term, 0) AS payment_term
+FROM business_relation.contact_books a
+LEFT JOIN business_relation.contact_groups b ON a.contact_group_id = b.id
+LEFT JOIN business_relation.contact_book_supplier_infos c ON a.id = c.contact_book_id
+WHERE a.primary_company_id = $1 AND a.is_supplier
+`
+
+type GetSuppliersRow struct {
+	ID               string `db:"id"`
+	PrimaryCompanyID string `db:"primary_company_id"`
+	ContactGroupID   string `db:"contact_group_id"`
+	ContactGroupName string `db:"contact_group_name"`
+	Name             string `db:"name"`
+	Email            string `db:"email"`
+	Phone            string `db:"phone"`
+	Mobile           string `db:"mobile"`
+	Web              string `db:"web"`
+	IsAllBranches    bool   `db:"is_all_branches"`
+	IsCustomer       bool   `db:"is_customer"`
+	IsSupplier       bool   `db:"is_supplier"`
+	IsTax            bool   `db:"is_tax"`
+	TaxID            string `db:"tax_id"`
+	IsDeleted        bool   `db:"is_deleted"`
+	Pic              string `db:"pic"`
+	CreditLimit      int64  `db:"credit_limit"`
+	PaymentTerm      int32  `db:"payment_term"`
+}
+
+func (q *Queries) GetSuppliers(ctx context.Context, primaryCompanyID string) ([]GetSuppliersRow, error) {
+	rows, err := q.db.QueryContext(ctx, getSuppliers, primaryCompanyID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetSuppliersRow
+	for rows.Next() {
+		var i GetSuppliersRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.PrimaryCompanyID,
+			&i.ContactGroupID,
+			&i.ContactGroupName,
+			&i.Name,
+			&i.Email,
+			&i.Phone,
+			&i.Mobile,
+			&i.Web,
+			&i.IsAllBranches,
+			&i.IsCustomer,
+			&i.IsSupplier,
+			&i.IsTax,
+			&i.TaxID,
+			&i.IsDeleted,
+			&i.Pic,
+			&i.CreditLimit,
+			&i.PaymentTerm,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const insertContactBook = `-- name: InsertContactBook :one
 INSERT INTO business_relation.contact_books(id, primary_company_id, secondary_company_id,
 contact_group_id, name, email, phone, mobile, web,

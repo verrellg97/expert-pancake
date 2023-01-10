@@ -17,6 +17,7 @@ type BusinessRelationService interface {
 	GetCustomers(w http.ResponseWriter, r *http.Request) error
 
 	UpdateSupplier(w http.ResponseWriter, r *http.Request) error
+	GetSuppliers(w http.ResponseWriter, r *http.Request) error
 }
 
 type ContactGroup struct {
@@ -186,4 +187,8 @@ type UpdateSupplierRequest struct {
 
 type UpdateSupplierResponse struct {
 	SupplierInfo
+}
+
+type GetSuppliersRequest struct {
+	CompanyId string `json:"company_id" validate:"required"`
 }
