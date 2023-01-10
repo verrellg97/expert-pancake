@@ -152,3 +152,13 @@ DO UPDATE SET
     credit_limit = EXCLUDED.credit_limit,
     payment_term = EXCLUDED.payment_term,
     updated_at = NOW();
+
+-- name: UpsertSupplierInfo :exec
+INSERT INTO business_relation.contact_book_supplier_infos(contact_book_id, pic, credit_limit, payment_term)
+VALUES ($1, $2, $3, $4)
+ON CONFLICT (contact_book_id)
+DO UPDATE SET
+    pic = EXCLUDED.pic,
+    credit_limit = EXCLUDED.credit_limit,
+    payment_term = EXCLUDED.payment_term,
+    updated_at = NOW();

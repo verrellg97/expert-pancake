@@ -15,6 +15,8 @@ type BusinessRelationService interface {
 
 	UpdateCustomer(w http.ResponseWriter, r *http.Request) error
 	GetCustomers(w http.ResponseWriter, r *http.Request) error
+
+	UpdateSupplier(w http.ResponseWriter, r *http.Request) error
 }
 
 type ContactGroup struct {
@@ -95,6 +97,21 @@ type CustomerInfo struct {
 	PaymentTerm      string `json:"payment_term" validate:"required"`
 }
 
+type SupplierInfo struct {
+	ContactBookId    string `json:"contact_book_id" validate:"required"`
+	ContactGroupName string `json:"contact_group_name" validate:"required"`
+	Name             string `json:"name" validate:"required"`
+	Email            string `json:"email" validate:"required"`
+	Phone            string `json:"phone" validate:"required"`
+	Mobile           string `json:"mobile" validate:"required"`
+	Web              string `json:"web" validate:"required"`
+	IsTax            bool   `json:"is_tax" validate:"required"`
+	TaxId            string `json:"tax_id" validate:"required"`
+	Pic              string `json:"pic" validate:"required"`
+	CreditLimit      string `json:"credit_limit" validate:"required"`
+	PaymentTerm      string `json:"payment_term" validate:"required"`
+}
+
 type AddContactBookRequest struct {
 	PrimaryCompanyId string                   `json:"primary_company_id" validate:"required"`
 	ContactGroupId   string                   `json:"contact_group_id"`
@@ -156,4 +173,17 @@ type UpdateCustomerResponse struct {
 
 type GetCustomersRequest struct {
 	CompanyId string `json:"company_id" validate:"required"`
+}
+
+type UpdateSupplierRequest struct {
+	ContactBookId string `json:"contact_book_id" validate:"required"`
+	IsTax         bool   `json:"is_tax"`
+	TaxId         string `json:"tax_id"`
+	Pic           string `json:"pic"`
+	CreditLimit   string `json:"credit_limit"`
+	PaymentTerm   string `json:"payment_term"`
+}
+
+type UpdateSupplierResponse struct {
+	SupplierInfo
 }
