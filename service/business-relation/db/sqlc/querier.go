@@ -12,7 +12,7 @@ type Querier interface {
 	DeleteContactBookBranches(ctx context.Context, contactBookID string) error
 	GetContactBookBranches(ctx context.Context, contactBookID string) ([]GetContactBookBranchesRow, error)
 	GetContactBookById(ctx context.Context, id string) (GetContactBookByIdRow, error)
-	GetContactBooks(ctx context.Context, primaryCompanyID string) ([]GetContactBooksRow, error)
+	GetContactBooks(ctx context.Context, arg GetContactBooksParams) ([]GetContactBooksRow, error)
 	GetContactGroups(ctx context.Context, companyID string) ([]GetContactGroupsRow, error)
 	GetCustomers(ctx context.Context, primaryCompanyID string) ([]GetCustomersRow, error)
 	GetSuppliers(ctx context.Context, primaryCompanyID string) ([]GetSuppliersRow, error)

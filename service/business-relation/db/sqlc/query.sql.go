@@ -107,7 +107,8 @@ func (q *Queries) GetContactBookById(ctx context.Context, id string) (GetContact
 
 const getContactBooks = `-- name: GetContactBooks :many
 SELECT a.id, a.primary_company_id, a.secondary_company_id, 
-a.contact_group_id, a.name, a.email, a.phone, a.mobile, a.web,
+a.contact_group_id, COALESCE(e.name, '') AS contact_group_name,
+a.name, a.email, a.phone, a.mobile, a.web,
 a.is_all_branches, a.is_customer, a.is_supplier,
 b.nickname, b.tag, b.note,
 c.province AS mailing_province, c.regency AS mailing_regency,
@@ -120,14 +121,24 @@ FROM business_relation.contact_books a
 JOIN business_relation.contact_book_additional_infos b ON a.id = b.contact_book_id
 JOIN business_relation.contact_book_mailing_addresses c ON a.id = c.contact_book_id
 JOIN business_relation.contact_book_shipping_addresses d ON a.id = d.contact_book_id
+LEFT JOIN business_relation.contact_groups e ON a.contact_group_id = e.id
 WHERE a.primary_company_id = $1
+AND CASE WHEN $3::bool
+THEN a.contact_group_id = $2 ELSE TRUE END
 `
+
+type GetContactBooksParams struct {
+	PrimaryCompanyID string `db:"primary_company_id"`
+	ContactGroupID   string `db:"contact_group_id"`
+	IsFilterGroupID  bool   `db:"is_filter_group_id"`
+}
 
 type GetContactBooksRow struct {
 	ID                  string `db:"id"`
 	PrimaryCompanyID    string `db:"primary_company_id"`
 	SecondaryCompanyID  string `db:"secondary_company_id"`
 	ContactGroupID      string `db:"contact_group_id"`
+	ContactGroupName    string `db:"contact_group_name"`
 	Name                string `db:"name"`
 	Email               string `db:"email"`
 	Phone               string `db:"phone"`
@@ -151,8 +162,8 @@ type GetContactBooksRow struct {
 	ShippingFullAddress string `db:"shipping_full_address"`
 }
 
-func (q *Queries) GetContactBooks(ctx context.Context, primaryCompanyID string) ([]GetContactBooksRow, error) {
-	rows, err := q.db.QueryContext(ctx, getContactBooks, primaryCompanyID)
+func (q *Queries) GetContactBooks(ctx context.Context, arg GetContactBooksParams) ([]GetContactBooksRow, error) {
+	rows, err := q.db.QueryContext(ctx, getContactBooks, arg.PrimaryCompanyID, arg.ContactGroupID, arg.IsFilterGroupID)
 	if err != nil {
 		return nil, err
 	}
@@ -165,6 +176,7 @@ func (q *Queries) GetContactBooks(ctx context.Context, primaryCompanyID string) 
 			&i.PrimaryCompanyID,
 			&i.SecondaryCompanyID,
 			&i.ContactGroupID,
+			&i.ContactGroupName,
 			&i.Name,
 			&i.Email,
 			&i.Phone,

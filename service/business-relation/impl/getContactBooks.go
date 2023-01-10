@@ -6,6 +6,7 @@ import (
 
 	"github.com/calvinkmts/expert-pancake/engine/errors"
 	"github.com/calvinkmts/expert-pancake/engine/httpHandler"
+	db "github.com/expert-pancake/service/business-relation/db/sqlc"
 	"github.com/expert-pancake/service/business-relation/model"
 	"github.com/expert-pancake/service/business-relation/util"
 )
@@ -20,23 +21,33 @@ func (a businessRelationService) GetContactBooks(w http.ResponseWriter, r *http.
 		return errors.NewClientError().WithDataMap(errMapRequest)
 	}
 
-	result, err := a.dbTrx.GetContactBooks(context.Background(), req.CompanyId)
+	var isFilterGroupId = false
+	if req.ContactGroupId != "" {
+		isFilterGroupId = true
+	}
+
+	result, err := a.dbTrx.GetContactBooks(context.Background(), db.GetContactBooksParams{
+		PrimaryCompanyID: req.CompanyId,
+		IsFilterGroupID:  isFilterGroupId,
+		ContactGroupID:   req.ContactGroupId,
+	})
 	if err != nil {
 		return errors.NewServerError(model.GetContactBooksError, err.Error())
 	}
 
-	var contact_books = make([]model.ContactBook, 0)
+	var contact_books = make([]model.ContactBookWithGroupName, 0)
 
 	for _, d := range result {
 		resultBranches, err := a.dbTrx.GetContactBookBranches(context.Background(), d.ID)
 		if err != nil {
 			return errors.NewServerError(model.GetContactBooksError, err.Error())
 		}
-		var contact_book = model.ContactBook{
+		var contact_book = model.ContactBookWithGroupName{
 			ContactBookId:      d.ID,
 			PrimaryCompanyId:   d.PrimaryCompanyID,
 			SecondaryCompanyId: d.SecondaryCompanyID,
 			ContactGroupId:     d.ContactGroupID,
+			ContactGroupName:   d.ContactGroupName,
 			Name:               d.Name,
 			Email:              d.Email,
 			Phone:              d.Phone,
