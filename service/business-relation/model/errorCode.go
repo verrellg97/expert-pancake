@@ -8,4 +8,5 @@ const (
 	UpdateContactBookError  = 600005
 	GetContactBooksError    = 600006
 	UpdateCustomerError     = 600007
+	GetCustomersError       = 600008
 )
