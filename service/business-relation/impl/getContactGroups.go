@@ -3,6 +3,7 @@ package impl
 import (
 	"context"
 	"net/http"
+	"strconv"
 
 	"github.com/calvinkmts/expert-pancake/engine/errors"
 	"github.com/calvinkmts/expert-pancake/engine/httpHandler"
@@ -24,13 +25,16 @@ func (a businessRelationService) GetContactGroups(w http.ResponseWriter, r *http
 		return errors.NewServerError(model.GetContactGroupsError, err.Error())
 	}
 
-	var groups = make([]model.ContactGroup, 0)
+	var groups = make([]model.ContactGroupWithMember, 0)
 
 	for _, d := range result {
-		var group = model.ContactGroup{
-			GroupId:   d.ID,
-			CompanyId: d.CompanyID,
-			Name:      d.Name,
+		var group = model.ContactGroupWithMember{
+			GroupId:     d.ID,
+			CompanyId:   d.CompanyID,
+			ImageUrl:    d.ImageUrl,
+			Name:        d.Name,
+			Description: d.Description,
+			Member:      strconv.FormatInt(d.Member, 10),
 		}
 		groups = append(groups, group)
 	}

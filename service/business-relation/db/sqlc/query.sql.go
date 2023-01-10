@@ -201,15 +201,20 @@ func (q *Queries) GetContactBooks(ctx context.Context, primaryCompanyID string) 
 }
 
 const getContactGroups = `-- name: GetContactGroups :many
-SELECT id, company_id, name
-FROM business_relation.contact_groups
-WHERE company_id = $1
+SELECT a.id, a.company_id, a.image_url, a.name, a.description, COUNT(b.id) AS member
+FROM business_relation.contact_groups a 
+LEFT JOIN business_relation.contact_books b ON a.id = b.contact_group_id
+WHERE a.company_id = $1
+GROUP BY a.id
 `
 
 type GetContactGroupsRow struct {
-	ID        string `db:"id"`
-	CompanyID string `db:"company_id"`
-	Name      string `db:"name"`
+	ID          string `db:"id"`
+	CompanyID   string `db:"company_id"`
+	ImageUrl    string `db:"image_url"`
+	Name        string `db:"name"`
+	Description string `db:"description"`
+	Member      int64  `db:"member"`
 }
 
 func (q *Queries) GetContactGroups(ctx context.Context, companyID string) ([]GetContactGroupsRow, error) {
@@ -221,7 +226,14 @@ func (q *Queries) GetContactGroups(ctx context.Context, companyID string) ([]Get
 	var items []GetContactGroupsRow
 	for rows.Next() {
 		var i GetContactGroupsRow
-		if err := rows.Scan(&i.ID, &i.CompanyID, &i.Name); err != nil {
+		if err := rows.Scan(
+			&i.ID,
+			&i.CompanyID,
+			&i.ImageUrl,
+			&i.Name,
+			&i.Description,
+			&i.Member,
+		); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
