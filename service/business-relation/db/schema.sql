@@ -74,7 +74,8 @@ CREATE TABLE business_relation.contact_book_customer_infos (
   "credit_limit" bigint NOT NULL DEFAULT 0,
   "payment_term" int NOT NULL DEFAULT 0,
   "created_at" timestamptz DEFAULT (now()),
-  "updated_at" timestamptz DEFAULT (now())
+  "updated_at" timestamptz DEFAULT (now()),
+  PRIMARY KEY ("contact_book_id")
 );
 
 CREATE TABLE business_relation.contact_book_supplier_infos (
@@ -83,5 +84,6 @@ CREATE TABLE business_relation.contact_book_supplier_infos (
   "credit_limit" bigint NOT NULL DEFAULT 0,
   "payment_term" int NOT NULL DEFAULT 0,
   "created_at" timestamptz DEFAULT (now()),
-  "updated_at" timestamptz DEFAULT (now())
+  "updated_at" timestamptz DEFAULT (now()),
+  PRIMARY KEY ("contact_book_id")
 );
