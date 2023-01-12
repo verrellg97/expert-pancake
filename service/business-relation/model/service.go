@@ -21,14 +21,18 @@ type BusinessRelationService interface {
 }
 
 type ContactGroup struct {
-	GroupId   string `json:"group_id" validate:"required"`
-	CompanyId string `json:"company_id" validate:"required"`
-	Name      string `json:"name" validate:"required"`
+	GroupId     string `json:"group_id" validate:"required"`
+	CompanyId   string `json:"company_id" validate:"required"`
+	ImageUrl    string `json:"image_url" validate:"required"`
+	Name        string `json:"name" validate:"required"`
+	Description string `json:"description" validate:"required"`
 }
 
 type AddContactGroupRequest struct {
-	CompanyId string `json:"company_id" validate:"required"`
-	Name      string `json:"name" validate:"required"`
+	CompanyId   string `json:"company_id" validate:"required"`
+	ImageUrl    string `json:"image_url"`
+	Name        string `json:"name" validate:"required"`
+	Description string `json:"description"`
 }
 
 type AddContactGroupResponse struct {
