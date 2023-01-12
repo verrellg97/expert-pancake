@@ -3,3 +3,4 @@
 
 20230106_business_relation_schema_and_table 2023-01-06T15:26:35Z Verrell <verrell@Verrells-MacBook-Air.local> # Add schema and table for business relation service
 20230107_alter_table_add_primary_key 2023-01-07T20:56:05Z Verrell <verrell@Verrells-MacBook-Air.local> # Alter table add primary key
+20230111_add_contact_invitations_table_and_alter_contact_groups_table 2023-01-10T19:09:36Z Verrell <verrell@Verrells-MacBook-Air.local> # Add contact_invitations table and alter contact_groups table
