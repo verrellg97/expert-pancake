@@ -6,6 +6,5 @@ ALTER TABLE "business_relation"."contact_groups" DROP COLUMN image_url;
 ALTER TABLE "business_relation"."contact_groups" DROP COLUMN description;
 
 DROP TABLE "business_relation"."contact_invitations";
-DROP TYPE "business_relation"."contact_invitation_status";
 
 COMMIT;
