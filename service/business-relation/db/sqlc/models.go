@@ -85,9 +85,11 @@ type BusinessRelationContactBookSupplierInfo struct {
 }
 
 type BusinessRelationContactGroup struct {
-	ID        string       `db:"id"`
-	CompanyID string       `db:"company_id"`
-	Name      string       `db:"name"`
-	CreatedAt sql.NullTime `db:"created_at"`
-	UpdatedAt sql.NullTime `db:"updated_at"`
+	ID          string       `db:"id"`
+	CompanyID   string       `db:"company_id"`
+	ImageUrl    string       `db:"image_url"`
+	Name        string       `db:"name"`
+	Description string       `db:"description"`
+	CreatedAt   sql.NullTime `db:"created_at"`
+	UpdatedAt   sql.NullTime `db:"updated_at"`
 }
