@@ -40,8 +40,10 @@ type AddContactGroupResponse struct {
 }
 
 type UpdateContactGroupRequest struct {
-	GroupId string `json:"group_id" validate:"required"`
-	Name    string `json:"name" validate:"required"`
+	GroupId     string `json:"group_id" validate:"required"`
+	ImageUrl    string `json:"image_url"`
+	Name        string `json:"name" validate:"required"`
+	Description string `json:"description"`
 }
 
 type UpdateContactGroupResponse struct {

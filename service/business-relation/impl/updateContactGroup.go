@@ -21,8 +21,10 @@ func (a businessRelationService) UpdateContactGroup(w http.ResponseWriter, r *ht
 	}
 
 	result, err := a.dbTrx.UpdateContactGroup(context.Background(), db.UpdateContactGroupParams{
-		ID:   req.GroupId,
-		Name: req.Name,
+		ID:          req.GroupId,
+		ImageUrl:    req.ImageUrl,
+		Name:        req.Name,
+		Description: req.Description,
 	})
 	if err != nil {
 		return errors.NewServerError(model.UpdateContactGroupError, err.Error())
@@ -30,9 +32,11 @@ func (a businessRelationService) UpdateContactGroup(w http.ResponseWriter, r *ht
 
 	res := model.UpdateContactGroupResponse{
 		ContactGroup: model.ContactGroup{
-			GroupId:   result.ID,
-			CompanyId: result.CompanyID,
-			Name:      result.Name,
+			GroupId:     result.ID,
+			CompanyId:   result.CompanyID,
+			ImageUrl:    result.ImageUrl,
+			Name:        result.Name,
+			Description: result.Description,
 		},
 	}
 	httpHandler.WriteResponse(w, res)

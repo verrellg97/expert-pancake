@@ -6,7 +6,9 @@ RETURNING *;
 -- name: UpdateContactGroup :one
 UPDATE business_relation.contact_groups
 SET 
-    name = $2,
+    image_url = $2,
+    name = $3,
+    description = $4,
     updated_at = NOW()
 WHERE id = $1
 RETURNING *;

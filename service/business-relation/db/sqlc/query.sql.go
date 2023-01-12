@@ -756,19 +756,28 @@ func (q *Queries) UpdateContactBookTaxInfo(ctx context.Context, arg UpdateContac
 const updateContactGroup = `-- name: UpdateContactGroup :one
 UPDATE business_relation.contact_groups
 SET 
-    name = $2,
+    image_url = $2,
+    name = $3,
+    description = $4,
     updated_at = NOW()
 WHERE id = $1
 RETURNING id, company_id, image_url, name, description, created_at, updated_at
 `
 
 type UpdateContactGroupParams struct {
-	ID   string `db:"id"`
-	Name string `db:"name"`
+	ID          string `db:"id"`
+	ImageUrl    string `db:"image_url"`
+	Name        string `db:"name"`
+	Description string `db:"description"`
 }
 
 func (q *Queries) UpdateContactGroup(ctx context.Context, arg UpdateContactGroupParams) (BusinessRelationContactGroup, error) {
-	row := q.db.QueryRowContext(ctx, updateContactGroup, arg.ID, arg.Name)
+	row := q.db.QueryRowContext(ctx, updateContactGroup,
+		arg.ID,
+		arg.ImageUrl,
+		arg.Name,
+		arg.Description,
+	)
 	var i BusinessRelationContactGroup
 	err := row.Scan(
 		&i.ID,
