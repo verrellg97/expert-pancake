@@ -60,7 +60,7 @@ SET
 WHERE id = $1;
 
 -- name: GetContactBooks :many
-SELECT a.id, a.primary_company_id, a.secondary_company_id, 
+SELECT a.id, a.konekin_id, a.primary_company_id, a.secondary_company_id, 
 a.contact_group_id, COALESCE(e.name, '') AS contact_group_name,
 a.name, a.email, a.phone, a.mobile, a.web,
 a.is_all_branches, a.is_customer, a.is_supplier,

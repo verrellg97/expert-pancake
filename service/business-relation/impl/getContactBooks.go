@@ -35,15 +35,16 @@ func (a businessRelationService) GetContactBooks(w http.ResponseWriter, r *http.
 		return errors.NewServerError(model.GetContactBooksError, err.Error())
 	}
 
-	var contact_books = make([]model.ContactBookWithGroupName, 0)
+	var contact_books = make([]model.ContactBook, 0)
 
 	for _, d := range result {
 		resultBranches, err := a.dbTrx.GetContactBookBranches(context.Background(), d.ID)
 		if err != nil {
 			return errors.NewServerError(model.GetContactBooksError, err.Error())
 		}
-		var contact_book = model.ContactBookWithGroupName{
+		var contact_book = model.ContactBook{
 			ContactBookId:      d.ID,
+			KonekinId:          d.KonekinID,
 			PrimaryCompanyId:   d.PrimaryCompanyID,
 			SecondaryCompanyId: d.SecondaryCompanyID,
 			ContactGroupId:     d.ContactGroupID,
