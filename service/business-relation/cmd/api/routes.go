@@ -11,16 +11,17 @@ import (
 )
 
 const (
-	AddContactGroupPath    = "/business-relation/contact-group/add"
-	UpdateContactGroupPath = "/business-relation/contact-group/update"
-	GetContactGroupsPath   = "/business-relation/contact-groups"
-	AddContactBookPath     = "/business-relation/contact-book/add"
-	UpdateContactBookPath  = "/business-relation/contact-book/update"
-	GetContactBooksPath    = "/business-relation/contact-books"
-	UpdateCustomerPath     = "/business-relation/customer/update"
-	GetCustomersPath       = "/business-relation/customers"
-	UpdateSupplierPath     = "/business-relation/supplier/update"
-	GetSuppliersPath       = "/business-relation/suppliers"
+	AddContactGroupPath       = "/business-relation/contact-group/add"
+	UpdateContactGroupPath    = "/business-relation/contact-group/update"
+	GetContactGroupsPath      = "/business-relation/contact-groups"
+	AddDefaultContactBookPath = "/business-relation/contact-book/default-data"
+	AddContactBookPath        = "/business-relation/contact-book/add"
+	UpdateContactBookPath     = "/business-relation/contact-book/update"
+	GetContactBooksPath       = "/business-relation/contact-books"
+	UpdateCustomerPath        = "/business-relation/customer/update"
+	GetCustomersPath          = "/business-relation/customers"
+	UpdateSupplierPath        = "/business-relation/supplier/update"
+	GetSuppliersPath          = "/business-relation/suppliers"
 )
 
 func (c *component) Routes(businessRelationService model.BusinessRelationService) http.Handler {
@@ -42,6 +43,7 @@ func (c *component) Routes(businessRelationService model.BusinessRelationService
 	mux.Method("POST", AddContactGroupPath, httpHandler.New(businessRelationService.AddContactGroup))
 	mux.Method("POST", UpdateContactGroupPath, httpHandler.New(businessRelationService.UpdateContactGroup))
 	mux.Method("POST", GetContactGroupsPath, httpHandler.New(businessRelationService.GetContactGroups))
+	mux.Method("POST", AddDefaultContactBookPath, httpHandler.New(businessRelationService.AddDefaultContactBook))
 	mux.Method("POST", AddContactBookPath, httpHandler.New(businessRelationService.AddContactBook))
 	mux.Method("POST", UpdateContactBookPath, httpHandler.New(businessRelationService.UpdateContactBook))
 	mux.Method("POST", GetContactBooksPath, httpHandler.New(businessRelationService.GetContactBooks))

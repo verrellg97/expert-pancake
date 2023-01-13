@@ -21,11 +21,11 @@ WHERE a.company_id = $1
 GROUP BY a.id;
 
 -- name: InsertContactBook :one
-INSERT INTO business_relation.contact_books(id, primary_company_id, secondary_company_id,
+INSERT INTO business_relation.contact_books(id, konekin_id, primary_company_id, secondary_company_id,
 contact_group_id, name, email, phone, mobile, web,
-is_all_branches, is_customer, is_supplier)
+is_all_branches, is_customer, is_supplier, is_default)
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9,
-$10, $11, $12)
+$10, $11, $12, $13, $14)
 RETURNING *;
 
 -- name: UpdateContactBook :one
@@ -70,6 +70,7 @@ JOIN business_relation.contact_book_mailing_addresses c ON a.id = c.contact_book
 JOIN business_relation.contact_book_shipping_addresses d ON a.id = d.contact_book_id
 LEFT JOIN business_relation.contact_groups e ON a.contact_group_id = e.id
 WHERE a.primary_company_id = $1
+AND a.is_default = FALSE
 AND CASE WHEN @is_filter_group_id::bool
 THEN a.contact_group_id = $2 ELSE TRUE END;
 
@@ -81,6 +82,11 @@ a.is_tax, a.tax_id, a.is_deleted
 FROM business_relation.contact_books a
 JOIN business_relation.contact_groups b ON a.contact_group_id = b.id
 WHERE a.id = $1;
+
+-- name: GetCountKonekinId :one
+SELECT COUNT(a.id)
+FROM business_relation.contact_books a
+WHERE a.konekin_id LIKE $1;
 
 -- name: GetCustomers :many
 SELECT a.id, a.primary_company_id, a.contact_group_id,

@@ -10,6 +10,7 @@ import (
 
 type BusinessRelationContactBook struct {
 	ID                 string       `db:"id"`
+	KonekinID          string       `db:"konekin_id"`
 	PrimaryCompanyID   string       `db:"primary_company_id"`
 	SecondaryCompanyID string       `db:"secondary_company_id"`
 	ContactGroupID     string       `db:"contact_group_id"`
@@ -23,6 +24,7 @@ type BusinessRelationContactBook struct {
 	IsSupplier         bool         `db:"is_supplier"`
 	IsTax              bool         `db:"is_tax"`
 	TaxID              string       `db:"tax_id"`
+	IsDefault          bool         `db:"is_default"`
 	IsDeleted          bool         `db:"is_deleted"`
 	CreatedAt          sql.NullTime `db:"created_at"`
 	UpdatedAt          sql.NullTime `db:"updated_at"`

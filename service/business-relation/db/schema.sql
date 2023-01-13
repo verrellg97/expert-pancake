@@ -13,6 +13,7 @@ CREATE TABLE business_relation.contact_groups (
 
 CREATE TABLE business_relation.contact_books (
   "id" text NOT NULL,
+  "konekin_id" text NOT NULL DEFAULT '',
   "primary_company_id" text NOT NULL,
   "secondary_company_id" text NOT NULL DEFAULT '',
   "contact_group_id" text NOT NULL DEFAULT '',
@@ -26,6 +27,7 @@ CREATE TABLE business_relation.contact_books (
   "is_supplier" bool NOT NULL DEFAULT false,
   "is_tax" bool NOT NULL DEFAULT false,
   "tax_id" text NOT NULL DEFAULT '',
+  "is_default" bool NOT NULL DEFAULT false,
   "is_deleted" bool NOT NULL DEFAULT false,
   "created_at" timestamptz DEFAULT (now()),
   "updated_at" timestamptz DEFAULT (now()),
