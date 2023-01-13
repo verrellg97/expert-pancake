@@ -83,6 +83,15 @@ FROM business_relation.contact_books a
 JOIN business_relation.contact_groups b ON a.contact_group_id = b.id
 WHERE a.id = $1;
 
+-- name: GetMyContactBook :one
+SELECT a.id, a.konekin_id, a.primary_company_id,
+a.name, a.email, a.phone, a.mobile, a.web
+FROM business_relation.contact_books a
+WHERE a.primary_company_id = $1
+AND a.is_customer = FALSE
+AND a.is_supplier = FALSE
+AND a.is_default = TRUE;
+
 -- name: GetCountKonekinId :one
 SELECT COUNT(a.id)
 FROM business_relation.contact_books a

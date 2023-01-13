@@ -5,11 +5,12 @@ const (
 	UpdateContactGroupError    = 600002
 	GetContactGroupsError      = 600003
 	AddDefaultContactBookError = 600004
-	AddNewContactBookError     = 600005
-	UpdateContactBookError     = 600006
-	GetContactBooksError       = 600007
-	UpdateCustomerError        = 600008
-	GetCustomersError          = 600009
-	UpdateSupplierError        = 600010
-	GetSuppliersError          = 600011
+	GetMyContactBookError      = 600005
+	AddNewContactBookError     = 600006
+	UpdateContactBookError     = 600007
+	GetContactBooksError       = 600008
+	UpdateCustomerError        = 600009
+	GetCustomersError          = 600010
+	UpdateSupplierError        = 600011
+	GetSuppliersError          = 600012
 )
