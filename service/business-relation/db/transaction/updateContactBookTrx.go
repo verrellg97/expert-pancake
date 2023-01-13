@@ -26,9 +26,11 @@ type UpdateContactBookTrxParams struct {
 
 type UpdateContactBookTrxResult struct {
 	ContactBookId      string
+	KonekinId          string
 	PrimaryCompanyId   string
 	SecondaryCompanyId string
 	ContactGroupId     string
+	ContactGroupName   string
 	Name               string
 	Email              string
 	Phone              string
@@ -49,7 +51,7 @@ func (trx *Trx) UpdateContactBookTrx(ctx context.Context, arg UpdateContactBookT
 	err := trx.execTx(ctx, func(q *db.Queries) error {
 		var err error
 
-		contactBookRes, err := q.UpdateContactBook(ctx, db.UpdateContactBookParams{
+		_, err = q.UpdateContactBook(ctx, db.UpdateContactBookParams{
 			ID:             arg.Id,
 			ContactGroupID: arg.ContactGroupId,
 			Name:           arg.Name,
@@ -61,6 +63,11 @@ func (trx *Trx) UpdateContactBookTrx(ctx context.Context, arg UpdateContactBookT
 			IsCustomer:     arg.IsCustomer,
 			IsSupplier:     arg.IsSupplier,
 		})
+		if err != nil {
+			return err
+		}
+
+		contactBookRes, err := q.GetContactBookById(ctx, arg.Id)
 		if err != nil {
 			return err
 		}
@@ -117,9 +124,11 @@ func (trx *Trx) UpdateContactBookTrx(ctx context.Context, arg UpdateContactBookT
 		}
 
 		result.ContactBookId = contactBookRes.ID
+		result.KonekinId = contactBookRes.KonekinID
 		result.PrimaryCompanyId = contactBookRes.PrimaryCompanyID
 		result.SecondaryCompanyId = contactBookRes.SecondaryCompanyID
 		result.ContactGroupId = contactBookRes.ContactGroupID
+		result.ContactGroupName = contactBookRes.ContactGroupName
 		result.Name = contactBookRes.Name
 		result.Email = contactBookRes.Email
 		result.Phone = contactBookRes.Phone

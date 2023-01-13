@@ -51,9 +51,11 @@ func (a businessRelationService) UpdateContactBook(w http.ResponseWriter, r *htt
 	res := model.UpdateContactBookResponse{
 		ContactBook: model.ContactBook{
 			ContactBookId:      result.ContactBookId,
+			KonekinId:          result.KonekinId,
 			PrimaryCompanyId:   result.PrimaryCompanyId,
 			SecondaryCompanyId: result.SecondaryCompanyId,
 			ContactGroupId:     result.ContactGroupId,
+			ContactGroupName:   result.ContactGroupName,
 			Name:               result.Name,
 			Email:              result.Email,
 			Phone:              result.Phone,
