@@ -39,10 +39,11 @@ type ContactGroupWithMember struct {
 }
 
 type AddContactGroupRequest struct {
-	CompanyId   string `json:"company_id" validate:"required"`
-	ImageUrl    string `json:"image_url"`
-	Name        string `json:"name" validate:"required"`
-	Description string `json:"description"`
+	CompanyId   string   `json:"company_id" validate:"required"`
+	ImageUrl    string   `json:"image_url"`
+	Name        string   `json:"name" validate:"required"`
+	Description string   `json:"description"`
+	Members     []string `json:"members"`
 }
 
 type AddContactGroupResponse struct {

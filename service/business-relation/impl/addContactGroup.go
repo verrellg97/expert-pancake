@@ -6,9 +6,8 @@ import (
 
 	"github.com/calvinkmts/expert-pancake/engine/errors"
 	"github.com/calvinkmts/expert-pancake/engine/httpHandler"
-	db "github.com/expert-pancake/service/business-relation/db/sqlc"
+	db "github.com/expert-pancake/service/business-relation/db/transaction"
 	"github.com/expert-pancake/service/business-relation/model"
-	uuid "github.com/satori/go.uuid"
 )
 
 func (a businessRelationService) AddContactGroup(w http.ResponseWriter, r *http.Request) error {
@@ -22,23 +21,23 @@ func (a businessRelationService) AddContactGroup(w http.ResponseWriter, r *http.
 		return errors.NewClientError().WithDataMap(errMapRequest)
 	}
 
-	arg := db.InsertContactGroupParams{
-		ID:          uuid.NewV4().String(),
-		CompanyID:   req.CompanyId,
+	arg := db.CreateNewContactGroupTrxParams{
+		CompanyId:   req.CompanyId,
 		ImageUrl:    req.ImageUrl,
 		Name:        req.Name,
 		Description: req.Description,
+		Members:     req.Members,
 	}
 
-	result, err := a.dbTrx.InsertContactGroup(context.Background(), arg)
+	result, err := a.dbTrx.CreateNewContactGroupTrx(context.Background(), arg)
 	if err != nil {
 		return errors.NewServerError(model.AddNewContactGroupError, err.Error())
 	}
 
 	res := model.AddContactGroupResponse{
 		ContactGroup: model.ContactGroup{
-			GroupId:     result.ID,
-			CompanyId:   result.CompanyID,
+			GroupId:     result.ContactGroupId,
+			CompanyId:   result.CompanyId,
 			ImageUrl:    result.ImageUrl,
 			Name:        result.Name,
 			Description: result.Description,
