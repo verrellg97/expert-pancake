@@ -106,7 +106,7 @@ func (q *Queries) GetContactBookById(ctx context.Context, id string) (GetContact
 }
 
 const getContactBooks = `-- name: GetContactBooks :many
-SELECT a.id, a.primary_company_id, a.secondary_company_id, 
+SELECT a.id, a.konekin_id, a.primary_company_id, a.secondary_company_id, 
 a.contact_group_id, COALESCE(e.name, '') AS contact_group_name,
 a.name, a.email, a.phone, a.mobile, a.web,
 a.is_all_branches, a.is_customer, a.is_supplier,
@@ -136,6 +136,7 @@ type GetContactBooksParams struct {
 
 type GetContactBooksRow struct {
 	ID                  string `db:"id"`
+	KonekinID           string `db:"konekin_id"`
 	PrimaryCompanyID    string `db:"primary_company_id"`
 	SecondaryCompanyID  string `db:"secondary_company_id"`
 	ContactGroupID      string `db:"contact_group_id"`
@@ -174,6 +175,7 @@ func (q *Queries) GetContactBooks(ctx context.Context, arg GetContactBooksParams
 		var i GetContactBooksRow
 		if err := rows.Scan(
 			&i.ID,
+			&i.KonekinID,
 			&i.PrimaryCompanyID,
 			&i.SecondaryCompanyID,
 			&i.ContactGroupID,
