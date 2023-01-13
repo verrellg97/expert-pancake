@@ -24,6 +24,21 @@ func (a businessRelationService) GetMyContactBook(w http.ResponseWriter, r *http
 		return errors.NewServerError(model.GetMyContactBookError, err.Error())
 	}
 
+	resultAdditionalInfo, err := a.dbTrx.GetContactBookAdditionalInfo(context.Background(), result.ID)
+	if err != nil {
+		return errors.NewServerError(model.GetMyContactBookError, err.Error())
+	}
+
+	resultMailingAddress, err := a.dbTrx.GetContactBookMailingAddress(context.Background(), result.ID)
+	if err != nil {
+		return errors.NewServerError(model.GetMyContactBookError, err.Error())
+	}
+
+	resultShippingAddress, err := a.dbTrx.GetContactBookShippingAddress(context.Background(), result.ID)
+	if err != nil {
+		return errors.NewServerError(model.GetMyContactBookError, err.Error())
+	}
+
 	res := model.MyContactBook{
 		ContactBookId:    result.ID,
 		KonekinId:        result.KonekinID,
@@ -33,6 +48,25 @@ func (a businessRelationService) GetMyContactBook(w http.ResponseWriter, r *http
 		Phone:            result.Phone,
 		Mobile:           result.Mobile,
 		Web:              result.Web,
+		AdditionalInfo: model.ContactBookAdditionaInfo{
+			Nickname: resultAdditionalInfo.Nickname,
+			Tag:      resultAdditionalInfo.Tag,
+			Note:     resultAdditionalInfo.Note,
+		},
+		MailingAddress: model.ContactBookAddress{
+			Province:    resultMailingAddress.Province,
+			Regency:     resultMailingAddress.Regency,
+			District:    resultMailingAddress.District,
+			PostalCode:  resultMailingAddress.PostalCode,
+			FullAddress: resultMailingAddress.FullAddress,
+		},
+		ShippingAddress: model.ContactBookAddress{
+			Province:    resultShippingAddress.Province,
+			Regency:     resultShippingAddress.Regency,
+			District:    resultShippingAddress.District,
+			PostalCode:  resultShippingAddress.PostalCode,
+			FullAddress: resultShippingAddress.FullAddress,
+		},
 	}
 	httpHandler.WriteResponse(w, res)
 

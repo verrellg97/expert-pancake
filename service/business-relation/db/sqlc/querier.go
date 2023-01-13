@@ -10,8 +10,11 @@ import (
 
 type Querier interface {
 	DeleteContactBookBranches(ctx context.Context, contactBookID string) error
+	GetContactBookAdditionalInfo(ctx context.Context, contactBookID string) (GetContactBookAdditionalInfoRow, error)
 	GetContactBookBranches(ctx context.Context, contactBookID string) ([]GetContactBookBranchesRow, error)
 	GetContactBookById(ctx context.Context, id string) (GetContactBookByIdRow, error)
+	GetContactBookMailingAddress(ctx context.Context, contactBookID string) (GetContactBookMailingAddressRow, error)
+	GetContactBookShippingAddress(ctx context.Context, contactBookID string) (GetContactBookShippingAddressRow, error)
 	GetContactBooks(ctx context.Context, arg GetContactBooksParams) ([]GetContactBooksRow, error)
 	GetContactGroups(ctx context.Context, companyID string) ([]GetContactGroupsRow, error)
 	GetCountKonekinId(ctx context.Context, konekinID string) (int64, error)

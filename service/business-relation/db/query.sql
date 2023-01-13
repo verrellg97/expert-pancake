@@ -99,6 +99,21 @@ AND a.is_customer = FALSE
 AND a.is_supplier = FALSE
 AND a.is_default = TRUE;
 
+-- name: GetContactBookAdditionalInfo :one
+SELECT a.nickname, a.tag, a.note
+FROM business_relation.contact_book_additional_infos a
+WHERE a.contact_book_id = $1;
+
+-- name: GetContactBookMailingAddress :one
+SELECT a.province, a.regency, a.district, a.postal_code, a.full_address
+FROM business_relation.contact_book_mailing_addresses a
+WHERE a.contact_book_id = $1;
+
+-- name: GetContactBookShippingAddress :one
+SELECT a.province, a.regency, a.district, a.postal_code, a.full_address
+FROM business_relation.contact_book_shipping_addresses a
+WHERE a.contact_book_id = $1;
+
 -- name: GetCountKonekinId :one
 SELECT COUNT(a.id)
 FROM business_relation.contact_books a

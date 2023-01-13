@@ -19,6 +19,25 @@ func (q *Queries) DeleteContactBookBranches(ctx context.Context, contactBookID s
 	return err
 }
 
+const getContactBookAdditionalInfo = `-- name: GetContactBookAdditionalInfo :one
+SELECT a.nickname, a.tag, a.note
+FROM business_relation.contact_book_additional_infos a
+WHERE a.contact_book_id = $1
+`
+
+type GetContactBookAdditionalInfoRow struct {
+	Nickname string `db:"nickname"`
+	Tag      string `db:"tag"`
+	Note     string `db:"note"`
+}
+
+func (q *Queries) GetContactBookAdditionalInfo(ctx context.Context, contactBookID string) (GetContactBookAdditionalInfoRow, error) {
+	row := q.db.QueryRowContext(ctx, getContactBookAdditionalInfo, contactBookID)
+	var i GetContactBookAdditionalInfoRow
+	err := row.Scan(&i.Nickname, &i.Tag, &i.Note)
+	return i, err
+}
+
 const getContactBookBranches = `-- name: GetContactBookBranches :many
 SELECT contact_book_id, company_branch_id FROM business_relation.contact_book_branches
 WHERE contact_book_id = $1
@@ -103,6 +122,60 @@ func (q *Queries) GetContactBookById(ctx context.Context, id string) (GetContact
 		&i.IsTax,
 		&i.TaxID,
 		&i.IsDeleted,
+	)
+	return i, err
+}
+
+const getContactBookMailingAddress = `-- name: GetContactBookMailingAddress :one
+SELECT a.province, a.regency, a.district, a.postal_code, a.full_address
+FROM business_relation.contact_book_mailing_addresses a
+WHERE a.contact_book_id = $1
+`
+
+type GetContactBookMailingAddressRow struct {
+	Province    string `db:"province"`
+	Regency     string `db:"regency"`
+	District    string `db:"district"`
+	PostalCode  string `db:"postal_code"`
+	FullAddress string `db:"full_address"`
+}
+
+func (q *Queries) GetContactBookMailingAddress(ctx context.Context, contactBookID string) (GetContactBookMailingAddressRow, error) {
+	row := q.db.QueryRowContext(ctx, getContactBookMailingAddress, contactBookID)
+	var i GetContactBookMailingAddressRow
+	err := row.Scan(
+		&i.Province,
+		&i.Regency,
+		&i.District,
+		&i.PostalCode,
+		&i.FullAddress,
+	)
+	return i, err
+}
+
+const getContactBookShippingAddress = `-- name: GetContactBookShippingAddress :one
+SELECT a.province, a.regency, a.district, a.postal_code, a.full_address
+FROM business_relation.contact_book_shipping_addresses a
+WHERE a.contact_book_id = $1
+`
+
+type GetContactBookShippingAddressRow struct {
+	Province    string `db:"province"`
+	Regency     string `db:"regency"`
+	District    string `db:"district"`
+	PostalCode  string `db:"postal_code"`
+	FullAddress string `db:"full_address"`
+}
+
+func (q *Queries) GetContactBookShippingAddress(ctx context.Context, contactBookID string) (GetContactBookShippingAddressRow, error) {
+	row := q.db.QueryRowContext(ctx, getContactBookShippingAddress, contactBookID)
+	var i GetContactBookShippingAddressRow
+	err := row.Scan(
+		&i.Province,
+		&i.Regency,
+		&i.District,
+		&i.PostalCode,
+		&i.FullAddress,
 	)
 	return i, err
 }
