@@ -123,6 +123,7 @@ JOIN business_relation.contact_book_mailing_addresses c ON a.id = c.contact_book
 JOIN business_relation.contact_book_shipping_addresses d ON a.id = d.contact_book_id
 LEFT JOIN business_relation.contact_groups e ON a.contact_group_id = e.id
 WHERE a.primary_company_id = $1
+AND a.is_default = FALSE
 AND CASE WHEN $3::bool
 THEN a.contact_group_id = $2 ELSE TRUE END
 `
@@ -257,6 +258,19 @@ func (q *Queries) GetContactGroups(ctx context.Context, companyID string) ([]Get
 		return nil, err
 	}
 	return items, nil
+}
+
+const getCountKonekinId = `-- name: GetCountKonekinId :one
+SELECT COUNT(a.id)
+FROM business_relation.contact_books a
+WHERE a.konekin_id LIKE $1
+`
+
+func (q *Queries) GetCountKonekinId(ctx context.Context, konekinID string) (int64, error) {
+	row := q.db.QueryRowContext(ctx, getCountKonekinId, konekinID)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
 }
 
 const getCustomers = `-- name: GetCustomers :many
@@ -410,16 +424,17 @@ func (q *Queries) GetSuppliers(ctx context.Context, primaryCompanyID string) ([]
 }
 
 const insertContactBook = `-- name: InsertContactBook :one
-INSERT INTO business_relation.contact_books(id, primary_company_id, secondary_company_id,
+INSERT INTO business_relation.contact_books(id, konekin_id, primary_company_id, secondary_company_id,
 contact_group_id, name, email, phone, mobile, web,
-is_all_branches, is_customer, is_supplier)
+is_all_branches, is_customer, is_supplier, is_default)
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9,
-$10, $11, $12)
-RETURNING id, primary_company_id, secondary_company_id, contact_group_id, name, email, phone, mobile, web, is_all_branches, is_customer, is_supplier, is_tax, tax_id, is_deleted, created_at, updated_at
+$10, $11, $12, $13, $14)
+RETURNING id, konekin_id, primary_company_id, secondary_company_id, contact_group_id, name, email, phone, mobile, web, is_all_branches, is_customer, is_supplier, is_tax, tax_id, is_default, is_deleted, created_at, updated_at
 `
 
 type InsertContactBookParams struct {
 	ID                 string `db:"id"`
+	KonekinID          string `db:"konekin_id"`
 	PrimaryCompanyID   string `db:"primary_company_id"`
 	SecondaryCompanyID string `db:"secondary_company_id"`
 	ContactGroupID     string `db:"contact_group_id"`
@@ -431,11 +446,13 @@ type InsertContactBookParams struct {
 	IsAllBranches      bool   `db:"is_all_branches"`
 	IsCustomer         bool   `db:"is_customer"`
 	IsSupplier         bool   `db:"is_supplier"`
+	IsDefault          bool   `db:"is_default"`
 }
 
 func (q *Queries) InsertContactBook(ctx context.Context, arg InsertContactBookParams) (BusinessRelationContactBook, error) {
 	row := q.db.QueryRowContext(ctx, insertContactBook,
 		arg.ID,
+		arg.KonekinID,
 		arg.PrimaryCompanyID,
 		arg.SecondaryCompanyID,
 		arg.ContactGroupID,
@@ -447,10 +464,12 @@ func (q *Queries) InsertContactBook(ctx context.Context, arg InsertContactBookPa
 		arg.IsAllBranches,
 		arg.IsCustomer,
 		arg.IsSupplier,
+		arg.IsDefault,
 	)
 	var i BusinessRelationContactBook
 	err := row.Scan(
 		&i.ID,
+		&i.KonekinID,
 		&i.PrimaryCompanyID,
 		&i.SecondaryCompanyID,
 		&i.ContactGroupID,
@@ -464,6 +483,7 @@ func (q *Queries) InsertContactBook(ctx context.Context, arg InsertContactBookPa
 		&i.IsSupplier,
 		&i.IsTax,
 		&i.TaxID,
+		&i.IsDefault,
 		&i.IsDeleted,
 		&i.CreatedAt,
 		&i.UpdatedAt,
@@ -612,7 +632,7 @@ SET
     is_supplier = $10,
     updated_at = NOW()
 WHERE id = $1
-RETURNING id, primary_company_id, secondary_company_id, contact_group_id, name, email, phone, mobile, web, is_all_branches, is_customer, is_supplier, is_tax, tax_id, is_deleted, created_at, updated_at
+RETURNING id, konekin_id, primary_company_id, secondary_company_id, contact_group_id, name, email, phone, mobile, web, is_all_branches, is_customer, is_supplier, is_tax, tax_id, is_default, is_deleted, created_at, updated_at
 `
 
 type UpdateContactBookParams struct {
@@ -644,6 +664,7 @@ func (q *Queries) UpdateContactBook(ctx context.Context, arg UpdateContactBookPa
 	var i BusinessRelationContactBook
 	err := row.Scan(
 		&i.ID,
+		&i.KonekinID,
 		&i.PrimaryCompanyID,
 		&i.SecondaryCompanyID,
 		&i.ContactGroupID,
@@ -657,6 +678,7 @@ func (q *Queries) UpdateContactBook(ctx context.Context, arg UpdateContactBookPa
 		&i.IsSupplier,
 		&i.IsTax,
 		&i.TaxID,
+		&i.IsDefault,
 		&i.IsDeleted,
 		&i.CreatedAt,
 		&i.UpdatedAt,
