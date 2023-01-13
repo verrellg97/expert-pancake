@@ -32,12 +32,48 @@ func (trx *Trx) AddDefaultContactBookTrx(ctx context.Context, arg AddDefaultCont
 			konekinId += strconv.FormatInt(countKonekinId, 10)
 		}
 
+		id := uuid.NewV4().String()
+
 		_, err = q.InsertContactBook(ctx, db.InsertContactBookParams{
-			ID:               uuid.NewV4().String(),
+			ID:               id,
 			KonekinID:        konekinId,
 			PrimaryCompanyID: arg.CompanyId,
 			Name:             arg.CompanyName,
 			IsDefault:        true,
+		})
+		if err != nil {
+			return err
+		}
+
+		err = q.InsertContactBookAdditionalInfo(ctx, db.InsertContactBookAdditionalInfoParams{
+			ContactBookID: id,
+			Nickname:      "",
+			Tag:           "",
+			Note:          "",
+		})
+		if err != nil {
+			return err
+		}
+
+		err = q.InsertContactBookMailingAddress(ctx, db.InsertContactBookMailingAddressParams{
+			ContactBookID: id,
+			Province:      "",
+			Regency:       "",
+			District:      "",
+			PostalCode:    "",
+			FullAddress:   "",
+		})
+		if err != nil {
+			return err
+		}
+
+		err = q.InsertContactBookShippingAddress(ctx, db.InsertContactBookShippingAddressParams{
+			ContactBookID: id,
+			Province:      "",
+			Regency:       "",
+			District:      "",
+			PostalCode:    "",
+			FullAddress:   "",
 		})
 		if err != nil {
 			return err
