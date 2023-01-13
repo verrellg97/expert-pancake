@@ -53,17 +53,18 @@ func (q *Queries) GetContactBookBranches(ctx context.Context, contactBookID stri
 }
 
 const getContactBookById = `-- name: GetContactBookById :one
-SELECT a.id, a.primary_company_id, a.secondary_company_id,
-a.contact_group_id, b.name AS contact_group_name, a.name, a.email,
+SELECT a.id, a.konekin_id, a.primary_company_id, a.secondary_company_id,
+a.contact_group_id, COALESCE(b.name, '') AS contact_group_name, a.name, a.email,
 a.phone, a.mobile, a.web, a.is_all_branches, a.is_customer, a.is_supplier,
 a.is_tax, a.tax_id, a.is_deleted
 FROM business_relation.contact_books a
-JOIN business_relation.contact_groups b ON a.contact_group_id = b.id
+LEFT JOIN business_relation.contact_groups b ON a.contact_group_id = b.id
 WHERE a.id = $1
 `
 
 type GetContactBookByIdRow struct {
 	ID                 string `db:"id"`
+	KonekinID          string `db:"konekin_id"`
 	PrimaryCompanyID   string `db:"primary_company_id"`
 	SecondaryCompanyID string `db:"secondary_company_id"`
 	ContactGroupID     string `db:"contact_group_id"`
@@ -86,6 +87,7 @@ func (q *Queries) GetContactBookById(ctx context.Context, id string) (GetContact
 	var i GetContactBookByIdRow
 	err := row.Scan(
 		&i.ID,
+		&i.KonekinID,
 		&i.PrimaryCompanyID,
 		&i.SecondaryCompanyID,
 		&i.ContactGroupID,

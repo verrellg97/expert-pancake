@@ -82,12 +82,12 @@ AND CASE WHEN @is_filter_group_id::bool
 THEN a.contact_group_id = $2 ELSE TRUE END;
 
 -- name: GetContactBookById :one
-SELECT a.id, a.primary_company_id, a.secondary_company_id,
-a.contact_group_id, b.name AS contact_group_name, a.name, a.email,
+SELECT a.id, a.konekin_id, a.primary_company_id, a.secondary_company_id,
+a.contact_group_id, COALESCE(b.name, '') AS contact_group_name, a.name, a.email,
 a.phone, a.mobile, a.web, a.is_all_branches, a.is_customer, a.is_supplier,
 a.is_tax, a.tax_id, a.is_deleted
 FROM business_relation.contact_books a
-JOIN business_relation.contact_groups b ON a.contact_group_id = b.id
+LEFT JOIN business_relation.contact_groups b ON a.contact_group_id = b.id
 WHERE a.id = $1;
 
 -- name: GetMyContactBook :one

@@ -27,9 +27,11 @@ type CreateNewContactBookTrxParams struct {
 
 type CreateNewContactBookTrxResult struct {
 	ContactBookId      string
+	KonekinId          string
 	PrimaryCompanyId   string
 	SecondaryCompanyId string
 	ContactGroupId     string
+	ContactGroupName   string
 	Name               string
 	Email              string
 	Phone              string
@@ -52,7 +54,7 @@ func (trx *Trx) CreateNewContactBookTrx(ctx context.Context, arg CreateNewContac
 
 		id := uuid.NewV4().String()
 
-		contactBookRes, err := q.InsertContactBook(ctx, db.InsertContactBookParams{
+		_, err = q.InsertContactBook(ctx, db.InsertContactBookParams{
 			ID:               id,
 			PrimaryCompanyID: arg.PrimaryCompanyId,
 			ContactGroupID:   arg.ContactGroupId,
@@ -65,6 +67,11 @@ func (trx *Trx) CreateNewContactBookTrx(ctx context.Context, arg CreateNewContac
 			IsCustomer:       arg.IsCustomer,
 			IsSupplier:       arg.IsSupplier,
 		})
+		if err != nil {
+			return err
+		}
+
+		contactBookRes, err := q.GetContactBookById(ctx, id)
 		if err != nil {
 			return err
 		}
@@ -116,9 +123,11 @@ func (trx *Trx) CreateNewContactBookTrx(ctx context.Context, arg CreateNewContac
 		}
 
 		result.ContactBookId = id
+		result.KonekinId = contactBookRes.KonekinID
 		result.PrimaryCompanyId = contactBookRes.PrimaryCompanyID
 		result.SecondaryCompanyId = contactBookRes.SecondaryCompanyID
 		result.ContactGroupId = contactBookRes.ContactGroupID
+		result.ContactGroupName = contactBookRes.ContactGroupName
 		result.Name = contactBookRes.Name
 		result.Email = contactBookRes.Email
 		result.Phone = contactBookRes.Phone
