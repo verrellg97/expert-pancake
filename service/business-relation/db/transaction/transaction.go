@@ -11,6 +11,7 @@ import (
 type BusinessRelationTrx interface {
 	Querier
 	CreateNewContactGroupTrx(ctx context.Context, arg CreateNewContactGroupTrxParams) (CreateNewContactGroupTrxResult, error)
+	UpdateContactGroupTrx(ctx context.Context, arg UpdateContactGroupTrxParams) (UpdateContactGroupTrxResult, error)
 	AddDefaultContactBookTrx(ctx context.Context, arg AddDefaultContactBookTrxParams) error
 	CreateNewContactBookTrx(ctx context.Context, arg CreateNewContactBookTrxParams) (CreateNewContactBookTrxResult, error)
 	UpdateContactBookTrx(ctx context.Context, arg UpdateContactBookTrxParams) (UpdateContactBookTrxResult, error)

@@ -845,6 +845,24 @@ func (q *Queries) UpdateContactBookGroupId(ctx context.Context, arg UpdateContac
 	return err
 }
 
+const updateContactBookGroupIdByGroupId = `-- name: UpdateContactBookGroupIdByGroupId :exec
+UPDATE business_relation.contact_books
+SET 
+    contact_group_id = $2::text,
+    updated_at = NOW()
+WHERE contact_group_id = $1
+`
+
+type UpdateContactBookGroupIdByGroupIdParams struct {
+	ContactGroupID    string `db:"contact_group_id"`
+	NewContactGroupID string `db:"new_contact_group_id"`
+}
+
+func (q *Queries) UpdateContactBookGroupIdByGroupId(ctx context.Context, arg UpdateContactBookGroupIdByGroupIdParams) error {
+	_, err := q.db.ExecContext(ctx, updateContactBookGroupIdByGroupId, arg.ContactGroupID, arg.NewContactGroupID)
+	return err
+}
+
 const updateContactBookMailingAddress = `-- name: UpdateContactBookMailingAddress :exec
 UPDATE business_relation.contact_book_mailing_addresses
 SET 
