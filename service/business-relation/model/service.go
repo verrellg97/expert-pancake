@@ -48,7 +48,7 @@ type AddContactGroupRequest struct {
 }
 
 type AddContactGroupResponse struct {
-	ContactGroup
+	ContactGroupWithMember
 }
 
 type UpdateContactGroupRequest struct {

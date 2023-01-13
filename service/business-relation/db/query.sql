@@ -52,6 +52,13 @@ SET
     updated_at = NOW()
 WHERE id = $1;
 
+-- name: UpdateContactBookGroupId :exec
+UPDATE business_relation.contact_books
+SET 
+    contact_group_id = $2,
+    updated_at = NOW()
+WHERE id = $1;
+
 -- name: GetContactBooks :many
 SELECT a.id, a.primary_company_id, a.secondary_company_id, 
 a.contact_group_id, COALESCE(e.name, '') AS contact_group_name,

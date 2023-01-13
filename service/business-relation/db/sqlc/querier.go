@@ -26,6 +26,7 @@ type Querier interface {
 	InsertContactGroup(ctx context.Context, arg InsertContactGroupParams) (BusinessRelationContactGroup, error)
 	UpdateContactBook(ctx context.Context, arg UpdateContactBookParams) (BusinessRelationContactBook, error)
 	UpdateContactBookAdditionalInfo(ctx context.Context, arg UpdateContactBookAdditionalInfoParams) error
+	UpdateContactBookGroupId(ctx context.Context, arg UpdateContactBookGroupIdParams) error
 	UpdateContactBookMailingAddress(ctx context.Context, arg UpdateContactBookMailingAddressParams) error
 	UpdateContactBookShippingAddress(ctx context.Context, arg UpdateContactBookShippingAddressParams) error
 	UpdateContactBookTaxInfo(ctx context.Context, arg UpdateContactBookTaxInfoParams) error
