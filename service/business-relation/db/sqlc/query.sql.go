@@ -348,6 +348,43 @@ func (q *Queries) GetCustomers(ctx context.Context, primaryCompanyID string) ([]
 	return items, nil
 }
 
+const getMyContactBook = `-- name: GetMyContactBook :one
+SELECT a.id, a.konekin_id, a.primary_company_id,
+a.name, a.email, a.phone, a.mobile, a.web
+FROM business_relation.contact_books a
+WHERE a.primary_company_id = $1
+AND a.is_customer = FALSE
+AND a.is_supplier = FALSE
+AND a.is_default = TRUE
+`
+
+type GetMyContactBookRow struct {
+	ID               string `db:"id"`
+	KonekinID        string `db:"konekin_id"`
+	PrimaryCompanyID string `db:"primary_company_id"`
+	Name             string `db:"name"`
+	Email            string `db:"email"`
+	Phone            string `db:"phone"`
+	Mobile           string `db:"mobile"`
+	Web              string `db:"web"`
+}
+
+func (q *Queries) GetMyContactBook(ctx context.Context, primaryCompanyID string) (GetMyContactBookRow, error) {
+	row := q.db.QueryRowContext(ctx, getMyContactBook, primaryCompanyID)
+	var i GetMyContactBookRow
+	err := row.Scan(
+		&i.ID,
+		&i.KonekinID,
+		&i.PrimaryCompanyID,
+		&i.Name,
+		&i.Email,
+		&i.Phone,
+		&i.Mobile,
+		&i.Web,
+	)
+	return i, err
+}
+
 const getSuppliers = `-- name: GetSuppliers :many
 SELECT a.id, a.primary_company_id, a.contact_group_id,
 COALESCE(b.name, '') AS contact_group_name, a.name, a.email, a.phone,

@@ -15,6 +15,7 @@ const (
 	UpdateContactGroupPath    = "/business-relation/contact-group/update"
 	GetContactGroupsPath      = "/business-relation/contact-groups"
 	AddDefaultContactBookPath = "/business-relation/contact-book/default-data"
+	GetMyContactBookPath      = "/business-relation/my-contact-book"
 	AddContactBookPath        = "/business-relation/contact-book/add"
 	UpdateContactBookPath     = "/business-relation/contact-book/update"
 	GetContactBooksPath       = "/business-relation/contact-books"
@@ -46,6 +47,7 @@ func (c *component) Routes(businessRelationService model.BusinessRelationService
 	mux.Method("POST", AddDefaultContactBookPath, httpHandler.New(businessRelationService.AddDefaultContactBook))
 	mux.Method("POST", AddContactBookPath, httpHandler.New(businessRelationService.AddContactBook))
 	mux.Method("POST", UpdateContactBookPath, httpHandler.New(businessRelationService.UpdateContactBook))
+	mux.Method("POST", GetMyContactBookPath, httpHandler.New(businessRelationService.GetMyContactBook))
 	mux.Method("POST", GetContactBooksPath, httpHandler.New(businessRelationService.GetContactBooks))
 	mux.Method("POST", UpdateCustomerPath, httpHandler.New(businessRelationService.UpdateCustomer))
 	mux.Method("POST", GetCustomersPath, httpHandler.New(businessRelationService.GetCustomers))
