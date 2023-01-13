@@ -7,11 +7,11 @@ import (
 	"net/http"
 )
 
-func AddDefaultCompanyChartOfAccount(req AddDefaultCompanyChartOfAccountRequest) error {
+func AddDefaultContactBook(req AddDefaultContactBookRequest) error {
 
 	reqJSON, err := json.Marshal(req)
 
-	res, err := http.Post(AccountingRootPath+AddDefaultCompanyChartOfAccountPath, "application/json", bytes.NewBuffer(reqJSON))
+	res, err := http.Post(BusinessRelationRootPath+AddDefaultContactBookPath, "application/json", bytes.NewBuffer(reqJSON))
 	if err != nil {
 		return err
 	}

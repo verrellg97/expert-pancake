@@ -62,6 +62,15 @@ func (trx *Trx) CreateNewCompanyTrx(ctx context.Context, arg db.InsertCompanyPar
 			return err
 		}
 
+		err = client.AddDefaultContactBook(
+			client.AddDefaultContactBookRequest{
+				CompanyId:   id,
+				CompanyName: arg.Name,
+			})
+		if err != nil {
+			return err
+		}
+
 		result.CompanyId = id
 		result.AccountId = companyRes.UserID
 		result.Name = companyRes.Name
