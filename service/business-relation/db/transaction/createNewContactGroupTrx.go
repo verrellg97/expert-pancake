@@ -44,7 +44,7 @@ func (trx *Trx) CreateNewContactGroupTrx(ctx context.Context, arg CreateNewConta
 		}
 
 		for _, d := range arg.Members {
-			_, err = q.UpdateContactBook(ctx, db.UpdateContactBookParams{
+			err = q.UpdateContactBookGroupId(ctx, db.UpdateContactBookGroupIdParams{
 				ID:             d,
 				ContactGroupID: id,
 			})

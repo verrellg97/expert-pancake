@@ -46,7 +46,7 @@ func (a accountingService) AddCompanyChartOfAccount(w http.ResponseWriter, r *ht
 
 	resultGroup, err := a.dbTrx.GetChartOfAccountGroup(context.Background(), arg.ChartOfAccountGroupId)
 	if err != nil {
-		return errors.NewServerError(model.UpdateCompanyChartOfAccountError, err.Error())
+		return errors.NewServerError(model.AddCompanyChartOfAccountError, err.Error())
 	}
 
 	res := model.UpsertCompanyChartOfAccountResponse{

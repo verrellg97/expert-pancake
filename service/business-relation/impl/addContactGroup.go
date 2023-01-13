@@ -3,6 +3,7 @@ package impl
 import (
 	"context"
 	"net/http"
+	"strconv"
 
 	"github.com/calvinkmts/expert-pancake/engine/errors"
 	"github.com/calvinkmts/expert-pancake/engine/httpHandler"
@@ -35,12 +36,13 @@ func (a businessRelationService) AddContactGroup(w http.ResponseWriter, r *http.
 	}
 
 	res := model.AddContactGroupResponse{
-		ContactGroup: model.ContactGroup{
+		ContactGroupWithMember: model.ContactGroupWithMember{
 			GroupId:     result.ContactGroupId,
 			CompanyId:   result.CompanyId,
 			ImageUrl:    result.ImageUrl,
 			Name:        result.Name,
 			Description: result.Description,
+			Member:      strconv.Itoa(int(len(result.Members))),
 		},
 	}
 
