@@ -3,10 +3,11 @@ package impl
 import (
 	"context"
 	"net/http"
+	"strconv"
 
 	"github.com/calvinkmts/expert-pancake/engine/errors"
 	"github.com/calvinkmts/expert-pancake/engine/httpHandler"
-	db "github.com/expert-pancake/service/business-relation/db/sqlc"
+	db "github.com/expert-pancake/service/business-relation/db/transaction"
 	"github.com/expert-pancake/service/business-relation/model"
 )
 
@@ -20,23 +21,27 @@ func (a businessRelationService) UpdateContactGroup(w http.ResponseWriter, r *ht
 		return errors.NewClientError().WithDataMap(errMapRequest)
 	}
 
-	result, err := a.dbTrx.UpdateContactGroup(context.Background(), db.UpdateContactGroupParams{
-		ID:          req.GroupId,
+	arg := db.UpdateContactGroupTrxParams{
+		Id:          req.GroupId,
 		ImageUrl:    req.ImageUrl,
 		Name:        req.Name,
 		Description: req.Description,
-	})
+		Members:     req.Members,
+	}
+
+	result, err := a.dbTrx.UpdateContactGroupTrx(context.Background(), arg)
 	if err != nil {
 		return errors.NewServerError(model.UpdateContactGroupError, err.Error())
 	}
 
 	res := model.UpdateContactGroupResponse{
-		ContactGroup: model.ContactGroup{
-			GroupId:     result.ID,
-			CompanyId:   result.CompanyID,
+		ContactGroupWithMember: model.ContactGroupWithMember{
+			GroupId:     result.ContactGroupId,
+			CompanyId:   result.CompanyId,
 			ImageUrl:    result.ImageUrl,
 			Name:        result.Name,
 			Description: result.Description,
+			Member:      strconv.Itoa(int(len(result.Members))),
 		},
 	}
 	httpHandler.WriteResponse(w, res)
