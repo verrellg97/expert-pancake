@@ -23,6 +23,7 @@ type BusinessRelationService interface {
 
 	AddContactInvitation(w http.ResponseWriter, r *http.Request) error
 	GetContactInvitations(w http.ResponseWriter, r *http.Request) error
+	GetRequestInvitations(w http.ResponseWriter, r *http.Request) error
 }
 
 type ContactGroupWithMember struct {
@@ -74,6 +75,22 @@ type MyContactBook struct {
 	AdditionalInfo   ContactBookAdditionaInfo `json:"additional_info" validate:"required"`
 	MailingAddress   ContactBookAddress       `json:"mailing_address" validate:"required"`
 	ShippingAddress  ContactBookAddress       `json:"shipping_address" validate:"required"`
+}
+
+type InvitationContactBook struct {
+	InvitationId     string                   `json:"invitation_id" validate:"required"`
+	ContactBookId    string                   `json:"contact_book_id" validate:"required"`
+	KonekinId        string                   `json:"konekin_id" validate:"required"`
+	PrimaryCompanyId string                   `json:"primary_company_id" validate:"required"`
+	Name             string                   `json:"name" validate:"required"`
+	Email            string                   `json:"email" validate:"required"`
+	Phone            string                   `json:"phone" validate:"required"`
+	Mobile           string                   `json:"mobile" validate:"required"`
+	Web              string                   `json:"web" validate:"required"`
+	AdditionalInfo   ContactBookAdditionaInfo `json:"additional_info" validate:"required"`
+	MailingAddress   ContactBookAddress       `json:"mailing_address" validate:"required"`
+	ShippingAddress  ContactBookAddress       `json:"shipping_address" validate:"required"`
+	Status           string                   `json:"status" validate:"required"`
 }
 
 type ContactBook struct {
@@ -249,5 +266,9 @@ type AddContactInvitationResponse struct {
 }
 
 type GetContactInvitationsRequest struct {
+	CompanyId string `json:"company_id" validate:"required"`
+}
+
+type GetRequestInvitationsRequest struct {
 	CompanyId string `json:"company_id" validate:"required"`
 }
