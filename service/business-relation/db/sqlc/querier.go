@@ -17,6 +17,7 @@ type Querier interface {
 	GetContactBookShippingAddress(ctx context.Context, contactBookID string) (GetContactBookShippingAddressRow, error)
 	GetContactBooks(ctx context.Context, arg GetContactBooksParams) ([]GetContactBooksRow, error)
 	GetContactGroups(ctx context.Context, companyID string) ([]GetContactGroupsRow, error)
+	GetContactInvitations(ctx context.Context, primaryCompanyID string) ([]GetContactInvitationsRow, error)
 	GetCountKonekinId(ctx context.Context, konekinID string) (int64, error)
 	GetCustomers(ctx context.Context, primaryCompanyID string) ([]GetCustomersRow, error)
 	GetMyContactBook(ctx context.Context, primaryCompanyID string) (GetMyContactBookRow, error)

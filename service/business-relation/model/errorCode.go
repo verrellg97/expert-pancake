@@ -14,4 +14,5 @@ const (
 	UpdateSupplierError          = 600011
 	GetSuppliersError            = 600012
 	AddNewContactInvitationError = 600013
+	GetContactInvitationsError   = 600014
 )
