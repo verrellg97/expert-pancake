@@ -555,6 +555,100 @@ func (q *Queries) GetMyContactBook(ctx context.Context, primaryCompanyID string)
 	return i, err
 }
 
+const getReceiveInvitations = `-- name: GetReceiveInvitations :many
+SELECT a.id, a.status,
+b.id AS contact_book_id, b.konekin_id, b.primary_company_id,
+b.name, b.email, b.phone, b.mobile, b.web,
+c.nickname, c.tag, c.note,
+d.province AS mailing_province, d.regency AS mailing_regency,
+d.district AS mailing_district, d.postal_code AS mailing_postal_code,
+d.full_address AS mailing_full_address,
+e.province AS shipping_province, e.regency AS shipping_regency,
+e.district AS shipping_district, e.postal_code AS shipping_postal_code,
+e.full_address AS shipping_full_address
+FROM business_relation.contact_invitations a
+JOIN business_relation.contact_books b ON a.primary_company_id = b.primary_company_id
+AND b.is_default = TRUE AND b.is_customer = FALSE AND b.is_supplier = FALSE
+JOIN business_relation.contact_book_additional_infos c ON b.id = c.contact_book_id
+JOIN business_relation.contact_book_mailing_addresses d ON b.id = d.contact_book_id
+JOIN business_relation.contact_book_shipping_addresses e ON b.id = e.contact_book_id
+WHERE a.secondary_company_id = $1
+AND a.status <> 'cancelled'
+`
+
+type GetReceiveInvitationsRow struct {
+	ID                  string `db:"id"`
+	Status              string `db:"status"`
+	ContactBookID       string `db:"contact_book_id"`
+	KonekinID           string `db:"konekin_id"`
+	PrimaryCompanyID    string `db:"primary_company_id"`
+	Name                string `db:"name"`
+	Email               string `db:"email"`
+	Phone               string `db:"phone"`
+	Mobile              string `db:"mobile"`
+	Web                 string `db:"web"`
+	Nickname            string `db:"nickname"`
+	Tag                 string `db:"tag"`
+	Note                string `db:"note"`
+	MailingProvince     string `db:"mailing_province"`
+	MailingRegency      string `db:"mailing_regency"`
+	MailingDistrict     string `db:"mailing_district"`
+	MailingPostalCode   string `db:"mailing_postal_code"`
+	MailingFullAddress  string `db:"mailing_full_address"`
+	ShippingProvince    string `db:"shipping_province"`
+	ShippingRegency     string `db:"shipping_regency"`
+	ShippingDistrict    string `db:"shipping_district"`
+	ShippingPostalCode  string `db:"shipping_postal_code"`
+	ShippingFullAddress string `db:"shipping_full_address"`
+}
+
+func (q *Queries) GetReceiveInvitations(ctx context.Context, secondaryCompanyID string) ([]GetReceiveInvitationsRow, error) {
+	rows, err := q.db.QueryContext(ctx, getReceiveInvitations, secondaryCompanyID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetReceiveInvitationsRow
+	for rows.Next() {
+		var i GetReceiveInvitationsRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Status,
+			&i.ContactBookID,
+			&i.KonekinID,
+			&i.PrimaryCompanyID,
+			&i.Name,
+			&i.Email,
+			&i.Phone,
+			&i.Mobile,
+			&i.Web,
+			&i.Nickname,
+			&i.Tag,
+			&i.Note,
+			&i.MailingProvince,
+			&i.MailingRegency,
+			&i.MailingDistrict,
+			&i.MailingPostalCode,
+			&i.MailingFullAddress,
+			&i.ShippingProvince,
+			&i.ShippingRegency,
+			&i.ShippingDistrict,
+			&i.ShippingPostalCode,
+			&i.ShippingFullAddress,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getRequestInvitations = `-- name: GetRequestInvitations :many
 SELECT a.id, a.status,
 b.id AS contact_book_id, b.konekin_id, b.primary_company_id,

@@ -16,4 +16,5 @@ const (
 	AddNewContactInvitationError = 600013
 	GetContactInvitationsError   = 600014
 	GetRequestInvitationsError   = 600015
+	GetReceiveInvitationsError   = 600016
 )
