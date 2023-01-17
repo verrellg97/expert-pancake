@@ -91,3 +91,15 @@ CREATE TABLE business_relation.contact_book_supplier_infos (
   "updated_at" timestamptz DEFAULT (now()),
   PRIMARY KEY ("contact_book_id")
 );
+
+CREATE TABLE business_relation.contact_invitations (
+  "id" text NOT NULL,
+  "primary_contact_book_id" text NOT NULL DEFAULT '',
+  "secondary_contact_book_id" text NOT NULL DEFAULT '',
+  "primary_company_id" text NOT NULL,
+  "secondary_company_id" text NOT NULL,
+  "status" text NOT NULL DEFAULT 'waiting',
+  "created_at" timestamptz DEFAULT (now()),
+  "updated_at" timestamptz DEFAULT (now()),
+  PRIMARY KEY ("id")
+);
