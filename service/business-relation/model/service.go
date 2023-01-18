@@ -24,6 +24,7 @@ type BusinessRelationService interface {
 	AddContactInvitation(w http.ResponseWriter, r *http.Request) error
 	GetContactInvitations(w http.ResponseWriter, r *http.Request) error
 	GetRequestInvitations(w http.ResponseWriter, r *http.Request) error
+	GetReceiveInvitations(w http.ResponseWriter, r *http.Request) error
 }
 
 type ContactGroupWithMember struct {
@@ -270,5 +271,9 @@ type GetContactInvitationsRequest struct {
 }
 
 type GetRequestInvitationsRequest struct {
+	CompanyId string `json:"company_id" validate:"required"`
+}
+
+type GetReceiveInvitationsRequest struct {
 	CompanyId string `json:"company_id" validate:"required"`
 }
