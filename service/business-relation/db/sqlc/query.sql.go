@@ -201,12 +201,18 @@ WHERE a.primary_company_id = $1
 AND a.is_default = FALSE
 AND CASE WHEN $3::bool
 THEN a.contact_group_id = $2 ELSE TRUE END
+AND CASE WHEN $4::bool
+THEN a.is_customer = FALSE
+WHEN $5::bool
+THEN a.is_supplier = FALSE ELSE TRUE END
 `
 
 type GetContactBooksParams struct {
-	PrimaryCompanyID string `db:"primary_company_id"`
-	ContactGroupID   string `db:"contact_group_id"`
-	IsFilterGroupID  bool   `db:"is_filter_group_id"`
+	PrimaryCompanyID    string `db:"primary_company_id"`
+	ContactGroupID      string `db:"contact_group_id"`
+	IsFilterGroupID     bool   `db:"is_filter_group_id"`
+	IsCustomerApplicant bool   `db:"is_customer_applicant"`
+	IsSupplierApplicant bool   `db:"is_supplier_applicant"`
 }
 
 type GetContactBooksRow struct {
@@ -240,7 +246,13 @@ type GetContactBooksRow struct {
 }
 
 func (q *Queries) GetContactBooks(ctx context.Context, arg GetContactBooksParams) ([]GetContactBooksRow, error) {
-	rows, err := q.db.QueryContext(ctx, getContactBooks, arg.PrimaryCompanyID, arg.ContactGroupID, arg.IsFilterGroupID)
+	rows, err := q.db.QueryContext(ctx, getContactBooks,
+		arg.PrimaryCompanyID,
+		arg.ContactGroupID,
+		arg.IsFilterGroupID,
+		arg.IsCustomerApplicant,
+		arg.IsSupplierApplicant,
+	)
 	if err != nil {
 		return nil, err
 	}
