@@ -255,3 +255,23 @@ AND a.is_default = TRUE
 AND a.is_customer = FALSE
 AND a.is_supplier = FALSE
 AND e.id IS NULL;
+
+-- name: GetRequestInvitations :many
+SELECT a.id, a.status,
+b.id AS contact_book_id, b.konekin_id, b.primary_company_id,
+b.name, b.email, b.phone, b.mobile, b.web,
+c.nickname, c.tag, c.note,
+d.province AS mailing_province, d.regency AS mailing_regency,
+d.district AS mailing_district, d.postal_code AS mailing_postal_code,
+d.full_address AS mailing_full_address,
+e.province AS shipping_province, e.regency AS shipping_regency,
+e.district AS shipping_district, e.postal_code AS shipping_postal_code,
+e.full_address AS shipping_full_address
+FROM business_relation.contact_invitations a
+JOIN business_relation.contact_books b ON a.secondary_company_id = b.primary_company_id
+AND b.is_default = TRUE AND b.is_customer = FALSE AND b.is_supplier = FALSE
+JOIN business_relation.contact_book_additional_infos c ON b.id = c.contact_book_id
+JOIN business_relation.contact_book_mailing_addresses d ON b.id = d.contact_book_id
+JOIN business_relation.contact_book_shipping_addresses e ON b.id = e.contact_book_id
+WHERE a.primary_company_id = $1
+AND a.status <> 'cancelled';

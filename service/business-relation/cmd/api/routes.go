@@ -25,6 +25,7 @@ const (
 	GetSuppliersPath          = "/business-relation/suppliers"
 	AddContactInvitationPath  = "/business-relation/invite-contact/add"
 	GetContactInvitationsPath = "/business-relation/invite-contacts"
+	GetRequestInvitationsPath = "/business-relation/invitation/request"
 )
 
 func (c *component) Routes(businessRelationService model.BusinessRelationService) http.Handler {
@@ -57,6 +58,7 @@ func (c *component) Routes(businessRelationService model.BusinessRelationService
 	mux.Method("POST", GetSuppliersPath, httpHandler.New(businessRelationService.GetSuppliers))
 	mux.Method("POST", AddContactInvitationPath, httpHandler.New(businessRelationService.AddContactInvitation))
 	mux.Method("POST", GetContactInvitationsPath, httpHandler.New(businessRelationService.GetContactInvitations))
+	mux.Method("POST", GetRequestInvitationsPath, httpHandler.New(businessRelationService.GetRequestInvitations))
 
 	return mux
 }
