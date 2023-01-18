@@ -232,3 +232,26 @@ primary_contact_book_id, secondary_contact_book_id,
 primary_company_id, secondary_company_id)
 VALUES ($1, $2, $3, $4, $5)
 RETURNING *;
+
+-- name: GetContactInvitations :many
+SELECT a.id, a.konekin_id, a.primary_company_id,
+a.name, a.email, a.phone, a.mobile, a.web,
+b.nickname, b.tag, b.note,
+c.province AS mailing_province, c.regency AS mailing_regency,
+c.district AS mailing_district, c.postal_code AS mailing_postal_code,
+c.full_address AS mailing_full_address,
+d.province AS shipping_province, d.regency AS shipping_regency,
+d.district AS shipping_district, d.postal_code AS shipping_postal_code,
+d.full_address AS shipping_full_address
+FROM business_relation.contact_books a
+JOIN business_relation.contact_book_additional_infos b ON a.id = b.contact_book_id
+JOIN business_relation.contact_book_mailing_addresses c ON a.id = c.contact_book_id
+JOIN business_relation.contact_book_shipping_addresses d ON a.id = d.contact_book_id
+LEFT JOIN business_relation.contact_invitations e
+ON (a.primary_company_id = e.primary_company_id OR a.primary_company_id = e.secondary_company_id)
+AND (e.status = 'waiting' OR e.status = 'accepted') 
+WHERE a.primary_company_id <> $1
+AND a.is_default = TRUE
+AND a.is_customer = FALSE
+AND a.is_supplier = FALSE
+AND e.id IS NULL;
