@@ -225,3 +225,10 @@ DO UPDATE SET
     credit_limit = EXCLUDED.credit_limit,
     payment_term = EXCLUDED.payment_term,
     updated_at = NOW();
+
+-- name: InsertContactInvitation :one
+INSERT INTO business_relation.contact_invitations(id,
+primary_contact_book_id, secondary_contact_book_id,
+primary_company_id, secondary_company_id)
+VALUES ($1, $2, $3, $4, $5)
+RETURNING *;

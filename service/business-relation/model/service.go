@@ -20,6 +20,8 @@ type BusinessRelationService interface {
 
 	UpdateSupplier(w http.ResponseWriter, r *http.Request) error
 	GetSuppliers(w http.ResponseWriter, r *http.Request) error
+
+	AddContactInvitation(w http.ResponseWriter, r *http.Request) error
 }
 
 type ContactGroupWithMember struct {
@@ -232,4 +234,15 @@ type AddDefaultContactBookResponse struct {
 
 type GetMyContactBookRequest struct {
 	CompanyId string `json:"company_id" validate:"required"`
+}
+
+type AddContactInvitationRequest struct {
+	PrimaryContactBookId   string `json:"primary_contact_book_id"`
+	SecondaryContactBookId string `json:"secondary_contact_book_id" validate:"required"`
+	PrimaryCompanyId       string `json:"primary_company_id" validate:"required"`
+	SecondaryCompanyId     string `json:"secondary_company_id" validate:"required"`
+}
+
+type AddContactInvitationResponse struct {
+	Message string `json:"message"`
 }

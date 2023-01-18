@@ -95,3 +95,14 @@ type BusinessRelationContactGroup struct {
 	CreatedAt   sql.NullTime `db:"created_at"`
 	UpdatedAt   sql.NullTime `db:"updated_at"`
 }
+
+type BusinessRelationContactInvitation struct {
+	ID                     string       `db:"id"`
+	PrimaryContactBookID   string       `db:"primary_contact_book_id"`
+	SecondaryContactBookID string       `db:"secondary_contact_book_id"`
+	PrimaryCompanyID       string       `db:"primary_company_id"`
+	SecondaryCompanyID     string       `db:"secondary_company_id"`
+	Status                 string       `db:"status"`
+	CreatedAt              sql.NullTime `db:"created_at"`
+	UpdatedAt              sql.NullTime `db:"updated_at"`
+}
