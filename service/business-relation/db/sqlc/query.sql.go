@@ -24,6 +24,19 @@ func (q *Queries) AddCustomer(ctx context.Context, contactBookIds []string) erro
 	return err
 }
 
+const addSupplier = `-- name: AddSupplier :exec
+UPDATE business_relation.contact_books
+SET 
+    is_supplier = TRUE,
+    updated_at = NOW()
+WHERE id = ANY($1::text[])
+`
+
+func (q *Queries) AddSupplier(ctx context.Context, contactBookIds []string) error {
+	_, err := q.db.ExecContext(ctx, addSupplier, pq.Array(contactBookIds))
+	return err
+}
+
 const deleteContactBookBranches = `-- name: DeleteContactBookBranches :exec
 DELETE FROM business_relation.contact_book_branches
 WHERE contact_book_id = $1

@@ -12,10 +12,11 @@ const (
 	AddCustomerError             = 600009
 	UpdateCustomerError          = 600010
 	GetCustomersError            = 600011
-	UpdateSupplierError          = 600012
-	GetSuppliersError            = 600013
-	AddNewContactInvitationError = 600014
-	GetContactInvitationsError   = 600015
-	GetRequestInvitationsError   = 600016
-	GetReceiveInvitationsError   = 600017
+	AddSupplierError             = 600012
+	UpdateSupplierError          = 600013
+	GetSuppliersError            = 600014
+	AddNewContactInvitationError = 600015
+	GetContactInvitationsError   = 600016
+	GetRequestInvitationsError   = 600017
+	GetReceiveInvitationsError   = 600018
 )

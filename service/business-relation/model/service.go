@@ -19,6 +19,7 @@ type BusinessRelationService interface {
 	UpdateCustomer(w http.ResponseWriter, r *http.Request) error
 	GetCustomers(w http.ResponseWriter, r *http.Request) error
 
+	AddSupplier(w http.ResponseWriter, r *http.Request) error
 	UpdateSupplier(w http.ResponseWriter, r *http.Request) error
 	GetSuppliers(w http.ResponseWriter, r *http.Request) error
 
@@ -285,5 +286,13 @@ type AddCustomerRequest struct {
 }
 
 type AddCustomerResponse struct {
+	Message string `json:"message"`
+}
+
+type AddSupplierRequest struct {
+	ContactBookIds []string `json:"contact_book_ids"`
+}
+
+type AddSupplierResponse struct {
 	Message string `json:"message"`
 }

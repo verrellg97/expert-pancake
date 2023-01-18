@@ -306,3 +306,10 @@ SET
     is_customer = TRUE,
     updated_at = NOW()
 WHERE id = ANY(@contact_book_ids::text[]);
+
+-- name: AddSupplier :exec
+UPDATE business_relation.contact_books
+SET 
+    is_supplier = TRUE,
+    updated_at = NOW()
+WHERE id = ANY(@contact_book_ids::text[]);

@@ -10,6 +10,7 @@ import (
 
 type Querier interface {
 	AddCustomer(ctx context.Context, contactBookIds []string) error
+	AddSupplier(ctx context.Context, contactBookIds []string) error
 	DeleteContactBookBranches(ctx context.Context, contactBookID string) error
 	GetContactBookAdditionalInfo(ctx context.Context, contactBookID string) (GetContactBookAdditionalInfoRow, error)
 	GetContactBookBranches(ctx context.Context, contactBookID string) ([]GetContactBookBranchesRow, error)
