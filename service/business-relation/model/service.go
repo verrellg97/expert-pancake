@@ -135,12 +135,14 @@ type ContactBookAddress struct {
 
 type CustomerInfo struct {
 	ContactBookId    string `json:"contact_book_id" validate:"required"`
+	KonekinId        string `json:"konekin_id" validate:"required"`
 	ContactGroupName string `json:"contact_group_name" validate:"required"`
 	Name             string `json:"name" validate:"required"`
 	Email            string `json:"email" validate:"required"`
 	Phone            string `json:"phone" validate:"required"`
 	Mobile           string `json:"mobile" validate:"required"`
 	Web              string `json:"web" validate:"required"`
+	IsDefault        bool   `json:"is_default" validate:"required"`
 	IsTax            bool   `json:"is_tax" validate:"required"`
 	TaxId            string `json:"tax_id" validate:"required"`
 	Pic              string `json:"pic" validate:"required"`
