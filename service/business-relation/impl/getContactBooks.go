@@ -26,10 +26,20 @@ func (a businessRelationService) GetContactBooks(w http.ResponseWriter, r *http.
 		isFilterGroupId = true
 	}
 
+	var isCustomerApplicant = false
+	var isSupplierrApplicant = false
+	if req.Applicant == "Customer" {
+		isCustomerApplicant = true
+	} else if req.Applicant == "Supplier" {
+		isSupplierrApplicant = true
+	}
+
 	result, err := a.dbTrx.GetContactBooks(context.Background(), db.GetContactBooksParams{
-		PrimaryCompanyID: req.CompanyId,
-		IsFilterGroupID:  isFilterGroupId,
-		ContactGroupID:   req.ContactGroupId,
+		PrimaryCompanyID:    req.CompanyId,
+		IsFilterGroupID:     isFilterGroupId,
+		ContactGroupID:      req.ContactGroupId,
+		IsCustomerApplicant: isCustomerApplicant,
+		IsSupplierApplicant: isSupplierrApplicant,
 	})
 	if err != nil {
 		return errors.NewServerError(model.GetContactBooksError, err.Error())

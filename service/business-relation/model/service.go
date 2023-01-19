@@ -206,6 +206,7 @@ type UpdateContactBookResponse struct {
 type GetContactBooksRequest struct {
 	CompanyId      string `json:"company_id" validate:"required"`
 	ContactGroupId string `json:"contact_group_id"`
+	Applicant      string `json:"applicant"`
 }
 
 type UpdateCustomerRequest struct {

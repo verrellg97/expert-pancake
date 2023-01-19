@@ -86,7 +86,11 @@ LEFT JOIN business_relation.contact_groups e ON a.contact_group_id = e.id
 WHERE a.primary_company_id = $1
 AND a.is_default = FALSE
 AND CASE WHEN @is_filter_group_id::bool
-THEN a.contact_group_id = $2 ELSE TRUE END;
+THEN a.contact_group_id = $2 ELSE TRUE END
+AND CASE WHEN @is_customer_applicant::bool
+THEN a.is_customer = FALSE
+WHEN @is_supplier_applicant::bool
+THEN a.is_supplier = FALSE ELSE TRUE END;
 
 -- name: GetContactBookById :one
 SELECT a.id, a.konekin_id, a.primary_company_id, a.secondary_company_id,
