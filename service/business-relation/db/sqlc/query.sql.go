@@ -484,10 +484,10 @@ func (q *Queries) GetCountKonekinId(ctx context.Context, konekinID string) (int6
 }
 
 const getCustomers = `-- name: GetCustomers :many
-SELECT a.id, a.primary_company_id, a.contact_group_id,
+SELECT a.id, a.konekin_id, a.primary_company_id, a.contact_group_id,
 COALESCE(b.name, '') AS contact_group_name, a.name, a.email, a.phone,
 a.mobile, a.web, a.is_all_branches, a.is_customer, a.is_supplier,
-a.is_tax, a.tax_id, a.is_deleted, COALESCE(c.pic, '') AS pic,
+a.is_tax, a.tax_id, a.is_default, a.is_deleted, COALESCE(c.pic, '') AS pic,
 COALESCE(c.credit_limit, 0) AS credit_limit, COALESCE(c.payment_term, 0) AS payment_term
 FROM business_relation.contact_books a
 LEFT JOIN business_relation.contact_groups b ON a.contact_group_id = b.id
@@ -497,6 +497,7 @@ WHERE a.primary_company_id = $1 AND a.is_customer
 
 type GetCustomersRow struct {
 	ID               string `db:"id"`
+	KonekinID        string `db:"konekin_id"`
 	PrimaryCompanyID string `db:"primary_company_id"`
 	ContactGroupID   string `db:"contact_group_id"`
 	ContactGroupName string `db:"contact_group_name"`
@@ -510,6 +511,7 @@ type GetCustomersRow struct {
 	IsSupplier       bool   `db:"is_supplier"`
 	IsTax            bool   `db:"is_tax"`
 	TaxID            string `db:"tax_id"`
+	IsDefault        bool   `db:"is_default"`
 	IsDeleted        bool   `db:"is_deleted"`
 	Pic              string `db:"pic"`
 	CreditLimit      int64  `db:"credit_limit"`
@@ -527,6 +529,7 @@ func (q *Queries) GetCustomers(ctx context.Context, primaryCompanyID string) ([]
 		var i GetCustomersRow
 		if err := rows.Scan(
 			&i.ID,
+			&i.KonekinID,
 			&i.PrimaryCompanyID,
 			&i.ContactGroupID,
 			&i.ContactGroupName,
@@ -540,6 +543,7 @@ func (q *Queries) GetCustomers(ctx context.Context, primaryCompanyID string) ([]
 			&i.IsSupplier,
 			&i.IsTax,
 			&i.TaxID,
+			&i.IsDefault,
 			&i.IsDeleted,
 			&i.Pic,
 			&i.CreditLimit,
