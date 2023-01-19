@@ -9,12 +9,13 @@ const (
 	AddNewContactBookError       = 600006
 	UpdateContactBookError       = 600007
 	GetContactBooksError         = 600008
-	UpdateCustomerError          = 600009
-	GetCustomersError            = 600010
-	UpdateSupplierError          = 600011
-	GetSuppliersError            = 600012
-	AddNewContactInvitationError = 600013
-	GetContactInvitationsError   = 600014
-	GetRequestInvitationsError   = 600015
-	GetReceiveInvitationsError   = 600016
+	AddCustomerError             = 600009
+	UpdateCustomerError          = 600010
+	GetCustomersError            = 600011
+	UpdateSupplierError          = 600012
+	GetSuppliersError            = 600013
+	AddNewContactInvitationError = 600014
+	GetContactInvitationsError   = 600015
+	GetRequestInvitationsError   = 600016
+	GetReceiveInvitationsError   = 600017
 )

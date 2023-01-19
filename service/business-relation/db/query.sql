@@ -299,3 +299,10 @@ JOIN business_relation.contact_book_mailing_addresses d ON b.id = d.contact_book
 JOIN business_relation.contact_book_shipping_addresses e ON b.id = e.contact_book_id
 WHERE a.secondary_company_id = $1
 AND a.status <> 'cancelled';
+
+-- name: AddCustomer :exec
+UPDATE business_relation.contact_books
+SET 
+    is_customer = TRUE,
+    updated_at = NOW()
+WHERE id = ANY(@contact_book_ids::text[]);
