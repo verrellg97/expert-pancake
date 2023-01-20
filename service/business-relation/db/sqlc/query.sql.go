@@ -1063,26 +1063,23 @@ func (q *Queries) InsertContactGroup(ctx context.Context, arg InsertContactGroup
 }
 
 const insertContactInvitation = `-- name: InsertContactInvitation :one
-INSERT INTO business_relation.contact_invitations(id,
-primary_contact_book_id, secondary_contact_book_id,
+INSERT INTO business_relation.contact_invitations(id, primary_contact_book_id,
 primary_company_id, secondary_company_id)
-VALUES ($1, $2, $3, $4, $5)
+VALUES ($1, $2, $3, $4)
 RETURNING id, primary_contact_book_id, secondary_contact_book_id, primary_company_id, secondary_company_id, status, created_at, updated_at
 `
 
 type InsertContactInvitationParams struct {
-	ID                     string `db:"id"`
-	PrimaryContactBookID   string `db:"primary_contact_book_id"`
-	SecondaryContactBookID string `db:"secondary_contact_book_id"`
-	PrimaryCompanyID       string `db:"primary_company_id"`
-	SecondaryCompanyID     string `db:"secondary_company_id"`
+	ID                   string `db:"id"`
+	PrimaryContactBookID string `db:"primary_contact_book_id"`
+	PrimaryCompanyID     string `db:"primary_company_id"`
+	SecondaryCompanyID   string `db:"secondary_company_id"`
 }
 
 func (q *Queries) InsertContactInvitation(ctx context.Context, arg InsertContactInvitationParams) (BusinessRelationContactInvitation, error) {
 	row := q.db.QueryRowContext(ctx, insertContactInvitation,
 		arg.ID,
 		arg.PrimaryContactBookID,
-		arg.SecondaryContactBookID,
 		arg.PrimaryCompanyID,
 		arg.SecondaryCompanyID,
 	)

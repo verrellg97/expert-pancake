@@ -23,11 +23,10 @@ func (a businessRelationService) AddContactInvitation(w http.ResponseWriter, r *
 	}
 
 	arg := db.InsertContactInvitationParams{
-		ID:                     uuid.NewV4().String(),
-		PrimaryContactBookID:   req.PrimaryContactBookId,
-		SecondaryContactBookID: req.SecondaryContactBookId,
-		PrimaryCompanyID:       req.PrimaryCompanyId,
-		SecondaryCompanyID:     req.SecondaryCompanyId,
+		ID:                   uuid.NewV4().String(),
+		PrimaryContactBookID: req.PrimaryContactBookId,
+		PrimaryCompanyID:     req.PrimaryCompanyId,
+		SecondaryCompanyID:   req.SecondaryCompanyId,
 	}
 
 	_, err := a.dbTrx.InsertContactInvitation(context.Background(), arg)
