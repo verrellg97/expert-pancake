@@ -252,9 +252,10 @@ JOIN business_relation.contact_book_additional_infos b ON a.id = b.contact_book_
 JOIN business_relation.contact_book_mailing_addresses c ON a.id = c.contact_book_id
 JOIN business_relation.contact_book_shipping_addresses d ON a.id = d.contact_book_id
 LEFT JOIN business_relation.contact_invitations e
-ON (a.primary_company_id = e.primary_company_id OR a.primary_company_id = e.secondary_company_id)
+ON ((a.primary_company_id = e.primary_company_id AND e.secondary_company_id = @company_id::text)
+OR (a.primary_company_id = e.secondary_company_id AND e.primary_company_id = @company_id::text))
 AND (e.status = 'waiting' OR e.status = 'accepted') 
-WHERE a.primary_company_id <> $1
+WHERE a.primary_company_id <> @company_id::text
 AND a.is_default = TRUE
 AND a.is_customer = FALSE
 AND a.is_supplier = FALSE
