@@ -17,6 +17,7 @@ type BusinessRelationTrx interface {
 	UpdateContactBookTrx(ctx context.Context, arg UpdateContactBookTrxParams) (UpdateContactBookTrxResult, error)
 	UpdateCustomerTrx(ctx context.Context, arg UpdateCustomerTrxParams) (UpdateCustomerTrxResult, error)
 	UpdateSupplierTrx(ctx context.Context, arg UpdateSupplierTrxParams) (UpdateSupplierTrxResult, error)
+	UpdateContactInvitationTrx(ctx context.Context, arg UpdateContactInvitationTrxParams) (UpdateContactInvitationTrxResult, error)
 }
 
 // Trx provides all functions to execute SQL queries and transactions

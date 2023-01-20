@@ -1264,6 +1264,26 @@ func (q *Queries) UpdateContactBookMailingAddress(ctx context.Context, arg Updat
 	return err
 }
 
+const updateContactBookRelation = `-- name: UpdateContactBookRelation :exec
+UPDATE business_relation.contact_books
+SET 
+    konekin_id = $2,
+    secondary_company_id = $3,
+    updated_at = NOW()
+WHERE id = $1
+`
+
+type UpdateContactBookRelationParams struct {
+	ID                 string `db:"id"`
+	KonekinID          string `db:"konekin_id"`
+	SecondaryCompanyID string `db:"secondary_company_id"`
+}
+
+func (q *Queries) UpdateContactBookRelation(ctx context.Context, arg UpdateContactBookRelationParams) error {
+	_, err := q.db.ExecContext(ctx, updateContactBookRelation, arg.ID, arg.KonekinID, arg.SecondaryCompanyID)
+	return err
+}
+
 const updateContactBookShippingAddress = `-- name: UpdateContactBookShippingAddress :exec
 UPDATE business_relation.contact_book_shipping_addresses
 SET 
@@ -1349,6 +1369,38 @@ func (q *Queries) UpdateContactGroup(ctx context.Context, arg UpdateContactGroup
 		&i.ImageUrl,
 		&i.Name,
 		&i.Description,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const updateContactInvitation = `-- name: UpdateContactInvitation :one
+UPDATE business_relation.contact_invitations
+SET 
+    secondary_contact_book_id = $2,
+    status = $3,
+    updated_at = NOW()
+WHERE id = $1
+RETURNING id, primary_contact_book_id, secondary_contact_book_id, primary_company_id, secondary_company_id, status, created_at, updated_at
+`
+
+type UpdateContactInvitationParams struct {
+	ID                     string `db:"id"`
+	SecondaryContactBookID string `db:"secondary_contact_book_id"`
+	Status                 string `db:"status"`
+}
+
+func (q *Queries) UpdateContactInvitation(ctx context.Context, arg UpdateContactInvitationParams) (BusinessRelationContactInvitation, error) {
+	row := q.db.QueryRowContext(ctx, updateContactInvitation, arg.ID, arg.SecondaryContactBookID, arg.Status)
+	var i BusinessRelationContactInvitation
+	err := row.Scan(
+		&i.ID,
+		&i.PrimaryContactBookID,
+		&i.SecondaryContactBookID,
+		&i.PrimaryCompanyID,
+		&i.SecondaryCompanyID,
+		&i.Status,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)

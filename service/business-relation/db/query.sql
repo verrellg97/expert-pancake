@@ -66,6 +66,14 @@ SET
     updated_at = NOW()
 WHERE contact_group_id = $1;
 
+-- name: UpdateContactBookRelation :exec
+UPDATE business_relation.contact_books
+SET 
+    konekin_id = $2,
+    secondary_company_id = $3,
+    updated_at = NOW()
+WHERE id = $1;
+
 -- name: GetContactBooks :many
 SELECT a.id, a.konekin_id, a.primary_company_id, a.secondary_company_id, 
 a.contact_group_id, COALESCE(e.name, '') AS contact_group_name,
@@ -235,6 +243,15 @@ INSERT INTO business_relation.contact_invitations(id,
 primary_contact_book_id, secondary_contact_book_id,
 primary_company_id, secondary_company_id)
 VALUES ($1, $2, $3, $4, $5)
+RETURNING *;
+
+-- name: UpdateContactInvitation :one
+UPDATE business_relation.contact_invitations
+SET 
+    secondary_contact_book_id = $2,
+    status = $3,
+    updated_at = NOW()
+WHERE id = $1
 RETURNING *;
 
 -- name: GetContactInvitations :many
