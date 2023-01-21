@@ -264,10 +264,9 @@ type GetMyContactBookRequest struct {
 }
 
 type AddContactInvitationRequest struct {
-	PrimaryContactBookId   string `json:"primary_contact_book_id"`
-	SecondaryContactBookId string `json:"secondary_contact_book_id"`
-	PrimaryCompanyId       string `json:"primary_company_id" validate:"required"`
-	SecondaryCompanyId     string `json:"secondary_company_id" validate:"required"`
+	PrimaryContactBookId string `json:"primary_contact_book_id"`
+	PrimaryCompanyId     string `json:"primary_company_id" validate:"required"`
+	SecondaryCompanyId   string `json:"secondary_company_id" validate:"required"`
 }
 
 type AddContactInvitationResponse struct {
