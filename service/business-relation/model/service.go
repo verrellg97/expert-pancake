@@ -24,6 +24,7 @@ type BusinessRelationService interface {
 	GetSuppliers(w http.ResponseWriter, r *http.Request) error
 
 	AddContactInvitation(w http.ResponseWriter, r *http.Request) error
+	UpdateContactInvitation(w http.ResponseWriter, r *http.Request) error
 	GetContactInvitations(w http.ResponseWriter, r *http.Request) error
 	GetRequestInvitations(w http.ResponseWriter, r *http.Request) error
 	GetReceiveInvitations(w http.ResponseWriter, r *http.Request) error
@@ -270,6 +271,16 @@ type AddContactInvitationRequest struct {
 }
 
 type AddContactInvitationResponse struct {
+	Message string `json:"message"`
+}
+
+type UpdateContactInvitationRequest struct {
+	InvitationId           string `json:"invitation_id" validate:"required"`
+	SecondaryContactBookId string `json:"secondary_contact_book_id"`
+	Status                 string `json:"status" validate:"required"`
+}
+
+type UpdateContactInvitationResponse struct {
 	Message string `json:"message"`
 }
 

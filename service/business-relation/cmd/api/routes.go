@@ -11,24 +11,25 @@ import (
 )
 
 const (
-	AddContactGroupPath       = "/business-relation/contact-group/add"
-	UpdateContactGroupPath    = "/business-relation/contact-group/update"
-	GetContactGroupsPath      = "/business-relation/contact-groups"
-	AddDefaultContactBookPath = "/business-relation/contact-book/default-data"
-	GetMyContactBookPath      = "/business-relation/my-contact-book"
-	AddContactBookPath        = "/business-relation/contact-book/add"
-	UpdateContactBookPath     = "/business-relation/contact-book/update"
-	GetContactBooksPath       = "/business-relation/contact-books"
-	AddCustomerPath           = "/business-relation/customer/add"
-	UpdateCustomerPath        = "/business-relation/customer/update"
-	GetCustomersPath          = "/business-relation/customers"
-	AddSupplierPath           = "/business-relation/supplier/add"
-	UpdateSupplierPath        = "/business-relation/supplier/update"
-	GetSuppliersPath          = "/business-relation/suppliers"
-	AddContactInvitationPath  = "/business-relation/invite-contact/add"
-	GetContactInvitationsPath = "/business-relation/invite-contacts"
-	GetRequestInvitationsPath = "/business-relation/invitation/request"
-	GetReceiveInvitationsPath = "/business-relation/invitation/receive"
+	AddContactGroupPath         = "/business-relation/contact-group/add"
+	UpdateContactGroupPath      = "/business-relation/contact-group/update"
+	GetContactGroupsPath        = "/business-relation/contact-groups"
+	AddDefaultContactBookPath   = "/business-relation/contact-book/default-data"
+	GetMyContactBookPath        = "/business-relation/my-contact-book"
+	AddContactBookPath          = "/business-relation/contact-book/add"
+	UpdateContactBookPath       = "/business-relation/contact-book/update"
+	GetContactBooksPath         = "/business-relation/contact-books"
+	AddCustomerPath             = "/business-relation/customer/add"
+	UpdateCustomerPath          = "/business-relation/customer/update"
+	GetCustomersPath            = "/business-relation/customers"
+	AddSupplierPath             = "/business-relation/supplier/add"
+	UpdateSupplierPath          = "/business-relation/supplier/update"
+	GetSuppliersPath            = "/business-relation/suppliers"
+	AddContactInvitationPath    = "/business-relation/invite-contact/add"
+	UpdateContactInvitationPath = "/business-relation/invite-contact/update"
+	GetContactInvitationsPath   = "/business-relation/invite-contacts"
+	GetRequestInvitationsPath   = "/business-relation/invitation/request"
+	GetReceiveInvitationsPath   = "/business-relation/invitation/receive"
 )
 
 func (c *component) Routes(businessRelationService model.BusinessRelationService) http.Handler {
@@ -62,6 +63,7 @@ func (c *component) Routes(businessRelationService model.BusinessRelationService
 	mux.Method("POST", UpdateSupplierPath, httpHandler.New(businessRelationService.UpdateSupplier))
 	mux.Method("POST", GetSuppliersPath, httpHandler.New(businessRelationService.GetSuppliers))
 	mux.Method("POST", AddContactInvitationPath, httpHandler.New(businessRelationService.AddContactInvitation))
+	mux.Method("POST", UpdateContactInvitationPath, httpHandler.New(businessRelationService.UpdateContactInvitation))
 	mux.Method("POST", GetContactInvitationsPath, httpHandler.New(businessRelationService.GetContactInvitations))
 	mux.Method("POST", GetRequestInvitationsPath, httpHandler.New(businessRelationService.GetRequestInvitations))
 	mux.Method("POST", GetReceiveInvitationsPath, httpHandler.New(businessRelationService.GetReceiveInvitations))

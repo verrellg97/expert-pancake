@@ -38,9 +38,11 @@ type Querier interface {
 	UpdateContactBookGroupId(ctx context.Context, arg UpdateContactBookGroupIdParams) error
 	UpdateContactBookGroupIdByGroupId(ctx context.Context, arg UpdateContactBookGroupIdByGroupIdParams) error
 	UpdateContactBookMailingAddress(ctx context.Context, arg UpdateContactBookMailingAddressParams) error
+	UpdateContactBookRelation(ctx context.Context, arg UpdateContactBookRelationParams) error
 	UpdateContactBookShippingAddress(ctx context.Context, arg UpdateContactBookShippingAddressParams) error
 	UpdateContactBookTaxInfo(ctx context.Context, arg UpdateContactBookTaxInfoParams) error
 	UpdateContactGroup(ctx context.Context, arg UpdateContactGroupParams) (BusinessRelationContactGroup, error)
+	UpdateContactInvitation(ctx context.Context, arg UpdateContactInvitationParams) (BusinessRelationContactInvitation, error)
 	UpsertCustomerInfo(ctx context.Context, arg UpsertCustomerInfoParams) error
 	UpsertSupplierInfo(ctx context.Context, arg UpsertSupplierInfoParams) error
 }
