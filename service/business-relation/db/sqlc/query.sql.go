@@ -226,6 +226,34 @@ JOIN business_relation.contact_book_mailing_addresses c ON a.id = c.contact_book
 JOIN business_relation.contact_book_shipping_addresses d ON a.id = d.contact_book_id
 LEFT JOIN business_relation.contact_groups e ON a.contact_group_id = e.id
 WHERE a.primary_company_id = $1
+AND a.konekin_id = ''
+AND a.is_default = FALSE
+AND CASE WHEN $3::bool
+THEN a.contact_group_id = $2 ELSE TRUE END
+AND CASE WHEN $4::bool
+THEN a.is_customer = FALSE
+WHEN $5::bool
+THEN a.is_supplier = FALSE ELSE TRUE END
+UNION ALL
+SELECT a.id, a.konekin_id, a.primary_company_id, a.secondary_company_id, 
+a.contact_group_id, COALESCE(f.name, '') AS contact_group_name,
+b.name, b.email, b.phone, b.mobile, b.web,
+a.is_all_branches, a.is_customer, a.is_supplier,
+c.nickname, c.tag, c.note,
+d.province AS mailing_province, d.regency AS mailing_regency,
+d.district AS mailing_district, d.postal_code AS mailing_postal_code,
+d.full_address AS mailing_full_address,
+e.province AS shipping_province, e.regency AS shipping_regency,
+e.district AS shipping_district, e.postal_code AS shipping_postal_code,
+e.full_address AS shipping_full_address
+FROM business_relation.contact_books a
+JOIN business_relation.contact_books b ON a.konekin_id = b.konekin_id AND b.is_default = TRUE
+JOIN business_relation.contact_book_additional_infos c ON b.id = c.contact_book_id
+JOIN business_relation.contact_book_mailing_addresses d ON b.id = d.contact_book_id
+JOIN business_relation.contact_book_shipping_addresses e ON b.id = e.contact_book_id
+LEFT JOIN business_relation.contact_groups f ON a.contact_group_id = f.id
+WHERE a.primary_company_id = $1
+AND a.konekin_id <> ''
 AND a.is_default = FALSE
 AND CASE WHEN $3::bool
 THEN a.contact_group_id = $2 ELSE TRUE END
