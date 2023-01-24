@@ -14,11 +14,19 @@ type Brand struct {
 	Name        string `json:"name" validate:"required"`
 }
 
+<<<<<<< HEAD
 type AddItemBrandRequest struct {
+=======
+type AddBrandRequest struct {
+>>>>>>> e67e22d (feat(service inventory) new endpoint add item brand)
 	CompanyId string `json:"company_id" validate:"required"`
 	Name      string `json:"name" validate:"required"`
 }
 
+<<<<<<< HEAD
 type AddItemBrandResponse struct {
+=======
+type AddBrandResponse struct {
+>>>>>>> e67e22d (feat(service inventory) new endpoint add item brand)
 	Brand
 }
