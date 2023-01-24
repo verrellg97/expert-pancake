@@ -49,6 +49,18 @@ services:
     deploy:
       mode: replicated
       replicas: 1
+  inventory-service:
+    build:
+      context: ./service/inventory
+      dockerfile: Dockerfile
+    networks:
+      - postgres
+    restart: always
+    ports:
+      - "4040:4040"
+    deploy:
+      mode: replicated
+      replicas: 1
 
   postgres:
     container_name: postgres_container

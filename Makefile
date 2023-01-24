@@ -2,6 +2,7 @@ ACCOUNT_BINARY=accountService
 BUSINESS_BINARY=businessService
 ACCOUNTING_BINARY=accountingService
 BUSINESS_RELATION_BINARY=businessRelationService
+INVENTORY_BINARY=inventoryService
 
 ## up: starts all containers in the background without forcing build
 up:
@@ -10,7 +11,7 @@ up:
 	@echo "Docker images started!"
 
 ## up_build: stops docker-compose (if running), builds all projects and starts docker compose
-up_build: build_account build_business build_accounting build_business_relation
+up_build: build_account build_business build_accounting build_business_relation build_inventory
 	@echo "Stopping docker images (if running...)"
 	docker compose down
 	@echo "Building (when required) and starting docker images..."
@@ -45,6 +46,12 @@ build_accounting:
 build_business_relation:
 	@echo "Building business_relation binary..."
 	cd ./service/business-relation && env GOOS=linux CGO_ENABLED=0 go build -o ${BUSINESS_RELATION_BINARY} ./cmd/api
+	@echo "Done!"
+
+## build_inventory: builds the inventory binary as a linux executable
+build_inventory:
+	@echo "Building inventory binary..."
+	cd ./service/inventory && env GOOS=linux CGO_ENABLED=0 go build -o ${INVENTORY_BINARY} ./cmd/api
 	@echo "Done!"
 
 ## up_appwrite: starts appwrite in the background
