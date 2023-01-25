@@ -14,11 +14,11 @@ type Brand struct {
 	Name        string `json:"name" validate:"required"`
 }
 
-type AddBrandRequest struct {
+type AddItemBrandRequest struct {
 	CompanyId string `json:"company_id" validate:"required"`
 	Name      string `json:"name" validate:"required"`
 }
 
-type AddBrandResponse struct {
+type AddItemBrandResponse struct {
 	Brand
 }
