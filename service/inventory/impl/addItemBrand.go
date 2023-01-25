@@ -13,12 +13,7 @@ import (
 
 func (a inventoryService) AddItemBrand(w http.ResponseWriter, r *http.Request) error {
 
-<<<<<<< HEAD
 	var req model.AddItemBrandRequest
-=======
-	var req model.AddBrandRequest
->>>>>>> e67e22d (feat(service inventory) new endpoint add item brand)
-
 
 	httpHandler.ParseHTTPRequest(r, &req)
 
@@ -38,11 +33,7 @@ func (a inventoryService) AddItemBrand(w http.ResponseWriter, r *http.Request) e
 		return errors.NewServerError(model.AddNewItemBrandError, err.Error())
 	}
 
-<<<<<<< HEAD
 	res := model.AddItemBrandResponse{
-=======
-	res := model.AddBrandResponse{
->>>>>>> e67e22d (feat(service inventory) new endpoint add item brand)
 		Brand: model.Brand{
 			ItemBrandId: result.ID,
 			CompanyId:   result.CompanyID,
