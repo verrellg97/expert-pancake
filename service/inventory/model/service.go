@@ -24,11 +24,11 @@ type AddBrandResponse struct {
 	Brand
 }
 
-type UpdateBrandRequest struct {
+type UpdateItemBrandRequest struct {
 	Id 		string `json:"id" validate:"required"`
 	Name 	string `json:"name" validate:"required"`
 }
 
-type UpdateBrandResponse struct {
+type UpdateItemBrandResponse struct {
 	Brand
 }

@@ -12,7 +12,7 @@ import (
 
 func (a inventoryService) UpdateItemBrand(w http.ResponseWriter, r *http.Request) error {
 
-	var req model.UpdateBrandRequest
+	var req model.UpdateItemBrandRequest
 
 	httpHandler.ParseHTTPRequest(r, &req)
 
@@ -31,7 +31,7 @@ func (a inventoryService) UpdateItemBrand(w http.ResponseWriter, r *http.Request
 		return errors.NewServerError(model.UpdateItemBrandError, err.Error())
 	}
 
-	res := model.UpdateBrandResponse{
+	res := model.UpdateItemBrandResponse{
 		Brand: model.Brand{
 			ItemBrandId: result.ID,
 			CompanyId:   result.CompanyID,
