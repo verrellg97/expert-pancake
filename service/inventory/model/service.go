@@ -6,6 +6,7 @@ import (
 
 type InventoryService interface {
 	AddItemBrand(w http.ResponseWriter, r *http.Request) error
+	UpdateItemBrand(w http.ResponseWriter, r *http.Request) error
 }
 
 type Brand struct {
@@ -28,5 +29,14 @@ type AddItemBrandResponse struct {
 =======
 type AddBrandResponse struct {
 >>>>>>> e67e22d (feat(service inventory) new endpoint add item brand)
+	Brand
+}
+
+type UpdateBrandRequest struct {
+	Id 		string `json:"id" validate:"required"`
+	Name 	string `json:"name" validate:"required"`
+}
+
+type UpdateBrandResponse struct {
 	Brand
 }
