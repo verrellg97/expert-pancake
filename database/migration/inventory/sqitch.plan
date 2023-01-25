@@ -1,0 +1,4 @@
+%syntax-version=1.0.0
+%project=inventory
+
+20230125_inventory_schema_and_item_components_table 2023-01-25T04:46:43Z Verrell <verrell@Verrells-MacBook-Air.local> # Add schema and item components table for inventory service
