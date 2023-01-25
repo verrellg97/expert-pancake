@@ -10,3 +10,7 @@ SET
     updated_at = NOW()
 WHERE id = $1
 RETURNING *;
+
+-- name: GetItemBrands :many
+SELECT id, company_id, name FROM inventory.item_brands
+WHERE company_id = $1 AND name LIKE $2;

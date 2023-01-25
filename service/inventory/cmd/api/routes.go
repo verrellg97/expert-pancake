@@ -13,6 +13,7 @@ import (
 const (
 	AddItemBrandPath = "/inventory/item/brand/add"
 	UpdateItemBrandPath = "/inventory/item/brand/update"
+	GetItemBrandsPath = "/inventory/item/brands"
 )
 
 func (c *component) Routes(inventoryService model.InventoryService) http.Handler {
@@ -33,6 +34,7 @@ func (c *component) Routes(inventoryService model.InventoryService) http.Handler
 
 	mux.Method("POST", AddItemBrandPath, httpHandler.New(inventoryService.AddItemBrand))
 	mux.Method("POST", UpdateItemBrandPath, httpHandler.New(inventoryService.UpdateItemBrand))
+	mux.Method("POST", GetItemBrandsPath, httpHandler.New(inventoryService.GetItemBrands))
 
 	return mux
 }

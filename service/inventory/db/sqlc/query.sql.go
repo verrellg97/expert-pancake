@@ -9,6 +9,45 @@ import (
 	"context"
 )
 
+const getItemBrands = `-- name: GetItemBrands :many
+SELECT id, company_id, name FROM inventory.item_brands
+WHERE company_id = $1 AND name LIKE $2
+`
+
+type GetItemBrandsParams struct {
+	CompanyID string `db:"company_id"`
+	Name      string `db:"name"`
+}
+
+type GetItemBrandsRow struct {
+	ID        string `db:"id"`
+	CompanyID string `db:"company_id"`
+	Name      string `db:"name"`
+}
+
+func (q *Queries) GetItemBrands(ctx context.Context, arg GetItemBrandsParams) ([]GetItemBrandsRow, error) {
+	rows, err := q.db.QueryContext(ctx, getItemBrands, arg.CompanyID, arg.Name)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetItemBrandsRow
+	for rows.Next() {
+		var i GetItemBrandsRow
+		if err := rows.Scan(&i.ID, &i.CompanyID, &i.Name); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const insertItemBrand = `-- name: InsertItemBrand :one
 INSERT INTO inventory.item_brands(id, company_id, name)
 VALUES ($1, $2, $3)
