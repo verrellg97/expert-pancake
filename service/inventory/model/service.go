@@ -6,6 +6,7 @@ import (
 
 type InventoryService interface {
 	AddItemBrand(w http.ResponseWriter, r *http.Request) error
+	UpdateItemBrand(w http.ResponseWriter, r *http.Request) error
 }
 
 type Brand struct {
@@ -20,5 +21,14 @@ type AddBrandRequest struct {
 }
 
 type AddBrandResponse struct {
+	Brand
+}
+
+type UpdateBrandRequest struct {
+	Id 		string `json:"id" validate:"required"`
+	Name 	string `json:"name" validate:"required"`
+}
+
+type UpdateBrandResponse struct {
 	Brand
 }
