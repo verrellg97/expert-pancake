@@ -19,6 +19,7 @@ func (a inventoryService) AddItemBrand(w http.ResponseWriter, r *http.Request) e
 	var req model.AddBrandRequest
 >>>>>>> e67e22d (feat(service inventory) new endpoint add item brand)
 
+
 	httpHandler.ParseHTTPRequest(r, &req)
 
 	errMapRequest := a.validator.Validate(req)
