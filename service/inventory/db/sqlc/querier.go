@@ -13,6 +13,7 @@ type Querier interface {
 	InsertItemBrand(ctx context.Context, arg InsertItemBrandParams) (InventoryItemBrand, error)
 	InsertItemUnit(ctx context.Context, arg InsertItemUnitParams) (InventoryItemUnit, error)
 	UpdateItemBrand(ctx context.Context, arg UpdateItemBrandParams) (InventoryItemBrand, error)
+	UpdateItemUnit(ctx context.Context, arg UpdateItemUnitParams) (InventoryItemUnit, error)
 }
 
 var _ Querier = (*Queries)(nil)

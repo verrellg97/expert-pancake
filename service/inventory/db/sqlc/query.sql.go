@@ -124,3 +124,30 @@ func (q *Queries) UpdateItemBrand(ctx context.Context, arg UpdateItemBrandParams
 	)
 	return i, err
 }
+
+const updateItemUnit = `-- name: UpdateItemUnit :one
+UPDATE inventory.item_units
+SET 
+    name = $2,
+    updated_at = NOW()
+WHERE id = $1
+RETURNING id, company_id, name, created_at, updated_at
+`
+
+type UpdateItemUnitParams struct {
+	ID   string `db:"id"`
+	Name string `db:"name"`
+}
+
+func (q *Queries) UpdateItemUnit(ctx context.Context, arg UpdateItemUnitParams) (InventoryItemUnit, error) {
+	row := q.db.QueryRowContext(ctx, updateItemUnit, arg.ID, arg.Name)
+	var i InventoryItemUnit
+	err := row.Scan(
+		&i.ID,
+		&i.CompanyID,
+		&i.Name,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}

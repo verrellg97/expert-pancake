@@ -6,4 +6,5 @@ const (
 	GetItemBrandsError = 700003
 
 	AddNewItemUnitError = 700007
+	UpdateItemUnitError = 700008
 )
