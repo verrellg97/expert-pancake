@@ -19,3 +19,11 @@ WHERE company_id = $1 AND name LIKE $2;
 INSERT INTO inventory.item_groups(id, company_id, name)
 VALUES ($1, $2, $3)
 RETURNING *;
+
+-- name: UpdateItemGroup :one
+UPDATE inventory.item_groups
+SET 
+    name = $2,
+    updated_at = NOW()
+WHERE id = $1
+RETURNING *;
