@@ -14,3 +14,8 @@ RETURNING *;
 -- name: GetItemBrands :many
 SELECT id, company_id, name FROM inventory.item_brands
 WHERE company_id = $1 AND name LIKE $2;
+
+-- name: InsertItemGroup :one
+INSERT INTO inventory.item_groups(id, company_id, name)
+VALUES ($1, $2, $3)
+RETURNING *;

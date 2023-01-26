@@ -11,6 +11,7 @@ import (
 type Querier interface {
 	GetItemBrands(ctx context.Context, arg GetItemBrandsParams) ([]GetItemBrandsRow, error)
 	InsertItemBrand(ctx context.Context, arg InsertItemBrandParams) (InventoryItemBrand, error)
+	InsertItemGroup(ctx context.Context, arg InsertItemGroupParams) (InventoryItemGroup, error)
 	UpdateItemBrand(ctx context.Context, arg UpdateItemBrandParams) (InventoryItemBrand, error)
 }
 
