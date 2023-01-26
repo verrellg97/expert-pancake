@@ -48,6 +48,45 @@ func (q *Queries) GetItemBrands(ctx context.Context, arg GetItemBrandsParams) ([
 	return items, nil
 }
 
+const getItemGroups = `-- name: GetItemGroups :many
+SELECT id, company_id, name FROM inventory.item_groups
+WHERE company_id = $1 AND name LIKE $2
+`
+
+type GetItemGroupsParams struct {
+	CompanyID string `db:"company_id"`
+	Name      string `db:"name"`
+}
+
+type GetItemGroupsRow struct {
+	ID        string `db:"id"`
+	CompanyID string `db:"company_id"`
+	Name      string `db:"name"`
+}
+
+func (q *Queries) GetItemGroups(ctx context.Context, arg GetItemGroupsParams) ([]GetItemGroupsRow, error) {
+	rows, err := q.db.QueryContext(ctx, getItemGroups, arg.CompanyID, arg.Name)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetItemGroupsRow
+	for rows.Next() {
+		var i GetItemGroupsRow
+		if err := rows.Scan(&i.ID, &i.CompanyID, &i.Name); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const insertItemBrand = `-- name: InsertItemBrand :one
 INSERT INTO inventory.item_brands(id, company_id, name)
 VALUES ($1, $2, $3)
