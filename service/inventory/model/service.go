@@ -11,6 +11,7 @@ type InventoryService interface {
 
 	AddItemGroup(w http.ResponseWriter, r *http.Request) error
 	UpdateItemGroup(w http.ResponseWriter, r *http.Request) error
+	GetItemGroups(w http.ResponseWriter, r *http.Request) error
 }
 
 type Brand struct {
@@ -64,4 +65,9 @@ type UpdateItemGroupRequest struct {
 
 type UpdateItemGroupResponse struct {
 	Group
+}
+
+type GetItemGroupsRequest struct {
+	CompanyId 		string `json:"company_id" validate:"required"`
+	Keyword 	string `json:"keyword"`
 }
