@@ -16,6 +16,7 @@ const (
 	GetItemBrandsPath = "/inventory/item/brands"
 
 	AddItemGroupPath = "/inventory/item/group/add"
+	UpdateItemGroupPath = "/inventory/item/group/update"
 )
 
 func (c *component) Routes(inventoryService model.InventoryService) http.Handler {
@@ -39,6 +40,7 @@ func (c *component) Routes(inventoryService model.InventoryService) http.Handler
 	mux.Method("POST", GetItemBrandsPath, httpHandler.New(inventoryService.GetItemBrands))
 
 	mux.Method("POST", AddItemGroupPath, httpHandler.New(inventoryService.AddItemGroup))
+	mux.Method("POST", UpdateItemGroupPath, httpHandler.New(inventoryService.UpdateItemGroup))
 
 	return mux
 }
