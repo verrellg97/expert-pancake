@@ -73,6 +73,31 @@ func (q *Queries) InsertItemBrand(ctx context.Context, arg InsertItemBrandParams
 	return i, err
 }
 
+const insertItemGroup = `-- name: InsertItemGroup :one
+INSERT INTO inventory.item_groups(id, company_id, name)
+VALUES ($1, $2, $3)
+RETURNING id, company_id, name, created_at, updated_at
+`
+
+type InsertItemGroupParams struct {
+	ID        string `db:"id"`
+	CompanyID string `db:"company_id"`
+	Name      string `db:"name"`
+}
+
+func (q *Queries) InsertItemGroup(ctx context.Context, arg InsertItemGroupParams) (InventoryItemGroup, error) {
+	row := q.db.QueryRowContext(ctx, insertItemGroup, arg.ID, arg.CompanyID, arg.Name)
+	var i InventoryItemGroup
+	err := row.Scan(
+		&i.ID,
+		&i.CompanyID,
+		&i.Name,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
 const updateItemBrand = `-- name: UpdateItemBrand :one
 UPDATE inventory.item_brands
 SET 
