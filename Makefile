@@ -54,6 +54,12 @@ build_inventory:
 	cd ./service/inventory && env GOOS=linux CGO_ENABLED=0 go build -o ${INVENTORY_BINARY} ./cmd/api
 	@echo "Done!"
 
+## build_warehouse: builds the warehouse binary as a linux executable
+build_warehouse:
+	@echo "Building warehouse binary..."
+	cd ./service/warehouse && env GOOS=linux CGO_ENABLED=0 go build -o ${WAREHOUSE_BINARY} ./cmd/api
+	@echo "Done!"
+
 ## up_appwrite: starts appwrite in the background
 up_appwrite:
 	@echo "Starting Appwrite..."
