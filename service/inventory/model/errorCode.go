@@ -8,4 +8,8 @@ const (
 	AddNewItemUnitError = 700007
 	UpdateItemUnitError = 700008
 	GetItemUnitsError = 700009
+
+	AddNewItemGroupError = 700004
+	UpdateItemGroupError = 700005
+	GetItemGroupsError = 700006
 )

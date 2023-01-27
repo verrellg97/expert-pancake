@@ -16,6 +16,14 @@ type InventoryItemBrand struct {
 	UpdatedAt sql.NullTime `db:"updated_at"`
 }
 
+type InventoryItemGroup struct {
+	ID        string       `db:"id"`
+	CompanyID string       `db:"company_id"`
+	Name      string       `db:"name"`
+	CreatedAt sql.NullTime `db:"created_at"`
+	UpdatedAt sql.NullTime `db:"updated_at"`
+}
+
 type InventoryItemUnit struct {
 	ID        string       `db:"id"`
 	CompanyID string       `db:"company_id"`
