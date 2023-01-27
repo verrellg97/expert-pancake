@@ -31,3 +31,8 @@ RETURNING *;
 -- name: GetItemGroups :many
 SELECT id, company_id, name FROM inventory.item_groups
 WHERE company_id = $1 AND name LIKE $2;
+
+-- name: InsertItemUnit :one
+INSERT INTO inventory.item_units(id, company_id, name)
+VALUES ($1, $2, $3)
+RETURNING *;

@@ -13,6 +13,7 @@ type Querier interface {
 	GetItemGroups(ctx context.Context, arg GetItemGroupsParams) ([]GetItemGroupsRow, error)
 	InsertItemBrand(ctx context.Context, arg InsertItemBrandParams) (InventoryItemBrand, error)
 	InsertItemGroup(ctx context.Context, arg InsertItemGroupParams) (InventoryItemGroup, error)
+	InsertItemUnit(ctx context.Context, arg InsertItemUnitParams) (InventoryItemUnit, error)
 	UpdateItemBrand(ctx context.Context, arg UpdateItemBrandParams) (InventoryItemBrand, error)
 	UpdateItemGroup(ctx context.Context, arg UpdateItemGroupParams) (InventoryItemGroup, error)
 }
