@@ -15,17 +15,13 @@ const (
 	UpdateItemBrandPath = "/inventory/item/brand/update"
 	GetItemBrandsPath = "/inventory/item/brands"
 
-	AddItemUnitPath = "/inventory/item/unit/add"
-	UpdateItemUnitPath = "/inventory/item/unit/update"
-	GetItemUnitsPath = "/inventory/item/units"
-
 	AddItemGroupPath = "/inventory/item/group/add"
 	UpdateItemGroupPath = "/inventory/item/group/update"
 	GetItemGroupsPath = "/inventory/item/groups"
 
-
 	AddItemUnitPath = "/inventory/item/unit/add"
 	UpdateItemUnitPath = "/inventory/item/unit/update"
+	GetItemUnitsPath = "/inventory/item/units"
 )
 
 func (c *component) Routes(inventoryService model.InventoryService) http.Handler {
