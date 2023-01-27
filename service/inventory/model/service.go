@@ -33,8 +33,8 @@ type AddItemBrandResponse struct {
 }
 
 type UpdateItemBrandRequest struct {
-	Id 		string `json:"id" validate:"required"`
-	Name 	string `json:"name" validate:"required"`
+	Id   string `json:"id" validate:"required"`
+	Name string `json:"name" validate:"required"`
 }
 
 type UpdateItemBrandResponse struct {
@@ -42,8 +42,8 @@ type UpdateItemBrandResponse struct {
 }
 
 type GetItemBrandsRequest struct {
-	CompanyId 		string `json:"company_id" validate:"required"`
-	Keyword 	string `json:"keyword"`
+	CompanyId string `json:"company_id" validate:"required"`
+	Keyword   string `json:"keyword"`
 }
 
 type Group struct {
@@ -62,8 +62,8 @@ type AddItemGroupResponse struct {
 }
 
 type UpdateItemGroupRequest struct {
-	Id 		string `json:"id" validate:"required"`
-	Name 	string `json:"name" validate:"required"`
+	Id   string `json:"id" validate:"required"`
+	Name string `json:"name" validate:"required"`
 }
 
 type UpdateItemGroupResponse struct {
@@ -71,14 +71,14 @@ type UpdateItemGroupResponse struct {
 }
 
 type GetItemGroupsRequest struct {
-	CompanyId 		string `json:"company_id" validate:"required"`
-	Keyword 	string `json:"keyword"`
+	CompanyId string `json:"company_id" validate:"required"`
+	Keyword   string `json:"keyword"`
 }
 
 type Unit struct {
-	CompanyId   string `json:"company_id" validate:"required"`
+	CompanyId  string `json:"company_id" validate:"required"`
 	ItemUnitId string `json:"item_unit_id" validate:"required"`
-	Name        string `json:"name" validate:"required"`
+	Name       string `json:"name" validate:"required"`
 }
 
 type AddItemUnitRequest struct {
@@ -91,8 +91,8 @@ type AddItemUnitResponse struct {
 }
 
 type UpdateItemUnitRequest struct {
-	Id 		string `json:"id" validate:"required"`
-	Name 	string `json:"name" validate:"required"`
+	Id   string `json:"id" validate:"required"`
+	Name string `json:"name" validate:"required"`
 }
 
 type UpdateItemUnitResponse struct {
