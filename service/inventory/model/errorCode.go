@@ -10,4 +10,5 @@ const (
 	GetItemGroupsError = 700006
 
 	AddNewItemUnitError = 700007
+	UpdateItemUnitError = 700008
 )
