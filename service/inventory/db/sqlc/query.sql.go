@@ -87,6 +87,45 @@ func (q *Queries) GetItemGroups(ctx context.Context, arg GetItemGroupsParams) ([
 	return items, nil
 }
 
+const getItemUnits = `-- name: GetItemUnits :many
+SELECT id, company_id, name FROM inventory.item_units
+WHERE company_id = $1 AND name LIKE $2
+`
+
+type GetItemUnitsParams struct {
+	CompanyID string `db:"company_id"`
+	Name      string `db:"name"`
+}
+
+type GetItemUnitsRow struct {
+	ID        string `db:"id"`
+	CompanyID string `db:"company_id"`
+	Name      string `db:"name"`
+}
+
+func (q *Queries) GetItemUnits(ctx context.Context, arg GetItemUnitsParams) ([]GetItemUnitsRow, error) {
+	rows, err := q.db.QueryContext(ctx, getItemUnits, arg.CompanyID, arg.Name)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetItemUnitsRow
+	for rows.Next() {
+		var i GetItemUnitsRow
+		if err := rows.Scan(&i.ID, &i.CompanyID, &i.Name); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const insertItemBrand = `-- name: InsertItemBrand :one
 INSERT INTO inventory.item_brands(id, company_id, name)
 VALUES ($1, $2, $3)

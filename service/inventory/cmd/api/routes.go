@@ -15,6 +15,10 @@ const (
 	UpdateItemBrandPath = "/inventory/item/brand/update"
 	GetItemBrandsPath = "/inventory/item/brands"
 
+	AddItemUnitPath = "/inventory/item/unit/add"
+	UpdateItemUnitPath = "/inventory/item/unit/update"
+	GetItemUnitsPath = "/inventory/item/units"
+
 	AddItemGroupPath = "/inventory/item/group/add"
 	UpdateItemGroupPath = "/inventory/item/group/update"
 	GetItemGroupsPath = "/inventory/item/groups"
@@ -50,6 +54,10 @@ func (c *component) Routes(inventoryService model.InventoryService) http.Handler
 
 	mux.Method("POST", AddItemUnitPath, httpHandler.New(inventoryService.AddItemUnit))
 	mux.Method("POST", UpdateItemUnitPath, httpHandler.New(inventoryService.UpdateItemUnit))
+
+	mux.Method("POST", AddItemUnitPath, httpHandler.New(inventoryService.AddItemUnit))
+	mux.Method("POST", UpdateItemUnitPath, httpHandler.New(inventoryService.UpdateItemUnit))
+	mux.Method("POST", GetItemUnitsPath, httpHandler.New(inventoryService.GetItemUnits))
 
 	return mux
 }
