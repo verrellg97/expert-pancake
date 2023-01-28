@@ -3,6 +3,7 @@ BUSINESS_BINARY=businessService
 ACCOUNTING_BINARY=accountingService
 BUSINESS_RELATION_BINARY=businessRelationService
 INVENTORY_BINARY=inventoryService
+WAREHOUSE_BINARY=warehouseService
 
 ## up: starts all containers in the background without forcing build
 up:
@@ -11,7 +12,7 @@ up:
 	@echo "Docker images started!"
 
 ## up_build: stops docker-compose (if running), builds all projects and starts docker compose
-up_build: build_account build_business build_accounting build_business_relation build_inventory
+up_build: build_account build_business build_accounting build_business_relation build_inventory build_warehouse
 	@echo "Stopping docker images (if running...)"
 	docker compose down
 	@echo "Building (when required) and starting docker images..."
