@@ -26,9 +26,9 @@ type UpsertRackResponse struct {
 }
 
 type GetRacksRequest struct {
-	BranchId string `json:"branch_id" validate:"required"`
-	Keyword  string `json:"keyword"`
-	Mode     string `json:"mode" validate:"required"`
+	BranchId       string `json:"branch_id" validate:"required"`
+	Keyword        string `json:"keyword"`
+	IsGetAvailable bool   `json:"is_get_available" validate:"boolean"`
 }
 
 type GetRacksResponse struct {

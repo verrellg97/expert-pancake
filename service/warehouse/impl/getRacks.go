@@ -21,21 +21,14 @@ func (a warehouseService) GetRacks(w http.ResponseWriter, r *http.Request) error
 	if errMapRequest != nil {
 		return errors.NewClientError().WithDataMap(errMapRequest)
 	}
-	
-	var is_get_all = true
-	if req.Mode == "available" {
-		is_get_all = false
-	}  else if  req.Mode == "all" {
-		is_get_all = true
-	}
-	
+
 	arg := db.GetRacksParams{
-		BranchID: req.BranchId,
-		Name:     util.WildCardString(req.Keyword),
-		IsGetAll: is_get_all,
+		BranchID:       req.BranchId,
+		Name:           util.WildCardString(req.Keyword),
+		Isgetavailable: req.IsGetAvailable,
 	}
+
 	result, err := a.dbTrx.GetRacks(context.Background(), arg)
-	
 	if err != nil {
 		return errors.NewServerError(model.GetRacksError, err.Error())
 	}
@@ -46,7 +39,7 @@ func (a warehouseService) GetRacks(w http.ResponseWriter, r *http.Request) error
 		var rack = model.Rack{
 			RackId:   d.ID,
 			BranchId: d.BranchID,
-			Name:      d.Name,
+			Name:     d.Name,
 		}
 		racks = append(racks, rack)
 	}

@@ -15,14 +15,14 @@ FROM warehouse.racks a
 LEFT JOIN warehouse.warehouse_racks b ON a.id = b.rack_id
 WHERE a.branch_id = $1 
     AND a.name LIKE $2 
-    AND CASE WHEN $3::bool
-    THEN TRUE ELSE b.rack_id IS NULL END
+    AND CASE WHEN
+        $3::bool THEN b.rack_id IS NULL ELSE TRUE END
 `
 
 type GetRacksParams struct {
-	BranchID string `db:"branch_id"`
-	Name     string `db:"name"`
-	IsGetAll bool   `db:"is_get_all"`
+	BranchID       string `db:"branch_id"`
+	Name           string `db:"name"`
+	Isgetavailable bool   `db:"isgetavailable"`
 }
 
 type GetRacksRow struct {
@@ -32,7 +32,7 @@ type GetRacksRow struct {
 }
 
 func (q *Queries) GetRacks(ctx context.Context, arg GetRacksParams) ([]GetRacksRow, error) {
-	rows, err := q.db.QueryContext(ctx, getRacks, arg.BranchID, arg.Name, arg.IsGetAll)
+	rows, err := q.db.QueryContext(ctx, getRacks, arg.BranchID, arg.Name, arg.Isgetavailable)
 	if err != nil {
 		return nil, err
 	}
