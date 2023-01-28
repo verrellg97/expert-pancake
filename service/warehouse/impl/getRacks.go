@@ -22,10 +22,12 @@ func (a warehouseService) GetRacks(w http.ResponseWriter, r *http.Request) error
 		return errors.NewClientError().WithDataMap(errMapRequest)
 	}
 	
-	var is_get_all = false
-	if req.Mode == "all" {
+	var is_get_all = true
+	if req.Mode == "available" {
+		is_get_all = false
+	}  else if  req.Mode == "all" {
 		is_get_all = true
-	} 
+	}
 	
 	arg := db.GetRacksParams{
 		BranchID: req.BranchId,
