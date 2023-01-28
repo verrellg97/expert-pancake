@@ -9,6 +9,51 @@ import (
 	"context"
 )
 
+const getRacks = `-- name: GetRacks :many
+SELECT a.id, a.branch_id, a.name
+FROM warehouse.racks a
+LEFT JOIN warehouse.warehouse_racks b ON a.id = b.rack_id
+WHERE a.branch_id = $1 
+    AND a.name LIKE $2 
+    AND CASE WHEN $3::bool
+    THEN TRUE ELSE b.rack_id IS NULL END
+`
+
+type GetRacksParams struct {
+	BranchID string `db:"branch_id"`
+	Name     string `db:"name"`
+	IsGetAll bool   `db:"is_get_all"`
+}
+
+type GetRacksRow struct {
+	ID       string `db:"id"`
+	BranchID string `db:"branch_id"`
+	Name     string `db:"name"`
+}
+
+func (q *Queries) GetRacks(ctx context.Context, arg GetRacksParams) ([]GetRacksRow, error) {
+	rows, err := q.db.QueryContext(ctx, getRacks, arg.BranchID, arg.Name, arg.IsGetAll)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetRacksRow
+	for rows.Next() {
+		var i GetRacksRow
+		if err := rows.Scan(&i.ID, &i.BranchID, &i.Name); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const upsertRack = `-- name: UpsertRack :one
 INSERT INTO warehouse.racks(id, branch_id, name)
 VALUES ($1, $2, $3)

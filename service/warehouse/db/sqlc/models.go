@@ -15,3 +15,10 @@ type WarehouseRack struct {
 	CreatedAt sql.NullTime `db:"created_at"`
 	UpdatedAt sql.NullTime `db:"updated_at"`
 }
+
+type WarehouseWarehouseRack struct {
+	WarehouseID string       `db:"warehouse_id"`
+	RackID      string       `db:"rack_id"`
+	CreatedAt   sql.NullTime `db:"created_at"`
+	UpdatedAt   sql.NullTime `db:"updated_at"`
+}
