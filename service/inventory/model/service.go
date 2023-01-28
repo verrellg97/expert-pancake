@@ -9,16 +9,13 @@ type InventoryService interface {
 	UpdateItemBrand(w http.ResponseWriter, r *http.Request) error
 	GetItemBrands(w http.ResponseWriter, r *http.Request) error
 
-	AddItemUnit(w http.ResponseWriter, r *http.Request) error
-	UpdateItemUnit(w http.ResponseWriter, r *http.Request) error
-	GetItemUnits(w http.ResponseWriter, r *http.Request) error
-
 	AddItemGroup(w http.ResponseWriter, r *http.Request) error
 	UpdateItemGroup(w http.ResponseWriter, r *http.Request) error
 	GetItemGroups(w http.ResponseWriter, r *http.Request) error
 
 	AddItemUnit(w http.ResponseWriter, r *http.Request) error
 	UpdateItemUnit(w http.ResponseWriter, r *http.Request) error
+	GetItemUnits(w http.ResponseWriter, r *http.Request) error
 }
 
 type Brand struct {
@@ -48,35 +45,6 @@ type UpdateItemBrandResponse struct {
 type GetItemBrandsRequest struct {
 	CompanyId string `json:"company_id" validate:"required"`
 	Keyword   string `json:"keyword"`
-}
-
-type Unit struct {
-	CompanyId   string `json:"company_id" validate:"required"`
-	ItemUnitId string `json:"item_unit_id" validate:"required"`
-	Name        string `json:"name" validate:"required"`
-}
-
-type AddItemUnitRequest struct {
-	CompanyId string `json:"company_id" validate:"required"`
-	Name      string `json:"name" validate:"required"`
-}
-
-type AddItemUnitResponse struct {
-	Unit
-}
-
-type UpdateItemUnitRequest struct {
-	Id 		string `json:"id" validate:"required"`
-	Name 	string `json:"name" validate:"required"`
-}
-
-type UpdateItemUnitResponse struct {
-	Unit
-}
-
-type GetItemUnitsRequest struct {
-	CompanyId 		string `json:"company_id" validate:"required"`
-	Keyword 	string `json:"keyword"`
 }
 
 type Group struct {
@@ -130,4 +98,9 @@ type UpdateItemUnitRequest struct {
 
 type UpdateItemUnitResponse struct {
 	Unit
+}
+
+type GetItemUnitsRequest struct {
+	CompanyId 		string `json:"company_id" validate:"required"`
+	Keyword 	string `json:"keyword"`
 }
