@@ -61,6 +61,18 @@ services:
     deploy:
       mode: replicated
       replicas: 1
+  warehouse-service:
+    build:
+      context: ./service/warehouse
+      dockerfile: Dockerfile
+    networks:
+      - postgres
+    restart: always
+    ports:
+      - "4050:4050"
+    deploy:
+      mode: replicated
+      replicas: 1
 
   postgres:
     container_name: postgres_container
