@@ -9,15 +9,15 @@ import (
 )
 
 type Querier interface {
-	GetItemBrands(ctx context.Context, arg GetItemBrandsParams) ([]GetItemBrandsRow, error)
-	GetItemGroups(ctx context.Context, arg GetItemGroupsParams) ([]GetItemGroupsRow, error)
-	GetItemUnits(ctx context.Context, arg GetItemUnitsParams) ([]GetItemUnitsRow, error)
-	InsertItemBrand(ctx context.Context, arg InsertItemBrandParams) (InventoryItemBrand, error)
-	InsertItemGroup(ctx context.Context, arg InsertItemGroupParams) (InventoryItemGroup, error)
-	InsertItemUnit(ctx context.Context, arg InsertItemUnitParams) (InventoryItemUnit, error)
-	UpdateItemBrand(ctx context.Context, arg UpdateItemBrandParams) (InventoryItemBrand, error)
-	UpdateItemGroup(ctx context.Context, arg UpdateItemGroupParams) (InventoryItemGroup, error)
-	UpdateItemUnit(ctx context.Context, arg UpdateItemUnitParams) (InventoryItemUnit, error)
+	GetBrands(ctx context.Context, arg GetBrandsParams) ([]GetBrandsRow, error)
+	GetGroups(ctx context.Context, arg GetGroupsParams) ([]GetGroupsRow, error)
+	GetUnits(ctx context.Context, arg GetUnitsParams) ([]GetUnitsRow, error)
+	InsertBrand(ctx context.Context, arg InsertBrandParams) (InventoryBrand, error)
+	InsertGroup(ctx context.Context, arg InsertGroupParams) (InventoryGroup, error)
+	InsertUnit(ctx context.Context, arg InsertUnitParams) (InventoryUnit, error)
+	UpdateBrand(ctx context.Context, arg UpdateBrandParams) (InventoryBrand, error)
+	UpdateGroup(ctx context.Context, arg UpdateGroupParams) (InventoryGroup, error)
+	UpdateUnit(ctx context.Context, arg UpdateUnitParams) (InventoryUnit, error)
 }
 
 var _ Querier = (*Queries)(nil)

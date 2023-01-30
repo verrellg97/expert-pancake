@@ -8,11 +8,12 @@ import (
 	"github.com/calvinkmts/expert-pancake/engine/httpHandler"
 	db "github.com/expert-pancake/service/inventory/db/sqlc"
 	"github.com/expert-pancake/service/inventory/model"
+	uuid "github.com/satori/go.uuid"
 )
 
-func (a inventoryService) UpdateItemGroup(w http.ResponseWriter, r *http.Request) error {
+func (a inventoryService) AddGroup(w http.ResponseWriter, r *http.Request) error {
 
-	var req model.UpdateItemGroupRequest
+	var req model.AddGroupRequest
 
 	httpHandler.ParseHTTPRequest(r, &req)
 
@@ -21,21 +22,22 @@ func (a inventoryService) UpdateItemGroup(w http.ResponseWriter, r *http.Request
 		return errors.NewClientError().WithDataMap(errMapRequest)
 	}
 
-	arg := db.UpdateItemGroupParams{
-		ID:        req.Id,
+	arg := db.InsertGroupParams{
+		ID:        uuid.NewV4().String(),
+		CompanyID: req.CompanyId,
 		Name:      req.Name,
 	}
 
-	result, err := a.dbTrx.UpdateItemGroup(context.Background(), arg)
+	result, err := a.dbTrx.InsertGroup(context.Background(), arg)
 	if err != nil {
-		return errors.NewServerError(model.UpdateItemGroupError, err.Error())
+		return errors.NewServerError(model.AddNewGroupError, err.Error())
 	}
 
-	res := model.UpdateItemGroupResponse{
+	res := model.AddGroupResponse{
 		Group: model.Group{
-			ItemGroupId: result.ID,
-			CompanyId:   result.CompanyID,
-			Name:        result.Name,
+			GroupId:   result.ID,
+			CompanyId: result.CompanyID,
+			Name:      result.Name,
 		},
 	}
 

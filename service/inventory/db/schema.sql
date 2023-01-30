@@ -1,6 +1,6 @@
 CREATE SCHEMA IF NOT EXISTS inventory;
 
-CREATE TABLE inventory.item_brands (
+CREATE TABLE "inventory"."brands" (
   "id" text NOT NULL,
   "company_id" text NOT NULL,
   "name" text NOT NULL,
@@ -9,7 +9,7 @@ CREATE TABLE inventory.item_brands (
   PRIMARY KEY ("id")
 );
 
-CREATE TABLE "inventory"."item_groups" (
+CREATE TABLE "inventory"."groups" (
   "id" text NOT NULL,
   "company_id" text NOT NULL,
   "name" text NOT NULL,
@@ -19,7 +19,7 @@ CREATE TABLE "inventory"."item_groups" (
 );
 
 
-CREATE TABLE "inventory"."item_units" (
+CREATE TABLE "inventory"."units" (
   "id" text NOT NULL,
   "company_id" text NOT NULL,
   "name" text NOT NULL,

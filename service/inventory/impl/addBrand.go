@@ -11,9 +11,9 @@ import (
 	uuid "github.com/satori/go.uuid"
 )
 
-func (a inventoryService) AddItemBrand(w http.ResponseWriter, r *http.Request) error {
+func (a inventoryService) AddBrand(w http.ResponseWriter, r *http.Request) error {
 
-	var req model.AddItemBrandRequest
+	var req model.AddBrandRequest
 
 	httpHandler.ParseHTTPRequest(r, &req)
 
@@ -22,22 +22,22 @@ func (a inventoryService) AddItemBrand(w http.ResponseWriter, r *http.Request) e
 		return errors.NewClientError().WithDataMap(errMapRequest)
 	}
 
-	arg := db.InsertItemBrandParams{
+	arg := db.InsertBrandParams{
 		ID:        uuid.NewV4().String(),
 		CompanyID: req.CompanyId,
 		Name:      req.Name,
 	}
 
-	result, err := a.dbTrx.InsertItemBrand(context.Background(), arg)
+	result, err := a.dbTrx.InsertBrand(context.Background(), arg)
 	if err != nil {
-		return errors.NewServerError(model.AddNewItemBrandError, err.Error())
+		return errors.NewServerError(model.AddNewBrandError, err.Error())
 	}
 
-	res := model.AddItemBrandResponse{
+	res := model.AddBrandResponse{
 		Brand: model.Brand{
-			ItemBrandId: result.ID,
-			CompanyId:   result.CompanyID,
-			Name:        result.Name,
+			BrandId:   result.ID,
+			CompanyId: result.CompanyID,
+			Name:      result.Name,
 		},
 	}
 

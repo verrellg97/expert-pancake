@@ -11,9 +11,9 @@ import (
 	"github.com/expert-pancake/service/inventory/util"
 )
 
-func (a inventoryService) GetItemGroups(w http.ResponseWriter, r *http.Request) error {
+func (a inventoryService) GetBrands(w http.ResponseWriter, r *http.Request) error {
 
-	var req model.GetItemGroupsRequest
+	var req model.GetBrandsRequest
 	httpHandler.ParseHTTPRequest(r, &req)
 
 	errMapRequest := a.validator.Validate(req)
@@ -21,27 +21,26 @@ func (a inventoryService) GetItemGroups(w http.ResponseWriter, r *http.Request) 
 		return errors.NewClientError().WithDataMap(errMapRequest)
 	}
 
-	result, err := a.dbTrx.GetItemGroups(context.Background(), db.GetItemGroupsParams{
+	result, err := a.dbTrx.GetBrands(context.Background(), db.GetBrandsParams{
 		CompanyID: req.CompanyId,
-		Name:   util.WildCardString(req.Keyword),
+		Name:      util.WildCardString(req.Keyword),
 	})
 	if err != nil {
-		return errors.NewServerError(model.GetItemGroupsError, err.Error())
+		return errors.NewServerError(model.GetBrandsError, err.Error())
 	}
 
-	var groups = make([]model.Group, 0)
+	var brands = make([]model.Brand, 0)
 
 	for _, d := range result {
-		var group = model.Group{
-			ItemGroupId:   d.ID,
+		var brand = model.Brand{
+			BrandId:   d.ID,
 			CompanyId: d.CompanyID,
 			Name:      d.Name,
 		}
-		groups = append(groups, group)
+		brands = append(brands, brand)
 	}
 
-
-	res := groups
+	res := brands
 	httpHandler.WriteResponse(w, res)
 
 	return nil

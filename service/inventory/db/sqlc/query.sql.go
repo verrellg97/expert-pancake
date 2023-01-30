@@ -9,31 +9,31 @@ import (
 	"context"
 )
 
-const getItemBrands = `-- name: GetItemBrands :many
-SELECT id, company_id, name FROM inventory.item_brands
+const getBrands = `-- name: GetBrands :many
+SELECT id, company_id, name FROM inventory.brands
 WHERE company_id = $1 AND name LIKE $2
 `
 
-type GetItemBrandsParams struct {
+type GetBrandsParams struct {
 	CompanyID string `db:"company_id"`
 	Name      string `db:"name"`
 }
 
-type GetItemBrandsRow struct {
+type GetBrandsRow struct {
 	ID        string `db:"id"`
 	CompanyID string `db:"company_id"`
 	Name      string `db:"name"`
 }
 
-func (q *Queries) GetItemBrands(ctx context.Context, arg GetItemBrandsParams) ([]GetItemBrandsRow, error) {
-	rows, err := q.db.QueryContext(ctx, getItemBrands, arg.CompanyID, arg.Name)
+func (q *Queries) GetBrands(ctx context.Context, arg GetBrandsParams) ([]GetBrandsRow, error) {
+	rows, err := q.db.QueryContext(ctx, getBrands, arg.CompanyID, arg.Name)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []GetItemBrandsRow
+	var items []GetBrandsRow
 	for rows.Next() {
-		var i GetItemBrandsRow
+		var i GetBrandsRow
 		if err := rows.Scan(&i.ID, &i.CompanyID, &i.Name); err != nil {
 			return nil, err
 		}
@@ -48,31 +48,31 @@ func (q *Queries) GetItemBrands(ctx context.Context, arg GetItemBrandsParams) ([
 	return items, nil
 }
 
-const getItemGroups = `-- name: GetItemGroups :many
-SELECT id, company_id, name FROM inventory.item_groups
+const getGroups = `-- name: GetGroups :many
+SELECT id, company_id, name FROM inventory.groups
 WHERE company_id = $1 AND name LIKE $2
 `
 
-type GetItemGroupsParams struct {
+type GetGroupsParams struct {
 	CompanyID string `db:"company_id"`
 	Name      string `db:"name"`
 }
 
-type GetItemGroupsRow struct {
+type GetGroupsRow struct {
 	ID        string `db:"id"`
 	CompanyID string `db:"company_id"`
 	Name      string `db:"name"`
 }
 
-func (q *Queries) GetItemGroups(ctx context.Context, arg GetItemGroupsParams) ([]GetItemGroupsRow, error) {
-	rows, err := q.db.QueryContext(ctx, getItemGroups, arg.CompanyID, arg.Name)
+func (q *Queries) GetGroups(ctx context.Context, arg GetGroupsParams) ([]GetGroupsRow, error) {
+	rows, err := q.db.QueryContext(ctx, getGroups, arg.CompanyID, arg.Name)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []GetItemGroupsRow
+	var items []GetGroupsRow
 	for rows.Next() {
-		var i GetItemGroupsRow
+		var i GetGroupsRow
 		if err := rows.Scan(&i.ID, &i.CompanyID, &i.Name); err != nil {
 			return nil, err
 		}
@@ -87,31 +87,31 @@ func (q *Queries) GetItemGroups(ctx context.Context, arg GetItemGroupsParams) ([
 	return items, nil
 }
 
-const getItemUnits = `-- name: GetItemUnits :many
-SELECT id, company_id, name FROM inventory.item_units
+const getUnits = `-- name: GetUnits :many
+SELECT id, company_id, name FROM inventory.units
 WHERE company_id = $1 AND name LIKE $2
 `
 
-type GetItemUnitsParams struct {
+type GetUnitsParams struct {
 	CompanyID string `db:"company_id"`
 	Name      string `db:"name"`
 }
 
-type GetItemUnitsRow struct {
+type GetUnitsRow struct {
 	ID        string `db:"id"`
 	CompanyID string `db:"company_id"`
 	Name      string `db:"name"`
 }
 
-func (q *Queries) GetItemUnits(ctx context.Context, arg GetItemUnitsParams) ([]GetItemUnitsRow, error) {
-	rows, err := q.db.QueryContext(ctx, getItemUnits, arg.CompanyID, arg.Name)
+func (q *Queries) GetUnits(ctx context.Context, arg GetUnitsParams) ([]GetUnitsRow, error) {
+	rows, err := q.db.QueryContext(ctx, getUnits, arg.CompanyID, arg.Name)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []GetItemUnitsRow
+	var items []GetUnitsRow
 	for rows.Next() {
-		var i GetItemUnitsRow
+		var i GetUnitsRow
 		if err := rows.Scan(&i.ID, &i.CompanyID, &i.Name); err != nil {
 			return nil, err
 		}
@@ -126,21 +126,21 @@ func (q *Queries) GetItemUnits(ctx context.Context, arg GetItemUnitsParams) ([]G
 	return items, nil
 }
 
-const insertItemBrand = `-- name: InsertItemBrand :one
-INSERT INTO inventory.item_brands(id, company_id, name)
+const insertBrand = `-- name: InsertBrand :one
+INSERT INTO inventory.brands(id, company_id, name)
 VALUES ($1, $2, $3)
 RETURNING id, company_id, name, created_at, updated_at
 `
 
-type InsertItemBrandParams struct {
+type InsertBrandParams struct {
 	ID        string `db:"id"`
 	CompanyID string `db:"company_id"`
 	Name      string `db:"name"`
 }
 
-func (q *Queries) InsertItemBrand(ctx context.Context, arg InsertItemBrandParams) (InventoryItemBrand, error) {
-	row := q.db.QueryRowContext(ctx, insertItemBrand, arg.ID, arg.CompanyID, arg.Name)
-	var i InventoryItemBrand
+func (q *Queries) InsertBrand(ctx context.Context, arg InsertBrandParams) (InventoryBrand, error) {
+	row := q.db.QueryRowContext(ctx, insertBrand, arg.ID, arg.CompanyID, arg.Name)
+	var i InventoryBrand
 	err := row.Scan(
 		&i.ID,
 		&i.CompanyID,
@@ -151,21 +151,21 @@ func (q *Queries) InsertItemBrand(ctx context.Context, arg InsertItemBrandParams
 	return i, err
 }
 
-const insertItemGroup = `-- name: InsertItemGroup :one
-INSERT INTO inventory.item_groups(id, company_id, name)
+const insertGroup = `-- name: InsertGroup :one
+INSERT INTO inventory.groups(id, company_id, name)
 VALUES ($1, $2, $3)
 RETURNING id, company_id, name, created_at, updated_at
 `
 
-type InsertItemGroupParams struct {
+type InsertGroupParams struct {
 	ID        string `db:"id"`
 	CompanyID string `db:"company_id"`
 	Name      string `db:"name"`
 }
 
-func (q *Queries) InsertItemGroup(ctx context.Context, arg InsertItemGroupParams) (InventoryItemGroup, error) {
-	row := q.db.QueryRowContext(ctx, insertItemGroup, arg.ID, arg.CompanyID, arg.Name)
-	var i InventoryItemGroup
+func (q *Queries) InsertGroup(ctx context.Context, arg InsertGroupParams) (InventoryGroup, error) {
+	row := q.db.QueryRowContext(ctx, insertGroup, arg.ID, arg.CompanyID, arg.Name)
+	var i InventoryGroup
 	err := row.Scan(
 		&i.ID,
 		&i.CompanyID,
@@ -176,21 +176,21 @@ func (q *Queries) InsertItemGroup(ctx context.Context, arg InsertItemGroupParams
 	return i, err
 }
 
-const insertItemUnit = `-- name: InsertItemUnit :one
-INSERT INTO inventory.item_units(id, company_id, name)
+const insertUnit = `-- name: InsertUnit :one
+INSERT INTO inventory.units(id, company_id, name)
 VALUES ($1, $2, $3)
 RETURNING id, company_id, name, created_at, updated_at
 `
 
-type InsertItemUnitParams struct {
+type InsertUnitParams struct {
 	ID        string `db:"id"`
 	CompanyID string `db:"company_id"`
 	Name      string `db:"name"`
 }
 
-func (q *Queries) InsertItemUnit(ctx context.Context, arg InsertItemUnitParams) (InventoryItemUnit, error) {
-	row := q.db.QueryRowContext(ctx, insertItemUnit, arg.ID, arg.CompanyID, arg.Name)
-	var i InventoryItemUnit
+func (q *Queries) InsertUnit(ctx context.Context, arg InsertUnitParams) (InventoryUnit, error) {
+	row := q.db.QueryRowContext(ctx, insertUnit, arg.ID, arg.CompanyID, arg.Name)
+	var i InventoryUnit
 	err := row.Scan(
 		&i.ID,
 		&i.CompanyID,
@@ -201,8 +201,8 @@ func (q *Queries) InsertItemUnit(ctx context.Context, arg InsertItemUnitParams) 
 	return i, err
 }
 
-const updateItemBrand = `-- name: UpdateItemBrand :one
-UPDATE inventory.item_brands
+const updateBrand = `-- name: UpdateBrand :one
+UPDATE inventory.brands
 SET 
     name = $2,
     updated_at = NOW()
@@ -210,14 +210,14 @@ WHERE id = $1
 RETURNING id, company_id, name, created_at, updated_at
 `
 
-type UpdateItemBrandParams struct {
+type UpdateBrandParams struct {
 	ID   string `db:"id"`
 	Name string `db:"name"`
 }
 
-func (q *Queries) UpdateItemBrand(ctx context.Context, arg UpdateItemBrandParams) (InventoryItemBrand, error) {
-	row := q.db.QueryRowContext(ctx, updateItemBrand, arg.ID, arg.Name)
-	var i InventoryItemBrand
+func (q *Queries) UpdateBrand(ctx context.Context, arg UpdateBrandParams) (InventoryBrand, error) {
+	row := q.db.QueryRowContext(ctx, updateBrand, arg.ID, arg.Name)
+	var i InventoryBrand
 	err := row.Scan(
 		&i.ID,
 		&i.CompanyID,
@@ -228,8 +228,8 @@ func (q *Queries) UpdateItemBrand(ctx context.Context, arg UpdateItemBrandParams
 	return i, err
 }
 
-const updateItemGroup = `-- name: UpdateItemGroup :one
-UPDATE inventory.item_groups
+const updateGroup = `-- name: UpdateGroup :one
+UPDATE inventory.groups
 SET 
     name = $2,
     updated_at = NOW()
@@ -237,14 +237,14 @@ WHERE id = $1
 RETURNING id, company_id, name, created_at, updated_at
 `
 
-type UpdateItemGroupParams struct {
+type UpdateGroupParams struct {
 	ID   string `db:"id"`
 	Name string `db:"name"`
 }
 
-func (q *Queries) UpdateItemGroup(ctx context.Context, arg UpdateItemGroupParams) (InventoryItemGroup, error) {
-	row := q.db.QueryRowContext(ctx, updateItemGroup, arg.ID, arg.Name)
-	var i InventoryItemGroup
+func (q *Queries) UpdateGroup(ctx context.Context, arg UpdateGroupParams) (InventoryGroup, error) {
+	row := q.db.QueryRowContext(ctx, updateGroup, arg.ID, arg.Name)
+	var i InventoryGroup
 	err := row.Scan(
 		&i.ID,
 		&i.CompanyID,
@@ -255,8 +255,8 @@ func (q *Queries) UpdateItemGroup(ctx context.Context, arg UpdateItemGroupParams
 	return i, err
 }
 
-const updateItemUnit = `-- name: UpdateItemUnit :one
-UPDATE inventory.item_units
+const updateUnit = `-- name: UpdateUnit :one
+UPDATE inventory.units
 SET 
     name = $2,
     updated_at = NOW()
@@ -264,14 +264,14 @@ WHERE id = $1
 RETURNING id, company_id, name, created_at, updated_at
 `
 
-type UpdateItemUnitParams struct {
+type UpdateUnitParams struct {
 	ID   string `db:"id"`
 	Name string `db:"name"`
 }
 
-func (q *Queries) UpdateItemUnit(ctx context.Context, arg UpdateItemUnitParams) (InventoryItemUnit, error) {
-	row := q.db.QueryRowContext(ctx, updateItemUnit, arg.ID, arg.Name)
-	var i InventoryItemUnit
+func (q *Queries) UpdateUnit(ctx context.Context, arg UpdateUnitParams) (InventoryUnit, error) {
+	row := q.db.QueryRowContext(ctx, updateUnit, arg.ID, arg.Name)
+	var i InventoryUnit
 	err := row.Scan(
 		&i.ID,
 		&i.CompanyID,

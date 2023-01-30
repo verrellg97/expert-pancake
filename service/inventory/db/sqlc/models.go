@@ -8,7 +8,7 @@ import (
 	"database/sql"
 )
 
-type InventoryItemBrand struct {
+type InventoryBrand struct {
 	ID        string       `db:"id"`
 	CompanyID string       `db:"company_id"`
 	Name      string       `db:"name"`
@@ -16,7 +16,7 @@ type InventoryItemBrand struct {
 	UpdatedAt sql.NullTime `db:"updated_at"`
 }
 
-type InventoryItemGroup struct {
+type InventoryGroup struct {
 	ID        string       `db:"id"`
 	CompanyID string       `db:"company_id"`
 	Name      string       `db:"name"`
@@ -24,7 +24,7 @@ type InventoryItemGroup struct {
 	UpdatedAt sql.NullTime `db:"updated_at"`
 }
 
-type InventoryItemUnit struct {
+type InventoryUnit struct {
 	ID        string       `db:"id"`
 	CompanyID string       `db:"company_id"`
 	Name      string       `db:"name"`
