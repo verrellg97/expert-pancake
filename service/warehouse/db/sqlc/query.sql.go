@@ -54,6 +54,54 @@ func (q *Queries) GetRacks(ctx context.Context, arg GetRacksParams) ([]GetRacksR
 	return items, nil
 }
 
+const getWarehouses = `-- name: GetWarehouses :many
+SELECT a.id, a.branch_id, a.code, a.name, a.address, a.type, a.is_deleted, a.created_at, a.updated_at
+FROM warehouse.warehouses a
+WHERE  a.branch_id = $1
+AND a.name LIKE $2
+AND a.type LIKE $3
+AND a.is_deleted = 0
+`
+
+type GetWarehousesParams struct {
+	BranchID string `db:"branch_id"`
+	Name     string `db:"name"`
+	Type     string `db:"type"`
+}
+
+func (q *Queries) GetWarehouses(ctx context.Context, arg GetWarehousesParams) ([]WarehouseWarehouse, error) {
+	rows, err := q.db.QueryContext(ctx, getWarehouses, arg.BranchID, arg.Name, arg.Type)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []WarehouseWarehouse
+	for rows.Next() {
+		var i WarehouseWarehouse
+		if err := rows.Scan(
+			&i.ID,
+			&i.BranchID,
+			&i.Code,
+			&i.Name,
+			&i.Address,
+			&i.Type,
+			&i.IsDeleted,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const upsertRack = `-- name: UpsertRack :one
 INSERT INTO warehouse.racks(id, branch_id, name)
 VALUES ($1, $2, $3)

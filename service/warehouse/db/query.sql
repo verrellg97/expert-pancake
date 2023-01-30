@@ -16,3 +16,11 @@ WHERE a.branch_id = $1
     AND a.name LIKE $2 
     AND CASE WHEN
         @IsGetAvailable::bool THEN b.rack_id IS NULL ELSE TRUE END;
+
+-- name: GetWarehouses :many
+SELECT a.*
+FROM warehouse.warehouses a
+WHERE  a.branch_id = $1
+AND a.name LIKE $2
+AND a.type LIKE $3
+AND a.is_deleted = 0;
