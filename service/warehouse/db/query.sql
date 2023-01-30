@@ -23,4 +23,4 @@ FROM warehouse.warehouses a
 WHERE  a.branch_id = $1
 AND a.name LIKE $2
 AND a.type LIKE $3
-AND a.is_deleted = 0;
+AND a.is_deleted = FALSE;
