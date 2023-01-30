@@ -10,6 +10,7 @@ import (
 
 type Querier interface {
 	GetRacks(ctx context.Context, arg GetRacksParams) ([]GetRacksRow, error)
+	GetWarehouses(ctx context.Context, arg GetWarehousesParams) ([]WarehouseWarehouse, error)
 	UpsertRack(ctx context.Context, arg UpsertRackParams) (WarehouseRack, error)
 }
 

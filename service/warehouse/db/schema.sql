@@ -15,3 +15,16 @@ CREATE TABLE warehouse.warehouse_racks (
   "created_at" timestamptz DEFAULT (now()),
   "updated_at" timestamptz DEFAULT (now())
 );
+
+CREATE TABLE warehouse.warehouses (
+  "id" text NOT NULL,
+  "branch_id" text NOT NULL,
+  "code" text NOT NULL,
+  "name" text NOT NULL,
+  "address" text NOT NULL,
+  "type" text NOT NULL,
+  "is_deleted" int NOT NULL DEFAULT 0,
+  "created_at" timestamptz DEFAULT (now()),
+  "updated_at" timestamptz DEFAULT (now()),
+  PRIMARY KEY ("id")
+);

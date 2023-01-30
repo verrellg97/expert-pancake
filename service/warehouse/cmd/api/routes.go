@@ -12,8 +12,9 @@ import (
 
 const (
 	UpsertRackPath = "/warehouse/rack/upsert"
-
 	GetRacksPath = "/warehouse/racks"
+
+	GetWarehousesPath = "/warehouses"
 )
 
 func (c *component) Routes(warehouseService model.WarehouseService) http.Handler {
@@ -34,6 +35,8 @@ func (c *component) Routes(warehouseService model.WarehouseService) http.Handler
 
 	mux.Method("POST", UpsertRackPath, httpHandler.New(warehouseService.UpsertRack))
 	mux.Method("POST", GetRacksPath, httpHandler.New(warehouseService.GetRacks))
+
+	mux.Method("POST", GetWarehousesPath, httpHandler.New(warehouseService.GetWarehouses))
 
 	return mux
 }

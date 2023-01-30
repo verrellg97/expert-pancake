@@ -16,6 +16,18 @@ type WarehouseRack struct {
 	UpdatedAt sql.NullTime `db:"updated_at"`
 }
 
+type WarehouseWarehouse struct {
+	ID        string       `db:"id"`
+	BranchID  string       `db:"branch_id"`
+	Code      string       `db:"code"`
+	Name      string       `db:"name"`
+	Address   string       `db:"address"`
+	Type      string       `db:"type"`
+	IsDeleted int32        `db:"is_deleted"`
+	CreatedAt sql.NullTime `db:"created_at"`
+	UpdatedAt sql.NullTime `db:"updated_at"`
+}
+
 type WarehouseWarehouseRack struct {
 	WarehouseID string       `db:"warehouse_id"`
 	RackID      string       `db:"rack_id"`
