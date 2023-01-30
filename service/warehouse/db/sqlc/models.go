@@ -23,7 +23,7 @@ type WarehouseWarehouse struct {
 	Name      string       `db:"name"`
 	Address   string       `db:"address"`
 	Type      string       `db:"type"`
-	IsDeleted int32        `db:"is_deleted"`
+	IsDeleted bool         `db:"is_deleted"`
 	CreatedAt sql.NullTime `db:"created_at"`
 	UpdatedAt sql.NullTime `db:"updated_at"`
 }

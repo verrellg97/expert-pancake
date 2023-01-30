@@ -23,7 +23,7 @@ CREATE TABLE warehouse.warehouses (
   "name" text NOT NULL,
   "address" text NOT NULL,
   "type" text NOT NULL,
-  "is_deleted" int NOT NULL DEFAULT 0,
+  "is_deleted" boolean NOT NULL DEFAULT FALSE,
   "created_at" timestamptz DEFAULT (now()),
   "updated_at" timestamptz DEFAULT (now()),
   PRIMARY KEY ("id")
