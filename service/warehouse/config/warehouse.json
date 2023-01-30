@@ -1,9 +1,9 @@
 {
   "db": {
-    "host": "localhost:5432",
-    "db_name": "konekin",
+    "host": "postgres",
+    "db_name": "warehouse",
     "username": "postgres",
-    "password": "root",
+    "password": "changeme",
     "ssl": "disable"
   },
   "server": {
