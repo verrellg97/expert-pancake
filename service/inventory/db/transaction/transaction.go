@@ -6,10 +6,12 @@ import (
 	"fmt"
 
 	. "github.com/expert-pancake/service/inventory/db/sqlc"
+	"github.com/expert-pancake/service/inventory/model"
 )
 
 type InventoryTrx interface {
 	Querier
+	AddItemTrx(ctx context.Context, arg model.AddItemRequest) (AddItemTrxResult, error)
 }
 
 // Trx provides all functions to execute SQL queries and transactions
