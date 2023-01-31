@@ -2,8 +2,8 @@ package db
 
 import (
 	"context"
+	"fmt"
 	"math/rand"
-	"strconv"
 
 	db "github.com/expert-pancake/service/inventory/db/sqlc"
 	"github.com/expert-pancake/service/inventory/model"
@@ -40,7 +40,7 @@ func (trx *Trx) AddItemTrx(ctx context.Context, arg model.AddItemRequest) (AddIt
 			ID:          id,
 			CompanyID:   arg.CompanyId,
 			ImageUrl:    arg.ImageUrl,
-			Code:        "BRG-" + strconv.Itoa(10000000+rand.Intn(99999999-10000000)),
+			Code:        "BRG-" + fmt.Sprintf("%08d", rand.Intn(100000000)),
 			Name:        arg.Name,
 			BrandID:     arg.BrandId,
 			GroupID:     arg.GroupId,
