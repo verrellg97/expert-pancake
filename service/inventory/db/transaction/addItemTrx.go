@@ -36,7 +36,7 @@ func (trx *Trx) AddItemTrx(ctx context.Context, arg model.AddItemRequest) (AddIt
 
 		id := uuid.NewV4().String()
 
-		_, err = q.InsertItem(ctx, db.InsertItemParams{
+		itemRes, err := q.InsertItem(ctx, db.InsertItemParams{
 			ID:          id,
 			CompanyID:   arg.CompanyId,
 			ImageUrl:    arg.ImageUrl,
@@ -76,7 +76,7 @@ func (trx *Trx) AddItemTrx(ctx context.Context, arg model.AddItemRequest) (AddIt
 		result.ItemId = id
 		result.VariantId = itemVariantRes.ID
 		result.ImageUrl = arg.ImageUrl
-		result.Code = ""
+		result.Code = itemRes.Code
 		result.Name = arg.Name
 		result.BrandId = arg.BrandId
 		result.BrandName = brandRes.Name
