@@ -2,3 +2,4 @@
 %project=inventory
 
 20230125_inventory_schema_and_item_components_table 2023-01-25T04:46:43Z Verrell <verrell@Verrells-MacBook-Air.local> # Add schema and item components table for inventory service
+20230130_alter_item_components_table_name_and_add_items_item_variants_item_unit_table 2023-01-30T19:28:32Z Verrell <verrell@Verrells-MacBook-Air.local> # Alter item components table name and add items item_variants item_units table
