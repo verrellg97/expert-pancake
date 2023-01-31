@@ -123,6 +123,79 @@ func (q *Queries) GetGroups(ctx context.Context, arg GetGroupsParams) ([]GetGrou
 	return items, nil
 }
 
+const getItems = `-- name: GetItems :many
+SELECT a.id, b.id AS variant_id, a.company_id, b.image_url, a.code, b.name,
+a.brand_id, c.name AS brand_name, a.group_id, d.name AS group_name,
+a.tag, a.description, b.is_default, b.price, b.stock
+FROM inventory.items a
+JOIN inventory.item_variants b ON a.id = b.item_id
+JOIN inventory.brands c ON a.brand_id = c.id
+JOIN inventory.groups d ON a.group_id = d.id
+WHERE a.company_id = $1 AND b.name LIKE $2
+`
+
+type GetItemsParams struct {
+	CompanyID string `db:"company_id"`
+	Name      string `db:"name"`
+}
+
+type GetItemsRow struct {
+	ID          string `db:"id"`
+	VariantID   string `db:"variant_id"`
+	CompanyID   string `db:"company_id"`
+	ImageUrl    string `db:"image_url"`
+	Code        string `db:"code"`
+	Name        string `db:"name"`
+	BrandID     string `db:"brand_id"`
+	BrandName   string `db:"brand_name"`
+	GroupID     string `db:"group_id"`
+	GroupName   string `db:"group_name"`
+	Tag         string `db:"tag"`
+	Description string `db:"description"`
+	IsDefault   bool   `db:"is_default"`
+	Price       int64  `db:"price"`
+	Stock       int64  `db:"stock"`
+}
+
+func (q *Queries) GetItems(ctx context.Context, arg GetItemsParams) ([]GetItemsRow, error) {
+	rows, err := q.db.QueryContext(ctx, getItems, arg.CompanyID, arg.Name)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetItemsRow
+	for rows.Next() {
+		var i GetItemsRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.VariantID,
+			&i.CompanyID,
+			&i.ImageUrl,
+			&i.Code,
+			&i.Name,
+			&i.BrandID,
+			&i.BrandName,
+			&i.GroupID,
+			&i.GroupName,
+			&i.Tag,
+			&i.Description,
+			&i.IsDefault,
+			&i.Price,
+			&i.Stock,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getUnits = `-- name: GetUnits :many
 SELECT id, company_id, name FROM inventory.units
 WHERE company_id = $1 AND name LIKE $2

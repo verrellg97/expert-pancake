@@ -91,3 +91,13 @@ SET
 WHERE item_id = $1
 AND is_default = true
 RETURNING *;
+
+-- name: GetItems :many
+SELECT a.id, b.id AS variant_id, a.company_id, b.image_url, a.code, b.name,
+a.brand_id, c.name AS brand_name, a.group_id, d.name AS group_name,
+a.tag, a.description, b.is_default, b.price, b.stock
+FROM inventory.items a
+JOIN inventory.item_variants b ON a.id = b.item_id
+JOIN inventory.brands c ON a.brand_id = c.id
+JOIN inventory.groups d ON a.group_id = d.id
+WHERE a.company_id = $1 AND b.name LIKE $2;
