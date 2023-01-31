@@ -11,9 +11,9 @@ import (
 	"github.com/expert-pancake/service/inventory/util"
 )
 
-func (a inventoryService) GetItemUnits(w http.ResponseWriter, r *http.Request) error {
+func (a inventoryService) GetGroups(w http.ResponseWriter, r *http.Request) error {
 
-	var req model.GetItemUnitsRequest
+	var req model.GetGroupsRequest
 	httpHandler.ParseHTTPRequest(r, &req)
 
 	errMapRequest := a.validator.Validate(req)
@@ -21,27 +21,26 @@ func (a inventoryService) GetItemUnits(w http.ResponseWriter, r *http.Request) e
 		return errors.NewClientError().WithDataMap(errMapRequest)
 	}
 
-	result, err := a.dbTrx.GetItemUnits(context.Background(), db.GetItemUnitsParams{
+	result, err := a.dbTrx.GetGroups(context.Background(), db.GetGroupsParams{
 		CompanyID: req.CompanyId,
-		Name:   util.WildCardString(req.Keyword),
+		Name:      util.WildCardString(req.Keyword),
 	})
 	if err != nil {
-		return errors.NewServerError(model.GetItemUnitsError, err.Error())
+		return errors.NewServerError(model.GetGroupsError, err.Error())
 	}
 
-	var units = make([]model.Unit, 0)
+	var groups = make([]model.Group, 0)
 
 	for _, d := range result {
-		var unit = model.Unit{
-			ItemUnitId:   d.ID,
+		var group = model.Group{
+			GroupId:   d.ID,
 			CompanyId: d.CompanyID,
 			Name:      d.Name,
 		}
-		units = append(units, unit)
+		groups = append(groups, group)
 	}
 
-
-	res := units
+	res := groups
 	httpHandler.WriteResponse(w, res)
 
 	return nil

@@ -5,102 +5,102 @@ import (
 )
 
 type InventoryService interface {
-	AddItemBrand(w http.ResponseWriter, r *http.Request) error
-	UpdateItemBrand(w http.ResponseWriter, r *http.Request) error
-	GetItemBrands(w http.ResponseWriter, r *http.Request) error
+	AddBrand(w http.ResponseWriter, r *http.Request) error
+	UpdateBrand(w http.ResponseWriter, r *http.Request) error
+	GetBrands(w http.ResponseWriter, r *http.Request) error
 
-	AddItemGroup(w http.ResponseWriter, r *http.Request) error
-	UpdateItemGroup(w http.ResponseWriter, r *http.Request) error
-	GetItemGroups(w http.ResponseWriter, r *http.Request) error
+	AddGroup(w http.ResponseWriter, r *http.Request) error
+	UpdateGroup(w http.ResponseWriter, r *http.Request) error
+	GetGroups(w http.ResponseWriter, r *http.Request) error
 
-	AddItemUnit(w http.ResponseWriter, r *http.Request) error
-	UpdateItemUnit(w http.ResponseWriter, r *http.Request) error
-	GetItemUnits(w http.ResponseWriter, r *http.Request) error
+	AddUnit(w http.ResponseWriter, r *http.Request) error
+	UpdateUnit(w http.ResponseWriter, r *http.Request) error
+	GetUnits(w http.ResponseWriter, r *http.Request) error
 }
 
 type Brand struct {
-	CompanyId   string `json:"company_id" validate:"required"`
-	ItemBrandId string `json:"item_brand_id" validate:"required"`
-	Name        string `json:"name" validate:"required"`
+	CompanyId string `json:"company_id" validate:"required"`
+	BrandId   string `json:"brand_id" validate:"required"`
+	Name      string `json:"name" validate:"required"`
 }
 
-type AddItemBrandRequest struct {
+type AddBrandRequest struct {
 	CompanyId string `json:"company_id" validate:"required"`
 	Name      string `json:"name" validate:"required"`
 }
 
-type AddItemBrandResponse struct {
+type AddBrandResponse struct {
 	Brand
 }
 
-type UpdateItemBrandRequest struct {
+type UpdateBrandRequest struct {
 	Id   string `json:"id" validate:"required"`
 	Name string `json:"name" validate:"required"`
 }
 
-type UpdateItemBrandResponse struct {
+type UpdateBrandResponse struct {
 	Brand
 }
 
-type GetItemBrandsRequest struct {
+type GetBrandsRequest struct {
 	CompanyId string `json:"company_id" validate:"required"`
 	Keyword   string `json:"keyword"`
 }
 
 type Group struct {
-	CompanyId   string `json:"company_id" validate:"required"`
-	ItemGroupId string `json:"item_group_id" validate:"required"`
-	Name        string `json:"name" validate:"required"`
+	CompanyId string `json:"company_id" validate:"required"`
+	GroupId   string `json:"group_id" validate:"required"`
+	Name      string `json:"name" validate:"required"`
 }
 
-type AddItemGroupRequest struct {
+type AddGroupRequest struct {
 	CompanyId string `json:"company_id" validate:"required"`
 	Name      string `json:"name" validate:"required"`
 }
 
-type AddItemGroupResponse struct {
+type AddGroupResponse struct {
 	Group
 }
 
-type UpdateItemGroupRequest struct {
+type UpdateGroupRequest struct {
 	Id   string `json:"id" validate:"required"`
 	Name string `json:"name" validate:"required"`
 }
 
-type UpdateItemGroupResponse struct {
+type UpdateGroupResponse struct {
 	Group
 }
 
-type GetItemGroupsRequest struct {
+type GetGroupsRequest struct {
 	CompanyId string `json:"company_id" validate:"required"`
 	Keyword   string `json:"keyword"`
 }
 
 type Unit struct {
-	CompanyId  string `json:"company_id" validate:"required"`
-	ItemUnitId string `json:"item_unit_id" validate:"required"`
-	Name       string `json:"name" validate:"required"`
+	CompanyId string `json:"company_id" validate:"required"`
+	UnitId    string `json:"unit_id" validate:"required"`
+	Name      string `json:"name" validate:"required"`
 }
 
-type AddItemUnitRequest struct {
+type AddUnitRequest struct {
 	CompanyId string `json:"company_id" validate:"required"`
 	Name      string `json:"name" validate:"required"`
 }
 
-type AddItemUnitResponse struct {
+type AddUnitResponse struct {
 	Unit
 }
 
-type UpdateItemUnitRequest struct {
+type UpdateUnitRequest struct {
 	Id   string `json:"id" validate:"required"`
 	Name string `json:"name" validate:"required"`
 }
 
-type UpdateItemUnitResponse struct {
+type UpdateUnitResponse struct {
 	Unit
 }
 
-type GetItemUnitsRequest struct {
-	CompanyId 		string `json:"company_id" validate:"required"`
-	Keyword 	string `json:"keyword"`
+type GetUnitsRequest struct {
+	CompanyId string `json:"company_id" validate:"required"`
+	Keyword   string `json:"keyword"`
 }

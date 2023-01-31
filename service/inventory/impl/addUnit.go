@@ -11,9 +11,9 @@ import (
 	uuid "github.com/satori/go.uuid"
 )
 
-func (a inventoryService) AddItemUnit(w http.ResponseWriter, r *http.Request) error {
+func (a inventoryService) AddUnit(w http.ResponseWriter, r *http.Request) error {
 
-	var req model.AddItemUnitRequest
+	var req model.AddUnitRequest
 
 	httpHandler.ParseHTTPRequest(r, &req)
 
@@ -22,22 +22,22 @@ func (a inventoryService) AddItemUnit(w http.ResponseWriter, r *http.Request) er
 		return errors.NewClientError().WithDataMap(errMapRequest)
 	}
 
-	arg := db.InsertItemUnitParams{
+	arg := db.InsertUnitParams{
 		ID:        uuid.NewV4().String(),
 		CompanyID: req.CompanyId,
 		Name:      req.Name,
 	}
 
-	result, err := a.dbTrx.InsertItemUnit(context.Background(), arg)
+	result, err := a.dbTrx.InsertUnit(context.Background(), arg)
 	if err != nil {
-		return errors.NewServerError(model.AddNewItemUnitError, err.Error())
+		return errors.NewServerError(model.AddNewUnitError, err.Error())
 	}
 
-	res := model.AddItemUnitResponse{
+	res := model.AddUnitResponse{
 		Unit: model.Unit{
-			ItemUnitId: result.ID,
-			CompanyId:   result.CompanyID,
-			Name:        result.Name,
+			UnitId:    result.ID,
+			CompanyId: result.CompanyID,
+			Name:      result.Name,
 		},
 	}
 

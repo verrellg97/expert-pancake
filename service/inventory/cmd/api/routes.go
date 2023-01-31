@@ -11,17 +11,17 @@ import (
 )
 
 const (
-	AddItemBrandPath = "/inventory/item/brand/add"
-	UpdateItemBrandPath = "/inventory/item/brand/update"
-	GetItemBrandsPath = "/inventory/item/brands"
+	AddBrandPath    = "/inventory/brand/add"
+	UpdateBrandPath = "/inventory/brand/update"
+	GetBrandsPath   = "/inventory/brands"
 
-	AddItemGroupPath = "/inventory/item/group/add"
-	UpdateItemGroupPath = "/inventory/item/group/update"
-	GetItemGroupsPath = "/inventory/item/groups"
+	AddGroupPath    = "/inventory/group/add"
+	UpdateGroupPath = "/inventory/group/update"
+	GetGroupsPath   = "/inventory/groups"
 
-	AddItemUnitPath = "/inventory/item/unit/add"
-	UpdateItemUnitPath = "/inventory/item/unit/update"
-	GetItemUnitsPath = "/inventory/item/units"
+	AddUnitPath    = "/inventory/unit/add"
+	UpdateUnitPath = "/inventory/unit/update"
+	GetUnitsPath   = "/inventory/units"
 )
 
 func (c *component) Routes(inventoryService model.InventoryService) http.Handler {
@@ -40,17 +40,17 @@ func (c *component) Routes(inventoryService model.InventoryService) http.Handler
 
 	mux.Use(middleware.Heartbeat("/ping"))
 
-	mux.Method("POST", AddItemBrandPath, httpHandler.New(inventoryService.AddItemBrand))
-	mux.Method("POST", UpdateItemBrandPath, httpHandler.New(inventoryService.UpdateItemBrand))
-	mux.Method("POST", GetItemBrandsPath, httpHandler.New(inventoryService.GetItemBrands))
+	mux.Method("POST", AddBrandPath, httpHandler.New(inventoryService.AddBrand))
+	mux.Method("POST", UpdateBrandPath, httpHandler.New(inventoryService.UpdateBrand))
+	mux.Method("POST", GetBrandsPath, httpHandler.New(inventoryService.GetBrands))
 
-	mux.Method("POST", AddItemGroupPath, httpHandler.New(inventoryService.AddItemGroup))
-	mux.Method("POST", UpdateItemGroupPath, httpHandler.New(inventoryService.UpdateItemGroup))
-	mux.Method("POST", GetItemGroupsPath, httpHandler.New(inventoryService.GetItemGroups))
+	mux.Method("POST", AddGroupPath, httpHandler.New(inventoryService.AddGroup))
+	mux.Method("POST", UpdateGroupPath, httpHandler.New(inventoryService.UpdateGroup))
+	mux.Method("POST", GetGroupsPath, httpHandler.New(inventoryService.GetGroups))
 
-	mux.Method("POST", AddItemUnitPath, httpHandler.New(inventoryService.AddItemUnit))
-	mux.Method("POST", UpdateItemUnitPath, httpHandler.New(inventoryService.UpdateItemUnit))
-	mux.Method("POST", GetItemUnitsPath, httpHandler.New(inventoryService.GetItemUnits))
+	mux.Method("POST", AddUnitPath, httpHandler.New(inventoryService.AddUnit))
+	mux.Method("POST", UpdateUnitPath, httpHandler.New(inventoryService.UpdateUnit))
+	mux.Method("POST", GetUnitsPath, httpHandler.New(inventoryService.GetUnits))
 
 	return mux
 }

@@ -11,9 +11,9 @@ import (
 	"github.com/expert-pancake/service/inventory/util"
 )
 
-func (a inventoryService) GetItemBrands(w http.ResponseWriter, r *http.Request) error {
+func (a inventoryService) GetUnits(w http.ResponseWriter, r *http.Request) error {
 
-	var req model.GetItemBrandsRequest
+	var req model.GetUnitsRequest
 	httpHandler.ParseHTTPRequest(r, &req)
 
 	errMapRequest := a.validator.Validate(req)
@@ -21,27 +21,26 @@ func (a inventoryService) GetItemBrands(w http.ResponseWriter, r *http.Request) 
 		return errors.NewClientError().WithDataMap(errMapRequest)
 	}
 
-	result, err := a.dbTrx.GetItemBrands(context.Background(), db.GetItemBrandsParams{
+	result, err := a.dbTrx.GetUnits(context.Background(), db.GetUnitsParams{
 		CompanyID: req.CompanyId,
-		Name:   util.WildCardString(req.Keyword),
+		Name:      util.WildCardString(req.Keyword),
 	})
 	if err != nil {
-		return errors.NewServerError(model.GetItemBrandsError, err.Error())
+		return errors.NewServerError(model.GetUnitsError, err.Error())
 	}
 
-	var brands = make([]model.Brand, 0)
+	var units = make([]model.Unit, 0)
 
 	for _, d := range result {
-		var brand = model.Brand{
-			ItemBrandId:   d.ID,
+		var unit = model.Unit{
+			UnitId:    d.ID,
 			CompanyId: d.CompanyID,
 			Name:      d.Name,
 		}
-		brands = append(brands, brand)
+		units = append(units, unit)
 	}
 
-
-	res := brands
+	res := units
 	httpHandler.WriteResponse(w, res)
 
 	return nil

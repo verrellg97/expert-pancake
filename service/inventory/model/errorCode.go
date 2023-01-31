@@ -1,15 +1,15 @@
 package model
 
 const (
-	AddNewItemBrandError = 700001
-	UpdateItemBrandError = 700002
-	GetItemBrandsError = 700003
+	AddNewBrandError = 700001
+	UpdateBrandError = 700002
+	GetBrandsError   = 700003
 
-	AddNewItemGroupError = 700004
-	UpdateItemGroupError = 700005
-	GetItemGroupsError = 700006
+	AddNewGroupError = 700004
+	UpdateGroupError = 700005
+	GetGroupsError   = 700006
 
-	AddNewItemUnitError = 700007
-	UpdateItemUnitError = 700008
-	GetItemUnitsError = 700009
+	AddNewUnitError = 700007
+	UpdateUnitError = 700008
+	GetUnitsError   = 700009
 )

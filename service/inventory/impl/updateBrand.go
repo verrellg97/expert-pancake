@@ -10,9 +10,9 @@ import (
 	"github.com/expert-pancake/service/inventory/model"
 )
 
-func (a inventoryService) UpdateItemUnit(w http.ResponseWriter, r *http.Request) error {
+func (a inventoryService) UpdateBrand(w http.ResponseWriter, r *http.Request) error {
 
-	var req model.UpdateItemUnitRequest
+	var req model.UpdateBrandRequest
 
 	httpHandler.ParseHTTPRequest(r, &req)
 
@@ -21,21 +21,21 @@ func (a inventoryService) UpdateItemUnit(w http.ResponseWriter, r *http.Request)
 		return errors.NewClientError().WithDataMap(errMapRequest)
 	}
 
-	arg := db.UpdateItemUnitParams{
-		ID:        req.Id,
-		Name:      req.Name,
+	arg := db.UpdateBrandParams{
+		ID:   req.Id,
+		Name: req.Name,
 	}
 
-	result, err := a.dbTrx.UpdateItemUnit(context.Background(), arg)
+	result, err := a.dbTrx.UpdateBrand(context.Background(), arg)
 	if err != nil {
-		return errors.NewServerError(model.UpdateItemUnitError, err.Error())
+		return errors.NewServerError(model.UpdateBrandError, err.Error())
 	}
 
-	res := model.UpdateItemUnitResponse{
-		Unit: model.Unit{
-			ItemUnitId: result.ID,
-			CompanyId:   result.CompanyID,
-			Name:        result.Name,
+	res := model.UpdateBrandResponse{
+		Brand: model.Brand{
+			BrandId:   result.ID,
+			CompanyId: result.CompanyID,
+			Name:      result.Name,
 		},
 	}
 

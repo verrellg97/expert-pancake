@@ -1,50 +1,50 @@
--- name: InsertItemBrand :one
-INSERT INTO inventory.item_brands(id, company_id, name)
+-- name: InsertBrand :one
+INSERT INTO inventory.brands(id, company_id, name)
 VALUES ($1, $2, $3)
 RETURNING *;
 
--- name: UpdateItemBrand :one
-UPDATE inventory.item_brands
+-- name: UpdateBrand :one
+UPDATE inventory.brands
 SET 
     name = $2,
     updated_at = NOW()
 WHERE id = $1
 RETURNING *;
 
--- name: GetItemBrands :many
-SELECT id, company_id, name FROM inventory.item_brands
+-- name: GetBrands :many
+SELECT id, company_id, name FROM inventory.brands
 WHERE company_id = $1 AND name LIKE $2;
 
--- name: InsertItemGroup :one
-INSERT INTO inventory.item_groups(id, company_id, name)
+-- name: InsertGroup :one
+INSERT INTO inventory.groups(id, company_id, name)
 VALUES ($1, $2, $3)
 RETURNING *;
 
--- name: UpdateItemGroup :one
-UPDATE inventory.item_groups
+-- name: UpdateGroup :one
+UPDATE inventory.groups
 SET 
     name = $2,
     updated_at = NOW()
 WHERE id = $1
 RETURNING *;
 
--- name: GetItemGroups :many
-SELECT id, company_id, name FROM inventory.item_groups
+-- name: GetGroups :many
+SELECT id, company_id, name FROM inventory.groups
 WHERE company_id = $1 AND name LIKE $2;
 
--- name: InsertItemUnit :one
-INSERT INTO inventory.item_units(id, company_id, name)
+-- name: InsertUnit :one
+INSERT INTO inventory.units(id, company_id, name)
 VALUES ($1, $2, $3)
 RETURNING *;
 
--- name: UpdateItemUnit :one
-UPDATE inventory.item_units
+-- name: UpdateUnit :one
+UPDATE inventory.units
 SET 
     name = $2,
     updated_at = NOW()
 WHERE id = $1
 RETURNING *;
 
--- name: GetItemUnits :many
-SELECT id, company_id, name FROM inventory.item_units
+-- name: GetUnits :many
+SELECT id, company_id, name FROM inventory.units
 WHERE company_id = $1 AND name LIKE $2;
