@@ -25,6 +25,7 @@ type InventoryService interface {
 	GetItemVariants(w http.ResponseWriter, r *http.Request) error
 
 	UpsertItemUnit(w http.ResponseWriter, r *http.Request) error
+	GetItemUnits(w http.ResponseWriter, r *http.Request) error
 }
 
 type Brand struct {
@@ -128,7 +129,7 @@ type Item struct {
 	GroupName   string `json:"group_name" validate:"required"`
 	Tag         string `json:"tag" validate:"required"`
 	Description string `json:"description" validate:"required"`
-	IsDefault   bool   `json:"is_default"`
+	IsDefault   bool   `json:"is_default" validate:"required"`
 	Price       string `json:"price" validate:"required"`
 	Stock       string `json:"stock" validate:"required"`
 }
@@ -167,7 +168,7 @@ type GetItemsRequest struct {
 }
 
 type GetItemsResponse struct {
-	Item []Item `json:"items" validate:"required"`
+	Items []Item `json:"items" validate:"required"`
 }
 
 type UpsertItemVariantRequest struct {
@@ -211,4 +212,13 @@ type UpsertItemUnitRequest struct {
 
 type UpsertItemUnitResponse struct {
 	ItemUnit
+}
+
+type GetItemUnitsRequest struct {
+	ItemId  string `json:"item_id" validate:"required"`
+	Keyword string `json:"keyword"`
+}
+
+type GetItemUnitsResponse struct {
+	ItemUnits []ItemUnit `json:"item_units" validate:"required"`
 }

@@ -123,6 +123,58 @@ func (q *Queries) GetGroups(ctx context.Context, arg GetGroupsParams) ([]GetGrou
 	return items, nil
 }
 
+const getItemUnits = `-- name: GetItemUnits :many
+SELECT a.id, a.item_id, a.unit_id, b.name AS unit_name,
+a.value, a.is_default
+FROM inventory.item_units a
+JOIN inventory.units b ON a.unit_id = b.id
+WHERE a.item_id = $1 AND b.name LIKE $2
+`
+
+type GetItemUnitsParams struct {
+	ItemID string `db:"item_id"`
+	Name   string `db:"name"`
+}
+
+type GetItemUnitsRow struct {
+	ID        string `db:"id"`
+	ItemID    string `db:"item_id"`
+	UnitID    string `db:"unit_id"`
+	UnitName  string `db:"unit_name"`
+	Value     int64  `db:"value"`
+	IsDefault bool   `db:"is_default"`
+}
+
+func (q *Queries) GetItemUnits(ctx context.Context, arg GetItemUnitsParams) ([]GetItemUnitsRow, error) {
+	rows, err := q.db.QueryContext(ctx, getItemUnits, arg.ItemID, arg.Name)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetItemUnitsRow
+	for rows.Next() {
+		var i GetItemUnitsRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.ItemID,
+			&i.UnitID,
+			&i.UnitName,
+			&i.Value,
+			&i.IsDefault,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getItemVariant = `-- name: GetItemVariant :one
 SELECT b.id, a.id AS variant_id, b.company_id, a.image_url, b.code, b.name, a.name AS variant_name,
 b.brand_id, c.name AS brand_name, b.group_id, d.name AS group_name,

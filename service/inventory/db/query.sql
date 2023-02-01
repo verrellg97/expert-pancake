@@ -151,3 +151,10 @@ RETURNING *;
 SELECT id, company_id, name
 FROM inventory.units
 WHERE id = $1;
+
+-- name: GetItemUnits :many
+SELECT a.id, a.item_id, a.unit_id, b.name AS unit_name,
+a.value, a.is_default
+FROM inventory.item_units a
+JOIN inventory.units b ON a.unit_id = b.id
+WHERE a.item_id = $1 AND b.name LIKE $2;

@@ -13,6 +13,7 @@ type Querier interface {
 	GetBrands(ctx context.Context, arg GetBrandsParams) ([]GetBrandsRow, error)
 	GetGroupById(ctx context.Context, id string) (GetGroupByIdRow, error)
 	GetGroups(ctx context.Context, arg GetGroupsParams) ([]GetGroupsRow, error)
+	GetItemUnits(ctx context.Context, arg GetItemUnitsParams) ([]GetItemUnitsRow, error)
 	GetItemVariant(ctx context.Context, id string) (GetItemVariantRow, error)
 	GetItemVariants(ctx context.Context, arg GetItemVariantsParams) ([]GetItemVariantsRow, error)
 	GetItems(ctx context.Context, arg GetItemsParams) ([]GetItemsRow, error)
