@@ -45,6 +45,7 @@ func (a inventoryService) AddItem(w http.ResponseWriter, r *http.Request) error 
 			ImageUrl:    result.ImageUrl,
 			Code:        result.Code,
 			Name:        result.Name,
+			VariantName: result.VariantName,
 			BrandId:     result.BrandId,
 			BrandName:   result.BrandName,
 			GroupId:     result.GroupId,
