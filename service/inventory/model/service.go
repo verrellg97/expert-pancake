@@ -162,5 +162,5 @@ type GetItemsRequest struct {
 }
 
 type GetItemsResponse struct {
-	Item
+	Item []Item `json:"items" validate:"required"`
 }
