@@ -55,7 +55,7 @@ func (a inventoryService) GetItems(w http.ResponseWriter, r *http.Request) error
 	}
 
 	res := model.GetItemsResponse{
-		Item: items,
+		Items: items,
 	}
 	httpHandler.WriteResponse(w, res)
 

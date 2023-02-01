@@ -51,7 +51,7 @@ func (a inventoryService) UpsertItemVariant(w http.ResponseWriter, r *http.Reque
 		return errors.NewServerError(model.UpsertItemVariantError, err.Error())
 	}
 
-	res := model.UpdateItemResponse{
+	res := model.UpsertItemVariantResponse{
 		Item: model.Item{
 			CompanyId:   result.CompanyID,
 			ItemId:      result.ID,
