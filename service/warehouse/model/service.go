@@ -7,6 +7,8 @@ import (
 type WarehouseService interface {
 	UpsertWarehouse(w http.ResponseWriter, r *http.Request) error
 	GetWarehouses(w http.ResponseWriter, r *http.Request) error
+
+	UpsertWarehouseRack(w http.ResponseWriter, r *http.Request) error
 }
 
 type Warehouse struct {
@@ -37,4 +39,20 @@ type GetWarehousesRequest struct {
 
 type GetWarehousesResponse struct {
 	Warehouses []Warehouse `json:"warehouses" validate:"required"`
+}
+
+type WarehouseRack struct {
+	RackId      string `json:"rack_id" validate:"required"`
+	WarehouseId string `json:"warehouse_id" validate:"required"`
+	Name        string `json:"name" validate:"required"`
+}
+
+type UpsertWarehouseRackRequest struct {
+	RackId      string `json:"rack_id"`
+	WarehouseId string `json:"warehouse_id" validate:"required"`
+	Name        string `json:"name" validate:"required"`
+}
+
+type UpsertWarehouseRackResponse struct {
+	WarehouseRack
 }
