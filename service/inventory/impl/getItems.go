@@ -40,6 +40,7 @@ func (a inventoryService) GetItems(w http.ResponseWriter, r *http.Request) error
 			ImageUrl:    d.ImageUrl,
 			Code:        d.Code,
 			Name:        d.Name,
+			VariantName: d.VariantName,
 			BrandId:     d.BrandID,
 			BrandName:   d.BrandName,
 			GroupId:     d.GroupID,

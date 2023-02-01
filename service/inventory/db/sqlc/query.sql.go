@@ -124,7 +124,7 @@ func (q *Queries) GetGroups(ctx context.Context, arg GetGroupsParams) ([]GetGrou
 }
 
 const getItems = `-- name: GetItems :many
-SELECT a.id, b.id AS variant_id, a.company_id, b.image_url, a.code, b.name,
+SELECT a.id, b.id AS variant_id, a.company_id, b.image_url, a.code, a.name, b.name AS variant_name,
 a.brand_id, c.name AS brand_name, a.group_id, d.name AS group_name,
 a.tag, a.description, b.is_default, b.price, b.stock
 FROM inventory.items a
@@ -146,6 +146,7 @@ type GetItemsRow struct {
 	ImageUrl    string `db:"image_url"`
 	Code        string `db:"code"`
 	Name        string `db:"name"`
+	VariantName string `db:"variant_name"`
 	BrandID     string `db:"brand_id"`
 	BrandName   string `db:"brand_name"`
 	GroupID     string `db:"group_id"`
@@ -173,6 +174,7 @@ func (q *Queries) GetItems(ctx context.Context, arg GetItemsParams) ([]GetItemsR
 			&i.ImageUrl,
 			&i.Code,
 			&i.Name,
+			&i.VariantName,
 			&i.BrandID,
 			&i.BrandName,
 			&i.GroupID,

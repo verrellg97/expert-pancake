@@ -93,7 +93,7 @@ AND is_default = true
 RETURNING *;
 
 -- name: GetItems :many
-SELECT a.id, b.id AS variant_id, a.company_id, b.image_url, a.code, b.name,
+SELECT a.id, b.id AS variant_id, a.company_id, b.image_url, a.code, a.name, b.name AS variant_name,
 a.brand_id, c.name AS brand_name, a.group_id, d.name AS group_name,
 a.tag, a.description, b.is_default, b.price, b.stock
 FROM inventory.items a
