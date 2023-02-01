@@ -24,6 +24,42 @@ type InventoryGroup struct {
 	UpdatedAt sql.NullTime `db:"updated_at"`
 }
 
+type InventoryItem struct {
+	ID          string       `db:"id"`
+	CompanyID   string       `db:"company_id"`
+	ImageUrl    string       `db:"image_url"`
+	Code        string       `db:"code"`
+	Name        string       `db:"name"`
+	BrandID     string       `db:"brand_id"`
+	GroupID     string       `db:"group_id"`
+	Tag         string       `db:"tag"`
+	Description string       `db:"description"`
+	CreatedAt   sql.NullTime `db:"created_at"`
+	UpdatedAt   sql.NullTime `db:"updated_at"`
+}
+
+type InventoryItemUnit struct {
+	ID        string       `db:"id"`
+	ItemID    string       `db:"item_id"`
+	UnitID    string       `db:"unit_id"`
+	Value     int64        `db:"value"`
+	IsDefault bool         `db:"is_default"`
+	CreatedAt sql.NullTime `db:"created_at"`
+	UpdatedAt sql.NullTime `db:"updated_at"`
+}
+
+type InventoryItemVariant struct {
+	ID        string       `db:"id"`
+	ItemID    string       `db:"item_id"`
+	ImageUrl  string       `db:"image_url"`
+	Name      string       `db:"name"`
+	Price     int64        `db:"price"`
+	Stock     int64        `db:"stock"`
+	IsDefault bool         `db:"is_default"`
+	CreatedAt sql.NullTime `db:"created_at"`
+	UpdatedAt sql.NullTime `db:"updated_at"`
+}
+
 type InventoryUnit struct {
 	ID        string       `db:"id"`
 	CompanyID string       `db:"company_id"`

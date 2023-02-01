@@ -16,6 +16,8 @@ type InventoryService interface {
 	AddUnit(w http.ResponseWriter, r *http.Request) error
 	UpdateUnit(w http.ResponseWriter, r *http.Request) error
 	GetUnits(w http.ResponseWriter, r *http.Request) error
+
+	AddItem(w http.ResponseWriter, r *http.Request) error
 }
 
 type Brand struct {
@@ -103,4 +105,37 @@ type UpdateUnitResponse struct {
 type GetUnitsRequest struct {
 	CompanyId string `json:"company_id" validate:"required"`
 	Keyword   string `json:"keyword"`
+}
+
+type Item struct {
+	CompanyId   string `json:"company_id" validate:"required"`
+	ItemId      string `json:"item_id" validate:"required"`
+	VariantId   string `json:"variant_id" validate:"required"`
+	ImageUrl    string `json:"image_url" validate:"required"`
+	Code        string `json:"code" validate:"required"`
+	Name        string `json:"name" validate:"required"`
+	VariantName string `json:"variant_name" validate:"required"`
+	BrandId     string `json:"brand_id" validate:"required"`
+	BrandName   string `json:"brand_name" validate:"required"`
+	GroupId     string `json:"group_id" validate:"required"`
+	GroupName   string `json:"group_name" validate:"required"`
+	Tag         string `json:"tag" validate:"required"`
+	Description string `json:"description" validate:"required"`
+	IsDefault   bool   `json:"is_default"`
+	Price       string `json:"price" validate:"required"`
+	Stock       string `json:"stock" validate:"required"`
+}
+
+type AddItemRequest struct {
+	CompanyId   string `json:"company_id" validate:"required"`
+	ImageUrl    string `json:"image_url"`
+	Name        string `json:"name" validate:"required"`
+	BrandId     string `json:"brand_id" validate:"required"`
+	GroupId     string `json:"group_id" validate:"required"`
+	Tag         string `json:"tag"`
+	Description string `json:"description"`
+}
+
+type AddItemResponse struct {
+	Item
 }

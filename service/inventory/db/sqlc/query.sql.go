@@ -9,6 +9,24 @@ import (
 	"context"
 )
 
+const getBrandById = `-- name: GetBrandById :one
+SELECT id, company_id, name FROM inventory.brands
+WHERE id = $1
+`
+
+type GetBrandByIdRow struct {
+	ID        string `db:"id"`
+	CompanyID string `db:"company_id"`
+	Name      string `db:"name"`
+}
+
+func (q *Queries) GetBrandById(ctx context.Context, id string) (GetBrandByIdRow, error) {
+	row := q.db.QueryRowContext(ctx, getBrandById, id)
+	var i GetBrandByIdRow
+	err := row.Scan(&i.ID, &i.CompanyID, &i.Name)
+	return i, err
+}
+
 const getBrands = `-- name: GetBrands :many
 SELECT id, company_id, name FROM inventory.brands
 WHERE company_id = $1 AND name LIKE $2
@@ -46,6 +64,24 @@ func (q *Queries) GetBrands(ctx context.Context, arg GetBrandsParams) ([]GetBran
 		return nil, err
 	}
 	return items, nil
+}
+
+const getGroupById = `-- name: GetGroupById :one
+SELECT id, company_id, name FROM inventory.groups
+WHERE id = $1
+`
+
+type GetGroupByIdRow struct {
+	ID        string `db:"id"`
+	CompanyID string `db:"company_id"`
+	Name      string `db:"name"`
+}
+
+func (q *Queries) GetGroupById(ctx context.Context, id string) (GetGroupByIdRow, error) {
+	row := q.db.QueryRowContext(ctx, getGroupById, id)
+	var i GetGroupByIdRow
+	err := row.Scan(&i.ID, &i.CompanyID, &i.Name)
+	return i, err
 }
 
 const getGroups = `-- name: GetGroups :many
@@ -170,6 +206,96 @@ func (q *Queries) InsertGroup(ctx context.Context, arg InsertGroupParams) (Inven
 		&i.ID,
 		&i.CompanyID,
 		&i.Name,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const insertItem = `-- name: InsertItem :one
+INSERT INTO inventory.items(id, company_id, image_url,
+code, name, brand_id, group_id, tag, description)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+RETURNING id, company_id, image_url, code, name, brand_id, group_id, tag, description, created_at, updated_at
+`
+
+type InsertItemParams struct {
+	ID          string `db:"id"`
+	CompanyID   string `db:"company_id"`
+	ImageUrl    string `db:"image_url"`
+	Code        string `db:"code"`
+	Name        string `db:"name"`
+	BrandID     string `db:"brand_id"`
+	GroupID     string `db:"group_id"`
+	Tag         string `db:"tag"`
+	Description string `db:"description"`
+}
+
+func (q *Queries) InsertItem(ctx context.Context, arg InsertItemParams) (InventoryItem, error) {
+	row := q.db.QueryRowContext(ctx, insertItem,
+		arg.ID,
+		arg.CompanyID,
+		arg.ImageUrl,
+		arg.Code,
+		arg.Name,
+		arg.BrandID,
+		arg.GroupID,
+		arg.Tag,
+		arg.Description,
+	)
+	var i InventoryItem
+	err := row.Scan(
+		&i.ID,
+		&i.CompanyID,
+		&i.ImageUrl,
+		&i.Code,
+		&i.Name,
+		&i.BrandID,
+		&i.GroupID,
+		&i.Tag,
+		&i.Description,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const insertItemVariant = `-- name: InsertItemVariant :one
+INSERT INTO inventory.item_variants(id, item_id, image_url,
+name, price, stock, is_default)
+VALUES ($1, $2, $3, $4, $5, $6, $7)
+RETURNING id, item_id, image_url, name, price, stock, is_default, created_at, updated_at
+`
+
+type InsertItemVariantParams struct {
+	ID        string `db:"id"`
+	ItemID    string `db:"item_id"`
+	ImageUrl  string `db:"image_url"`
+	Name      string `db:"name"`
+	Price     int64  `db:"price"`
+	Stock     int64  `db:"stock"`
+	IsDefault bool   `db:"is_default"`
+}
+
+func (q *Queries) InsertItemVariant(ctx context.Context, arg InsertItemVariantParams) (InventoryItemVariant, error) {
+	row := q.db.QueryRowContext(ctx, insertItemVariant,
+		arg.ID,
+		arg.ItemID,
+		arg.ImageUrl,
+		arg.Name,
+		arg.Price,
+		arg.Stock,
+		arg.IsDefault,
+	)
+	var i InventoryItemVariant
+	err := row.Scan(
+		&i.ID,
+		&i.ItemID,
+		&i.ImageUrl,
+		&i.Name,
+		&i.Price,
+		&i.Stock,
+		&i.IsDefault,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
