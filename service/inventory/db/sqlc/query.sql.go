@@ -123,6 +123,58 @@ func (q *Queries) GetGroups(ctx context.Context, arg GetGroupsParams) ([]GetGrou
 	return items, nil
 }
 
+const getItemVariant = `-- name: GetItemVariant :one
+SELECT b.id, a.id AS variant_id, b.company_id, a.image_url, b.code, a.name,
+b.brand_id, c.name AS brand_name, b.group_id, d.name AS group_name,
+b.tag, b.description, a.is_default, a.price, a.stock
+FROM inventory.item_variants a
+JOIN inventory.items b ON a.item_id = b.id
+JOIN inventory.brands c ON b.brand_id = c.id
+JOIN inventory.groups d ON b.group_id = d.id
+WHERE a.id = $1
+`
+
+type GetItemVariantRow struct {
+	ID          string `db:"id"`
+	VariantID   string `db:"variant_id"`
+	CompanyID   string `db:"company_id"`
+	ImageUrl    string `db:"image_url"`
+	Code        string `db:"code"`
+	Name        string `db:"name"`
+	BrandID     string `db:"brand_id"`
+	BrandName   string `db:"brand_name"`
+	GroupID     string `db:"group_id"`
+	GroupName   string `db:"group_name"`
+	Tag         string `db:"tag"`
+	Description string `db:"description"`
+	IsDefault   bool   `db:"is_default"`
+	Price       int64  `db:"price"`
+	Stock       int64  `db:"stock"`
+}
+
+func (q *Queries) GetItemVariant(ctx context.Context, id string) (GetItemVariantRow, error) {
+	row := q.db.QueryRowContext(ctx, getItemVariant, id)
+	var i GetItemVariantRow
+	err := row.Scan(
+		&i.ID,
+		&i.VariantID,
+		&i.CompanyID,
+		&i.ImageUrl,
+		&i.Code,
+		&i.Name,
+		&i.BrandID,
+		&i.BrandName,
+		&i.GroupID,
+		&i.GroupName,
+		&i.Tag,
+		&i.Description,
+		&i.IsDefault,
+		&i.Price,
+		&i.Stock,
+	)
+	return i, err
+}
+
 const getItems = `-- name: GetItems :many
 SELECT a.id, b.id AS variant_id, a.company_id, b.image_url, a.code, a.name, b.name AS variant_name,
 a.brand_id, c.name AS brand_name, a.group_id, d.name AS group_name,
@@ -566,4 +618,38 @@ func (q *Queries) UpdateUnit(ctx context.Context, arg UpdateUnitParams) (Invento
 		&i.UpdatedAt,
 	)
 	return i, err
+}
+
+const upsertItemVariant = `-- name: UpsertItemVariant :exec
+INSERT INTO inventory.item_variants(id, item_id, image_url, name, price, stock)
+VALUES ($1, $2, $3, $4, $5, $6)
+ON CONFLICT (id)
+DO UPDATE SET
+    item_id = EXCLUDED.item_id,
+    image_url = EXCLUDED.image_url,
+    name = EXCLUDED.name,
+    price = EXCLUDED.price,
+    stock = EXCLUDED.stock,
+    updated_at = NOW()
+`
+
+type UpsertItemVariantParams struct {
+	ID       string `db:"id"`
+	ItemID   string `db:"item_id"`
+	ImageUrl string `db:"image_url"`
+	Name     string `db:"name"`
+	Price    int64  `db:"price"`
+	Stock    int64  `db:"stock"`
+}
+
+func (q *Queries) UpsertItemVariant(ctx context.Context, arg UpsertItemVariantParams) error {
+	_, err := q.db.ExecContext(ctx, upsertItemVariant,
+		arg.ID,
+		arg.ItemID,
+		arg.ImageUrl,
+		arg.Name,
+		arg.Price,
+		arg.Stock,
+	)
+	return err
 }

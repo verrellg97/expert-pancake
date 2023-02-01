@@ -13,6 +13,7 @@ type Querier interface {
 	GetBrands(ctx context.Context, arg GetBrandsParams) ([]GetBrandsRow, error)
 	GetGroupById(ctx context.Context, id string) (GetGroupByIdRow, error)
 	GetGroups(ctx context.Context, arg GetGroupsParams) ([]GetGroupsRow, error)
+	GetItemVariant(ctx context.Context, id string) (GetItemVariantRow, error)
 	GetItems(ctx context.Context, arg GetItemsParams) ([]GetItemsRow, error)
 	GetUnits(ctx context.Context, arg GetUnitsParams) ([]GetUnitsRow, error)
 	InsertBrand(ctx context.Context, arg InsertBrandParams) (InventoryBrand, error)
@@ -25,6 +26,7 @@ type Querier interface {
 	UpdateItem(ctx context.Context, arg UpdateItemParams) (InventoryItem, error)
 	UpdateItemVariantDefault(ctx context.Context, arg UpdateItemVariantDefaultParams) (InventoryItemVariant, error)
 	UpdateUnit(ctx context.Context, arg UpdateUnitParams) (InventoryUnit, error)
+	UpsertItemVariant(ctx context.Context, arg UpsertItemVariantParams) error
 }
 
 var _ Querier = (*Queries)(nil)
