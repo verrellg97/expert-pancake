@@ -134,3 +134,20 @@ JOIN inventory.brands c ON b.brand_id = c.id
 JOIN inventory.groups d ON b.group_id = d.id
 WHERE a.item_id = $1 AND a.name LIKE $2
 AND a.is_default = false;
+
+-- name: UpsertItemUnit :one
+INSERT INTO inventory.item_units(id, item_id, unit_id, value, is_default)
+VALUES ($1, $2, $3, $4, $5)
+ON CONFLICT (id)
+DO UPDATE SET
+    item_id = EXCLUDED.item_id,
+    unit_id = EXCLUDED.unit_id,
+    value = EXCLUDED.value,
+    is_default = EXCLUDED.is_default,
+    updated_at = NOW()
+RETURNING *;
+
+-- name: GetUnit :one
+SELECT id, company_id, name
+FROM inventory.units
+WHERE id = $1;

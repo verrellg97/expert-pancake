@@ -328,6 +328,25 @@ func (q *Queries) GetItems(ctx context.Context, arg GetItemsParams) ([]GetItemsR
 	return items, nil
 }
 
+const getUnit = `-- name: GetUnit :one
+SELECT id, company_id, name
+FROM inventory.units
+WHERE id = $1
+`
+
+type GetUnitRow struct {
+	ID        string `db:"id"`
+	CompanyID string `db:"company_id"`
+	Name      string `db:"name"`
+}
+
+func (q *Queries) GetUnit(ctx context.Context, id string) (GetUnitRow, error) {
+	row := q.db.QueryRowContext(ctx, getUnit, id)
+	var i GetUnitRow
+	err := row.Scan(&i.ID, &i.CompanyID, &i.Name)
+	return i, err
+}
+
 const getUnits = `-- name: GetUnits :many
 SELECT id, company_id, name FROM inventory.units
 WHERE company_id = $1 AND name LIKE $2
@@ -692,6 +711,48 @@ func (q *Queries) UpdateUnit(ctx context.Context, arg UpdateUnitParams) (Invento
 		&i.ID,
 		&i.CompanyID,
 		&i.Name,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const upsertItemUnit = `-- name: UpsertItemUnit :one
+INSERT INTO inventory.item_units(id, item_id, unit_id, value, is_default)
+VALUES ($1, $2, $3, $4, $5)
+ON CONFLICT (id)
+DO UPDATE SET
+    item_id = EXCLUDED.item_id,
+    unit_id = EXCLUDED.unit_id,
+    value = EXCLUDED.value,
+    is_default = EXCLUDED.is_default,
+    updated_at = NOW()
+RETURNING id, item_id, unit_id, value, is_default, created_at, updated_at
+`
+
+type UpsertItemUnitParams struct {
+	ID        string `db:"id"`
+	ItemID    string `db:"item_id"`
+	UnitID    string `db:"unit_id"`
+	Value     int64  `db:"value"`
+	IsDefault bool   `db:"is_default"`
+}
+
+func (q *Queries) UpsertItemUnit(ctx context.Context, arg UpsertItemUnitParams) (InventoryItemUnit, error) {
+	row := q.db.QueryRowContext(ctx, upsertItemUnit,
+		arg.ID,
+		arg.ItemID,
+		arg.UnitID,
+		arg.Value,
+		arg.IsDefault,
+	)
+	var i InventoryItemUnit
+	err := row.Scan(
+		&i.ID,
+		&i.ItemID,
+		&i.UnitID,
+		&i.Value,
+		&i.IsDefault,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
