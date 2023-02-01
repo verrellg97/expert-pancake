@@ -30,26 +30,28 @@ func (a inventoryService) GetItems(w http.ResponseWriter, r *http.Request) error
 		return errors.NewServerError(model.GetItemsError, err.Error())
 	}
 
-	var items = make([]model.Item, 0)
+	var items = make([]model.GetItemsResponse, 0)
 
 	for _, d := range result {
-		var item = model.Item{
-			CompanyId:   d.CompanyID,
-			ItemId:      d.ID,
-			VariantId:   d.VariantID,
-			ImageUrl:    d.ImageUrl,
-			Code:        d.Code,
-			Name:        d.Name,
-			VariantName: d.VariantName,
-			BrandId:     d.BrandID,
-			BrandName:   d.BrandName,
-			GroupId:     d.GroupID,
-			GroupName:   d.GroupName,
-			Tag:         d.Tag,
-			Description: d.Description,
-			IsDefault:   d.IsDefault,
-			Price:       strconv.FormatInt(d.Price, 10),
-			Stock:       strconv.FormatInt(d.Stock, 10),
+		var item = model.GetItemsResponse{
+			Item: model.Item{
+				CompanyId:   d.CompanyID,
+				ItemId:      d.ID,
+				VariantId:   d.VariantID,
+				ImageUrl:    d.ImageUrl,
+				Code:        d.Code,
+				Name:        d.Name,
+				VariantName: d.VariantName,
+				BrandId:     d.BrandID,
+				BrandName:   d.BrandName,
+				GroupId:     d.GroupID,
+				GroupName:   d.GroupName,
+				Tag:         d.Tag,
+				Description: d.Description,
+				IsDefault:   d.IsDefault,
+				Price:       strconv.FormatInt(d.Price, 10),
+				Stock:       strconv.FormatInt(d.Stock, 10),
+			},
 		}
 		items = append(items, item)
 	}

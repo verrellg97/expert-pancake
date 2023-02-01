@@ -160,3 +160,7 @@ type GetItemsRequest struct {
 	CompanyId string `json:"company_id" validate:"required"`
 	Keyword   string `json:"keyword"`
 }
+
+type GetItemsResponse struct {
+	Item
+}
