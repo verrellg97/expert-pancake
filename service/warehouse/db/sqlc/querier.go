@@ -9,6 +9,7 @@ import (
 )
 
 type Querier interface {
+	GetWarehouses(ctx context.Context, arg GetWarehousesParams) ([]GetWarehousesRow, error)
 	UpsertWarehouse(ctx context.Context, arg UpsertWarehouseParams) (WarehouseWarehouse, error)
 }
 
