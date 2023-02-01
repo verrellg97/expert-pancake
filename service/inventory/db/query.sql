@@ -101,3 +101,25 @@ JOIN inventory.item_variants b ON a.id = b.item_id
 JOIN inventory.brands c ON a.brand_id = c.id
 JOIN inventory.groups d ON a.group_id = d.id
 WHERE a.company_id = $1 AND b.name LIKE $2;
+
+-- name: UpsertItemVariant :exec
+INSERT INTO inventory.item_variants(id, item_id, image_url, name, price, stock)
+VALUES ($1, $2, $3, $4, $5, $6)
+ON CONFLICT (id)
+DO UPDATE SET
+    item_id = EXCLUDED.item_id,
+    image_url = EXCLUDED.image_url,
+    name = EXCLUDED.name,
+    price = EXCLUDED.price,
+    stock = EXCLUDED.stock,
+    updated_at = NOW();
+
+-- name: GetItemVariant :one
+SELECT b.id, a.id AS variant_id, b.company_id, a.image_url, b.code, b.name, a.name AS variant_name,
+b.brand_id, c.name AS brand_name, b.group_id, d.name AS group_name,
+b.tag, b.description, a.is_default, a.price, a.stock
+FROM inventory.item_variants a
+JOIN inventory.items b ON a.item_id = b.id
+JOIN inventory.brands c ON b.brand_id = c.id
+JOIN inventory.groups d ON b.group_id = d.id
+WHERE a.id = $1;
