@@ -381,6 +381,91 @@ func (q *Queries) UpdateGroup(ctx context.Context, arg UpdateGroupParams) (Inven
 	return i, err
 }
 
+const updateItem = `-- name: UpdateItem :one
+UPDATE inventory.items
+SET 
+    image_url = $2,
+    name = $3,
+    brand_id = $4,
+    group_id = $5,
+    tag = $6,
+    description = $7,
+    updated_at = NOW()
+WHERE id = $1
+RETURNING id, company_id, image_url, code, name, brand_id, group_id, tag, description, created_at, updated_at
+`
+
+type UpdateItemParams struct {
+	ID          string `db:"id"`
+	ImageUrl    string `db:"image_url"`
+	Name        string `db:"name"`
+	BrandID     string `db:"brand_id"`
+	GroupID     string `db:"group_id"`
+	Tag         string `db:"tag"`
+	Description string `db:"description"`
+}
+
+func (q *Queries) UpdateItem(ctx context.Context, arg UpdateItemParams) (InventoryItem, error) {
+	row := q.db.QueryRowContext(ctx, updateItem,
+		arg.ID,
+		arg.ImageUrl,
+		arg.Name,
+		arg.BrandID,
+		arg.GroupID,
+		arg.Tag,
+		arg.Description,
+	)
+	var i InventoryItem
+	err := row.Scan(
+		&i.ID,
+		&i.CompanyID,
+		&i.ImageUrl,
+		&i.Code,
+		&i.Name,
+		&i.BrandID,
+		&i.GroupID,
+		&i.Tag,
+		&i.Description,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const updateItemVariantDefault = `-- name: UpdateItemVariantDefault :one
+UPDATE inventory.item_variants
+SET 
+    image_url = $2,
+    name = $3,
+    updated_at = NOW()
+WHERE item_id = $1
+AND is_default = true
+RETURNING id, item_id, image_url, name, price, stock, is_default, created_at, updated_at
+`
+
+type UpdateItemVariantDefaultParams struct {
+	ItemID   string `db:"item_id"`
+	ImageUrl string `db:"image_url"`
+	Name     string `db:"name"`
+}
+
+func (q *Queries) UpdateItemVariantDefault(ctx context.Context, arg UpdateItemVariantDefaultParams) (InventoryItemVariant, error) {
+	row := q.db.QueryRowContext(ctx, updateItemVariantDefault, arg.ItemID, arg.ImageUrl, arg.Name)
+	var i InventoryItemVariant
+	err := row.Scan(
+		&i.ID,
+		&i.ItemID,
+		&i.ImageUrl,
+		&i.Name,
+		&i.Price,
+		&i.Stock,
+		&i.IsDefault,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
 const updateUnit = `-- name: UpdateUnit :one
 UPDATE inventory.units
 SET 

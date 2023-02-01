@@ -68,3 +68,26 @@ WHERE id = $1;
 -- name: GetGroupById :one
 SELECT id, company_id, name FROM inventory.groups
 WHERE id = $1;
+
+-- name: UpdateItem :one
+UPDATE inventory.items
+SET 
+    image_url = $2,
+    name = $3,
+    brand_id = $4,
+    group_id = $5,
+    tag = $6,
+    description = $7,
+    updated_at = NOW()
+WHERE id = $1
+RETURNING *;
+
+-- name: UpdateItemVariantDefault :one
+UPDATE inventory.item_variants
+SET 
+    image_url = $2,
+    name = $3,
+    updated_at = NOW()
+WHERE item_id = $1
+AND is_default = true
+RETURNING *;
