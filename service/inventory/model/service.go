@@ -22,6 +22,7 @@ type InventoryService interface {
 	GetItems(w http.ResponseWriter, r *http.Request) error
 
 	UpsertItemVariant(w http.ResponseWriter, r *http.Request) error
+	GetItemVariants(w http.ResponseWriter, r *http.Request) error
 }
 
 type Brand struct {
@@ -178,4 +179,13 @@ type UpsertItemVariantRequest struct {
 
 type UpsertItemVariantResponse struct {
 	Item
+}
+
+type GetItemVariantsRequest struct {
+	ItemId  string `json:"item_id" validate:"required"`
+	Keyword string `json:"keyword"`
+}
+
+type GetItemVariantsResponse struct {
+	ItemVariants []Item `json:"item_variants" validate:"required"`
 }
