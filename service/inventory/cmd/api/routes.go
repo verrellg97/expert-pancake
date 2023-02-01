@@ -28,6 +28,7 @@ const (
 	GetItemsPath   = "/inventory/items"
 
 	UpsertItemVariantPath = "/inventory/item/variant/upsert"
+	GetItemVariantsPath   = "/inventory/item/variants"
 )
 
 func (c *component) Routes(inventoryService model.InventoryService) http.Handler {
@@ -61,7 +62,9 @@ func (c *component) Routes(inventoryService model.InventoryService) http.Handler
 	mux.Method("POST", AddItemPath, httpHandler.New(inventoryService.AddItem))
 	mux.Method("POST", UpdateItemPath, httpHandler.New(inventoryService.UpdateItem))
 	mux.Method("POST", GetItemsPath, httpHandler.New(inventoryService.GetItems))
+
 	mux.Method("POST", UpsertItemVariantPath, httpHandler.New(inventoryService.UpsertItemVariant))
+	mux.Method("POST", GetItemVariantsPath, httpHandler.New(inventoryService.GetItemVariants))
 
 	return mux
 }

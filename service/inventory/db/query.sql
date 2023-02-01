@@ -123,3 +123,14 @@ JOIN inventory.items b ON a.item_id = b.id
 JOIN inventory.brands c ON b.brand_id = c.id
 JOIN inventory.groups d ON b.group_id = d.id
 WHERE a.id = $1;
+
+-- name: GetItemVariants :many
+SELECT b.id, a.id AS variant_id, b.company_id, a.image_url, b.code, b.name, a.name AS variant_name,
+b.brand_id, c.name AS brand_name, b.group_id, d.name AS group_name,
+b.tag, b.description, a.is_default, a.price, a.stock
+FROM inventory.item_variants a
+JOIN inventory.items b ON a.item_id = b.id
+JOIN inventory.brands c ON b.brand_id = c.id
+JOIN inventory.groups d ON b.group_id = d.id
+WHERE a.item_id = $1 AND a.name LIKE $2
+AND a.is_default = false;

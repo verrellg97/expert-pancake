@@ -14,6 +14,7 @@ type Querier interface {
 	GetGroupById(ctx context.Context, id string) (GetGroupByIdRow, error)
 	GetGroups(ctx context.Context, arg GetGroupsParams) ([]GetGroupsRow, error)
 	GetItemVariant(ctx context.Context, id string) (GetItemVariantRow, error)
+	GetItemVariants(ctx context.Context, arg GetItemVariantsParams) ([]GetItemVariantsRow, error)
 	GetItems(ctx context.Context, arg GetItemsParams) ([]GetItemsRow, error)
 	GetUnits(ctx context.Context, arg GetUnitsParams) ([]GetUnitsRow, error)
 	InsertBrand(ctx context.Context, arg InsertBrandParams) (InventoryBrand, error)
