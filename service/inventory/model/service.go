@@ -114,6 +114,7 @@ type Item struct {
 	ImageUrl    string `json:"image_url" validate:"required"`
 	Code        string `json:"code" validate:"required"`
 	Name        string `json:"name" validate:"required"`
+	VariantName string `json:"variant_name" validate:"required"`
 	BrandId     string `json:"brand_id" validate:"required"`
 	BrandName   string `json:"brand_name" validate:"required"`
 	GroupId     string `json:"group_id" validate:"required"`

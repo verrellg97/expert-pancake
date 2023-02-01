@@ -6,9 +6,18 @@ import (
 	"math/rand"
 
 	db "github.com/expert-pancake/service/inventory/db/sqlc"
-	"github.com/expert-pancake/service/inventory/model"
 	uuid "github.com/satori/go.uuid"
 )
+
+type AddItemTrxParams struct {
+	CompanyId   string
+	ImageUrl    string
+	Name        string
+	BrandId     string
+	GroupId     string
+	Tag         string
+	Description string
+}
 
 type AddItemTrxResult struct {
 	CompanyId   string
@@ -17,6 +26,7 @@ type AddItemTrxResult struct {
 	ImageUrl    string
 	Code        string
 	Name        string
+	VariantName string
 	BrandId     string
 	BrandName   string
 	GroupId     string
@@ -28,7 +38,7 @@ type AddItemTrxResult struct {
 	Stock       int64
 }
 
-func (trx *Trx) AddItemTrx(ctx context.Context, arg model.AddItemRequest) (AddItemTrxResult, error) {
+func (trx *Trx) AddItemTrx(ctx context.Context, arg AddItemTrxParams) (AddItemTrxResult, error) {
 	var result AddItemTrxResult
 
 	err := trx.execTx(ctx, func(q *db.Queries) error {
@@ -65,7 +75,6 @@ func (trx *Trx) AddItemTrx(ctx context.Context, arg model.AddItemRequest) (AddIt
 			ID:        uuid.NewV4().String(),
 			ItemID:    id,
 			ImageUrl:  arg.ImageUrl,
-			Name:      arg.Name,
 			IsDefault: true,
 		})
 		if err != nil {
@@ -78,6 +87,7 @@ func (trx *Trx) AddItemTrx(ctx context.Context, arg model.AddItemRequest) (AddIt
 		result.ImageUrl = arg.ImageUrl
 		result.Code = itemRes.Code
 		result.Name = arg.Name
+		result.VariantName = itemVariantRes.Name
 		result.BrandId = arg.BrandId
 		result.BrandName = brandRes.Name
 		result.GroupId = arg.GroupId
