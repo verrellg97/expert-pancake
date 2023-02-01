@@ -8,14 +8,6 @@ import (
 	"database/sql"
 )
 
-type WarehouseRack struct {
-	ID        string       `db:"id"`
-	BranchID  string       `db:"branch_id"`
-	Name      string       `db:"name"`
-	CreatedAt sql.NullTime `db:"created_at"`
-	UpdatedAt sql.NullTime `db:"updated_at"`
-}
-
 type WarehouseWarehouse struct {
 	ID        string       `db:"id"`
 	BranchID  string       `db:"branch_id"`
@@ -29,8 +21,9 @@ type WarehouseWarehouse struct {
 }
 
 type WarehouseWarehouseRack struct {
+	ID          string       `db:"id"`
 	WarehouseID string       `db:"warehouse_id"`
-	RackID      string       `db:"rack_id"`
+	Name        string       `db:"name"`
 	CreatedAt   sql.NullTime `db:"created_at"`
 	UpdatedAt   sql.NullTime `db:"updated_at"`
 }
