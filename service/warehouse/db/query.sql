@@ -25,3 +25,8 @@ DO UPDATE SET
     name = EXCLUDED.name,
     updated_at = NOW()
 RETURNING *;
+
+-- name: GetWarehouseRacks :many
+SELECT id, warehouse_id, name
+FROM warehouse.warehouse_racks
+WHERE warehouse_id = $1 AND name LIKE $2;

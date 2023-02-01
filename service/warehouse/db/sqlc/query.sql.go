@@ -9,6 +9,46 @@ import (
 	"context"
 )
 
+const getWarehouseRacks = `-- name: GetWarehouseRacks :many
+SELECT id, warehouse_id, name
+FROM warehouse.warehouse_racks
+WHERE warehouse_id = $1 AND name LIKE $2
+`
+
+type GetWarehouseRacksParams struct {
+	WarehouseID string `db:"warehouse_id"`
+	Name        string `db:"name"`
+}
+
+type GetWarehouseRacksRow struct {
+	ID          string `db:"id"`
+	WarehouseID string `db:"warehouse_id"`
+	Name        string `db:"name"`
+}
+
+func (q *Queries) GetWarehouseRacks(ctx context.Context, arg GetWarehouseRacksParams) ([]GetWarehouseRacksRow, error) {
+	rows, err := q.db.QueryContext(ctx, getWarehouseRacks, arg.WarehouseID, arg.Name)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetWarehouseRacksRow
+	for rows.Next() {
+		var i GetWarehouseRacksRow
+		if err := rows.Scan(&i.ID, &i.WarehouseID, &i.Name); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getWarehouses = `-- name: GetWarehouses :many
 SELECT id, branch_id, code, name, address, type
 FROM warehouse.warehouses
