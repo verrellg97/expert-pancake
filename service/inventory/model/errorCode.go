@@ -14,4 +14,5 @@ const (
 	GetUnitsError   = 700009
 
 	AddNewItemError = 700010
+	UpdateItemError = 700011
 )
