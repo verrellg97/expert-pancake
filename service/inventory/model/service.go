@@ -19,6 +19,7 @@ type InventoryService interface {
 
 	AddItem(w http.ResponseWriter, r *http.Request) error
 	UpdateItem(w http.ResponseWriter, r *http.Request) error
+	GetItems(w http.ResponseWriter, r *http.Request) error
 }
 
 type Brand struct {
@@ -153,4 +154,13 @@ type UpdateItemRequest struct {
 
 type UpdateItemResponse struct {
 	Item
+}
+
+type GetItemsRequest struct {
+	CompanyId string `json:"company_id" validate:"required"`
+	Keyword   string `json:"keyword"`
+}
+
+type GetItemsResponse struct {
+	Item []Item `json:"items" validate:"required"`
 }

@@ -15,4 +15,5 @@ const (
 
 	AddNewItemError = 700010
 	UpdateItemError = 700011
+	GetItemsError   = 700012
 )
