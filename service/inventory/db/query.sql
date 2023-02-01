@@ -125,7 +125,7 @@ JOIN inventory.groups d ON b.group_id = d.id
 WHERE a.id = $1;
 
 -- name: GetItemVariants :many
-SELECT b.id, a.id AS variant_id, b.company_id, a.image_url, b.code, a.name,
+SELECT b.id, a.id AS variant_id, b.company_id, a.image_url, b.code, b.name, a.name AS variant_name,
 b.brand_id, c.name AS brand_name, b.group_id, d.name AS group_name,
 b.tag, b.description, a.is_default, a.price, a.stock
 FROM inventory.item_variants a

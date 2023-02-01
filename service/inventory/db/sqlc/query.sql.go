@@ -178,7 +178,7 @@ func (q *Queries) GetItemVariant(ctx context.Context, id string) (GetItemVariant
 }
 
 const getItemVariants = `-- name: GetItemVariants :many
-SELECT b.id, a.id AS variant_id, b.company_id, a.image_url, b.code, a.name,
+SELECT b.id, a.id AS variant_id, b.company_id, a.image_url, b.code, b.name, a.name AS variant_name,
 b.brand_id, c.name AS brand_name, b.group_id, d.name AS group_name,
 b.tag, b.description, a.is_default, a.price, a.stock
 FROM inventory.item_variants a
@@ -201,6 +201,7 @@ type GetItemVariantsRow struct {
 	ImageUrl    string `db:"image_url"`
 	Code        string `db:"code"`
 	Name        string `db:"name"`
+	VariantName string `db:"variant_name"`
 	BrandID     string `db:"brand_id"`
 	BrandName   string `db:"brand_name"`
 	GroupID     string `db:"group_id"`
@@ -228,6 +229,7 @@ func (q *Queries) GetItemVariants(ctx context.Context, arg GetItemVariantsParams
 			&i.ImageUrl,
 			&i.Code,
 			&i.Name,
+			&i.VariantName,
 			&i.BrandID,
 			&i.BrandName,
 			&i.GroupID,

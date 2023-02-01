@@ -40,6 +40,7 @@ func (a inventoryService) GetItemVariants(w http.ResponseWriter, r *http.Request
 			ImageUrl:    d.ImageUrl,
 			Code:        d.Code,
 			Name:        d.Name,
+			VariantName: d.VariantName,
 			BrandId:     d.BrandID,
 			BrandName:   d.BrandName,
 			GroupId:     d.GroupID,
