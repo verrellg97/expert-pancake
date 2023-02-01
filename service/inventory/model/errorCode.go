@@ -19,4 +19,6 @@ const (
 
 	UpsertItemVariantError = 700013
 	GetItemVariantsError   = 700014
+
+	UpsertItemUnitError = 700015
 )
