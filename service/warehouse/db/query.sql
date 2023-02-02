@@ -9,3 +9,9 @@ DO UPDATE SET
     type = EXCLUDED.type,
     updated_at = NOW()
 RETURNING *;
+
+-- name: GetWarehouses :many
+SELECT id, branch_id, code, name, address, type
+FROM warehouse.warehouses
+WHERE branch_id = $1 AND name LIKE $2
+AND is_deleted = false;

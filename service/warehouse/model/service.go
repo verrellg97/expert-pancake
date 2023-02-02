@@ -6,6 +6,7 @@ import (
 
 type WarehouseService interface {
 	UpsertWarehouse(w http.ResponseWriter, r *http.Request) error
+	GetWarehouses(w http.ResponseWriter, r *http.Request) error
 }
 
 type Warehouse struct {
@@ -27,4 +28,13 @@ type UpsertWarehouseRequest struct {
 
 type UpsertWarehouseResponse struct {
 	Warehouse
+}
+
+type GetWarehousesRequest struct {
+	BranchId string `json:"branch_id" validate:"required"`
+	Keyword  string `json:"keyword"`
+}
+
+type GetWarehousesResponse struct {
+	Warehouses []Warehouse `json:"warehouses" validate:"required"`
 }
