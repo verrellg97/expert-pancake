@@ -21,7 +21,21 @@ func (a warehouseService) GetWarehouseRacks(w http.ResponseWriter, r *http.Reque
 		return errors.NewClientError().WithDataMap(errMapRequest)
 	}
 
+	var isFilterId = false
+	var id = ""
+	if req.Id != nil {
+		switch *req.Id {
+		case "":
+			isFilterId = false
+		default:
+			id = *req.Id
+			isFilterId = true
+		}
+	}
+
 	result, err := a.dbTrx.GetWarehouseRacks(context.Background(), db.GetWarehouseRacksParams{
+		IsFilterID:  isFilterId,
+		ID:          id,
 		WarehouseID: req.WarehouseId,
 		Name:        util.WildCardString(req.Keyword),
 	})

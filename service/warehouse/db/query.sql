@@ -30,7 +30,8 @@ RETURNING *;
 -- name: GetWarehouseRacks :many
 SELECT id, warehouse_id, name
 FROM warehouse.warehouse_racks
-WHERE warehouse_id = $1 AND name LIKE $2;
+WHERE CASE WHEN @is_filter_id::bool THEN id = $1
+ELSE warehouse_id = $2 AND name LIKE $3 END;
 
 -- name: DeleteWarehouse :exec
 UPDATE warehouse.warehouses
