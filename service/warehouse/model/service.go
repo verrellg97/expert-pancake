@@ -35,8 +35,9 @@ type UpsertWarehouseResponse struct {
 }
 
 type GetWarehousesRequest struct {
-	BranchId string `json:"branch_id" validate:"required"`
-	Keyword  string `json:"keyword"`
+	Id       *string `json:"id"`
+	BranchId string  `json:"branch_id" validate:"required"`
+	Keyword  string  `json:"keyword"`
 }
 
 type GetWarehousesResponse struct {

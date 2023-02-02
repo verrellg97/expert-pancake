@@ -63,13 +63,16 @@ func (q *Queries) GetWarehouseRacks(ctx context.Context, arg GetWarehouseRacksPa
 const getWarehouses = `-- name: GetWarehouses :many
 SELECT id, branch_id, code, name, address, type
 FROM warehouse.warehouses
-WHERE branch_id = $1 AND name LIKE $2
+WHERE CASE WHEN $4::bool THEN id = $1
+ELSE branch_id = $2 AND name LIKE $3 END
 AND is_deleted = false
 `
 
 type GetWarehousesParams struct {
-	BranchID string `db:"branch_id"`
-	Name     string `db:"name"`
+	ID         string `db:"id"`
+	BranchID   string `db:"branch_id"`
+	Name       string `db:"name"`
+	IsFilterID bool   `db:"is_filter_id"`
 }
 
 type GetWarehousesRow struct {
@@ -82,7 +85,12 @@ type GetWarehousesRow struct {
 }
 
 func (q *Queries) GetWarehouses(ctx context.Context, arg GetWarehousesParams) ([]GetWarehousesRow, error) {
-	rows, err := q.db.QueryContext(ctx, getWarehouses, arg.BranchID, arg.Name)
+	rows, err := q.db.QueryContext(ctx, getWarehouses,
+		arg.ID,
+		arg.BranchID,
+		arg.Name,
+		arg.IsFilterID,
+	)
 	if err != nil {
 		return nil, err
 	}
