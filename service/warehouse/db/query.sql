@@ -15,3 +15,13 @@ SELECT id, branch_id, code, name, address, type
 FROM warehouse.warehouses
 WHERE branch_id = $1 AND name LIKE $2
 AND is_deleted = false;
+
+-- name: UpsertWarehouseRack :one
+INSERT INTO warehouse.warehouse_racks(id, warehouse_id, name)
+VALUES ($1, $2, $3)
+ON CONFLICT (id)
+DO UPDATE SET
+    warehouse_id = EXCLUDED.warehouse_id,
+    name = EXCLUDED.name,
+    updated_at = NOW()
+RETURNING *;

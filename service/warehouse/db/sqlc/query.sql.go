@@ -105,3 +105,33 @@ func (q *Queries) UpsertWarehouse(ctx context.Context, arg UpsertWarehouseParams
 	)
 	return i, err
 }
+
+const upsertWarehouseRack = `-- name: UpsertWarehouseRack :one
+INSERT INTO warehouse.warehouse_racks(id, warehouse_id, name)
+VALUES ($1, $2, $3)
+ON CONFLICT (id)
+DO UPDATE SET
+    warehouse_id = EXCLUDED.warehouse_id,
+    name = EXCLUDED.name,
+    updated_at = NOW()
+RETURNING id, warehouse_id, name, created_at, updated_at
+`
+
+type UpsertWarehouseRackParams struct {
+	ID          string `db:"id"`
+	WarehouseID string `db:"warehouse_id"`
+	Name        string `db:"name"`
+}
+
+func (q *Queries) UpsertWarehouseRack(ctx context.Context, arg UpsertWarehouseRackParams) (WarehouseWarehouseRack, error) {
+	row := q.db.QueryRowContext(ctx, upsertWarehouseRack, arg.ID, arg.WarehouseID, arg.Name)
+	var i WarehouseWarehouseRack
+	err := row.Scan(
+		&i.ID,
+		&i.WarehouseID,
+		&i.Name,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}

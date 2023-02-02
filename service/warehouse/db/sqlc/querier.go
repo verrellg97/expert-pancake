@@ -11,6 +11,7 @@ import (
 type Querier interface {
 	GetWarehouses(ctx context.Context, arg GetWarehousesParams) ([]GetWarehousesRow, error)
 	UpsertWarehouse(ctx context.Context, arg UpsertWarehouseParams) (WarehouseWarehouse, error)
+	UpsertWarehouseRack(ctx context.Context, arg UpsertWarehouseRackParams) (WarehouseWarehouseRack, error)
 }
 
 var _ Querier = (*Queries)(nil)
