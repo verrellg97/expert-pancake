@@ -9,6 +9,17 @@ import (
 	"context"
 )
 
+const deleteWarehouse = `-- name: DeleteWarehouse :exec
+UPDATE warehouse.warehouses
+SET is_deleted = true
+WHERE id = $1
+`
+
+func (q *Queries) DeleteWarehouse(ctx context.Context, id string) error {
+	_, err := q.db.ExecContext(ctx, deleteWarehouse, id)
+	return err
+}
+
 const getWarehouseRacks = `-- name: GetWarehouseRacks :many
 SELECT id, warehouse_id, name
 FROM warehouse.warehouse_racks

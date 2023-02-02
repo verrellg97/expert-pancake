@@ -30,3 +30,8 @@ RETURNING *;
 SELECT id, warehouse_id, name
 FROM warehouse.warehouse_racks
 WHERE warehouse_id = $1 AND name LIKE $2;
+
+-- name: DeleteWarehouse :exec
+UPDATE warehouse.warehouses
+SET is_deleted = true
+WHERE id = $1;
