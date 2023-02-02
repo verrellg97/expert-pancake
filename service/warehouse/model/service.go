@@ -7,6 +7,7 @@ import (
 type WarehouseService interface {
 	UpsertWarehouse(w http.ResponseWriter, r *http.Request) error
 	GetWarehouses(w http.ResponseWriter, r *http.Request) error
+	DeleteWarehouse(w http.ResponseWriter, r *http.Request) error
 
 	UpsertWarehouseRack(w http.ResponseWriter, r *http.Request) error
 	GetWarehouseRacks(w http.ResponseWriter, r *http.Request) error
@@ -65,4 +66,12 @@ type GetWarehouseRacksRequest struct {
 
 type GetWarehouseRacksResponse struct {
 	WarehouseRacks []WarehouseRack `json:"warehouse_racks" validate:"required"`
+}
+
+type DeleteWarehouseRequest struct {
+	WarehouseId string `json:"warehouse_id" validate:"required"`
+}
+
+type DeleteWarehouseResponse struct {
+	Message string `json:"message"`
 }
