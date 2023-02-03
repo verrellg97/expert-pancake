@@ -32,6 +32,8 @@ const (
 
 	UpsertItemUnitPath = "/inventory/item/unit/upsert"
 	GetItemUnitsPath   = "/inventory/item/units"
+
+	AddInternalStockTransferPath = "/inventory/internal-stock-transfer/add"
 )
 
 func (c *component) Routes(inventoryService model.InventoryService) http.Handler {
@@ -71,6 +73,8 @@ func (c *component) Routes(inventoryService model.InventoryService) http.Handler
 
 	mux.Method("POST", UpsertItemUnitPath, httpHandler.New(inventoryService.UpsertItemUnit))
 	mux.Method("POST", GetItemUnitsPath, httpHandler.New(inventoryService.GetItemUnits))
+
+	mux.Method("POST", AddInternalStockTransferPath, httpHandler.New(inventoryService.AddInternalStockTransfer))
 
 	return mux
 }

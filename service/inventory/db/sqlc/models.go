@@ -6,6 +6,7 @@ package db
 
 import (
 	"database/sql"
+	"time"
 )
 
 type InventoryBrand struct {
@@ -24,6 +25,33 @@ type InventoryGroup struct {
 	UpdatedAt sql.NullTime `db:"updated_at"`
 }
 
+type InventoryInternalStockTransfer struct {
+	ID                     string       `db:"id"`
+	SourceWarehouseID      string       `db:"source_warehouse_id"`
+	DestinationWarehouseID string       `db:"destination_warehouse_id"`
+	FormNumber             string       `db:"form_number"`
+	TransactionDate        time.Time    `db:"transaction_date"`
+	IsDeleted              bool         `db:"is_deleted"`
+	CreatedAt              sql.NullTime `db:"created_at"`
+	UpdatedAt              sql.NullTime `db:"updated_at"`
+}
+
+type InventoryInternalStockTransferItem struct {
+	ID                      string         `db:"id"`
+	InternalStockTransferID string         `db:"internal_stock_transfer_id"`
+	WarehouseRackID         string         `db:"warehouse_rack_id"`
+	VariantID               string         `db:"variant_id"`
+	ItemUnitID              string         `db:"item_unit_id"`
+	ItemUnitValue           int64          `db:"item_unit_value"`
+	Amount                  int64          `db:"amount"`
+	Batch                   sql.NullString `db:"batch"`
+	ExpiredDate             sql.NullTime   `db:"expired_date"`
+	ItemBarcodeID           string         `db:"item_barcode_id"`
+	IsDeleted               bool           `db:"is_deleted"`
+	CreatedAt               sql.NullTime   `db:"created_at"`
+	UpdatedAt               sql.NullTime   `db:"updated_at"`
+}
+
 type InventoryItem struct {
 	ID          string       `db:"id"`
 	CompanyID   string       `db:"company_id"`
@@ -36,6 +64,15 @@ type InventoryItem struct {
 	Description string       `db:"description"`
 	CreatedAt   sql.NullTime `db:"created_at"`
 	UpdatedAt   sql.NullTime `db:"updated_at"`
+}
+
+type InventoryItemBarcode struct {
+	ID          string         `db:"id"`
+	VariantID   string         `db:"variant_id"`
+	Batch       sql.NullString `db:"batch"`
+	ExpiredDate sql.NullTime   `db:"expired_date"`
+	CreatedAt   sql.NullTime   `db:"created_at"`
+	UpdatedAt   sql.NullTime   `db:"updated_at"`
 }
 
 type InventoryItemUnit struct {
@@ -58,6 +95,21 @@ type InventoryItemVariant struct {
 	IsDefault bool         `db:"is_default"`
 	CreatedAt sql.NullTime `db:"created_at"`
 	UpdatedAt sql.NullTime `db:"updated_at"`
+}
+
+type InventoryStockMovement struct {
+	ID                   string       `db:"id"`
+	TransactionID        string       `db:"transaction_id"`
+	TransactionDate      time.Time    `db:"transaction_date"`
+	TransactionReference string       `db:"transaction_reference"`
+	DetailTransactionID  string       `db:"detail_transaction_id"`
+	WarehouseID          string       `db:"warehouse_id"`
+	WarehouseRackID      string       `db:"warehouse_rack_id"`
+	VariantID            string       `db:"variant_id"`
+	ItemBarcodeID        string       `db:"item_barcode_id"`
+	Amount               int64        `db:"amount"`
+	CreatedAt            sql.NullTime `db:"created_at"`
+	UpdatedAt            sql.NullTime `db:"updated_at"`
 }
 
 type InventoryUnit struct {

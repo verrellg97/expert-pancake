@@ -158,3 +158,45 @@ a.value, a.is_default
 FROM inventory.item_units a
 JOIN inventory.units b ON a.unit_id = b.id
 WHERE a.item_id = $1 AND b.name LIKE $2;
+
+-- name: InsertInternalStockTransfer :one
+INSERT INTO inventory.internal_stock_transfers(id,
+source_warehouse_id, destination_warehouse_id, form_number, transaction_date)
+VALUES ($1, $2, $3, $4, $5)
+RETURNING *;
+
+-- name: InsertInternalStockTransferItem :exec
+INSERT INTO inventory.internal_stock_transfer_items(id,
+internal_stock_transfer_id, warehouse_rack_id, variant_id,
+item_unit_id, item_unit_value, amount, batch, expired_date,
+item_barcode_id)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10);
+
+-- name: GetInternalStockTransferItems :many
+SELECT a.id, a.warehouse_rack_id, e.name AS item_name, a.variant_id, b.name AS variant_name,
+a.item_unit_id, d.name AS item_unit_name, a.item_unit_value, a.amount, a.batch, a.expired_date
+FROM inventory.internal_stock_transfer_items a
+JOIN inventory.item_variants b ON a.variant_id = b.id
+JOIN inventory.item_units c ON a.item_unit_id = c.id
+JOIN inventory.units d ON c.unit_id = d.id
+JOIN inventory.items e ON b.item_id = e.id
+WHERE a.internal_stock_transfer_id = $1 AND a.is_deleted = false;
+
+-- name: InsertItemBarcode :exec
+INSERT INTO inventory.item_barcodes(id, variant_id, batch, expired_date)
+VALUES ($1, $2, $3, $4);
+
+-- name: GetItemBarcode :one
+SELECT id
+FROM inventory.item_barcodes
+WHERE variant_id = $1
+AND CASE WHEN @is_null_batch::bool THEN batch is null
+ELSE batch = $2 END
+AND CASE WHEN @is_null_expired_date::bool THEN expired_date is null
+ELSE expired_date = $3 END;
+
+-- name: InsertStockMovement :exec
+INSERT INTO inventory.stock_movements(id, transaction_id, transaction_date,
+transaction_reference, detail_transaction_id, warehouse_id, warehouse_rack_id,
+variant_id, item_barcode_id, amount)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10);

@@ -13,6 +13,8 @@ type Querier interface {
 	GetBrands(ctx context.Context, arg GetBrandsParams) ([]GetBrandsRow, error)
 	GetGroupById(ctx context.Context, id string) (GetGroupByIdRow, error)
 	GetGroups(ctx context.Context, arg GetGroupsParams) ([]GetGroupsRow, error)
+	GetInternalStockTransferItems(ctx context.Context, internalStockTransferID string) ([]GetInternalStockTransferItemsRow, error)
+	GetItemBarcode(ctx context.Context, arg GetItemBarcodeParams) (string, error)
 	GetItemUnits(ctx context.Context, arg GetItemUnitsParams) ([]GetItemUnitsRow, error)
 	GetItemVariant(ctx context.Context, id string) (GetItemVariantRow, error)
 	GetItemVariants(ctx context.Context, arg GetItemVariantsParams) ([]GetItemVariantsRow, error)
@@ -21,8 +23,12 @@ type Querier interface {
 	GetUnits(ctx context.Context, arg GetUnitsParams) ([]GetUnitsRow, error)
 	InsertBrand(ctx context.Context, arg InsertBrandParams) (InventoryBrand, error)
 	InsertGroup(ctx context.Context, arg InsertGroupParams) (InventoryGroup, error)
+	InsertInternalStockTransfer(ctx context.Context, arg InsertInternalStockTransferParams) (InventoryInternalStockTransfer, error)
+	InsertInternalStockTransferItem(ctx context.Context, arg InsertInternalStockTransferItemParams) error
 	InsertItem(ctx context.Context, arg InsertItemParams) (InventoryItem, error)
+	InsertItemBarcode(ctx context.Context, arg InsertItemBarcodeParams) error
 	InsertItemVariant(ctx context.Context, arg InsertItemVariantParams) (InventoryItemVariant, error)
+	InsertStockMovement(ctx context.Context, arg InsertStockMovementParams) error
 	InsertUnit(ctx context.Context, arg InsertUnitParams) (InventoryUnit, error)
 	UpdateBrand(ctx context.Context, arg UpdateBrandParams) (InventoryBrand, error)
 	UpdateGroup(ctx context.Context, arg UpdateGroupParams) (InventoryGroup, error)

@@ -7,6 +7,8 @@ package db
 
 import (
 	"context"
+	"database/sql"
+	"time"
 )
 
 const getBrandById = `-- name: GetBrandById :one
@@ -121,6 +123,97 @@ func (q *Queries) GetGroups(ctx context.Context, arg GetGroupsParams) ([]GetGrou
 		return nil, err
 	}
 	return items, nil
+}
+
+const getInternalStockTransferItems = `-- name: GetInternalStockTransferItems :many
+SELECT a.id, a.warehouse_rack_id, e.name AS item_name, a.variant_id, b.name AS variant_name,
+a.item_unit_id, d.name AS item_unit_name, a.item_unit_value, a.amount, a.batch, a.expired_date
+FROM inventory.internal_stock_transfer_items a
+JOIN inventory.item_variants b ON a.variant_id = b.id
+JOIN inventory.item_units c ON a.item_unit_id = c.id
+JOIN inventory.units d ON c.unit_id = d.id
+JOIN inventory.items e ON b.item_id = e.id
+WHERE a.internal_stock_transfer_id = $1 AND a.is_deleted = false
+`
+
+type GetInternalStockTransferItemsRow struct {
+	ID              string         `db:"id"`
+	WarehouseRackID string         `db:"warehouse_rack_id"`
+	ItemName        string         `db:"item_name"`
+	VariantID       string         `db:"variant_id"`
+	VariantName     string         `db:"variant_name"`
+	ItemUnitID      string         `db:"item_unit_id"`
+	ItemUnitName    string         `db:"item_unit_name"`
+	ItemUnitValue   int64          `db:"item_unit_value"`
+	Amount          int64          `db:"amount"`
+	Batch           sql.NullString `db:"batch"`
+	ExpiredDate     sql.NullTime   `db:"expired_date"`
+}
+
+func (q *Queries) GetInternalStockTransferItems(ctx context.Context, internalStockTransferID string) ([]GetInternalStockTransferItemsRow, error) {
+	rows, err := q.db.QueryContext(ctx, getInternalStockTransferItems, internalStockTransferID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetInternalStockTransferItemsRow
+	for rows.Next() {
+		var i GetInternalStockTransferItemsRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.WarehouseRackID,
+			&i.ItemName,
+			&i.VariantID,
+			&i.VariantName,
+			&i.ItemUnitID,
+			&i.ItemUnitName,
+			&i.ItemUnitValue,
+			&i.Amount,
+			&i.Batch,
+			&i.ExpiredDate,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getItemBarcode = `-- name: GetItemBarcode :one
+SELECT id
+FROM inventory.item_barcodes
+WHERE variant_id = $1
+AND CASE WHEN $4::bool THEN batch is null
+ELSE batch = $2 END
+AND CASE WHEN $5::bool THEN expired_date is null
+ELSE expired_date = $3 END
+`
+
+type GetItemBarcodeParams struct {
+	VariantID         string         `db:"variant_id"`
+	Batch             sql.NullString `db:"batch"`
+	ExpiredDate       sql.NullTime   `db:"expired_date"`
+	IsNullBatch       bool           `db:"is_null_batch"`
+	IsNullExpiredDate bool           `db:"is_null_expired_date"`
+}
+
+func (q *Queries) GetItemBarcode(ctx context.Context, arg GetItemBarcodeParams) (string, error) {
+	row := q.db.QueryRowContext(ctx, getItemBarcode,
+		arg.VariantID,
+		arg.Batch,
+		arg.ExpiredDate,
+		arg.IsNullBatch,
+		arg.IsNullExpiredDate,
+	)
+	var id string
+	err := row.Scan(&id)
+	return id, err
 }
 
 const getItemUnits = `-- name: GetItemUnits :many
@@ -488,6 +581,80 @@ func (q *Queries) InsertGroup(ctx context.Context, arg InsertGroupParams) (Inven
 	return i, err
 }
 
+const insertInternalStockTransfer = `-- name: InsertInternalStockTransfer :one
+INSERT INTO inventory.internal_stock_transfers(id,
+source_warehouse_id, destination_warehouse_id, form_number, transaction_date)
+VALUES ($1, $2, $3, $4, $5)
+RETURNING id, source_warehouse_id, destination_warehouse_id, form_number, transaction_date, is_deleted, created_at, updated_at
+`
+
+type InsertInternalStockTransferParams struct {
+	ID                     string    `db:"id"`
+	SourceWarehouseID      string    `db:"source_warehouse_id"`
+	DestinationWarehouseID string    `db:"destination_warehouse_id"`
+	FormNumber             string    `db:"form_number"`
+	TransactionDate        time.Time `db:"transaction_date"`
+}
+
+func (q *Queries) InsertInternalStockTransfer(ctx context.Context, arg InsertInternalStockTransferParams) (InventoryInternalStockTransfer, error) {
+	row := q.db.QueryRowContext(ctx, insertInternalStockTransfer,
+		arg.ID,
+		arg.SourceWarehouseID,
+		arg.DestinationWarehouseID,
+		arg.FormNumber,
+		arg.TransactionDate,
+	)
+	var i InventoryInternalStockTransfer
+	err := row.Scan(
+		&i.ID,
+		&i.SourceWarehouseID,
+		&i.DestinationWarehouseID,
+		&i.FormNumber,
+		&i.TransactionDate,
+		&i.IsDeleted,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const insertInternalStockTransferItem = `-- name: InsertInternalStockTransferItem :exec
+INSERT INTO inventory.internal_stock_transfer_items(id,
+internal_stock_transfer_id, warehouse_rack_id, variant_id,
+item_unit_id, item_unit_value, amount, batch, expired_date,
+item_barcode_id)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+`
+
+type InsertInternalStockTransferItemParams struct {
+	ID                      string         `db:"id"`
+	InternalStockTransferID string         `db:"internal_stock_transfer_id"`
+	WarehouseRackID         string         `db:"warehouse_rack_id"`
+	VariantID               string         `db:"variant_id"`
+	ItemUnitID              string         `db:"item_unit_id"`
+	ItemUnitValue           int64          `db:"item_unit_value"`
+	Amount                  int64          `db:"amount"`
+	Batch                   sql.NullString `db:"batch"`
+	ExpiredDate             sql.NullTime   `db:"expired_date"`
+	ItemBarcodeID           string         `db:"item_barcode_id"`
+}
+
+func (q *Queries) InsertInternalStockTransferItem(ctx context.Context, arg InsertInternalStockTransferItemParams) error {
+	_, err := q.db.ExecContext(ctx, insertInternalStockTransferItem,
+		arg.ID,
+		arg.InternalStockTransferID,
+		arg.WarehouseRackID,
+		arg.VariantID,
+		arg.ItemUnitID,
+		arg.ItemUnitValue,
+		arg.Amount,
+		arg.Batch,
+		arg.ExpiredDate,
+		arg.ItemBarcodeID,
+	)
+	return err
+}
+
 const insertItem = `-- name: InsertItem :one
 INSERT INTO inventory.items(id, company_id, image_url,
 code, name, brand_id, group_id, tag, description)
@@ -536,6 +703,28 @@ func (q *Queries) InsertItem(ctx context.Context, arg InsertItemParams) (Invento
 	return i, err
 }
 
+const insertItemBarcode = `-- name: InsertItemBarcode :exec
+INSERT INTO inventory.item_barcodes(id, variant_id, batch, expired_date)
+VALUES ($1, $2, $3, $4)
+`
+
+type InsertItemBarcodeParams struct {
+	ID          string         `db:"id"`
+	VariantID   string         `db:"variant_id"`
+	Batch       sql.NullString `db:"batch"`
+	ExpiredDate sql.NullTime   `db:"expired_date"`
+}
+
+func (q *Queries) InsertItemBarcode(ctx context.Context, arg InsertItemBarcodeParams) error {
+	_, err := q.db.ExecContext(ctx, insertItemBarcode,
+		arg.ID,
+		arg.VariantID,
+		arg.Batch,
+		arg.ExpiredDate,
+	)
+	return err
+}
+
 const insertItemVariant = `-- name: InsertItemVariant :one
 INSERT INTO inventory.item_variants(id, item_id, image_url,
 name, price, stock, is_default)
@@ -576,6 +765,42 @@ func (q *Queries) InsertItemVariant(ctx context.Context, arg InsertItemVariantPa
 		&i.UpdatedAt,
 	)
 	return i, err
+}
+
+const insertStockMovement = `-- name: InsertStockMovement :exec
+INSERT INTO inventory.stock_movements(id, transaction_id, transaction_date,
+transaction_reference, detail_transaction_id, warehouse_id, warehouse_rack_id,
+variant_id, item_barcode_id, amount)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+`
+
+type InsertStockMovementParams struct {
+	ID                   string    `db:"id"`
+	TransactionID        string    `db:"transaction_id"`
+	TransactionDate      time.Time `db:"transaction_date"`
+	TransactionReference string    `db:"transaction_reference"`
+	DetailTransactionID  string    `db:"detail_transaction_id"`
+	WarehouseID          string    `db:"warehouse_id"`
+	WarehouseRackID      string    `db:"warehouse_rack_id"`
+	VariantID            string    `db:"variant_id"`
+	ItemBarcodeID        string    `db:"item_barcode_id"`
+	Amount               int64     `db:"amount"`
+}
+
+func (q *Queries) InsertStockMovement(ctx context.Context, arg InsertStockMovementParams) error {
+	_, err := q.db.ExecContext(ctx, insertStockMovement,
+		arg.ID,
+		arg.TransactionID,
+		arg.TransactionDate,
+		arg.TransactionReference,
+		arg.DetailTransactionID,
+		arg.WarehouseID,
+		arg.WarehouseRackID,
+		arg.VariantID,
+		arg.ItemBarcodeID,
+		arg.Amount,
+	)
+	return err
 }
 
 const insertUnit = `-- name: InsertUnit :one
