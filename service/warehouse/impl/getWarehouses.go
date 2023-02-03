@@ -23,14 +23,9 @@ func (a warehouseService) GetWarehouses(w http.ResponseWriter, r *http.Request) 
 
 	var isFilterId = false
 	var id = ""
-	if req.Id != nil {
-		switch *req.Id {
-		case "":
-			isFilterId = false
-		default:
-			id = *req.Id
-			isFilterId = true
-		}
+	if req.Id != nil && *req.Id != "" {
+		id = *req.Id
+		isFilterId = true
 	}
 
 	result, err := a.dbTrx.GetWarehouses(context.Background(), db.GetWarehousesParams{
