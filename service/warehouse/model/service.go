@@ -61,8 +61,9 @@ type UpsertWarehouseRackResponse struct {
 }
 
 type GetWarehouseRacksRequest struct {
-	WarehouseId string `json:"warehouse_id" validate:"required"`
-	Keyword     string `json:"keyword"`
+	Id          *string `json:"id"`
+	WarehouseId string  `json:"warehouse_id" validate:"required"`
+	Keyword     string  `json:"keyword"`
 }
 
 type GetWarehouseRacksResponse struct {

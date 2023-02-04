@@ -23,12 +23,15 @@ func (q *Queries) DeleteWarehouse(ctx context.Context, id string) error {
 const getWarehouseRacks = `-- name: GetWarehouseRacks :many
 SELECT id, warehouse_id, name
 FROM warehouse.warehouse_racks
-WHERE warehouse_id = $1 AND name LIKE $2
+WHERE CASE WHEN $4::bool THEN id = $1
+ELSE warehouse_id = $2 AND name LIKE $3 END
 `
 
 type GetWarehouseRacksParams struct {
+	ID          string `db:"id"`
 	WarehouseID string `db:"warehouse_id"`
 	Name        string `db:"name"`
+	IsFilterID  bool   `db:"is_filter_id"`
 }
 
 type GetWarehouseRacksRow struct {
@@ -38,7 +41,12 @@ type GetWarehouseRacksRow struct {
 }
 
 func (q *Queries) GetWarehouseRacks(ctx context.Context, arg GetWarehouseRacksParams) ([]GetWarehouseRacksRow, error) {
-	rows, err := q.db.QueryContext(ctx, getWarehouseRacks, arg.WarehouseID, arg.Name)
+	rows, err := q.db.QueryContext(ctx, getWarehouseRacks,
+		arg.ID,
+		arg.WarehouseID,
+		arg.Name,
+		arg.IsFilterID,
+	)
 	if err != nil {
 		return nil, err
 	}
