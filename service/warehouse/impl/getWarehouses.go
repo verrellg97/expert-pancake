@@ -21,9 +21,18 @@ func (a warehouseService) GetWarehouses(w http.ResponseWriter, r *http.Request) 
 		return errors.NewClientError().WithDataMap(errMapRequest)
 	}
 
+	var isFilterId = false
+	var id = ""
+	if req.Id != nil && *req.Id != "" {
+		id = *req.Id
+		isFilterId = true
+	}
+
 	result, err := a.dbTrx.GetWarehouses(context.Background(), db.GetWarehousesParams{
-		BranchID: req.BranchId,
-		Name:     util.WildCardString(req.Keyword),
+		IsFilterID: isFilterId,
+		ID:         id,
+		BranchID:   req.BranchId,
+		Name:       util.WildCardString(req.Keyword),
 	})
 	if err != nil {
 		return errors.NewServerError(model.GetWarehousesError, err.Error())

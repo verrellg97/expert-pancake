@@ -13,7 +13,8 @@ RETURNING *;
 -- name: GetWarehouses :many
 SELECT id, branch_id, code, name, address, type
 FROM warehouse.warehouses
-WHERE branch_id = $1 AND name LIKE $2
+WHERE CASE WHEN @is_filter_id::bool THEN id = $1
+ELSE branch_id = $2 AND name LIKE $3 END
 AND is_deleted = false;
 
 -- name: UpsertWarehouseRack :one
