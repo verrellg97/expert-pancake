@@ -1,7 +1,7 @@
 package client
 
 const (
-	WarehouseRootPath     = "http://warehouse-service:4050"
+	WarehouseRootPath     = "http://127.0.0.1:4050"
 	GetWarehousesPath     = "/warehouses"
 	GetWarehouseRacksPath = "/warehouse/racks"
 )
