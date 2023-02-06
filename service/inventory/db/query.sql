@@ -201,7 +201,7 @@ transaction_reference, detail_transaction_id, warehouse_id, warehouse_rack_id,
 variant_id, item_barcode_id, amount)
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10);
 
--- name: UpsertItemReorder :exec
+-- name: UpsertItemReorder :one
 INSERT INTO inventory.item_reorders(id, variant_id, warehouse_id, minimum_stock)
 VALUES ($1, $2, $3, $4)
 ON CONFLICT (id)
@@ -209,4 +209,12 @@ DO UPDATE SET
     variant_id = EXCLUDED.variant_id,
     warehouse_id = EXCLUDED.warehouse_id,
     minimum_stock = EXCLUDED.minimum_stock,
-    updated_at = NOW();
+    updated_at = NOW()
+RETURNING *;
+
+-- name: GetItemReorder :one
+SELECT a.id, a.variant_id, b.name as variant_name, c.id as item_id, c.name as item_name, a.warehouse_id, a.minimum_stock
+FROM inventory.item_reorders a
+JOIN inventory.item_variants b ON a.variant_id = b.id
+JOIN inventory.items c ON b.item_id = c.id
+WHERE a.id = $1;
