@@ -28,6 +28,8 @@ type InventoryService interface {
 	GetItemUnits(w http.ResponseWriter, r *http.Request) error
 
 	AddInternalStockTransfer(w http.ResponseWriter, r *http.Request) error
+	
+	UpsertItemReorder(w http.ResponseWriter, r *http.Request) error
 }
 
 type Brand struct {
@@ -267,4 +269,15 @@ type AddInternalStockTransferResponse struct {
 	FormNumber               string                              `json:"form_number" validate:"required"`
 	TransactionDate          string                              `json:"transaction_date" validate:"required"`
 	Items                    []InternalStockTransferItemResponse `json:"items" validate:"required"`
+}
+
+type UpsertItemReorderRequest struct {
+	Id           string `json:"id"`
+	VariantId    string `json:"variant_id" validate:"required"`
+	WarehouseId  string `json:"warehouse_id" validate:"required"`
+	MinimumStock int64  `json:"minimum_stock" validate:"required"`
+}
+
+type UpsertItemReorderResponse struct {
+	Message string `json:"message" validate:"required"`
 }

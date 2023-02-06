@@ -994,6 +994,34 @@ func (q *Queries) UpdateUnit(ctx context.Context, arg UpdateUnitParams) (Invento
 	return i, err
 }
 
+const upsertItemReorder = `-- name: UpsertItemReorder :exec
+INSERT INTO inventory.item_reorders(id, variant_id, warehouse_id, minimum_stock)
+VALUES ($1, $2, $3, $4)
+ON CONFLICT (id)
+DO UPDATE SET
+    variant_id = EXCLUDED.variant_id,
+    warehouse_id = EXCLUDED.warehouse_id,
+    minimum_stock = EXCLUDED.minimum_stock,
+    updated_at = NOW()
+`
+
+type UpsertItemReorderParams struct {
+	ID           string `db:"id"`
+	VariantID    string `db:"variant_id"`
+	WarehouseID  string `db:"warehouse_id"`
+	MinimumStock int64  `db:"minimum_stock"`
+}
+
+func (q *Queries) UpsertItemReorder(ctx context.Context, arg UpsertItemReorderParams) error {
+	_, err := q.db.ExecContext(ctx, upsertItemReorder,
+		arg.ID,
+		arg.VariantID,
+		arg.WarehouseID,
+		arg.MinimumStock,
+	)
+	return err
+}
+
 const upsertItemUnit = `-- name: UpsertItemUnit :one
 INSERT INTO inventory.item_units(id, item_id, unit_id, value, is_default)
 VALUES ($1, $2, $3, $4, $5)

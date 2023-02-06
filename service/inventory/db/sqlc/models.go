@@ -75,6 +75,15 @@ type InventoryItemBarcode struct {
 	UpdatedAt   sql.NullTime   `db:"updated_at"`
 }
 
+type InventoryItemReorder struct {
+	ID           string       `db:"id"`
+	WarehouseID  string       `db:"warehouse_id"`
+	VariantID    string       `db:"variant_id"`
+	MinimumStock int64        `db:"minimum_stock"`
+	CreatedAt    sql.NullTime `db:"created_at"`
+	UpdatedAt    sql.NullTime `db:"updated_at"`
+}
+
 type InventoryItemUnit struct {
 	ID        string       `db:"id"`
 	ItemID    string       `db:"item_id"`

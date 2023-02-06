@@ -35,6 +35,7 @@ type Querier interface {
 	UpdateItem(ctx context.Context, arg UpdateItemParams) (InventoryItem, error)
 	UpdateItemVariantDefault(ctx context.Context, arg UpdateItemVariantDefaultParams) (InventoryItemVariant, error)
 	UpdateUnit(ctx context.Context, arg UpdateUnitParams) (InventoryUnit, error)
+	UpsertItemReorder(ctx context.Context, arg UpsertItemReorderParams) error
 	UpsertItemUnit(ctx context.Context, arg UpsertItemUnitParams) (InventoryItemUnit, error)
 	UpsertItemVariant(ctx context.Context, arg UpsertItemVariantParams) error
 }

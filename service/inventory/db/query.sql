@@ -200,3 +200,13 @@ INSERT INTO inventory.stock_movements(id, transaction_id, transaction_date,
 transaction_reference, detail_transaction_id, warehouse_id, warehouse_rack_id,
 variant_id, item_barcode_id, amount)
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10);
+
+-- name: UpsertItemReorder :exec
+INSERT INTO inventory.item_reorders(id, variant_id, warehouse_id, minimum_stock)
+VALUES ($1, $2, $3, $4)
+ON CONFLICT (id)
+DO UPDATE SET
+    variant_id = EXCLUDED.variant_id,
+    warehouse_id = EXCLUDED.warehouse_id,
+    minimum_stock = EXCLUDED.minimum_stock,
+    updated_at = NOW();
