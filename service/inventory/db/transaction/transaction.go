@@ -12,6 +12,7 @@ type InventoryTrx interface {
 	Querier
 	AddItemTrx(ctx context.Context, arg AddItemTrxParams) (AddItemTrxResult, error)
 	UpdateItemTrx(ctx context.Context, arg UpdateItemTrxParams) (UpdateItemTrxResult, error)
+	AddInternalStockTransferTrx(ctx context.Context, arg AddInternalStockTransferTrxParams) (AddInternalStockTransferTrxResult, error)
 }
 
 // Trx provides all functions to execute SQL queries and transactions
