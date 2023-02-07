@@ -216,6 +216,39 @@ func (q *Queries) GetItemBarcode(ctx context.Context, arg GetItemBarcodeParams) 
 	return id, err
 }
 
+const getItemReorder = `-- name: GetItemReorder :one
+SELECT a.id, a.variant_id, b.name as variant_name, c.id as item_id, c.name as item_name, a.warehouse_id, a.minimum_stock
+FROM inventory.item_reorders a
+JOIN inventory.item_variants b ON a.variant_id = b.id
+JOIN inventory.items c ON b.item_id = c.id
+WHERE a.id = $1
+`
+
+type GetItemReorderRow struct {
+	ID           string `db:"id"`
+	VariantID    string `db:"variant_id"`
+	VariantName  string `db:"variant_name"`
+	ItemID       string `db:"item_id"`
+	ItemName     string `db:"item_name"`
+	WarehouseID  string `db:"warehouse_id"`
+	MinimumStock int64  `db:"minimum_stock"`
+}
+
+func (q *Queries) GetItemReorder(ctx context.Context, id string) (GetItemReorderRow, error) {
+	row := q.db.QueryRowContext(ctx, getItemReorder, id)
+	var i GetItemReorderRow
+	err := row.Scan(
+		&i.ID,
+		&i.VariantID,
+		&i.VariantName,
+		&i.ItemID,
+		&i.ItemName,
+		&i.WarehouseID,
+		&i.MinimumStock,
+	)
+	return i, err
+}
+
 const getItemUnits = `-- name: GetItemUnits :many
 SELECT a.id, a.item_id, a.unit_id, b.name AS unit_name,
 a.value, a.is_default
@@ -988,6 +1021,44 @@ func (q *Queries) UpdateUnit(ctx context.Context, arg UpdateUnitParams) (Invento
 		&i.ID,
 		&i.CompanyID,
 		&i.Name,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const upsertItemReorder = `-- name: UpsertItemReorder :one
+INSERT INTO inventory.item_reorders(id, variant_id, warehouse_id, minimum_stock)
+VALUES ($1, $2, $3, $4)
+ON CONFLICT (id)
+DO UPDATE SET
+    variant_id = EXCLUDED.variant_id,
+    warehouse_id = EXCLUDED.warehouse_id,
+    minimum_stock = EXCLUDED.minimum_stock,
+    updated_at = NOW()
+RETURNING id, warehouse_id, variant_id, minimum_stock, created_at, updated_at
+`
+
+type UpsertItemReorderParams struct {
+	ID           string `db:"id"`
+	VariantID    string `db:"variant_id"`
+	WarehouseID  string `db:"warehouse_id"`
+	MinimumStock int64  `db:"minimum_stock"`
+}
+
+func (q *Queries) UpsertItemReorder(ctx context.Context, arg UpsertItemReorderParams) (InventoryItemReorder, error) {
+	row := q.db.QueryRowContext(ctx, upsertItemReorder,
+		arg.ID,
+		arg.VariantID,
+		arg.WarehouseID,
+		arg.MinimumStock,
+	)
+	var i InventoryItemReorder
+	err := row.Scan(
+		&i.ID,
+		&i.WarehouseID,
+		&i.VariantID,
+		&i.MinimumStock,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
