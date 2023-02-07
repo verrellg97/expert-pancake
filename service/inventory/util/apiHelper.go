@@ -8,8 +8,8 @@ import (
 	"github.com/expert-pancake/service/inventory/model"
 )
 
-func InternalStockTransferItemDbToApi(data []db.GetInternalStockTransferItemsRow) []model.InternalStockTransferItemResponse {
-	var items = make([]model.InternalStockTransferItemResponse, 0)
+func InternalStockTransferItemDbToApi(data []db.GetInternalStockTransferItemsRow) []model.InternalStockTransferItem {
+	var items = make([]model.InternalStockTransferItem, 0)
 
 	for _, d := range data {
 		var batch, expired_date *string
@@ -27,7 +27,7 @@ func InternalStockTransferItemDbToApi(data []db.GetInternalStockTransferItemsRow
 		}
 		warehouseRack, _ := client.GetWarehouseRacks(argWarehouseRack)
 
-		items = append(items, model.InternalStockTransferItemResponse{
+		items = append(items, model.InternalStockTransferItem{
 			DetailId:          d.ID,
 			WarehouseRackId:   d.WarehouseRackID,
 			WarehouseRackName: warehouseRack.Result.WarehouseRacks[0].Name,

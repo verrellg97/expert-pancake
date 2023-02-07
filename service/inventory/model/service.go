@@ -28,6 +28,7 @@ type InventoryService interface {
 	GetItemUnits(w http.ResponseWriter, r *http.Request) error
 
 	AddInternalStockTransfer(w http.ResponseWriter, r *http.Request) error
+	GetInternalStockTransfers(w http.ResponseWriter, r *http.Request) error
 
 	UpsertItemReorder(w http.ResponseWriter, r *http.Request) error
 }
@@ -227,6 +228,32 @@ type GetItemUnitsResponse struct {
 	ItemUnits []ItemUnit `json:"item_units" validate:"required"`
 }
 
+type InternalStockTransferItem struct {
+	DetailId          string  `json:"detail_id" validate:"required"`
+	WarehouseRackId   string  `json:"warehouse_rack_id" validate:"required"`
+	WarehouseRackName string  `json:"warehouse_rack_name" validate:"required"`
+	ItemName          string  `json:"item_name" validate:"required"`
+	VariantId         string  `json:"variant_id" validate:"required"`
+	VariantName       string  `json:"variant_name" validate:"required"`
+	ItemUnitId        string  `json:"item_unit_id" validate:"required"`
+	ItemUnitName      string  `json:"item_unit_name" validate:"required"`
+	ItemUnitValue     string  `json:"item_unit_value" validate:"required"`
+	Amount            string  `json:"amount" validate:"required"`
+	Batch             *string `json:"batch" validate:"required"`
+	ExpiredDate       *string `json:"expired_date" validate:"required"`
+}
+
+type InternalStockTransfer struct {
+	TransactionId            string                      `json:"transaction_id" validate:"required"`
+	SourceWarehouseId        string                      `json:"source_warehouse_id" validate:"required"`
+	SourceWarehouseName      string                      `json:"source_warehouse_name" validate:"required"`
+	DestinationWarehouseId   string                      `json:"destination_warehouse_id" validate:"required"`
+	DestinationWarehouseName string                      `json:"destination_warehouse_name" validate:"required"`
+	FormNumber               string                      `json:"form_number" validate:"required"`
+	TransactionDate          string                      `json:"transaction_date" validate:"required"`
+	Items                    []InternalStockTransferItem `json:"items" validate:"required"`
+}
+
 type InternalStockTransferItemRequest struct {
 	WarehouseRackId string `json:"warehouse_rack_id"`
 	VariantId       string `json:"variant_id" validate:"required"`
@@ -245,30 +272,17 @@ type AddInternalStockTransferRequest struct {
 	Items                  []InternalStockTransferItemRequest `json:"items" validate:"required"`
 }
 
-type InternalStockTransferItemResponse struct {
-	DetailId          string  `json:"detail_id" validate:"required"`
-	WarehouseRackId   string  `json:"warehouse_rack_id" validate:"required"`
-	WarehouseRackName string  `json:"warehouse_rack_name" validate:"required"`
-	ItemName          string  `json:"item_name" validate:"required"`
-	VariantId         string  `json:"variant_id" validate:"required"`
-	VariantName       string  `json:"variant_name" validate:"required"`
-	ItemUnitId        string  `json:"item_unit_id" validate:"required"`
-	ItemUnitName      string  `json:"item_unit_name" validate:"required"`
-	ItemUnitValue     string  `json:"item_unit_value" validate:"required"`
-	Amount            string  `json:"amount" validate:"required"`
-	Batch             *string `json:"batch" validate:"required"`
-	ExpiredDate       *string `json:"expired_date" validate:"required"`
+type AddInternalStockTransferResponse struct {
+	InternalStockTransfer
 }
 
-type AddInternalStockTransferResponse struct {
-	TransactionId            string                              `json:"transaction_id" validate:"required"`
-	SourceWarehouseId        string                              `json:"source_warehouse_id" validate:"required"`
-	SourceWarehouseName      string                              `json:"source_warehouse_name" validate:"required"`
-	DestinationWarehouseId   string                              `json:"destination_warehouse_id" validate:"required"`
-	DestinationWarehouseName string                              `json:"destination_warehouse_name" validate:"required"`
-	FormNumber               string                              `json:"form_number" validate:"required"`
-	TransactionDate          string                              `json:"transaction_date" validate:"required"`
-	Items                    []InternalStockTransferItemResponse `json:"items" validate:"required"`
+type GetInternalStockTransfersRequest struct {
+	StartDate string `json:"start_date"`
+	EndDate   string `json:"end_date"`
+}
+
+type GetInternalStockTransfersResponse struct {
+	InternalStockTransfers []InternalStockTransfer `json:"internal_stock_transfers" validate:"required"`
 }
 
 type ItemReorder struct {

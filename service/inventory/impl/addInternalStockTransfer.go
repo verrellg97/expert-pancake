@@ -57,14 +57,16 @@ func (a inventoryService) AddInternalStockTransfer(w http.ResponseWriter, r *htt
 	resultItems, err := a.dbTrx.GetInternalStockTransferItems(context.Background(), result.TransactionId)
 
 	res := model.AddInternalStockTransferResponse{
-		TransactionId:            result.TransactionId,
-		SourceWarehouseId:        result.SourceWarehouseId,
-		SourceWarehouseName:      sourceWarehouse.Result.Warehouses[0].Name,
-		DestinationWarehouseId:   result.DestinationWarehouseId,
-		DestinationWarehouseName: destinationWarehouse.Result.Warehouses[0].Name,
-		FormNumber:               result.FormNumber,
-		TransactionDate:          result.TransactionDate,
-		Items:                    util.InternalStockTransferItemDbToApi(resultItems),
+		InternalStockTransfer: model.InternalStockTransfer{
+			TransactionId:            result.TransactionId,
+			SourceWarehouseId:        result.SourceWarehouseId,
+			SourceWarehouseName:      sourceWarehouse.Result.Warehouses[0].Name,
+			DestinationWarehouseId:   result.DestinationWarehouseId,
+			DestinationWarehouseName: destinationWarehouse.Result.Warehouses[0].Name,
+			FormNumber:               result.FormNumber,
+			TransactionDate:          result.TransactionDate,
+			Items:                    util.InternalStockTransferItemDbToApi(resultItems),
+		},
 	}
 
 	httpHandler.WriteResponse(w, res)

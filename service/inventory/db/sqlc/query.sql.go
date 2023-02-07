@@ -185,6 +185,56 @@ func (q *Queries) GetInternalStockTransferItems(ctx context.Context, internalSto
 	return items, nil
 }
 
+const getInternalStockTransfers = `-- name: GetInternalStockTransfers :many
+SELECT id, source_warehouse_id, destination_warehouse_id,
+form_number, transaction_date
+FROM inventory.internal_stock_transfers
+WHERE is_deleted = false
+AND transaction_date BETWEEN $1::date AND $2::date
+`
+
+type GetInternalStockTransfersParams struct {
+	StartDate time.Time `db:"start_date"`
+	EndDate   time.Time `db:"end_date"`
+}
+
+type GetInternalStockTransfersRow struct {
+	ID                     string    `db:"id"`
+	SourceWarehouseID      string    `db:"source_warehouse_id"`
+	DestinationWarehouseID string    `db:"destination_warehouse_id"`
+	FormNumber             string    `db:"form_number"`
+	TransactionDate        time.Time `db:"transaction_date"`
+}
+
+func (q *Queries) GetInternalStockTransfers(ctx context.Context, arg GetInternalStockTransfersParams) ([]GetInternalStockTransfersRow, error) {
+	rows, err := q.db.QueryContext(ctx, getInternalStockTransfers, arg.StartDate, arg.EndDate)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetInternalStockTransfersRow
+	for rows.Next() {
+		var i GetInternalStockTransfersRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.SourceWarehouseID,
+			&i.DestinationWarehouseID,
+			&i.FormNumber,
+			&i.TransactionDate,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getItemBarcode = `-- name: GetItemBarcode :one
 SELECT id
 FROM inventory.item_barcodes
