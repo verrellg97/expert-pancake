@@ -4,3 +4,4 @@
 20230125_inventory_schema_and_item_components_table 2023-01-25T04:46:43Z Verrell <verrell@Verrells-MacBook-Air.local> # Add schema and item components table for inventory service
 20230130_alter_item_components_table_name_and_add_items_item_variants_item_unit_table 2023-01-30T19:28:32Z Verrell <verrell@Verrells-MacBook-Air.local> # Alter item components table name and add items item_variants item_units table
 20230202_add_internal_stock_transfers_and_stock_movements_table 2023-02-02T17:47:24Z Verrell <verrell@Verrells-MacBook-Air.local> # Add internal stock transfers and stock movements table
+20230207_add_item_reorders_table 2023-02-07T06:10:35Z Verrell <verrell@Verrells-MacBook-Air.local> # Add item_reorders table
