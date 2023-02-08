@@ -299,6 +299,60 @@ func (q *Queries) GetItemReorder(ctx context.Context, id string) (GetItemReorder
 	return i, err
 }
 
+const getItemReorders = `-- name: GetItemReorders :many
+SELECT a.id, a.variant_id, b.name as variant_name, c.id as item_id, c.name as item_name, a.warehouse_id, a.minimum_stock
+FROM inventory.item_reorders a
+JOIN inventory.item_variants b ON a.variant_id = b.id
+JOIN inventory.items c ON b.item_id = c.id
+WHERE a.warehouse_id LIKE $1 AND b.item_id LIKE $2
+`
+
+type GetItemReordersParams struct {
+	WarehouseID string `db:"warehouse_id"`
+	ItemID      string `db:"item_id"`
+}
+
+type GetItemReordersRow struct {
+	ID           string `db:"id"`
+	VariantID    string `db:"variant_id"`
+	VariantName  string `db:"variant_name"`
+	ItemID       string `db:"item_id"`
+	ItemName     string `db:"item_name"`
+	WarehouseID  string `db:"warehouse_id"`
+	MinimumStock int64  `db:"minimum_stock"`
+}
+
+func (q *Queries) GetItemReorders(ctx context.Context, arg GetItemReordersParams) ([]GetItemReordersRow, error) {
+	rows, err := q.db.QueryContext(ctx, getItemReorders, arg.WarehouseID, arg.ItemID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetItemReordersRow
+	for rows.Next() {
+		var i GetItemReordersRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.VariantID,
+			&i.VariantName,
+			&i.ItemID,
+			&i.ItemName,
+			&i.WarehouseID,
+			&i.MinimumStock,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getItemUnits = `-- name: GetItemUnits :many
 SELECT a.id, a.item_id, a.unit_id, b.name AS unit_name,
 a.value, a.is_default

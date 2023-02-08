@@ -31,6 +31,7 @@ type InventoryService interface {
 	GetInternalStockTransfers(w http.ResponseWriter, r *http.Request) error
 
 	UpsertItemReorder(w http.ResponseWriter, r *http.Request) error
+	GetItemReorders(w http.ResponseWriter, r *http.Request) error
 }
 
 type Brand struct {
@@ -304,4 +305,13 @@ type UpsertItemReorderRequest struct {
 
 type UpsertItemReorderResponse struct {
 	ItemReorder ItemReorder `json:"item_reorder" validate:"required"`
+}
+
+type GetItemReordersRequest struct {
+	ItemId  string `json:"item_id"`
+	WarehouseId string `json:"warehouse_id"`
+}
+
+type GetItemReordersResponse struct {
+	ItemReorders []ItemReorder `json:"item_reorders" validate:"required"`
 }
