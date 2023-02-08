@@ -27,4 +27,5 @@ const (
 	GetInternalStockTransfersError   = 700018
 
 	UpsertItemReorderError = 700019
+	GetItemReordersError = 700020
 )
