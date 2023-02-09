@@ -28,4 +28,6 @@ const (
 
 	UpsertItemReorderError = 700019
 	GetItemReordersError = 700020
+
+	UpsertUnitCategoryError = 700021
 )

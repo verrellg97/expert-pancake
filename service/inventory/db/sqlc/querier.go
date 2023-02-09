@@ -41,6 +41,7 @@ type Querier interface {
 	UpsertItemReorder(ctx context.Context, arg UpsertItemReorderParams) (InventoryItemReorder, error)
 	UpsertItemUnit(ctx context.Context, arg UpsertItemUnitParams) (InventoryItemUnit, error)
 	UpsertItemVariant(ctx context.Context, arg UpsertItemVariantParams) error
+	UpsertUnitCategory(ctx context.Context, arg UpsertUnitCategoryParams) (InventoryUnitCategory, error)
 }
 
 var _ Querier = (*Queries)(nil)

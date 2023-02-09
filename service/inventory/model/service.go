@@ -32,6 +32,8 @@ type InventoryService interface {
 
 	UpsertItemReorder(w http.ResponseWriter, r *http.Request) error
 	GetItemReorders(w http.ResponseWriter, r *http.Request) error
+
+	UpsertUnitCategory(w http.ResponseWriter, r *http.Request) error
 }
 
 type Brand struct {
@@ -314,4 +316,20 @@ type GetItemReordersRequest struct {
 
 type GetItemReordersResponse struct {
 	ItemReorders []ItemReorder `json:"item_reorders" validate:"required"`
+}
+
+type UnitCategory struct {
+	Id        string `json:"id" validate:"required"`
+	CompanyId string `json:"company_id" validate:"required"`
+	Name      string `json:"name" validate:"required"`
+}
+
+type UpsertUnitCategoryRequest struct {
+	Id  string `json:"id"`
+	CompanyId string `json:"company_id" validate:"required"`
+	Name string `json:"name" validate:"required"`
+}
+
+type UpsertUnitCategoryResponse struct {
+	UnitCategory UnitCategory `json:"unit_category" validate:"required"`
 }

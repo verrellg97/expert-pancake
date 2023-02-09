@@ -232,3 +232,13 @@ FROM inventory.item_reorders a
 JOIN inventory.item_variants b ON a.variant_id = b.id
 JOIN inventory.items c ON b.item_id = c.id
 WHERE a.warehouse_id LIKE $1 AND b.item_id LIKE $2;
+
+-- name: UpsertUnitCategory :one
+INSERT INTO inventory.unit_categories(id, company_id, name)
+VALUES ($1, $2, $3)
+ON CONFLICT (id)
+DO UPDATE SET
+    company_id = EXCLUDED.company_id,
+    name = EXCLUDED.name,
+    updated_at = NOW()
+RETURNING *;
