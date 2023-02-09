@@ -1244,3 +1244,33 @@ func (q *Queries) UpsertItemVariant(ctx context.Context, arg UpsertItemVariantPa
 	)
 	return err
 }
+
+const upsertUnitCategory = `-- name: UpsertUnitCategory :one
+INSERT INTO inventory.unit_categories(id, company_id, name)
+VALUES ($1, $2, $3)
+ON CONFLICT (id)
+DO UPDATE SET
+    company_id = EXCLUDED.company_id,
+    name = EXCLUDED.name,
+    updated_at = NOW()
+RETURNING id, company_id, name, created_at, updated_at
+`
+
+type UpsertUnitCategoryParams struct {
+	ID        string `db:"id"`
+	CompanyID string `db:"company_id"`
+	Name      string `db:"name"`
+}
+
+func (q *Queries) UpsertUnitCategory(ctx context.Context, arg UpsertUnitCategoryParams) (InventoryUnitCategory, error) {
+	row := q.db.QueryRowContext(ctx, upsertUnitCategory, arg.ID, arg.CompanyID, arg.Name)
+	var i InventoryUnitCategory
+	err := row.Scan(
+		&i.ID,
+		&i.CompanyID,
+		&i.Name,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
