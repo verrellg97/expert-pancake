@@ -242,3 +242,8 @@ DO UPDATE SET
     name = EXCLUDED.name,
     updated_at = NOW()
 RETURNING *;
+
+-- name: GetUnitCategories :many
+SELECT id, company_id, name
+FROM inventory.unit_categories
+WHERE company_id = $1 AND name LIKE $2;

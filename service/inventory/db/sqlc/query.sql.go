@@ -629,6 +629,46 @@ func (q *Queries) GetUnit(ctx context.Context, id string) (GetUnitRow, error) {
 	return i, err
 }
 
+const getUnitCategories = `-- name: GetUnitCategories :many
+SELECT id, company_id, name
+FROM inventory.unit_categories
+WHERE company_id = $1 AND name LIKE $2
+`
+
+type GetUnitCategoriesParams struct {
+	CompanyID string `db:"company_id"`
+	Name      string `db:"name"`
+}
+
+type GetUnitCategoriesRow struct {
+	ID        string `db:"id"`
+	CompanyID string `db:"company_id"`
+	Name      string `db:"name"`
+}
+
+func (q *Queries) GetUnitCategories(ctx context.Context, arg GetUnitCategoriesParams) ([]GetUnitCategoriesRow, error) {
+	rows, err := q.db.QueryContext(ctx, getUnitCategories, arg.CompanyID, arg.Name)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetUnitCategoriesRow
+	for rows.Next() {
+		var i GetUnitCategoriesRow
+		if err := rows.Scan(&i.ID, &i.CompanyID, &i.Name); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getUnits = `-- name: GetUnits :many
 SELECT id, company_id, name FROM inventory.units
 WHERE company_id = $1 AND name LIKE $2

@@ -30,4 +30,5 @@ const (
 	GetItemReordersError = 700020
 
 	UpsertUnitCategoryError = 700021
+	GetUnitCategoriesError = 700022
 )
