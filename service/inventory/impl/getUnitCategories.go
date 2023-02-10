@@ -40,7 +40,9 @@ func (a inventoryService) GetUnitCategories(w http.ResponseWriter, r *http.Reque
 		unitCategories = append(unitCategories, unitCategory)
 	}
 
-	res := unitCategories
+	res := model.GetUnitCategoriesResponse{
+		UnitCategories: unitCategories,
+	}
 	httpHandler.WriteResponse(w, res)
 
 	return nil
