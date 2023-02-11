@@ -23,9 +23,10 @@ func (a inventoryService) AddUnit(w http.ResponseWriter, r *http.Request) error 
 	}
 
 	arg := db.InsertUnitParams{
-		ID:        uuid.NewV4().String(),
-		CompanyID: req.CompanyId,
-		Name:      req.Name,
+		ID:             uuid.NewV4().String(),
+		UnitCategoryID: req.UnitCategoryId,
+		CompanyID:      req.CompanyId,
+		Name:           req.Name,
 	}
 
 	result, err := a.dbTrx.InsertUnit(context.Background(), arg)
@@ -35,9 +36,10 @@ func (a inventoryService) AddUnit(w http.ResponseWriter, r *http.Request) error 
 
 	res := model.AddUnitResponse{
 		Unit: model.Unit{
-			UnitId:    result.ID,
-			CompanyId: result.CompanyID,
-			Name:      result.Name,
+			UnitId:         result.ID,
+			CompanyId:      result.CompanyID,
+			UnitCategoryId: result.UnitCategoryID,
+			Name:           result.Name,
 		},
 	}
 

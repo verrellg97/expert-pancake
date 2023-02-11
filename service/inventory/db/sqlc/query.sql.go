@@ -670,23 +670,25 @@ func (q *Queries) GetUnitCategories(ctx context.Context, arg GetUnitCategoriesPa
 }
 
 const getUnits = `-- name: GetUnits :many
-SELECT id, company_id, name FROM inventory.units
-WHERE company_id = $1 AND name LIKE $2
+SELECT id, company_id, unit_category_id, name FROM inventory.units
+WHERE company_id = $1 AND unit_category_id LIKE $2 AND name LIKE $3
 `
 
 type GetUnitsParams struct {
-	CompanyID string `db:"company_id"`
-	Name      string `db:"name"`
+	CompanyID      string `db:"company_id"`
+	UnitCategoryID string `db:"unit_category_id"`
+	Name           string `db:"name"`
 }
 
 type GetUnitsRow struct {
-	ID        string `db:"id"`
-	CompanyID string `db:"company_id"`
-	Name      string `db:"name"`
+	ID             string `db:"id"`
+	CompanyID      string `db:"company_id"`
+	UnitCategoryID string `db:"unit_category_id"`
+	Name           string `db:"name"`
 }
 
 func (q *Queries) GetUnits(ctx context.Context, arg GetUnitsParams) ([]GetUnitsRow, error) {
-	rows, err := q.db.QueryContext(ctx, getUnits, arg.CompanyID, arg.Name)
+	rows, err := q.db.QueryContext(ctx, getUnits, arg.CompanyID, arg.UnitCategoryID, arg.Name)
 	if err != nil {
 		return nil, err
 	}
@@ -694,7 +696,12 @@ func (q *Queries) GetUnits(ctx context.Context, arg GetUnitsParams) ([]GetUnitsR
 	var items []GetUnitsRow
 	for rows.Next() {
 		var i GetUnitsRow
-		if err := rows.Scan(&i.ID, &i.CompanyID, &i.Name); err != nil {
+		if err := rows.Scan(
+			&i.ID,
+			&i.CompanyID,
+			&i.UnitCategoryID,
+			&i.Name,
+		); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
@@ -981,22 +988,29 @@ func (q *Queries) InsertStockMovement(ctx context.Context, arg InsertStockMoveme
 }
 
 const insertUnit = `-- name: InsertUnit :one
-INSERT INTO inventory.units(id, company_id, name)
-VALUES ($1, $2, $3)
-RETURNING id, company_id, name, created_at, updated_at
+INSERT INTO inventory.units(id, company_id, unit_category_id, name)
+VALUES ($1, $2, $3, $4)
+RETURNING id, unit_category_id, company_id, name, created_at, updated_at
 `
 
 type InsertUnitParams struct {
-	ID        string `db:"id"`
-	CompanyID string `db:"company_id"`
-	Name      string `db:"name"`
+	ID             string `db:"id"`
+	CompanyID      string `db:"company_id"`
+	UnitCategoryID string `db:"unit_category_id"`
+	Name           string `db:"name"`
 }
 
 func (q *Queries) InsertUnit(ctx context.Context, arg InsertUnitParams) (InventoryUnit, error) {
-	row := q.db.QueryRowContext(ctx, insertUnit, arg.ID, arg.CompanyID, arg.Name)
+	row := q.db.QueryRowContext(ctx, insertUnit,
+		arg.ID,
+		arg.CompanyID,
+		arg.UnitCategoryID,
+		arg.Name,
+	)
 	var i InventoryUnit
 	err := row.Scan(
 		&i.ID,
+		&i.UnitCategoryID,
 		&i.CompanyID,
 		&i.Name,
 		&i.CreatedAt,
@@ -1147,22 +1161,25 @@ func (q *Queries) UpdateItemVariantDefault(ctx context.Context, arg UpdateItemVa
 const updateUnit = `-- name: UpdateUnit :one
 UPDATE inventory.units
 SET 
-    name = $2,
+    unit_category_id = $2,
+    name = $3,
     updated_at = NOW()
 WHERE id = $1
-RETURNING id, company_id, name, created_at, updated_at
+RETURNING id, unit_category_id, company_id, name, created_at, updated_at
 `
 
 type UpdateUnitParams struct {
-	ID   string `db:"id"`
-	Name string `db:"name"`
+	ID             string `db:"id"`
+	UnitCategoryID string `db:"unit_category_id"`
+	Name           string `db:"name"`
 }
 
 func (q *Queries) UpdateUnit(ctx context.Context, arg UpdateUnitParams) (InventoryUnit, error) {
-	row := q.db.QueryRowContext(ctx, updateUnit, arg.ID, arg.Name)
+	row := q.db.QueryRowContext(ctx, updateUnit, arg.ID, arg.UnitCategoryID, arg.Name)
 	var i InventoryUnit
 	err := row.Scan(
 		&i.ID,
+		&i.UnitCategoryID,
 		&i.CompanyID,
 		&i.Name,
 		&i.CreatedAt,

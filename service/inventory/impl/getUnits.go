@@ -22,8 +22,9 @@ func (a inventoryService) GetUnits(w http.ResponseWriter, r *http.Request) error
 	}
 
 	result, err := a.dbTrx.GetUnits(context.Background(), db.GetUnitsParams{
-		CompanyID: req.CompanyId,
-		Name:      util.WildCardString(req.Keyword),
+		CompanyID:      req.CompanyId,
+		UnitCategoryID: util.WildCardString(req.UnitCategoryId),
+		Name:           util.WildCardString(req.Keyword),
 	})
 	if err != nil {
 		return errors.NewServerError(model.GetUnitsError, err.Error())
@@ -33,9 +34,10 @@ func (a inventoryService) GetUnits(w http.ResponseWriter, r *http.Request) error
 
 	for _, d := range result {
 		var unit = model.Unit{
-			UnitId:    d.ID,
-			CompanyId: d.CompanyID,
-			Name:      d.Name,
+			UnitId:         d.ID,
+			CompanyId:      d.CompanyID,
+			UnitCategoryId: d.UnitCategoryID,
+			Name:           d.Name,
 		}
 		units = append(units, unit)
 	}

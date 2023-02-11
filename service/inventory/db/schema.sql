@@ -20,6 +20,7 @@ CREATE TABLE "inventory"."groups" (
 
 CREATE TABLE "inventory"."units" (
   "id" text NOT NULL,
+  "unit_category_id" text NOT NULL,
   "company_id" text NOT NULL,
   "name" text NOT NULL,
   "created_at" timestamptz DEFAULT (now()),

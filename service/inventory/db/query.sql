@@ -33,21 +33,22 @@ SELECT id, company_id, name FROM inventory.groups
 WHERE company_id = $1 AND name LIKE $2;
 
 -- name: InsertUnit :one
-INSERT INTO inventory.units(id, company_id, name)
-VALUES ($1, $2, $3)
+INSERT INTO inventory.units(id, company_id, unit_category_id, name)
+VALUES ($1, $2, $3, $4)
 RETURNING *;
 
 -- name: UpdateUnit :one
 UPDATE inventory.units
 SET 
-    name = $2,
+    unit_category_id = $2,
+    name = $3,
     updated_at = NOW()
 WHERE id = $1
 RETURNING *;
 
 -- name: GetUnits :many
-SELECT id, company_id, name FROM inventory.units
-WHERE company_id = $1 AND name LIKE $2;
+SELECT id, company_id, unit_category_id, name FROM inventory.units
+WHERE company_id = $1 AND unit_category_id LIKE $2 AND name LIKE $3;
 
 -- name: InsertItem :one
 INSERT INTO inventory.items(id, company_id, image_url,

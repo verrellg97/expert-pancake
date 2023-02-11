@@ -22,8 +22,9 @@ func (a inventoryService) UpdateUnit(w http.ResponseWriter, r *http.Request) err
 	}
 
 	arg := db.UpdateUnitParams{
-		ID:   req.Id,
-		Name: req.Name,
+		ID:             req.Id,
+		UnitCategoryID: req.UnitCategoryId,
+		Name:           req.Name,
 	}
 
 	result, err := a.dbTrx.UpdateUnit(context.Background(), arg)
@@ -33,9 +34,10 @@ func (a inventoryService) UpdateUnit(w http.ResponseWriter, r *http.Request) err
 
 	res := model.UpdateUnitResponse{
 		Unit: model.Unit{
-			UnitId:    result.ID,
-			CompanyId: result.CompanyID,
-			Name:      result.Name,
+			UnitId:         result.ID,
+			CompanyId:      result.CompanyID,
+			UnitCategoryId: result.UnitCategoryID,
+			Name:           result.Name,
 		},
 	}
 
