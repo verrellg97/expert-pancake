@@ -34,6 +34,7 @@ type InventoryService interface {
 	GetItemReorders(w http.ResponseWriter, r *http.Request) error
 
 	UpsertUnitCategory(w http.ResponseWriter, r *http.Request) error
+	GetUnitCategories(w http.ResponseWriter, r *http.Request) error
 }
 
 type Brand struct {
@@ -332,4 +333,13 @@ type UpsertUnitCategoryRequest struct {
 
 type UpsertUnitCategoryResponse struct {
 	UnitCategory UnitCategory `json:"unit_category" validate:"required"`
+}
+
+type GetUnitCategoriesRequest struct {
+	CompanyId string `json:"company_id" validate:"required"`
+	Keyword string `json:"keyword"`
+}
+
+type GetUnitCategoriesResponse struct {
+	UnitCategories []UnitCategory `json:"unit_categories" validate:"required"`
 }

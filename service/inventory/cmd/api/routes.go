@@ -40,6 +40,7 @@ const (
 	GetItemReordersPath = "/inventory/item-reorders"
 
 	UpsertUnitCategoryPath = "/inventory/unit-category/upsert"
+	GetUnitCategoriesPath = "/inventory/unit-categories"
 )
 
 func (c *component) Routes(inventoryService model.InventoryService) http.Handler {
@@ -87,6 +88,7 @@ func (c *component) Routes(inventoryService model.InventoryService) http.Handler
 	mux.Method("POST", GetItemReordersPath, httpHandler.New(inventoryService.GetItemReorders))
 
 	mux.Method("POST", UpsertUnitCategoryPath, httpHandler.New(inventoryService.UpsertUnitCategory))
+	mux.Method("POST", GetUnitCategoriesPath, httpHandler.New(inventoryService.GetUnitCategories))
 
 	return mux
 }
