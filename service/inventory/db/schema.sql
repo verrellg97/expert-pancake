@@ -43,6 +43,20 @@ CREATE TABLE "inventory"."items" (
   PRIMARY KEY ("id")
 );
 
+CREATE TABLE "inventory"."item_infos" (
+  "item_id" text NOT NULL,
+  "is_purchase" bool NOT NULL DEFAULT false,
+  "is_sale" bool NOT NULL DEFAULT false,
+  "is_raw_material" bool NOT NULL DEFAULT false,
+  "is_asset" bool NOT NULL DEFAULT false,
+  "purchase_chart_of_account_id" text NOT NULL,
+  "sale_chart_of_account_id" text NOT NULL,
+  "purchase_item_unit_id" text NOT NULL,
+  "created_at" timestamptz DEFAULT (now()),
+  "updated_at" timestamptz DEFAULT (now()),
+  PRIMARY KEY ("item_id")
+);
+
 CREATE TABLE "inventory"."item_variants" (
   "id" text NOT NULL,
   "item_id" text NOT NULL,

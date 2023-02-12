@@ -266,6 +266,48 @@ func (q *Queries) GetItemBarcode(ctx context.Context, arg GetItemBarcodeParams) 
 	return id, err
 }
 
+const getItemInfo = `-- name: GetItemInfo :one
+SELECT a.item_id, d.company_id, a.is_purchase, a.is_sale, a.is_raw_material, a.is_asset,
+a.purchase_chart_of_account_id, a.sale_chart_of_account_id, a.purchase_item_unit_id,
+c.name AS purchase_item_unit_name
+FROM inventory.item_infos a
+JOIN inventory.item_units b ON a.purchase_item_unit_id = b.id
+JOIN inventory.units c ON b.unit_id = c.id
+JOIN inventory.items d ON a.item_id = d.id
+WHERE a.item_id = $1
+`
+
+type GetItemInfoRow struct {
+	ItemID                   string `db:"item_id"`
+	CompanyID                string `db:"company_id"`
+	IsPurchase               bool   `db:"is_purchase"`
+	IsSale                   bool   `db:"is_sale"`
+	IsRawMaterial            bool   `db:"is_raw_material"`
+	IsAsset                  bool   `db:"is_asset"`
+	PurchaseChartOfAccountID string `db:"purchase_chart_of_account_id"`
+	SaleChartOfAccountID     string `db:"sale_chart_of_account_id"`
+	PurchaseItemUnitID       string `db:"purchase_item_unit_id"`
+	PurchaseItemUnitName     string `db:"purchase_item_unit_name"`
+}
+
+func (q *Queries) GetItemInfo(ctx context.Context, itemID string) (GetItemInfoRow, error) {
+	row := q.db.QueryRowContext(ctx, getItemInfo, itemID)
+	var i GetItemInfoRow
+	err := row.Scan(
+		&i.ItemID,
+		&i.CompanyID,
+		&i.IsPurchase,
+		&i.IsSale,
+		&i.IsRawMaterial,
+		&i.IsAsset,
+		&i.PurchaseChartOfAccountID,
+		&i.SaleChartOfAccountID,
+		&i.PurchaseItemUnitID,
+		&i.PurchaseItemUnitName,
+	)
+	return i, err
+}
+
 const getItemReorder = `-- name: GetItemReorder :one
 SELECT a.id, a.variant_id, b.name as variant_name, c.id as item_id, c.name as item_name, a.warehouse_id, a.minimum_stock
 FROM inventory.item_reorders a
@@ -1192,6 +1234,47 @@ func (q *Queries) UpdateUnit(ctx context.Context, arg UpdateUnitParams) (Invento
 		&i.UpdatedAt,
 	)
 	return i, err
+}
+
+const upsertItemInfo = `-- name: UpsertItemInfo :exec
+INSERT INTO inventory.item_infos(item_id, is_purchase, is_sale, is_raw_material, is_asset,
+purchase_chart_of_account_id, sale_chart_of_account_id, purchase_item_unit_id)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+ON CONFLICT (item_id)
+DO UPDATE SET
+    is_purchase = EXCLUDED.is_purchase,
+    is_sale = EXCLUDED.is_sale,
+    is_raw_material = EXCLUDED.is_raw_material,
+    is_asset = EXCLUDED.is_asset,
+    purchase_chart_of_account_id = EXCLUDED.purchase_chart_of_account_id,
+    sale_chart_of_account_id = EXCLUDED.sale_chart_of_account_id,
+    purchase_item_unit_id = EXCLUDED.purchase_item_unit_id,
+    updated_at = NOW()
+`
+
+type UpsertItemInfoParams struct {
+	ItemID                   string `db:"item_id"`
+	IsPurchase               bool   `db:"is_purchase"`
+	IsSale                   bool   `db:"is_sale"`
+	IsRawMaterial            bool   `db:"is_raw_material"`
+	IsAsset                  bool   `db:"is_asset"`
+	PurchaseChartOfAccountID string `db:"purchase_chart_of_account_id"`
+	SaleChartOfAccountID     string `db:"sale_chart_of_account_id"`
+	PurchaseItemUnitID       string `db:"purchase_item_unit_id"`
+}
+
+func (q *Queries) UpsertItemInfo(ctx context.Context, arg UpsertItemInfoParams) error {
+	_, err := q.db.ExecContext(ctx, upsertItemInfo,
+		arg.ItemID,
+		arg.IsPurchase,
+		arg.IsSale,
+		arg.IsRawMaterial,
+		arg.IsAsset,
+		arg.PurchaseChartOfAccountID,
+		arg.SaleChartOfAccountID,
+		arg.PurchaseItemUnitID,
+	)
+	return err
 }
 
 const upsertItemReorder = `-- name: UpsertItemReorder :one

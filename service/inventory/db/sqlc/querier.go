@@ -16,6 +16,7 @@ type Querier interface {
 	GetInternalStockTransferItems(ctx context.Context, internalStockTransferID string) ([]GetInternalStockTransferItemsRow, error)
 	GetInternalStockTransfers(ctx context.Context, arg GetInternalStockTransfersParams) ([]GetInternalStockTransfersRow, error)
 	GetItemBarcode(ctx context.Context, arg GetItemBarcodeParams) (string, error)
+	GetItemInfo(ctx context.Context, itemID string) (GetItemInfoRow, error)
 	GetItemReorder(ctx context.Context, id string) (GetItemReorderRow, error)
 	GetItemReorders(ctx context.Context, arg GetItemReordersParams) ([]GetItemReordersRow, error)
 	GetItemUnits(ctx context.Context, arg GetItemUnitsParams) ([]GetItemUnitsRow, error)
@@ -39,6 +40,7 @@ type Querier interface {
 	UpdateItem(ctx context.Context, arg UpdateItemParams) (InventoryItem, error)
 	UpdateItemVariantDefault(ctx context.Context, arg UpdateItemVariantDefaultParams) (InventoryItemVariant, error)
 	UpdateUnit(ctx context.Context, arg UpdateUnitParams) (InventoryUnit, error)
+	UpsertItemInfo(ctx context.Context, arg UpsertItemInfoParams) error
 	UpsertItemReorder(ctx context.Context, arg UpsertItemReorderParams) (InventoryItemReorder, error)
 	UpsertItemUnit(ctx context.Context, arg UpsertItemUnitParams) (InventoryItemUnit, error)
 	UpsertItemVariant(ctx context.Context, arg UpsertItemVariantParams) error

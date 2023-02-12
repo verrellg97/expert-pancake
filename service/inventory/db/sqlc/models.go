@@ -75,6 +75,19 @@ type InventoryItemBarcode struct {
 	UpdatedAt   sql.NullTime   `db:"updated_at"`
 }
 
+type InventoryItemInfo struct {
+	ItemID                   string       `db:"item_id"`
+	IsPurchase               bool         `db:"is_purchase"`
+	IsSale                   bool         `db:"is_sale"`
+	IsRawMaterial            bool         `db:"is_raw_material"`
+	IsAsset                  bool         `db:"is_asset"`
+	PurchaseChartOfAccountID string       `db:"purchase_chart_of_account_id"`
+	SaleChartOfAccountID     string       `db:"sale_chart_of_account_id"`
+	PurchaseItemUnitID       string       `db:"purchase_item_unit_id"`
+	CreatedAt                sql.NullTime `db:"created_at"`
+	UpdatedAt                sql.NullTime `db:"updated_at"`
+}
+
 type InventoryItemReorder struct {
 	ID           string       `db:"id"`
 	WarehouseID  string       `db:"warehouse_id"`

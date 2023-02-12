@@ -27,6 +27,8 @@ const (
 	UpdateItemPath = "/inventory/item/update"
 	GetItemsPath   = "/inventory/items"
 
+	UpsertItemInfoPath = "/inventory/item/info/upsert"
+
 	UpsertItemVariantPath = "/inventory/item/variant/upsert"
 	GetItemVariantsPath   = "/inventory/item/variants"
 
@@ -37,10 +39,10 @@ const (
 	GetInternalStockTransfersPath = "/inventory/internal-stock-transfers"
 
 	UpsertItemReorderPath = "/inventory/item-reorder/upsert"
-	GetItemReordersPath = "/inventory/item-reorders"
+	GetItemReordersPath   = "/inventory/item-reorders"
 
 	UpsertUnitCategoryPath = "/inventory/unit-category/upsert"
-	GetUnitCategoriesPath = "/inventory/unit-categories"
+	GetUnitCategoriesPath  = "/inventory/unit-categories"
 )
 
 func (c *component) Routes(inventoryService model.InventoryService) http.Handler {
@@ -74,6 +76,8 @@ func (c *component) Routes(inventoryService model.InventoryService) http.Handler
 	mux.Method("POST", AddItemPath, httpHandler.New(inventoryService.AddItem))
 	mux.Method("POST", UpdateItemPath, httpHandler.New(inventoryService.UpdateItem))
 	mux.Method("POST", GetItemsPath, httpHandler.New(inventoryService.GetItems))
+
+	mux.Method("POST", UpsertItemInfoPath, httpHandler.New(inventoryService.UpsertItemInfo))
 
 	mux.Method("POST", UpsertItemVariantPath, httpHandler.New(inventoryService.UpsertItemVariant))
 	mux.Method("POST", GetItemVariantsPath, httpHandler.New(inventoryService.GetItemVariants))
