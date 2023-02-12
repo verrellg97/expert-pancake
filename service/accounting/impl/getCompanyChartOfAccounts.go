@@ -46,6 +46,11 @@ func (a accountingService) GetCompanyChartOfAccounts(w http.ResponseWriter, r *h
 		}
 	}
 
+	var isFilterId = false
+	if req.Id != "" {
+		isFilterId = true
+	}
+
 	result, err := a.dbTrx.GetCompanyChartOfAccounts(context.Background(), db.GetCompanyChartOfAccountsParams{
 		CompanyID:           req.CompanyId,
 		AccountName:         util.WildCardString(req.Keyword),
@@ -53,6 +58,8 @@ func (a accountingService) GetCompanyChartOfAccounts(w http.ResponseWriter, r *h
 		IsDeleted:           *req.IsDeletedFilter,
 		IsFilterJournalType: isFilterJournalType,
 		AccountTypes:        accountTypes,
+		IsFilterID:          isFilterId,
+		ID:                  req.Id,
 	})
 	if err != nil {
 		return errors.NewServerError(model.GetCompanyChartOfAccountsError, err.Error())

@@ -75,7 +75,8 @@ AND a.account_name LIKE $2
 AND CASE WHEN @is_filter_journal_type::bool
 THEN b.account_type = ANY(@account_types::text[]) ELSE TRUE END
 AND CASE WHEN @is_deleted_filter::bool
-THEN a.is_deleted = $3 ELSE TRUE END;
+THEN a.is_deleted = $3 ELSE TRUE END
+AND CASE WHEN @is_filter_id::bool THEN a.id = $4 ELSE TRUE END;
 
 -- name: GetCompanyChartOfAccount :one
 SELECT *

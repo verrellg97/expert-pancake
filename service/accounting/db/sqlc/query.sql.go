@@ -396,19 +396,22 @@ FROM accounting.company_chart_of_accounts a
 JOIN accounting.chart_of_account_groups b ON a.chart_of_account_group_id = b.id
 WHERE a.company_id = $1
 AND a.account_name LIKE $2
-AND CASE WHEN $4::bool
-THEN b.account_type = ANY($5::text[]) ELSE TRUE END
-AND CASE WHEN $6::bool
+AND CASE WHEN $5::bool
+THEN b.account_type = ANY($6::text[]) ELSE TRUE END
+AND CASE WHEN $7::bool
 THEN a.is_deleted = $3 ELSE TRUE END
+AND CASE WHEN $8::bool THEN a.id = $4 ELSE TRUE END
 `
 
 type GetCompanyChartOfAccountsParams struct {
 	CompanyID           string   `db:"company_id"`
 	AccountName         string   `db:"account_name"`
 	IsDeleted           bool     `db:"is_deleted"`
+	ID                  string   `db:"id"`
 	IsFilterJournalType bool     `db:"is_filter_journal_type"`
 	AccountTypes        []string `db:"account_types"`
 	IsDeletedFilter     bool     `db:"is_deleted_filter"`
+	IsFilterID          bool     `db:"is_filter_id"`
 }
 
 type GetCompanyChartOfAccountsRow struct {
@@ -433,9 +436,11 @@ func (q *Queries) GetCompanyChartOfAccounts(ctx context.Context, arg GetCompanyC
 		arg.CompanyID,
 		arg.AccountName,
 		arg.IsDeleted,
+		arg.ID,
 		arg.IsFilterJournalType,
 		pq.Array(arg.AccountTypes),
 		arg.IsDeletedFilter,
+		arg.IsFilterID,
 	)
 	if err != nil {
 		return nil, err
