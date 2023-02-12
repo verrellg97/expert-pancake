@@ -58,7 +58,7 @@ RETURNING *;
 
 -- name: InsertItemVariant :one
 INSERT INTO inventory.item_variants(id, item_id, image_url,
-name, price, stock, is_default)
+barcode, name, price, is_default)
 VALUES ($1, $2, $3, $4, $5, $6, $7)
 RETURNING *;
 
@@ -87,16 +87,17 @@ RETURNING *;
 UPDATE inventory.item_variants
 SET 
     image_url = $2,
-    name = $3,
+    barcode = $3,
+    price = $4,
     updated_at = NOW()
 WHERE item_id = $1
 AND is_default = true
 RETURNING *;
 
 -- name: GetItems :many
-SELECT a.id, b.id AS variant_id, a.company_id, b.image_url, a.code, a.name, b.name AS variant_name,
+SELECT a.id, b.id AS variant_id, a.company_id, b.image_url, a.code, b.barcode, a.name, b.name AS variant_name,
 a.brand_id, c.name AS brand_name, a.group_id, d.name AS group_name,
-a.tag, a.description, b.is_default, b.price, b.stock
+a.tag, a.description, b.is_default, b.price
 FROM inventory.items a
 JOIN inventory.item_variants b ON a.id = b.item_id
 JOIN inventory.brands c ON a.brand_id = c.id
@@ -104,21 +105,21 @@ JOIN inventory.groups d ON a.group_id = d.id
 WHERE a.company_id = $1 AND b.name LIKE $2;
 
 -- name: UpsertItemVariant :exec
-INSERT INTO inventory.item_variants(id, item_id, image_url, name, price, stock)
+INSERT INTO inventory.item_variants(id, item_id, image_url, barcode, name, price)
 VALUES ($1, $2, $3, $4, $5, $6)
 ON CONFLICT (id)
 DO UPDATE SET
     item_id = EXCLUDED.item_id,
     image_url = EXCLUDED.image_url,
+    barcode = EXCLUDED.barcode,
     name = EXCLUDED.name,
     price = EXCLUDED.price,
-    stock = EXCLUDED.stock,
     updated_at = NOW();
 
 -- name: GetItemVariant :one
-SELECT b.id, a.id AS variant_id, b.company_id, a.image_url, b.code, b.name, a.name AS variant_name,
+SELECT b.id, a.id AS variant_id, b.company_id, a.image_url, b.code, a.barcode, b.name, a.name AS variant_name,
 b.brand_id, c.name AS brand_name, b.group_id, d.name AS group_name,
-b.tag, b.description, a.is_default, a.price, a.stock
+b.tag, b.description, a.is_default, a.price
 FROM inventory.item_variants a
 JOIN inventory.items b ON a.item_id = b.id
 JOIN inventory.brands c ON b.brand_id = c.id
@@ -126,15 +127,14 @@ JOIN inventory.groups d ON b.group_id = d.id
 WHERE a.id = $1;
 
 -- name: GetItemVariants :many
-SELECT b.id, a.id AS variant_id, b.company_id, a.image_url, b.code, b.name, a.name AS variant_name,
+SELECT b.id, a.id AS variant_id, b.company_id, a.image_url, b.code, a.barcode, b.name, a.name AS variant_name,
 b.brand_id, c.name AS brand_name, b.group_id, d.name AS group_name,
-b.tag, b.description, a.is_default, a.price, a.stock
+b.tag, b.description, a.is_default, a.price
 FROM inventory.item_variants a
 JOIN inventory.items b ON a.item_id = b.id
 JOIN inventory.brands c ON b.brand_id = c.id
 JOIN inventory.groups d ON b.group_id = d.id
-WHERE a.item_id = $1 AND a.name LIKE $2
-AND a.is_default = false;
+WHERE a.item_id = $1 AND a.name LIKE $2;
 
 -- name: UpsertItemUnit :one
 INSERT INTO inventory.item_units(id, item_id, unit_id, value, is_default)

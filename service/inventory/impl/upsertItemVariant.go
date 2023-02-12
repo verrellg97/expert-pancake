@@ -31,14 +31,13 @@ func (a inventoryService) UpsertItemVariant(w http.ResponseWriter, r *http.Reque
 	}
 
 	price, _ := strconv.ParseInt(req.Price, 10, 64)
-	stock, _ := strconv.ParseInt(req.Stock, 10, 64)
 	arg := db.UpsertItemVariantParams{
 		ID:       id,
 		ItemID:   req.ItemId,
 		ImageUrl: req.ImageUrl,
+		Barcode:  req.Barcode,
 		Name:     req.Name,
 		Price:    price,
-		Stock:    stock,
 	}
 
 	err := a.dbTrx.UpsertItemVariant(context.Background(), arg)
@@ -58,6 +57,7 @@ func (a inventoryService) UpsertItemVariant(w http.ResponseWriter, r *http.Reque
 			VariantId:   result.VariantID,
 			ImageUrl:    result.ImageUrl,
 			Code:        result.Code,
+			Barcode:     result.Barcode,
 			Name:        result.Name,
 			VariantName: result.VariantName,
 			BrandId:     result.BrandID,
@@ -68,7 +68,6 @@ func (a inventoryService) UpsertItemVariant(w http.ResponseWriter, r *http.Reque
 			Description: result.Description,
 			IsDefault:   result.IsDefault,
 			Price:       strconv.FormatInt(result.Price, 10),
-			Stock:       strconv.FormatInt(result.Stock, 10),
 		},
 	}
 

@@ -39,6 +39,7 @@ func (a inventoryService) GetItemVariants(w http.ResponseWriter, r *http.Request
 			VariantId:   d.VariantID,
 			ImageUrl:    d.ImageUrl,
 			Code:        d.Code,
+			Barcode:     d.Barcode,
 			Name:        d.Name,
 			VariantName: d.VariantName,
 			BrandId:     d.BrandID,
@@ -49,7 +50,6 @@ func (a inventoryService) GetItemVariants(w http.ResponseWriter, r *http.Request
 			Description: d.Description,
 			IsDefault:   d.IsDefault,
 			Price:       strconv.FormatInt(d.Price, 10),
-			Stock:       strconv.FormatInt(d.Stock, 10),
 		}
 		items = append(items, item)
 	}

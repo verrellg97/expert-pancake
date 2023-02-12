@@ -25,10 +25,12 @@ func (a inventoryService) UpdateItem(w http.ResponseWriter, r *http.Request) err
 	arg := db.UpdateItemTrxParams{
 		ItemId:      req.ItemId,
 		ImageUrl:    req.ImageUrl,
+		Barcode:     req.Barcode,
 		Name:        req.Name,
 		BrandId:     req.BrandId,
 		GroupId:     req.GroupId,
 		Tag:         req.Tag,
+		Price:       req.Price,
 		Description: req.Description,
 	}
 
@@ -44,6 +46,7 @@ func (a inventoryService) UpdateItem(w http.ResponseWriter, r *http.Request) err
 			VariantId:   result.VariantId,
 			ImageUrl:    result.ImageUrl,
 			Code:        result.Code,
+			Barcode:     result.Barcode,
 			Name:        result.Name,
 			VariantName: result.VariantName,
 			BrandId:     result.BrandId,
@@ -54,7 +57,6 @@ func (a inventoryService) UpdateItem(w http.ResponseWriter, r *http.Request) err
 			Description: result.Description,
 			IsDefault:   result.IsDefault,
 			Price:       strconv.FormatInt(result.Price, 10),
-			Stock:       strconv.FormatInt(result.Stock, 10),
 		},
 	}
 
