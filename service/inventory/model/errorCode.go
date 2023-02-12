@@ -33,4 +33,5 @@ const (
 	GetUnitCategoriesError  = 700022
 
 	UpsertItemInfoError = 700023
+	GetItemInfoError    = 700024
 )

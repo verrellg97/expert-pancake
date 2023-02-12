@@ -22,6 +22,7 @@ type InventoryService interface {
 	GetItems(w http.ResponseWriter, r *http.Request) error
 
 	UpsertItemInfo(w http.ResponseWriter, r *http.Request) error
+	GetItemInfo(w http.ResponseWriter, r *http.Request) error
 
 	UpsertItemVariant(w http.ResponseWriter, r *http.Request) error
 	GetItemVariants(w http.ResponseWriter, r *http.Request) error
@@ -216,6 +217,14 @@ type UpsertItemInfoRequest struct {
 }
 
 type UpsertItemInfoResponse struct {
+	ItemInfo
+}
+
+type GetItemInfoRequest struct {
+	ItemId string `json:"item_id" validate:"required"`
+}
+
+type GetItemInfoResponse struct {
 	ItemInfo
 }
 
