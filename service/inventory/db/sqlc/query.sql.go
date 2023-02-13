@@ -9,6 +9,8 @@ import (
 	"context"
 	"database/sql"
 	"time"
+
+	"github.com/lib/pq"
 )
 
 const getBrandById = `-- name: GetBrandById :one
@@ -191,11 +193,14 @@ form_number, transaction_date
 FROM inventory.internal_stock_transfers
 WHERE is_deleted = false
 AND transaction_date BETWEEN $1::date AND $2::date
+AND (source_warehouse_id = ANY($3::text[])
+OR destination_warehouse_id = ANY($3::text[]))
 `
 
 type GetInternalStockTransfersParams struct {
-	StartDate time.Time `db:"start_date"`
-	EndDate   time.Time `db:"end_date"`
+	StartDate    time.Time `db:"start_date"`
+	EndDate      time.Time `db:"end_date"`
+	WarehouseIds []string  `db:"warehouse_ids"`
 }
 
 type GetInternalStockTransfersRow struct {
@@ -207,7 +212,7 @@ type GetInternalStockTransfersRow struct {
 }
 
 func (q *Queries) GetInternalStockTransfers(ctx context.Context, arg GetInternalStockTransfersParams) ([]GetInternalStockTransfersRow, error) {
-	rows, err := q.db.QueryContext(ctx, getInternalStockTransfers, arg.StartDate, arg.EndDate)
+	rows, err := q.db.QueryContext(ctx, getInternalStockTransfers, arg.StartDate, arg.EndDate, pq.Array(arg.WarehouseIds))
 	if err != nil {
 		return nil, err
 	}

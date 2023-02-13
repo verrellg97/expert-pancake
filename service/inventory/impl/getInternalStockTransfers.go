@@ -22,9 +22,23 @@ func (a inventoryService) GetInternalStockTransfers(w http.ResponseWriter, r *ht
 		return errors.NewClientError().WithDataMap(errMapRequest)
 	}
 
+	argWarehouseIds := client.GetWarehousesRequest{
+		BranchId: req.BranchId,
+	}
+	warehouseIds, err := client.GetWarehouses(argWarehouseIds)
+	if err != nil {
+		return errors.NewServerError(model.GetInternalStockTransfersError, err.Error())
+	}
+
+	var warehouseIdsParams = make([]string, 0)
+	for _, d := range warehouseIds.Result.Warehouses {
+		warehouseIdsParams = append(warehouseIdsParams, d.WarehouseId)
+	}
+
 	result, err := a.dbTrx.GetInternalStockTransfers(context.Background(), db.GetInternalStockTransfersParams{
-		StartDate: util.StringToDate(req.StartDate),
-		EndDate:   util.StringToDate(req.EndDate),
+		StartDate:    util.StringToDate(req.StartDate),
+		EndDate:      util.StringToDate(req.EndDate),
+		WarehouseIds: warehouseIdsParams,
 	})
 	if err != nil {
 		return errors.NewServerError(model.GetInternalStockTransfersError, err.Error())

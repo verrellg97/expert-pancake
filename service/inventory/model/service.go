@@ -329,6 +329,7 @@ type AddInternalStockTransferResponse struct {
 }
 
 type GetInternalStockTransfersRequest struct {
+	BranchId  string `json:"branch_id" validate:"required"`
 	StartDate string `json:"start_date"`
 	EndDate   string `json:"end_date"`
 }
@@ -343,8 +344,8 @@ type ItemReorder struct {
 	ItemName      string `json:"item_name" validate:"required"`
 	VariantId     string `json:"variant_id" validate:"required"`
 	VariantName   string `json:"variant_name" validate:"required"`
-	ItemUnitId     string `json:"item_unit_id" validate:"required"`
-	ItemUnitName   string `json:"item_unit_name" validate:"required"`
+	ItemUnitId    string `json:"item_unit_id" validate:"required"`
+	ItemUnitName  string `json:"item_unit_name" validate:"required"`
 	WarehouseId   string `json:"warehouse_id" validate:"required"`
 	WarehouseName string `json:"warehouse_name" validate:"required"`
 	MinimumStock  string `json:"minimum_stock" validate:"required"`
@@ -352,7 +353,7 @@ type ItemReorder struct {
 type UpsertItemReorderRequest struct {
 	Id           string `json:"id"`
 	VariantId    string `json:"variant_id" validate:"required"`
-	ItemUnitId    string `json:"item_unit_id" validate:"required"`
+	ItemUnitId   string `json:"item_unit_id" validate:"required"`
 	WarehouseId  string `json:"warehouse_id" validate:"required"`
 	MinimumStock string `json:"minimum_stock" validate:"required"`
 }

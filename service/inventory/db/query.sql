@@ -196,7 +196,9 @@ SELECT id, source_warehouse_id, destination_warehouse_id,
 form_number, transaction_date
 FROM inventory.internal_stock_transfers
 WHERE is_deleted = false
-AND transaction_date BETWEEN @start_date::date AND @end_date::date;
+AND transaction_date BETWEEN @start_date::date AND @end_date::date
+AND (source_warehouse_id = ANY(@warehouse_ids::text[])
+OR destination_warehouse_id = ANY(@warehouse_ids::text[]));
 
 -- name: InsertInternalStockTransferItem :exec
 INSERT INTO inventory.internal_stock_transfer_items(id,
