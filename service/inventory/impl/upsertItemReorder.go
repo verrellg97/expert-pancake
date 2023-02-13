@@ -35,6 +35,7 @@ func (a inventoryService) UpsertItemReorder(w http.ResponseWriter, r *http.Reque
 	arg := db.UpsertItemReorderParams{
 		ID:           id,
 		VariantID:    req.VariantId,
+		ItemUnitID:   req.ItemUnitId,
 		WarehouseID:  req.WarehouseId,
 		MinimumStock: minimumStock,
 	}
@@ -63,6 +64,8 @@ func (a inventoryService) UpsertItemReorder(w http.ResponseWriter, r *http.Reque
 			Id:            itemReorder.ID,
 			VariantId:     itemReorder.VariantID,
 			VariantName:   itemReorder.VariantName,
+			ItemUnitId:    itemReorder.ItemUnitID,
+			ItemUnitName:  itemReorder.ItemUnitName,
 			ItemId:        itemReorder.ItemID,
 			ItemName:      itemReorder.ItemName,
 			WarehouseId:   warehouse.Result.Warehouses[0].WarehouseId,

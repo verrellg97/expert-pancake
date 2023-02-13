@@ -235,28 +235,45 @@ variant_id, item_barcode_id, amount)
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10);
 
 -- name: UpsertItemReorder :one
-INSERT INTO inventory.item_reorders(id, variant_id, warehouse_id, minimum_stock)
-VALUES ($1, $2, $3, $4)
+INSERT INTO inventory.item_reorders(id, variant_id, item_unit_id, warehouse_id, minimum_stock)
+VALUES ($1, $2, $3, $4, $5)
 ON CONFLICT (id)
 DO UPDATE SET
     variant_id = EXCLUDED.variant_id,
+    item_unit_id = EXCLUDED.item_unit_id,
     warehouse_id = EXCLUDED.warehouse_id,
     minimum_stock = EXCLUDED.minimum_stock,
     updated_at = NOW()
 RETURNING *;
 
 -- name: GetItemReorder :one
-SELECT a.id, a.variant_id, b.name as variant_name, c.id as item_id, c.name as item_name, a.warehouse_id, a.minimum_stock
+SELECT
+    a.id, 
+    a.variant_id,
+    b.name as variant_name, 
+    c.id as item_id, c.name as item_name,
+    d.id as item_unit_id, d.name as item_unit_name, 
+    a.warehouse_id, 
+    a.minimum_stock
 FROM inventory.item_reorders a
 JOIN inventory.item_variants b ON a.variant_id = b.id
 JOIN inventory.items c ON b.item_id = c.id
+JOIN inventory.units d ON a.item_unit_id = d.id
 WHERE a.id = $1;
 
 -- name: GetItemReorders :many
-SELECT a.id, a.variant_id, b.name as variant_name, c.id as item_id, c.name as item_name, a.warehouse_id, a.minimum_stock
+SELECT 
+    a.id, 
+    a.variant_id, 
+    b.name as variant_name,
+    d.id as item_unit_id, d.name as item_unit_name,
+    c.id as item_id, c.name as item_name, 
+    a.warehouse_id, 
+    a.minimum_stock
 FROM inventory.item_reorders a
 JOIN inventory.item_variants b ON a.variant_id = b.id
 JOIN inventory.items c ON b.item_id = c.id
+JOIN inventory.units d ON a.item_unit_id = d.id
 WHERE a.warehouse_id LIKE $1 AND b.item_id LIKE $2;
 
 -- name: UpsertUnitCategory :one
