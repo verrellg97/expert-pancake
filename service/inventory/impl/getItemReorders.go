@@ -47,6 +47,8 @@ func (a inventoryService) GetItemReorders(w http.ResponseWriter, r *http.Request
 			Id:            d.ID,
 			VariantId:     d.VariantID,
 			VariantName:   d.VariantName,
+			ItemUnitId:    d.ItemUnitID,
+			ItemUnitName:  d.ItemUnitName,
 			ItemId:        d.ItemID,
 			ItemName:      d.ItemName,
 			WarehouseId:   warehouse.Result.Warehouses[0].WarehouseId,
