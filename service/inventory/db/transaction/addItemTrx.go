@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"math/rand"
+	"strconv"
 
 	db "github.com/expert-pancake/service/inventory/db/sqlc"
 	uuid "github.com/satori/go.uuid"
@@ -13,9 +14,11 @@ type AddItemTrxParams struct {
 	CompanyId   string
 	ImageUrl    string
 	Name        string
+	Barcode     string
 	BrandId     string
 	GroupId     string
 	Tag         string
+	Price       string
 	Description string
 }
 
@@ -25,6 +28,7 @@ type AddItemTrxResult struct {
 	VariantId   string
 	ImageUrl    string
 	Code        string
+	Barcode     string
 	Name        string
 	VariantName string
 	BrandId     string
@@ -35,7 +39,6 @@ type AddItemTrxResult struct {
 	Description string
 	IsDefault   bool
 	Price       int64
-	Stock       int64
 }
 
 func (trx *Trx) AddItemTrx(ctx context.Context, arg AddItemTrxParams) (AddItemTrxResult, error) {
@@ -71,10 +74,13 @@ func (trx *Trx) AddItemTrx(ctx context.Context, arg AddItemTrxParams) (AddItemTr
 			return err
 		}
 
+		price, _ := strconv.ParseInt(arg.Price, 10, 64)
 		itemVariantRes, err := q.InsertItemVariant(ctx, db.InsertItemVariantParams{
 			ID:        uuid.NewV4().String(),
 			ItemID:    id,
 			ImageUrl:  arg.ImageUrl,
+			Barcode:   arg.Barcode,
+			Price:     price,
 			IsDefault: true,
 		})
 		if err != nil {
@@ -86,6 +92,7 @@ func (trx *Trx) AddItemTrx(ctx context.Context, arg AddItemTrxParams) (AddItemTr
 		result.VariantId = itemVariantRes.ID
 		result.ImageUrl = arg.ImageUrl
 		result.Code = itemRes.Code
+		result.Barcode = itemVariantRes.Barcode
 		result.Name = arg.Name
 		result.VariantName = itemVariantRes.Name
 		result.BrandId = arg.BrandId
@@ -96,7 +103,6 @@ func (trx *Trx) AddItemTrx(ctx context.Context, arg AddItemTrxParams) (AddItemTr
 		result.Description = arg.Description
 		result.IsDefault = itemVariantRes.IsDefault
 		result.Price = itemVariantRes.Price
-		result.Stock = itemVariantRes.Stock
 
 		return err
 	})

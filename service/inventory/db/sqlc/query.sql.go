@@ -406,9 +406,9 @@ func (q *Queries) GetItemUnits(ctx context.Context, arg GetItemUnitsParams) ([]G
 }
 
 const getItemVariant = `-- name: GetItemVariant :one
-SELECT b.id, a.id AS variant_id, b.company_id, a.image_url, b.code, b.name, a.name AS variant_name,
+SELECT b.id, a.id AS variant_id, b.company_id, a.image_url, b.code, a.barcode, b.name, a.name AS variant_name,
 b.brand_id, c.name AS brand_name, b.group_id, d.name AS group_name,
-b.tag, b.description, a.is_default, a.price, a.stock
+b.tag, b.description, a.is_default, a.price
 FROM inventory.item_variants a
 JOIN inventory.items b ON a.item_id = b.id
 JOIN inventory.brands c ON b.brand_id = c.id
@@ -422,6 +422,7 @@ type GetItemVariantRow struct {
 	CompanyID   string `db:"company_id"`
 	ImageUrl    string `db:"image_url"`
 	Code        string `db:"code"`
+	Barcode     string `db:"barcode"`
 	Name        string `db:"name"`
 	VariantName string `db:"variant_name"`
 	BrandID     string `db:"brand_id"`
@@ -432,7 +433,6 @@ type GetItemVariantRow struct {
 	Description string `db:"description"`
 	IsDefault   bool   `db:"is_default"`
 	Price       int64  `db:"price"`
-	Stock       int64  `db:"stock"`
 }
 
 func (q *Queries) GetItemVariant(ctx context.Context, id string) (GetItemVariantRow, error) {
@@ -444,6 +444,7 @@ func (q *Queries) GetItemVariant(ctx context.Context, id string) (GetItemVariant
 		&i.CompanyID,
 		&i.ImageUrl,
 		&i.Code,
+		&i.Barcode,
 		&i.Name,
 		&i.VariantName,
 		&i.BrandID,
@@ -454,21 +455,19 @@ func (q *Queries) GetItemVariant(ctx context.Context, id string) (GetItemVariant
 		&i.Description,
 		&i.IsDefault,
 		&i.Price,
-		&i.Stock,
 	)
 	return i, err
 }
 
 const getItemVariants = `-- name: GetItemVariants :many
-SELECT b.id, a.id AS variant_id, b.company_id, a.image_url, b.code, b.name, a.name AS variant_name,
+SELECT b.id, a.id AS variant_id, b.company_id, a.image_url, b.code, a.barcode, b.name, a.name AS variant_name,
 b.brand_id, c.name AS brand_name, b.group_id, d.name AS group_name,
-b.tag, b.description, a.is_default, a.price, a.stock
+b.tag, b.description, a.is_default, a.price
 FROM inventory.item_variants a
 JOIN inventory.items b ON a.item_id = b.id
 JOIN inventory.brands c ON b.brand_id = c.id
 JOIN inventory.groups d ON b.group_id = d.id
 WHERE a.item_id = $1 AND a.name LIKE $2
-AND a.is_default = false
 `
 
 type GetItemVariantsParams struct {
@@ -482,6 +481,7 @@ type GetItemVariantsRow struct {
 	CompanyID   string `db:"company_id"`
 	ImageUrl    string `db:"image_url"`
 	Code        string `db:"code"`
+	Barcode     string `db:"barcode"`
 	Name        string `db:"name"`
 	VariantName string `db:"variant_name"`
 	BrandID     string `db:"brand_id"`
@@ -492,7 +492,6 @@ type GetItemVariantsRow struct {
 	Description string `db:"description"`
 	IsDefault   bool   `db:"is_default"`
 	Price       int64  `db:"price"`
-	Stock       int64  `db:"stock"`
 }
 
 func (q *Queries) GetItemVariants(ctx context.Context, arg GetItemVariantsParams) ([]GetItemVariantsRow, error) {
@@ -510,6 +509,7 @@ func (q *Queries) GetItemVariants(ctx context.Context, arg GetItemVariantsParams
 			&i.CompanyID,
 			&i.ImageUrl,
 			&i.Code,
+			&i.Barcode,
 			&i.Name,
 			&i.VariantName,
 			&i.BrandID,
@@ -520,7 +520,6 @@ func (q *Queries) GetItemVariants(ctx context.Context, arg GetItemVariantsParams
 			&i.Description,
 			&i.IsDefault,
 			&i.Price,
-			&i.Stock,
 		); err != nil {
 			return nil, err
 		}
@@ -536,9 +535,9 @@ func (q *Queries) GetItemVariants(ctx context.Context, arg GetItemVariantsParams
 }
 
 const getItems = `-- name: GetItems :many
-SELECT a.id, b.id AS variant_id, a.company_id, b.image_url, a.code, a.name, b.name AS variant_name,
+SELECT a.id, b.id AS variant_id, a.company_id, b.image_url, a.code, b.barcode, a.name, b.name AS variant_name,
 a.brand_id, c.name AS brand_name, a.group_id, d.name AS group_name,
-a.tag, a.description, b.is_default, b.price, b.stock
+a.tag, a.description, b.is_default, b.price
 FROM inventory.items a
 JOIN inventory.item_variants b ON a.id = b.item_id
 JOIN inventory.brands c ON a.brand_id = c.id
@@ -557,6 +556,7 @@ type GetItemsRow struct {
 	CompanyID   string `db:"company_id"`
 	ImageUrl    string `db:"image_url"`
 	Code        string `db:"code"`
+	Barcode     string `db:"barcode"`
 	Name        string `db:"name"`
 	VariantName string `db:"variant_name"`
 	BrandID     string `db:"brand_id"`
@@ -567,7 +567,6 @@ type GetItemsRow struct {
 	Description string `db:"description"`
 	IsDefault   bool   `db:"is_default"`
 	Price       int64  `db:"price"`
-	Stock       int64  `db:"stock"`
 }
 
 func (q *Queries) GetItems(ctx context.Context, arg GetItemsParams) ([]GetItemsRow, error) {
@@ -585,6 +584,7 @@ func (q *Queries) GetItems(ctx context.Context, arg GetItemsParams) ([]GetItemsR
 			&i.CompanyID,
 			&i.ImageUrl,
 			&i.Code,
+			&i.Barcode,
 			&i.Name,
 			&i.VariantName,
 			&i.BrandID,
@@ -595,7 +595,6 @@ func (q *Queries) GetItems(ctx context.Context, arg GetItemsParams) ([]GetItemsR
 			&i.Description,
 			&i.IsDefault,
 			&i.Price,
-			&i.Stock,
 		); err != nil {
 			return nil, err
 		}
@@ -911,18 +910,18 @@ func (q *Queries) InsertItemBarcode(ctx context.Context, arg InsertItemBarcodePa
 
 const insertItemVariant = `-- name: InsertItemVariant :one
 INSERT INTO inventory.item_variants(id, item_id, image_url,
-name, price, stock, is_default)
+barcode, name, price, is_default)
 VALUES ($1, $2, $3, $4, $5, $6, $7)
-RETURNING id, item_id, image_url, name, price, stock, is_default, created_at, updated_at
+RETURNING id, item_id, image_url, barcode, name, price, is_default, created_at, updated_at
 `
 
 type InsertItemVariantParams struct {
 	ID        string `db:"id"`
 	ItemID    string `db:"item_id"`
 	ImageUrl  string `db:"image_url"`
+	Barcode   string `db:"barcode"`
 	Name      string `db:"name"`
 	Price     int64  `db:"price"`
-	Stock     int64  `db:"stock"`
 	IsDefault bool   `db:"is_default"`
 }
 
@@ -931,9 +930,9 @@ func (q *Queries) InsertItemVariant(ctx context.Context, arg InsertItemVariantPa
 		arg.ID,
 		arg.ItemID,
 		arg.ImageUrl,
+		arg.Barcode,
 		arg.Name,
 		arg.Price,
-		arg.Stock,
 		arg.IsDefault,
 	)
 	var i InventoryItemVariant
@@ -941,9 +940,9 @@ func (q *Queries) InsertItemVariant(ctx context.Context, arg InsertItemVariantPa
 		&i.ID,
 		&i.ItemID,
 		&i.ImageUrl,
+		&i.Barcode,
 		&i.Name,
 		&i.Price,
-		&i.Stock,
 		&i.IsDefault,
 		&i.CreatedAt,
 		&i.UpdatedAt,
@@ -1128,29 +1127,36 @@ const updateItemVariantDefault = `-- name: UpdateItemVariantDefault :one
 UPDATE inventory.item_variants
 SET 
     image_url = $2,
-    name = $3,
+    barcode = $3,
+    price = $4,
     updated_at = NOW()
 WHERE item_id = $1
 AND is_default = true
-RETURNING id, item_id, image_url, name, price, stock, is_default, created_at, updated_at
+RETURNING id, item_id, image_url, barcode, name, price, is_default, created_at, updated_at
 `
 
 type UpdateItemVariantDefaultParams struct {
 	ItemID   string `db:"item_id"`
 	ImageUrl string `db:"image_url"`
-	Name     string `db:"name"`
+	Barcode  string `db:"barcode"`
+	Price    int64  `db:"price"`
 }
 
 func (q *Queries) UpdateItemVariantDefault(ctx context.Context, arg UpdateItemVariantDefaultParams) (InventoryItemVariant, error) {
-	row := q.db.QueryRowContext(ctx, updateItemVariantDefault, arg.ItemID, arg.ImageUrl, arg.Name)
+	row := q.db.QueryRowContext(ctx, updateItemVariantDefault,
+		arg.ItemID,
+		arg.ImageUrl,
+		arg.Barcode,
+		arg.Price,
+	)
 	var i InventoryItemVariant
 	err := row.Scan(
 		&i.ID,
 		&i.ItemID,
 		&i.ImageUrl,
+		&i.Barcode,
 		&i.Name,
 		&i.Price,
-		&i.Stock,
 		&i.IsDefault,
 		&i.CreatedAt,
 		&i.UpdatedAt,
@@ -1269,15 +1275,15 @@ func (q *Queries) UpsertItemUnit(ctx context.Context, arg UpsertItemUnitParams) 
 }
 
 const upsertItemVariant = `-- name: UpsertItemVariant :exec
-INSERT INTO inventory.item_variants(id, item_id, image_url, name, price, stock)
+INSERT INTO inventory.item_variants(id, item_id, image_url, barcode, name, price)
 VALUES ($1, $2, $3, $4, $5, $6)
 ON CONFLICT (id)
 DO UPDATE SET
     item_id = EXCLUDED.item_id,
     image_url = EXCLUDED.image_url,
+    barcode = EXCLUDED.barcode,
     name = EXCLUDED.name,
     price = EXCLUDED.price,
-    stock = EXCLUDED.stock,
     updated_at = NOW()
 `
 
@@ -1285,9 +1291,9 @@ type UpsertItemVariantParams struct {
 	ID       string `db:"id"`
 	ItemID   string `db:"item_id"`
 	ImageUrl string `db:"image_url"`
+	Barcode  string `db:"barcode"`
 	Name     string `db:"name"`
 	Price    int64  `db:"price"`
-	Stock    int64  `db:"stock"`
 }
 
 func (q *Queries) UpsertItemVariant(ctx context.Context, arg UpsertItemVariantParams) error {
@@ -1295,9 +1301,9 @@ func (q *Queries) UpsertItemVariant(ctx context.Context, arg UpsertItemVariantPa
 		arg.ID,
 		arg.ItemID,
 		arg.ImageUrl,
+		arg.Barcode,
 		arg.Name,
 		arg.Price,
-		arg.Stock,
 	)
 	return err
 }

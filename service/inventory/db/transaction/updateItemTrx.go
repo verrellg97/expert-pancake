@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	"strconv"
 
 	db "github.com/expert-pancake/service/inventory/db/sqlc"
 )
@@ -9,10 +10,12 @@ import (
 type UpdateItemTrxParams struct {
 	ItemId      string
 	ImageUrl    string
+	Barcode     string
 	Name        string
 	BrandId     string
 	GroupId     string
 	Tag         string
+	Price       string
 	Description string
 }
 
@@ -22,6 +25,7 @@ type UpdateItemTrxResult struct {
 	VariantId   string
 	ImageUrl    string
 	Code        string
+	Barcode     string
 	Name        string
 	VariantName string
 	BrandId     string
@@ -32,7 +36,6 @@ type UpdateItemTrxResult struct {
 	Description string
 	IsDefault   bool
 	Price       int64
-	Stock       int64
 }
 
 func (trx *Trx) UpdateItemTrx(ctx context.Context, arg UpdateItemTrxParams) (UpdateItemTrxResult, error) {
@@ -64,9 +67,12 @@ func (trx *Trx) UpdateItemTrx(ctx context.Context, arg UpdateItemTrxParams) (Upd
 			return err
 		}
 
+		price, _ := strconv.ParseInt(arg.Price, 10, 64)
 		itemVariantRes, err := q.UpdateItemVariantDefault(ctx, db.UpdateItemVariantDefaultParams{
 			ItemID:   arg.ItemId,
 			ImageUrl: arg.ImageUrl,
+			Barcode:  arg.Barcode,
+			Price:    price,
 		})
 		if err != nil {
 			return err
@@ -77,6 +83,7 @@ func (trx *Trx) UpdateItemTrx(ctx context.Context, arg UpdateItemTrxParams) (Upd
 		result.VariantId = itemVariantRes.ID
 		result.ImageUrl = arg.ImageUrl
 		result.Code = itemRes.Code
+		result.Barcode = itemVariantRes.Barcode
 		result.Name = arg.Name
 		result.VariantName = itemVariantRes.Name
 		result.BrandId = arg.BrandId
@@ -87,7 +94,6 @@ func (trx *Trx) UpdateItemTrx(ctx context.Context, arg UpdateItemTrxParams) (Upd
 		result.Description = arg.Description
 		result.IsDefault = itemVariantRes.IsDefault
 		result.Price = itemVariantRes.Price
-		result.Stock = itemVariantRes.Stock
 
 		return err
 	})

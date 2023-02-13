@@ -98,9 +98,9 @@ type InventoryItemVariant struct {
 	ID        string       `db:"id"`
 	ItemID    string       `db:"item_id"`
 	ImageUrl  string       `db:"image_url"`
+	Barcode   string       `db:"barcode"`
 	Name      string       `db:"name"`
 	Price     int64        `db:"price"`
-	Stock     int64        `db:"stock"`
 	IsDefault bool         `db:"is_default"`
 	CreatedAt sql.NullTime `db:"created_at"`
 	UpdatedAt sql.NullTime `db:"updated_at"`

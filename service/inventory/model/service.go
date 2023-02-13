@@ -134,6 +134,7 @@ type Item struct {
 	VariantId   string `json:"variant_id" validate:"required"`
 	ImageUrl    string `json:"image_url" validate:"required"`
 	Code        string `json:"code" validate:"required"`
+	Barcode     string `json:"barcode" validate:"required"`
 	Name        string `json:"name" validate:"required"`
 	VariantName string `json:"variant_name" validate:"required"`
 	BrandId     string `json:"brand_id" validate:"required"`
@@ -144,16 +145,17 @@ type Item struct {
 	Description string `json:"description" validate:"required"`
 	IsDefault   bool   `json:"is_default" validate:"required"`
 	Price       string `json:"price" validate:"required"`
-	Stock       string `json:"stock" validate:"required"`
 }
 
 type AddItemRequest struct {
 	CompanyId   string `json:"company_id" validate:"required"`
 	ImageUrl    string `json:"image_url"`
+	Barcode     string `json:"barcode"`
 	Name        string `json:"name" validate:"required"`
 	BrandId     string `json:"brand_id" validate:"required"`
 	GroupId     string `json:"group_id" validate:"required"`
 	Tag         string `json:"tag"`
+	Price       string `json:"price" validate:"required"`
 	Description string `json:"description"`
 }
 
@@ -164,10 +166,12 @@ type AddItemResponse struct {
 type UpdateItemRequest struct {
 	ItemId      string `json:"item_id" validate:"required"`
 	ImageUrl    string `json:"image_url"`
+	Barcode     string `json:"barcode"`
 	Name        string `json:"name" validate:"required"`
 	BrandId     string `json:"brand_id" validate:"required"`
 	GroupId     string `json:"group_id" validate:"required"`
 	Tag         string `json:"tag"`
+	Price       string `json:"price" validate:"required"`
 	Description string `json:"description"`
 }
 
@@ -188,9 +192,9 @@ type UpsertItemVariantRequest struct {
 	ItemVariantId string `json:"item_variant_id"`
 	ItemId        string `json:"item_id" validate:"required"`
 	ImageUrl      string `json:"image_url"`
+	Barcode       string `json:"barcode"`
 	Name          string `json:"name" validate:"required"`
 	Price         string `json:"price" validate:"required"`
-	Stock         string `json:"stock" validate:"required"`
 }
 
 type UpsertItemVariantResponse struct {
