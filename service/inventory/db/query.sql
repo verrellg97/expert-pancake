@@ -104,6 +104,31 @@ JOIN inventory.brands c ON a.brand_id = c.id
 JOIN inventory.groups d ON a.group_id = d.id
 WHERE a.company_id = $1 AND b.name LIKE $2;
 
+-- name: UpsertItemInfo :exec
+INSERT INTO inventory.item_infos(item_id, is_purchase, is_sale, is_raw_material, is_asset,
+purchase_chart_of_account_id, sale_chart_of_account_id, purchase_item_unit_id)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+ON CONFLICT (item_id)
+DO UPDATE SET
+    is_purchase = EXCLUDED.is_purchase,
+    is_sale = EXCLUDED.is_sale,
+    is_raw_material = EXCLUDED.is_raw_material,
+    is_asset = EXCLUDED.is_asset,
+    purchase_chart_of_account_id = EXCLUDED.purchase_chart_of_account_id,
+    sale_chart_of_account_id = EXCLUDED.sale_chart_of_account_id,
+    purchase_item_unit_id = EXCLUDED.purchase_item_unit_id,
+    updated_at = NOW();
+
+-- name: GetItemInfo :one
+SELECT a.item_id, d.company_id, a.is_purchase, a.is_sale, a.is_raw_material, a.is_asset,
+a.purchase_chart_of_account_id, a.sale_chart_of_account_id, a.purchase_item_unit_id,
+c.name AS purchase_item_unit_name
+FROM inventory.item_infos a
+JOIN inventory.item_units b ON a.purchase_item_unit_id = b.id
+JOIN inventory.units c ON b.unit_id = c.id
+JOIN inventory.items d ON a.item_id = d.id
+WHERE a.item_id = $1;
+
 -- name: UpsertItemVariant :exec
 INSERT INTO inventory.item_variants(id, item_id, image_url, barcode, name, price)
 VALUES ($1, $2, $3, $4, $5, $6)

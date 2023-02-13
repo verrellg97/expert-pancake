@@ -21,6 +21,8 @@ type InventoryService interface {
 	UpdateItem(w http.ResponseWriter, r *http.Request) error
 	GetItems(w http.ResponseWriter, r *http.Request) error
 
+	UpsertItemInfo(w http.ResponseWriter, r *http.Request) error
+
 	UpsertItemVariant(w http.ResponseWriter, r *http.Request) error
 	GetItemVariants(w http.ResponseWriter, r *http.Request) error
 
@@ -186,6 +188,35 @@ type GetItemsRequest struct {
 
 type GetItemsResponse struct {
 	Items []Item `json:"items" validate:"required"`
+}
+
+type ItemInfo struct {
+	ItemId                     string `json:"item_id" validate:"required"`
+	IsPurchase                 bool   `json:"is_purchase" validate:"required"`
+	IsSale                     bool   `json:"is_sale" validate:"required"`
+	IsRawMaterial              bool   `json:"is_raw_material" validate:"required"`
+	IsAsset                    bool   `json:"is_asset" validate:"required"`
+	PurchaseChartOfAccountId   string `json:"purchase_chart_of_account_id" validate:"required"`
+	PurchaseChartOfAccountName string `json:"purchase_chart_of_account_name" validate:"required"`
+	SaleChartOfAccountId       string `json:"sale_chart_of_account_id" validate:"required"`
+	SaleChartOfAccountName     string `json:"sale_chart_of_account_name" validate:"required"`
+	PurchaseItemUnitId         string `json:"purchase_item_unit_id" validate:"required"`
+	PurchaseItemUnitName       string `json:"purchase_item_unit_name" validate:"required"`
+}
+
+type UpsertItemInfoRequest struct {
+	ItemId                   string `json:"item_id" validate:"required"`
+	IsPurchase               bool   `json:"is_purchase"`
+	IsSale                   bool   `json:"is_sale"`
+	IsRawMaterial            bool   `json:"is_raw_material"`
+	IsAsset                  bool   `json:"is_asset"`
+	PurchaseChartOfAccountId string `json:"purchase_chart_of_account_id" validate:"required"`
+	SaleChartOfAccountId     string `json:"sale_chart_of_account_id" validate:"required"`
+	PurchaseItemUnitId       string `json:"purchase_item_unit_id" validate:"required"`
+}
+
+type UpsertItemInfoResponse struct {
+	ItemInfo
 }
 
 type UpsertItemVariantRequest struct {
