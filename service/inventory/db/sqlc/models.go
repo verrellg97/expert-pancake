@@ -122,11 +122,12 @@ type InventoryStockMovement struct {
 }
 
 type InventoryUnit struct {
-	ID        string       `db:"id"`
-	CompanyID string       `db:"company_id"`
-	Name      string       `db:"name"`
-	CreatedAt sql.NullTime `db:"created_at"`
-	UpdatedAt sql.NullTime `db:"updated_at"`
+	ID             string       `db:"id"`
+	UnitCategoryID string       `db:"unit_category_id"`
+	CompanyID      string       `db:"company_id"`
+	Name           string       `db:"name"`
+	CreatedAt      sql.NullTime `db:"created_at"`
+	UpdatedAt      sql.NullTime `db:"updated_at"`
 }
 
 type InventoryUnitCategory struct {

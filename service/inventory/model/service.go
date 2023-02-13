@@ -96,14 +96,16 @@ type GetGroupsRequest struct {
 }
 
 type Unit struct {
-	CompanyId string `json:"company_id" validate:"required"`
-	UnitId    string `json:"unit_id" validate:"required"`
-	Name      string `json:"name" validate:"required"`
+	CompanyId      string `json:"company_id" validate:"required"`
+	UnitCategoryId string `json:"unit_category_id" validate:"required"`
+	UnitId         string `json:"unit_id" validate:"required"`
+	Name           string `json:"name" validate:"required"`
 }
 
 type AddUnitRequest struct {
-	CompanyId string `json:"company_id" validate:"required"`
-	Name      string `json:"name" validate:"required"`
+	CompanyId      string `json:"company_id" validate:"required"`
+	UnitCategoryId string `json:"unit_category_id" validate:"required"`
+	Name           string `json:"name" validate:"required"`
 }
 
 type AddUnitResponse struct {
@@ -111,8 +113,9 @@ type AddUnitResponse struct {
 }
 
 type UpdateUnitRequest struct {
-	Id   string `json:"id" validate:"required"`
-	Name string `json:"name" validate:"required"`
+	Id             string `json:"id" validate:"required"`
+	UnitCategoryId string `json:"unit_category_id" validate:"required"`
+	Name           string `json:"name" validate:"required"`
 }
 
 type UpdateUnitResponse struct {
@@ -120,8 +123,9 @@ type UpdateUnitResponse struct {
 }
 
 type GetUnitsRequest struct {
-	CompanyId string `json:"company_id" validate:"required"`
-	Keyword   string `json:"keyword"`
+	CompanyId      string `json:"company_id" validate:"required"`
+	UnitCategoryId string `json:"unit_category_id"`
+	Keyword        string `json:"keyword"`
 }
 
 type Item struct {
@@ -311,7 +315,7 @@ type UpsertItemReorderResponse struct {
 }
 
 type GetItemReordersRequest struct {
-	ItemId  string `json:"item_id"`
+	ItemId      string `json:"item_id"`
 	WarehouseId string `json:"warehouse_id"`
 }
 
@@ -326,9 +330,9 @@ type UnitCategory struct {
 }
 
 type UpsertUnitCategoryRequest struct {
-	Id  string `json:"id"`
+	Id        string `json:"id"`
 	CompanyId string `json:"company_id" validate:"required"`
-	Name string `json:"name" validate:"required"`
+	Name      string `json:"name" validate:"required"`
 }
 
 type UpsertUnitCategoryResponse struct {
@@ -337,7 +341,7 @@ type UpsertUnitCategoryResponse struct {
 
 type GetUnitCategoriesRequest struct {
 	CompanyId string `json:"company_id" validate:"required"`
-	Keyword string `json:"keyword"`
+	Keyword   string `json:"keyword"`
 }
 
 type GetUnitCategoriesResponse struct {
