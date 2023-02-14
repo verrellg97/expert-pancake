@@ -34,4 +34,6 @@ const (
 
 	UpsertItemInfoError = 700023
 	GetItemInfoError    = 700024
+
+	AddNewUpdateStockError = 700025
 )

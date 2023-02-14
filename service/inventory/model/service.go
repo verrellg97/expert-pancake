@@ -33,6 +33,8 @@ type InventoryService interface {
 	AddInternalStockTransfer(w http.ResponseWriter, r *http.Request) error
 	GetInternalStockTransfers(w http.ResponseWriter, r *http.Request) error
 
+	AddUpdateStock(w http.ResponseWriter, r *http.Request) error
+
 	UpsertItemReorder(w http.ResponseWriter, r *http.Request) error
 	GetItemReorders(w http.ResponseWriter, r *http.Request) error
 
@@ -336,6 +338,44 @@ type GetInternalStockTransfersRequest struct {
 
 type GetInternalStockTransfersResponse struct {
 	InternalStockTransfers []InternalStockTransfer `json:"internal_stock_transfers" validate:"required"`
+}
+
+type UpdateStock struct {
+	TransactionId     string  `json:"transaction_id" validate:"required"`
+	FormNumber        string  `json:"form_number" validate:"required"`
+	TransactionDate   string  `json:"transaction_date" validate:"required"`
+	WarehouseId       string  `json:"warehouse_id" validate:"required"`
+	WarehouseName     string  `json:"warehouse_name" validate:"required"`
+	WarehouseRackId   string  `json:"warehouse_rack_id" validate:"required"`
+	WarehouseRackName string  `json:"warehouse_rack_name" validate:"required"`
+	ItemId            string  `json:"item_id" validate:"required"`
+	ItemName          string  `json:"item_name" validate:"required"`
+	VariantId         string  `json:"variant_id" validate:"required"`
+	VariantName       string  `json:"variant_name" validate:"required"`
+	ItemUnitId        string  `json:"item_unit_id" validate:"required"`
+	ItemUnitName      string  `json:"item_unit_name" validate:"required"`
+	ItemUnitValue     string  `json:"item_unit_value" validate:"required"`
+	BeginningStock    string  `json:"beginning_stock" validate:"required"`
+	EndingStock       string  `json:"ending_stock" validate:"required"`
+	Batch             *string `json:"batch" validate:"required"`
+	ExpiredDate       *string `json:"expired_date" validate:"required"`
+}
+
+type AddUpdateStockRequest struct {
+	TransactionDate string `json:"transaction_date" validate:"required"`
+	WarehouseId     string `json:"warehouse_id" validate:"required"`
+	WarehouseRackId string `json:"warehouse_rack_id" validate:"required"`
+	VariantId       string `json:"variant_id" validate:"required"`
+	ItemUnitId      string `json:"item_unit_id" validate:"required"`
+	ItemUnitValue   string `json:"item_unit_value" validate:"required"`
+	BeginningStock  string `json:"beginning_stock" validate:"required"`
+	EndingStock     string `json:"ending_stock" validate:"required"`
+	Batch           string `json:"batch"`
+	ExpiredDate     string `json:"expired_date"`
+}
+
+type AddUpdateStockResponse struct {
+	UpdateStock
 }
 
 type ItemReorder struct {

@@ -236,6 +236,25 @@ transaction_reference, detail_transaction_id, warehouse_id, warehouse_rack_id,
 variant_id, item_barcode_id, amount)
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10);
 
+-- name: InsertUpdateStock :exec
+INSERT INTO inventory.update_stocks(id,
+form_number, transaction_date, warehouse_id, warehouse_rack_id,
+variant_id, item_unit_id, item_unit_value, beginning_stock, ending_stock,
+batch, expired_date, item_barcode_id)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13);
+
+-- name: GetUpdateStock :one
+SELECT a.id, a.form_number, a.transaction_date, a.warehouse_id, a.warehouse_rack_id,
+b.item_id, c.name AS item_name, a.variant_id, b.name AS variant_name,
+a.item_unit_id, e.name AS item_unit_name, a.item_unit_value,
+a.beginning_stock, a.ending_stock, a.batch, a.expired_date
+FROM inventory.update_stocks a
+JOIN inventory.item_variants b ON a.variant_id = b.id
+JOIN inventory.items c ON b.item_id = c.id
+JOIN inventory.item_units d ON a.item_unit_id = d.id
+JOIN inventory.units e ON d.unit_id = e.id
+WHERE a.id = $1;
+
 -- name: UpsertItemReorder :one
 INSERT INTO inventory.item_reorders(id, variant_id, item_unit_id, warehouse_id, minimum_stock)
 VALUES ($1, $2, $3, $4, $5)

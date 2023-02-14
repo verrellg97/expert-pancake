@@ -151,3 +151,22 @@ type InventoryUnitCategory struct {
 	CreatedAt sql.NullTime `db:"created_at"`
 	UpdatedAt sql.NullTime `db:"updated_at"`
 }
+
+type InventoryUpdateStock struct {
+	ID              string         `db:"id"`
+	FormNumber      string         `db:"form_number"`
+	TransactionDate time.Time      `db:"transaction_date"`
+	WarehouseID     string         `db:"warehouse_id"`
+	WarehouseRackID string         `db:"warehouse_rack_id"`
+	VariantID       string         `db:"variant_id"`
+	ItemUnitID      string         `db:"item_unit_id"`
+	ItemUnitValue   int64          `db:"item_unit_value"`
+	BeginningStock  int64          `db:"beginning_stock"`
+	EndingStock     int64          `db:"ending_stock"`
+	Batch           sql.NullString `db:"batch"`
+	ExpiredDate     sql.NullTime   `db:"expired_date"`
+	ItemBarcodeID   string         `db:"item_barcode_id"`
+	IsDeleted       bool           `db:"is_deleted"`
+	CreatedAt       sql.NullTime   `db:"created_at"`
+	UpdatedAt       sql.NullTime   `db:"updated_at"`
+}
