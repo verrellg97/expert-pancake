@@ -7,3 +7,4 @@
 20230207_add_item_reorders_table 2023-02-07T06:10:35Z Verrell <verrell@Verrells-MacBook-Air.local> # Add item_reorders table
 20230210_add_unit_categories_and_item_infos_table 2023-02-09T20:42:11Z Verrell <verrell@Verrells-MacBook-Air.local> # Add unit_categories and item_infos table
 20230214_add_update_stocks_table 2023-02-13T20:14:43Z Verrell <verrell@Verrells-MacBook-Air.local> # Add update_stocks table
+20230215_alter_update_stocks_table 2023-02-14T20:53:37Z Verrell <verrell@Verrells-MacBook-Air.local> # Alter udpate_stocks table
