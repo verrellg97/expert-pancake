@@ -36,4 +36,5 @@ const (
 	GetItemInfoError    = 700024
 
 	AddNewUpdateStockError = 700025
+	GetUpdateStocksError   = 700026
 )

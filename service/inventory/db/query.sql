@@ -255,6 +255,20 @@ JOIN inventory.item_units d ON a.item_unit_id = d.id
 JOIN inventory.units e ON d.unit_id = e.id
 WHERE a.id = $1;
 
+-- name: GetUpdateStocks :many
+SELECT a.id, a.form_number, a.transaction_date, a.warehouse_id, a.warehouse_rack_id,
+b.item_id, c.name AS item_name, a.variant_id, b.name AS variant_name,
+a.item_unit_id, e.name AS item_unit_name, a.item_unit_value,
+a.beginning_stock, a.ending_stock, a.batch, a.expired_date
+FROM inventory.update_stocks a
+JOIN inventory.item_variants b ON a.variant_id = b.id
+JOIN inventory.items c ON b.item_id = c.id
+JOIN inventory.item_units d ON a.item_unit_id = d.id
+JOIN inventory.units e ON d.unit_id = e.id
+WHERE a.is_deleted = false
+AND a.transaction_date BETWEEN @start_date::date AND @end_date::date
+AND a.warehouse_id = ANY(@warehouse_ids::text[]);
+
 -- name: UpsertItemReorder :one
 INSERT INTO inventory.item_reorders(id, variant_id, item_unit_id, warehouse_id, minimum_stock)
 VALUES ($1, $2, $3, $4, $5)
