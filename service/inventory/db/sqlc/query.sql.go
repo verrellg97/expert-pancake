@@ -785,6 +785,62 @@ func (q *Queries) GetUnits(ctx context.Context, arg GetUnitsParams) ([]GetUnitsR
 	return items, nil
 }
 
+const getUpdateStock = `-- name: GetUpdateStock :one
+SELECT a.id, a.form_number, a.transaction_date, a.warehouse_id, a.warehouse_rack_id,
+b.item_id, c.name AS item_name, a.variant_id, b.name AS variant_name,
+a.item_unit_id, e.name AS item_unit_name, a.item_unit_value,
+a.beginning_stock, a.ending_stock, a.batch, a.expired_date
+FROM inventory.update_stocks a
+JOIN inventory.item_variants b ON a.variant_id = b.id
+JOIN inventory.items c ON b.item_id = c.id
+JOIN inventory.item_units d ON a.item_unit_id = d.id
+JOIN inventory.units e ON d.unit_id = e.id
+WHERE a.id = $1
+`
+
+type GetUpdateStockRow struct {
+	ID              string         `db:"id"`
+	FormNumber      string         `db:"form_number"`
+	TransactionDate time.Time      `db:"transaction_date"`
+	WarehouseID     string         `db:"warehouse_id"`
+	WarehouseRackID string         `db:"warehouse_rack_id"`
+	ItemID          string         `db:"item_id"`
+	ItemName        string         `db:"item_name"`
+	VariantID       string         `db:"variant_id"`
+	VariantName     string         `db:"variant_name"`
+	ItemUnitID      string         `db:"item_unit_id"`
+	ItemUnitName    string         `db:"item_unit_name"`
+	ItemUnitValue   int64          `db:"item_unit_value"`
+	BeginningStock  int64          `db:"beginning_stock"`
+	EndingStock     int64          `db:"ending_stock"`
+	Batch           sql.NullString `db:"batch"`
+	ExpiredDate     sql.NullTime   `db:"expired_date"`
+}
+
+func (q *Queries) GetUpdateStock(ctx context.Context, id string) (GetUpdateStockRow, error) {
+	row := q.db.QueryRowContext(ctx, getUpdateStock, id)
+	var i GetUpdateStockRow
+	err := row.Scan(
+		&i.ID,
+		&i.FormNumber,
+		&i.TransactionDate,
+		&i.WarehouseID,
+		&i.WarehouseRackID,
+		&i.ItemID,
+		&i.ItemName,
+		&i.VariantID,
+		&i.VariantName,
+		&i.ItemUnitID,
+		&i.ItemUnitName,
+		&i.ItemUnitValue,
+		&i.BeginningStock,
+		&i.EndingStock,
+		&i.Batch,
+		&i.ExpiredDate,
+	)
+	return i, err
+}
+
 const insertBrand = `-- name: InsertBrand :one
 INSERT INTO inventory.brands(id, company_id, name)
 VALUES ($1, $2, $3)
@@ -1087,6 +1143,49 @@ func (q *Queries) InsertUnit(ctx context.Context, arg InsertUnitParams) (Invento
 		&i.UpdatedAt,
 	)
 	return i, err
+}
+
+const insertUpdateStock = `-- name: InsertUpdateStock :exec
+INSERT INTO inventory.update_stocks(id,
+form_number, transaction_date, warehouse_id, warehouse_rack_id,
+variant_id, item_unit_id, item_unit_value, beginning_stock, ending_stock,
+batch, expired_date, item_barcode_id)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+`
+
+type InsertUpdateStockParams struct {
+	ID              string         `db:"id"`
+	FormNumber      string         `db:"form_number"`
+	TransactionDate time.Time      `db:"transaction_date"`
+	WarehouseID     string         `db:"warehouse_id"`
+	WarehouseRackID string         `db:"warehouse_rack_id"`
+	VariantID       string         `db:"variant_id"`
+	ItemUnitID      string         `db:"item_unit_id"`
+	ItemUnitValue   int64          `db:"item_unit_value"`
+	BeginningStock  int64          `db:"beginning_stock"`
+	EndingStock     int64          `db:"ending_stock"`
+	Batch           sql.NullString `db:"batch"`
+	ExpiredDate     sql.NullTime   `db:"expired_date"`
+	ItemBarcodeID   string         `db:"item_barcode_id"`
+}
+
+func (q *Queries) InsertUpdateStock(ctx context.Context, arg InsertUpdateStockParams) error {
+	_, err := q.db.ExecContext(ctx, insertUpdateStock,
+		arg.ID,
+		arg.FormNumber,
+		arg.TransactionDate,
+		arg.WarehouseID,
+		arg.WarehouseRackID,
+		arg.VariantID,
+		arg.ItemUnitID,
+		arg.ItemUnitValue,
+		arg.BeginningStock,
+		arg.EndingStock,
+		arg.Batch,
+		arg.ExpiredDate,
+		arg.ItemBarcodeID,
+	)
+	return err
 }
 
 const updateBrand = `-- name: UpdateBrand :one
