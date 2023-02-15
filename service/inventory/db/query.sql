@@ -467,3 +467,8 @@ GROUP BY b.transaction_date,
     a.amount
 ORDER BY b.transaction_date DESC;
 
+-- name: GetVariantWarehouseRacks :many
+SELECT DISTINCT a.warehouse_rack_id
+FROM inventory.stock_movements a
+WHERE a.variant_id = $1
+AND a.warehouse_id = $2;

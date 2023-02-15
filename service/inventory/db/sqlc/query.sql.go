@@ -1117,6 +1117,41 @@ func (q *Queries) GetUpdateStocks(ctx context.Context, arg GetUpdateStocksParams
 	return items, nil
 }
 
+const getVariantWarehouseRacks = `-- name: GetVariantWarehouseRacks :many
+SELECT DISTINCT a.warehouse_rack_id
+FROM inventory.stock_movements a
+WHERE a.variant_id = $1
+AND a.warehouse_id = $2
+`
+
+type GetVariantWarehouseRacksParams struct {
+	VariantID   string `db:"variant_id"`
+	WarehouseID string `db:"warehouse_id"`
+}
+
+func (q *Queries) GetVariantWarehouseRacks(ctx context.Context, arg GetVariantWarehouseRacksParams) ([]string, error) {
+	rows, err := q.db.QueryContext(ctx, getVariantWarehouseRacks, arg.VariantID, arg.WarehouseID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []string
+	for rows.Next() {
+		var warehouse_rack_id string
+		if err := rows.Scan(&warehouse_rack_id); err != nil {
+			return nil, err
+		}
+		items = append(items, warehouse_rack_id)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const insertBrand = `-- name: InsertBrand :one
 INSERT INTO inventory.brands(id, company_id, name)
 VALUES ($1, $2, $3)
