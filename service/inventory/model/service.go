@@ -34,6 +34,7 @@ type InventoryService interface {
 	GetInternalStockTransfers(w http.ResponseWriter, r *http.Request) error
 
 	AddUpdateStock(w http.ResponseWriter, r *http.Request) error
+	GetUpdateStocks(w http.ResponseWriter, r *http.Request) error
 
 	UpsertItemReorder(w http.ResponseWriter, r *http.Request) error
 	GetItemReorders(w http.ResponseWriter, r *http.Request) error
@@ -376,6 +377,16 @@ type AddUpdateStockRequest struct {
 
 type AddUpdateStockResponse struct {
 	UpdateStock
+}
+
+type GetUpdateStocksRequest struct {
+	BranchId  string `json:"branch_id" validate:"required"`
+	StartDate string `json:"start_date"`
+	EndDate   string `json:"end_date"`
+}
+
+type GetUpdateStocksResponse struct {
+	UpdateStocks []UpdateStock `json:"update_stocks" validate:"required"`
 }
 
 type ItemReorder struct {

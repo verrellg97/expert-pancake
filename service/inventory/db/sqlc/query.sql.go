@@ -841,6 +841,86 @@ func (q *Queries) GetUpdateStock(ctx context.Context, id string) (GetUpdateStock
 	return i, err
 }
 
+const getUpdateStocks = `-- name: GetUpdateStocks :many
+SELECT a.id, a.form_number, a.transaction_date, a.warehouse_id, a.warehouse_rack_id,
+b.item_id, c.name AS item_name, a.variant_id, b.name AS variant_name,
+a.item_unit_id, e.name AS item_unit_name, a.item_unit_value,
+a.beginning_stock, a.ending_stock, a.batch, a.expired_date
+FROM inventory.update_stocks a
+JOIN inventory.item_variants b ON a.variant_id = b.id
+JOIN inventory.items c ON b.item_id = c.id
+JOIN inventory.item_units d ON a.item_unit_id = d.id
+JOIN inventory.units e ON d.unit_id = e.id
+WHERE a.is_deleted = false
+AND a.transaction_date BETWEEN $1::date AND $2::date
+AND a.warehouse_id = ANY($3::text[])
+`
+
+type GetUpdateStocksParams struct {
+	StartDate    time.Time `db:"start_date"`
+	EndDate      time.Time `db:"end_date"`
+	WarehouseIds []string  `db:"warehouse_ids"`
+}
+
+type GetUpdateStocksRow struct {
+	ID              string         `db:"id"`
+	FormNumber      string         `db:"form_number"`
+	TransactionDate time.Time      `db:"transaction_date"`
+	WarehouseID     string         `db:"warehouse_id"`
+	WarehouseRackID string         `db:"warehouse_rack_id"`
+	ItemID          string         `db:"item_id"`
+	ItemName        string         `db:"item_name"`
+	VariantID       string         `db:"variant_id"`
+	VariantName     string         `db:"variant_name"`
+	ItemUnitID      string         `db:"item_unit_id"`
+	ItemUnitName    string         `db:"item_unit_name"`
+	ItemUnitValue   int64          `db:"item_unit_value"`
+	BeginningStock  int64          `db:"beginning_stock"`
+	EndingStock     int64          `db:"ending_stock"`
+	Batch           sql.NullString `db:"batch"`
+	ExpiredDate     sql.NullTime   `db:"expired_date"`
+}
+
+func (q *Queries) GetUpdateStocks(ctx context.Context, arg GetUpdateStocksParams) ([]GetUpdateStocksRow, error) {
+	rows, err := q.db.QueryContext(ctx, getUpdateStocks, arg.StartDate, arg.EndDate, pq.Array(arg.WarehouseIds))
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetUpdateStocksRow
+	for rows.Next() {
+		var i GetUpdateStocksRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.FormNumber,
+			&i.TransactionDate,
+			&i.WarehouseID,
+			&i.WarehouseRackID,
+			&i.ItemID,
+			&i.ItemName,
+			&i.VariantID,
+			&i.VariantName,
+			&i.ItemUnitID,
+			&i.ItemUnitName,
+			&i.ItemUnitValue,
+			&i.BeginningStock,
+			&i.EndingStock,
+			&i.Batch,
+			&i.ExpiredDate,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const insertBrand = `-- name: InsertBrand :one
 INSERT INTO inventory.brands(id, company_id, name)
 VALUES ($1, $2, $3)
