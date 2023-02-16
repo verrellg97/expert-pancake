@@ -38,5 +38,7 @@ const (
 	AddNewUpdateStockError = 700025
 	GetUpdateStocksError   = 700026
 
-	GetTransferHistoryError = 700027
+	GetVariantWarehouseRacksError = 700027
+
+	GetTransferHistoryError = 700031
 )

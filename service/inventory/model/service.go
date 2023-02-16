@@ -42,6 +42,8 @@ type InventoryService interface {
 	UpsertUnitCategory(w http.ResponseWriter, r *http.Request) error
 	GetUnitCategories(w http.ResponseWriter, r *http.Request) error
 
+	GetVariantWarehouseRacks(w http.ResponseWriter, r *http.Request) error
+
 	GetTransferHistory(w http.ResponseWriter, r *http.Request) error
 }
 
@@ -447,6 +449,21 @@ type GetUnitCategoriesRequest struct {
 
 type GetUnitCategoriesResponse struct {
 	UnitCategories []UnitCategory `json:"unit_categories" validate:"required"`
+}
+
+type WarehouseRack struct {
+	RackId      string `json:"rack_id" validate:"required"`
+	WarehouseId string `json:"warehouse_id" validate:"required"`
+	Name        string `json:"name" validate:"required"`
+}
+
+type GetVariantWarehouseRacksRequest struct {
+	WarehouseId string `json:"warehouse_id" validate:"required"`
+	VariantId   string `json:"variant_id" validate:"required"`
+}
+
+type GetVariantWarehouseRacksResponse struct {
+	WarehouseRacks []WarehouseRack `json:"warehouse_racks" validate:"required"`
 }
 
 type TransferHistory struct {
