@@ -794,15 +794,6 @@ WHERE a.is_deleted = FALSE
         source_warehouse_id LIKE $2
         OR destination_warehouse_id LIKE $3
     )
-GROUP BY b.transaction_date,
-    a.variant_id,
-    item.id,
-    variant.id,
-    item.image_url,
-    b.form_number,
-    b.source_warehouse_id,
-    b.destination_warehouse_id,
-    a.amount
 ORDER BY b.transaction_date DESC
 `
 
