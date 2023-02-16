@@ -23,6 +23,7 @@ type Querier interface {
 	GetItemVariant(ctx context.Context, id string) (GetItemVariantRow, error)
 	GetItemVariants(ctx context.Context, arg GetItemVariantsParams) ([]GetItemVariantsRow, error)
 	GetItems(ctx context.Context, arg GetItemsParams) ([]GetItemsRow, error)
+	GetTransferHistory(ctx context.Context, arg GetTransferHistoryParams) ([]GetTransferHistoryRow, error)
 	GetUnit(ctx context.Context, id string) (GetUnitRow, error)
 	GetUnitCategories(ctx context.Context, arg GetUnitCategoriesParams) ([]GetUnitCategoriesRow, error)
 	GetUnits(ctx context.Context, arg GetUnitsParams) ([]GetUnitsRow, error)

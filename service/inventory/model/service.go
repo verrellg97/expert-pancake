@@ -41,6 +41,8 @@ type InventoryService interface {
 
 	UpsertUnitCategory(w http.ResponseWriter, r *http.Request) error
 	GetUnitCategories(w http.ResponseWriter, r *http.Request) error
+
+	GetTransferHistory(w http.ResponseWriter, r *http.Request) error
 }
 
 type Brand struct {
@@ -445,4 +447,30 @@ type GetUnitCategoriesRequest struct {
 
 type GetUnitCategoriesResponse struct {
 	UnitCategories []UnitCategory `json:"unit_categories" validate:"required"`
+}
+
+type TransferHistory struct {
+	FormNumber               string `json:"form_number" validate:"required"`
+	TransactionDate          string `json:"transaction_date" validate:"required"`
+	SourceWarehouseId        string `json:"source_warehouse_id" validate:"required"`
+	SourceWarehouseName      string `json:"source_warehouse_name" validate:"required"`
+	DestinationWarehouseId   string `json:"destination_warehouse_id" validate:"required"`
+	DestinationWarehouseName string `json:"destination_warehouse_name" validate:"required"`
+	ItemId                   string `json:"item_id" validate:"required"`
+	ItemName                 string `json:"item_name" validate:"required"`
+	ItemImageUrl             string `json:"item_image_url" validate:"required"`
+	VariantId                string `json:"variant_id" validate:"required"`
+	VariantName              string `json:"variant_name" validate:"required"`
+	Amount                   string `json:"amount" validate:"required"`
+}
+
+type GetTransferHistoryRequest struct {
+	WarehouseId string `json:"warehouse_id"`
+	ItemId      string `json:"item_id"`
+	StartDate   string `json:"start_date"`
+	EndDate     string `json:"end_date"`
+}
+
+type GetTransferHistoryResponse struct {
+	TransferHistories []TransferHistory `json:"transfer_histories" validate:"required"`
 }
