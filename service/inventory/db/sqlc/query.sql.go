@@ -1761,6 +1761,24 @@ func (q *Queries) UpdateItem(ctx context.Context, arg UpdateItemParams) (Invento
 	return i, err
 }
 
+const updateItemUnitIsDefaultToFalse = `-- name: UpdateItemUnitIsDefaultToFalse :exec
+UPDATE inventory.item_units
+SET is_default = false,
+    updated_at = NOW()
+WHERE item_id = $1
+AND id <> $2
+`
+
+type UpdateItemUnitIsDefaultToFalseParams struct {
+	ItemID string `db:"item_id"`
+	ID     string `db:"id"`
+}
+
+func (q *Queries) UpdateItemUnitIsDefaultToFalse(ctx context.Context, arg UpdateItemUnitIsDefaultToFalseParams) error {
+	_, err := q.db.ExecContext(ctx, updateItemUnitIsDefaultToFalse, arg.ItemID, arg.ID)
+	return err
+}
+
 const updateItemVariantDefault = `-- name: UpdateItemVariantDefault :one
 UPDATE inventory.item_variants
 SET image_url = $2,
