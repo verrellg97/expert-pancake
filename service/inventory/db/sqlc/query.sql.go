@@ -1117,6 +1117,53 @@ func (q *Queries) GetUpdateStocks(ctx context.Context, arg GetUpdateStocksParams
 	return items, nil
 }
 
+const getVariantWarehouseRackBatchExpiredDates = `-- name: GetVariantWarehouseRackBatchExpiredDates :many
+SELECT DISTINCT b.expired_date
+FROM inventory.stock_movements a
+JOIN inventory.item_barcodes b ON a.item_barcode_id = b.id
+WHERE a.variant_id = $1
+AND a.warehouse_rack_id = $2
+AND CASE
+    WHEN $4::bool THEN b.batch is null
+    ELSE b.batch = $3
+END
+`
+
+type GetVariantWarehouseRackBatchExpiredDatesParams struct {
+	VariantID       string         `db:"variant_id"`
+	WarehouseRackID string         `db:"warehouse_rack_id"`
+	Batch           sql.NullString `db:"batch"`
+	IsNullBatch     bool           `db:"is_null_batch"`
+}
+
+func (q *Queries) GetVariantWarehouseRackBatchExpiredDates(ctx context.Context, arg GetVariantWarehouseRackBatchExpiredDatesParams) ([]sql.NullTime, error) {
+	rows, err := q.db.QueryContext(ctx, getVariantWarehouseRackBatchExpiredDates,
+		arg.VariantID,
+		arg.WarehouseRackID,
+		arg.Batch,
+		arg.IsNullBatch,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []sql.NullTime
+	for rows.Next() {
+		var expired_date sql.NullTime
+		if err := rows.Scan(&expired_date); err != nil {
+			return nil, err
+		}
+		items = append(items, expired_date)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getVariantWarehouseRackBatches = `-- name: GetVariantWarehouseRackBatches :many
 SELECT DISTINCT b.batch
 FROM inventory.stock_movements a

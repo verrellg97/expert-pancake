@@ -48,8 +48,9 @@ const (
 	UpsertUnitCategoryPath = "/inventory/unit-category/upsert"
 	GetUnitCategoriesPath  = "/inventory/unit-categories"
 
-	GetVariantWarehouseRacksPath       = "/inventory/item/variant/racks"
-	GetVariantWarehouseRackBatchesPath = "/inventory/item/variant/rack/batches"
+	GetVariantWarehouseRacksPath                 = "/inventory/item/variant/racks"
+	GetVariantWarehouseRackBatchesPath           = "/inventory/item/variant/rack/batches"
+	GetVariantWarehouseRackBatchExpiredDatesPath = "/inventory/item/variant/rack/batch/expired-dates"
 
 	GetTransferHistoryPath = "/inventory/transfer-history"
 )
@@ -109,6 +110,7 @@ func (c *component) Routes(inventoryService model.InventoryService) http.Handler
 
 	mux.Method("POST", GetVariantWarehouseRacksPath, httpHandler.New(inventoryService.GetVariantWarehouseRacks))
 	mux.Method("POST", GetVariantWarehouseRackBatchesPath, httpHandler.New(inventoryService.GetVariantWarehouseRackBatches))
+	mux.Method("POST", GetVariantWarehouseRackBatchExpiredDatesPath, httpHandler.New(inventoryService.GetVariantWarehouseRackBatchExpiredDates))
 
 	mux.Method("POST", GetTransferHistoryPath, httpHandler.New(inventoryService.GetTransferHistory))
 
