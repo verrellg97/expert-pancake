@@ -2,6 +2,7 @@ package impl
 
 import (
 	"context"
+	"log"
 	"net/http"
 	"strconv"
 
@@ -30,6 +31,7 @@ func (a inventoryService) GetVariantWarehouseRackStock(w http.ResponseWriter, r 
 		IsNullExpiredDate: !util.NewNullableDate(util.StringToDate(req.ExpiredDate)).Valid,
 		ExpiredDate:       util.NewNullableDate(util.StringToDate(req.ExpiredDate)),
 	})
+	log.Println(err)
 	if err != nil {
 		return errors.NewServerError(model.GetVariantWarehouseRackStockError, err.Error())
 	}
