@@ -492,6 +492,21 @@ AND CASE
     ELSE b.batch = $3
 END;
 
+-- name: GetVariantWarehouseRackStock :one
+SELECT SUM(a.amount) AS stock
+FROM inventory.stock_movements a
+JOIN inventory.item_barcodes b ON a.item_barcode_id = b.id
+WHERE a.variant_id = $1
+AND a.warehouse_rack_id = $2
+AND CASE
+    WHEN @is_null_batch::bool THEN b.batch is null
+    ELSE b.batch = $3
+END
+AND CASE
+    WHEN @is_null_expired_date::bool THEN b.expired_date is null
+    ELSE b.expired_date = $4
+END;
+
 -- name: GetTransferHistory :many
 SELECT b.transaction_date,
     b.form_number,
