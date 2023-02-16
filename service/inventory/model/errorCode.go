@@ -42,6 +42,7 @@ const (
 	GetVariantWarehouseRackBatchesError           = 700028
 	GetVariantWarehouseRackBatchExpiredDatesError = 700029
 	GetVariantWarehouseRackStockError             = 700030
+	GetVariantWarehouseStocksError                = 700031
 
-	GetTransferHistoryError = 700031
+	GetTransferHistoryError = 700032
 )

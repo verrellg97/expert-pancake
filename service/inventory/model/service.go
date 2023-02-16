@@ -46,6 +46,7 @@ type InventoryService interface {
 	GetVariantWarehouseRackBatches(w http.ResponseWriter, r *http.Request) error
 	GetVariantWarehouseRackBatchExpiredDates(w http.ResponseWriter, r *http.Request) error
 	GetVariantWarehouseRackStock(w http.ResponseWriter, r *http.Request) error
+	GetVariantWarehouseStocks(w http.ResponseWriter, r *http.Request) error
 
 	GetTransferHistory(w http.ResponseWriter, r *http.Request) error
 }
@@ -497,6 +498,22 @@ type GetVariantWarehouseRackStockRequest struct {
 
 type GetVariantWarehouseRackStockResponse struct {
 	Stock string `json:"stock" validate:"required"`
+}
+
+type VariantStock struct {
+	ItemId      string `json:"item_id" validate:"required"`
+	ItemName    string `json:"item_name" validate:"required"`
+	VariantId   string `json:"variant_id" validate:"required"`
+	VariantName string `json:"variant_name" validate:"required"`
+	Stock       string `json:"stock" validate:"required"`
+}
+
+type GetVariantWarehouseStocksRequest struct {
+	WarehouseId string `json:"warehouse_id" validate:"required"`
+}
+
+type GetVariantWarehouseStocksResponse struct {
+	VariantStocks []VariantStock `json:"variant_stocks" validate:"required"`
 }
 
 type TransferHistory struct {
