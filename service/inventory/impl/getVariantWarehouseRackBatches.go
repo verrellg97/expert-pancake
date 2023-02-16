@@ -31,11 +31,12 @@ func (a inventoryService) GetVariantWarehouseRackBatches(w http.ResponseWriter, 
 	var datas = make([]*string, 0)
 
 	for _, d := range result {
+		var batch *string
 		if d.Valid {
-			datas = append(datas, &d.String)
-		} else {
-			datas = append(datas, nil)
+			batch = new(string)
+			*batch = d.String
 		}
+		datas = append(datas, batch)
 	}
 
 	res := model.GetVariantWarehouseRackBatchesResponse{
