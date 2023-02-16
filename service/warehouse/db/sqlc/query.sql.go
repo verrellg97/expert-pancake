@@ -72,8 +72,8 @@ const getWarehouses = `-- name: GetWarehouses :many
 SELECT id, branch_id, code, name, address, type
 FROM warehouse.warehouses
 WHERE CASE WHEN $4::bool THEN id = $1
-ELSE branch_id = $2 AND name LIKE $3 END
-AND is_deleted = false
+ELSE branch_id = $2 AND name LIKE $3
+AND is_deleted = false END
 `
 
 type GetWarehousesParams struct {
