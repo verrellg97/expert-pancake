@@ -1117,6 +1117,42 @@ func (q *Queries) GetUpdateStocks(ctx context.Context, arg GetUpdateStocksParams
 	return items, nil
 }
 
+const getVariantWarehouseRackBatches = `-- name: GetVariantWarehouseRackBatches :many
+SELECT DISTINCT b.batch
+FROM inventory.stock_movements a
+JOIN inventory.item_barcodes b ON a.item_barcode_id = b.id
+WHERE a.variant_id = $1
+AND a.warehouse_rack_id = $2
+`
+
+type GetVariantWarehouseRackBatchesParams struct {
+	VariantID       string `db:"variant_id"`
+	WarehouseRackID string `db:"warehouse_rack_id"`
+}
+
+func (q *Queries) GetVariantWarehouseRackBatches(ctx context.Context, arg GetVariantWarehouseRackBatchesParams) ([]sql.NullString, error) {
+	rows, err := q.db.QueryContext(ctx, getVariantWarehouseRackBatches, arg.VariantID, arg.WarehouseRackID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []sql.NullString
+	for rows.Next() {
+		var batch sql.NullString
+		if err := rows.Scan(&batch); err != nil {
+			return nil, err
+		}
+		items = append(items, batch)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getVariantWarehouseRacks = `-- name: GetVariantWarehouseRacks :many
 SELECT DISTINCT a.warehouse_rack_id
 FROM inventory.stock_movements a
