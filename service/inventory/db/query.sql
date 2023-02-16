@@ -433,6 +433,19 @@ FROM inventory.unit_categories
 WHERE company_id = $1
     AND name LIKE $2;
 
+-- name: GetVariantWarehouseRacks :many
+SELECT DISTINCT a.warehouse_rack_id
+FROM inventory.stock_movements a
+WHERE a.variant_id = $1
+AND a.warehouse_id = $2;
+
+-- name: GetVariantWarehouseRackBatches :many
+SELECT DISTINCT b.batch
+FROM inventory.stock_movements a
+JOIN inventory.item_barcodes b ON a.item_barcode_id = b.id
+WHERE a.variant_id = $1
+AND a.warehouse_rack_id = $2;
+
 -- name: GetTransferHistory :many
 SELECT b.transaction_date,
     b.form_number,
@@ -466,9 +479,3 @@ GROUP BY b.transaction_date,
     b.destination_warehouse_id,
     a.amount
 ORDER BY b.transaction_date DESC;
-
--- name: GetVariantWarehouseRacks :many
-SELECT DISTINCT a.warehouse_rack_id
-FROM inventory.stock_movements a
-WHERE a.variant_id = $1
-AND a.warehouse_id = $2;
