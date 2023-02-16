@@ -360,13 +360,14 @@ SELECT a.id,
     c.id as item_id,
     c.name as item_name,
     d.id as item_unit_id,
-    d.name as item_unit_name,
+    e.name as item_unit_name,
     a.warehouse_id,
     a.minimum_stock
 FROM inventory.item_reorders a
     JOIN inventory.item_variants b ON a.variant_id = b.id
     JOIN inventory.items c ON b.item_id = c.id
-    JOIN inventory.units d ON a.item_unit_id = d.id
+    JOIN inventory.item_units d ON a.item_unit_id = d.id
+    JOIN inventory.units e ON d.unit_id = e.id
 WHERE a.id = $1
 `
 
@@ -403,16 +404,17 @@ const getItemReorders = `-- name: GetItemReorders :many
 SELECT a.id,
     a.variant_id,
     b.name as variant_name,
-    d.id as item_unit_id,
-    d.name as item_unit_name,
     c.id as item_id,
     c.name as item_name,
+    d.id as item_unit_id,
+    e.name as item_unit_name,
     a.warehouse_id,
     a.minimum_stock
 FROM inventory.item_reorders a
     JOIN inventory.item_variants b ON a.variant_id = b.id
     JOIN inventory.items c ON b.item_id = c.id
-    JOIN inventory.units d ON a.item_unit_id = d.id
+    JOIN inventory.item_units d ON a.item_unit_id = d.id
+    JOIN inventory.units e ON d.unit_id = e.id
 WHERE a.warehouse_id LIKE $1
     AND b.item_id LIKE $2
 `
@@ -426,10 +428,10 @@ type GetItemReordersRow struct {
 	ID           string `db:"id"`
 	VariantID    string `db:"variant_id"`
 	VariantName  string `db:"variant_name"`
-	ItemUnitID   string `db:"item_unit_id"`
-	ItemUnitName string `db:"item_unit_name"`
 	ItemID       string `db:"item_id"`
 	ItemName     string `db:"item_name"`
+	ItemUnitID   string `db:"item_unit_id"`
+	ItemUnitName string `db:"item_unit_name"`
 	WarehouseID  string `db:"warehouse_id"`
 	MinimumStock int64  `db:"minimum_stock"`
 }
@@ -447,10 +449,10 @@ func (q *Queries) GetItemReorders(ctx context.Context, arg GetItemReordersParams
 			&i.ID,
 			&i.VariantID,
 			&i.VariantName,
-			&i.ItemUnitID,
-			&i.ItemUnitName,
 			&i.ItemID,
 			&i.ItemName,
+			&i.ItemUnitID,
+			&i.ItemUnitName,
 			&i.WarehouseID,
 			&i.MinimumStock,
 		); err != nil {

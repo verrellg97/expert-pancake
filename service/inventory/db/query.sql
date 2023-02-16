@@ -432,29 +432,31 @@ SELECT a.id,
     c.id as item_id,
     c.name as item_name,
     d.id as item_unit_id,
-    d.name as item_unit_name,
+    e.name as item_unit_name,
     a.warehouse_id,
     a.minimum_stock
 FROM inventory.item_reorders a
     JOIN inventory.item_variants b ON a.variant_id = b.id
     JOIN inventory.items c ON b.item_id = c.id
-    JOIN inventory.units d ON a.item_unit_id = d.id
+    JOIN inventory.item_units d ON a.item_unit_id = d.id
+    JOIN inventory.units e ON d.unit_id = e.id
 WHERE a.id = $1;
 
 -- name: GetItemReorders :many
 SELECT a.id,
     a.variant_id,
     b.name as variant_name,
-    d.id as item_unit_id,
-    d.name as item_unit_name,
     c.id as item_id,
     c.name as item_name,
+    d.id as item_unit_id,
+    e.name as item_unit_name,
     a.warehouse_id,
     a.minimum_stock
 FROM inventory.item_reorders a
     JOIN inventory.item_variants b ON a.variant_id = b.id
     JOIN inventory.items c ON b.item_id = c.id
-    JOIN inventory.units d ON a.item_unit_id = d.id
+    JOIN inventory.item_units d ON a.item_unit_id = d.id
+    JOIN inventory.units e ON d.unit_id = e.id
 WHERE a.warehouse_id LIKE $1
     AND b.item_id LIKE $2;
 
