@@ -14,7 +14,10 @@ import (
 )
 
 const getBrandById = `-- name: GetBrandById :one
-SELECT id, company_id, name FROM inventory.brands
+SELECT id,
+    company_id,
+    name
+FROM inventory.brands
 WHERE id = $1
 `
 
@@ -32,8 +35,12 @@ func (q *Queries) GetBrandById(ctx context.Context, id string) (GetBrandByIdRow,
 }
 
 const getBrands = `-- name: GetBrands :many
-SELECT id, company_id, name FROM inventory.brands
-WHERE company_id = $1 AND name LIKE $2
+SELECT id,
+    company_id,
+    name
+FROM inventory.brands
+WHERE company_id = $1
+    AND name LIKE $2
 `
 
 type GetBrandsParams struct {
@@ -71,7 +78,10 @@ func (q *Queries) GetBrands(ctx context.Context, arg GetBrandsParams) ([]GetBran
 }
 
 const getGroupById = `-- name: GetGroupById :one
-SELECT id, company_id, name FROM inventory.groups
+SELECT id,
+    company_id,
+    name
+FROM inventory.groups
 WHERE id = $1
 `
 
@@ -89,8 +99,12 @@ func (q *Queries) GetGroupById(ctx context.Context, id string) (GetGroupByIdRow,
 }
 
 const getGroups = `-- name: GetGroups :many
-SELECT id, company_id, name FROM inventory.groups
-WHERE company_id = $1 AND name LIKE $2
+SELECT id,
+    company_id,
+    name
+FROM inventory.groups
+WHERE company_id = $1
+    AND name LIKE $2
 `
 
 type GetGroupsParams struct {
@@ -128,14 +142,24 @@ func (q *Queries) GetGroups(ctx context.Context, arg GetGroupsParams) ([]GetGrou
 }
 
 const getInternalStockTransferItems = `-- name: GetInternalStockTransferItems :many
-SELECT a.id, a.warehouse_rack_id, e.name AS item_name, a.variant_id, b.name AS variant_name,
-a.item_unit_id, d.name AS item_unit_name, a.item_unit_value, a.amount, a.batch, a.expired_date
+SELECT a.id,
+    a.warehouse_rack_id,
+    e.name AS item_name,
+    a.variant_id,
+    b.name AS variant_name,
+    a.item_unit_id,
+    d.name AS item_unit_name,
+    a.item_unit_value,
+    a.amount,
+    a.batch,
+    a.expired_date
 FROM inventory.internal_stock_transfer_items a
-JOIN inventory.item_variants b ON a.variant_id = b.id
-JOIN inventory.item_units c ON a.item_unit_id = c.id
-JOIN inventory.units d ON c.unit_id = d.id
-JOIN inventory.items e ON b.item_id = e.id
-WHERE a.internal_stock_transfer_id = $1 AND a.is_deleted = false
+    JOIN inventory.item_variants b ON a.variant_id = b.id
+    JOIN inventory.item_units c ON a.item_unit_id = c.id
+    JOIN inventory.units d ON c.unit_id = d.id
+    JOIN inventory.items e ON b.item_id = e.id
+WHERE a.internal_stock_transfer_id = $1
+    AND a.is_deleted = false
 `
 
 type GetInternalStockTransferItemsRow struct {
@@ -188,13 +212,18 @@ func (q *Queries) GetInternalStockTransferItems(ctx context.Context, internalSto
 }
 
 const getInternalStockTransfers = `-- name: GetInternalStockTransfers :many
-SELECT id, source_warehouse_id, destination_warehouse_id,
-form_number, transaction_date
+SELECT id,
+    source_warehouse_id,
+    destination_warehouse_id,
+    form_number,
+    transaction_date
 FROM inventory.internal_stock_transfers
 WHERE is_deleted = false
-AND transaction_date BETWEEN $1::date AND $2::date
-AND (source_warehouse_id = ANY($3::text[])
-OR destination_warehouse_id = ANY($3::text[]))
+    AND transaction_date BETWEEN $1::date AND $2::date
+    AND (
+        source_warehouse_id = ANY($3::text [])
+        OR destination_warehouse_id = ANY($3::text [])
+    )
 `
 
 type GetInternalStockTransfersParams struct {
@@ -244,10 +273,14 @@ const getItemBarcode = `-- name: GetItemBarcode :one
 SELECT id
 FROM inventory.item_barcodes
 WHERE variant_id = $1
-AND CASE WHEN $4::bool THEN batch is null
-ELSE batch = $2 END
-AND CASE WHEN $5::bool THEN expired_date is null
-ELSE expired_date = $3 END
+    AND CASE
+        WHEN $4::bool THEN batch is null
+        ELSE batch = $2
+    END
+    AND CASE
+        WHEN $5::bool THEN expired_date is null
+        ELSE expired_date = $3
+    END
 `
 
 type GetItemBarcodeParams struct {
@@ -272,13 +305,20 @@ func (q *Queries) GetItemBarcode(ctx context.Context, arg GetItemBarcodeParams) 
 }
 
 const getItemInfo = `-- name: GetItemInfo :one
-SELECT a.item_id, d.company_id, a.is_purchase, a.is_sale, a.is_raw_material, a.is_asset,
-a.purchase_chart_of_account_id, a.sale_chart_of_account_id, a.purchase_item_unit_id,
-c.name AS purchase_item_unit_name
+SELECT a.item_id,
+    d.company_id,
+    a.is_purchase,
+    a.is_sale,
+    a.is_raw_material,
+    a.is_asset,
+    a.purchase_chart_of_account_id,
+    a.sale_chart_of_account_id,
+    a.purchase_item_unit_id,
+    c.name AS purchase_item_unit_name
 FROM inventory.item_infos a
-JOIN inventory.item_units b ON a.purchase_item_unit_id = b.id
-JOIN inventory.units c ON b.unit_id = c.id
-JOIN inventory.items d ON a.item_id = d.id
+    JOIN inventory.item_units b ON a.purchase_item_unit_id = b.id
+    JOIN inventory.units c ON b.unit_id = c.id
+    JOIN inventory.items d ON a.item_id = d.id
 WHERE a.item_id = $1
 `
 
@@ -314,18 +354,19 @@ func (q *Queries) GetItemInfo(ctx context.Context, itemID string) (GetItemInfoRo
 }
 
 const getItemReorder = `-- name: GetItemReorder :one
-SELECT
-    a.id, 
+SELECT a.id,
     a.variant_id,
-    b.name as variant_name, 
-    c.id as item_id, c.name as item_name,
-    d.id as item_unit_id, d.name as item_unit_name, 
-    a.warehouse_id, 
+    b.name as variant_name,
+    c.id as item_id,
+    c.name as item_name,
+    d.id as item_unit_id,
+    d.name as item_unit_name,
+    a.warehouse_id,
     a.minimum_stock
 FROM inventory.item_reorders a
-JOIN inventory.item_variants b ON a.variant_id = b.id
-JOIN inventory.items c ON b.item_id = c.id
-JOIN inventory.units d ON a.item_unit_id = d.id
+    JOIN inventory.item_variants b ON a.variant_id = b.id
+    JOIN inventory.items c ON b.item_id = c.id
+    JOIN inventory.units d ON a.item_unit_id = d.id
 WHERE a.id = $1
 `
 
@@ -359,19 +400,21 @@ func (q *Queries) GetItemReorder(ctx context.Context, id string) (GetItemReorder
 }
 
 const getItemReorders = `-- name: GetItemReorders :many
-SELECT 
-    a.id, 
-    a.variant_id, 
+SELECT a.id,
+    a.variant_id,
     b.name as variant_name,
-    d.id as item_unit_id, d.name as item_unit_name,
-    c.id as item_id, c.name as item_name, 
-    a.warehouse_id, 
+    d.id as item_unit_id,
+    d.name as item_unit_name,
+    c.id as item_id,
+    c.name as item_name,
+    a.warehouse_id,
     a.minimum_stock
 FROM inventory.item_reorders a
-JOIN inventory.item_variants b ON a.variant_id = b.id
-JOIN inventory.items c ON b.item_id = c.id
-JOIN inventory.units d ON a.item_unit_id = d.id
-WHERE a.warehouse_id LIKE $1 AND b.item_id LIKE $2
+    JOIN inventory.item_variants b ON a.variant_id = b.id
+    JOIN inventory.items c ON b.item_id = c.id
+    JOIN inventory.units d ON a.item_unit_id = d.id
+WHERE a.warehouse_id LIKE $1
+    AND b.item_id LIKE $2
 `
 
 type GetItemReordersParams struct {
@@ -425,11 +468,16 @@ func (q *Queries) GetItemReorders(ctx context.Context, arg GetItemReordersParams
 }
 
 const getItemUnits = `-- name: GetItemUnits :many
-SELECT a.id, a.item_id, a.unit_id, b.name AS unit_name,
-a.value, a.is_default
+SELECT a.id,
+    a.item_id,
+    a.unit_id,
+    b.name AS unit_name,
+    a.value,
+    a.is_default
 FROM inventory.item_units a
-JOIN inventory.units b ON a.unit_id = b.id
-WHERE a.item_id = $1 AND b.name LIKE $2
+    JOIN inventory.units b ON a.unit_id = b.id
+WHERE a.item_id = $1
+    AND b.name LIKE $2
 `
 
 type GetItemUnitsParams struct {
@@ -477,13 +525,26 @@ func (q *Queries) GetItemUnits(ctx context.Context, arg GetItemUnitsParams) ([]G
 }
 
 const getItemVariant = `-- name: GetItemVariant :one
-SELECT b.id, a.id AS variant_id, b.company_id, a.image_url, b.code, a.barcode, b.name, a.name AS variant_name,
-b.brand_id, c.name AS brand_name, b.group_id, d.name AS group_name,
-b.tag, b.description, a.is_default, a.price
+SELECT b.id,
+    a.id AS variant_id,
+    b.company_id,
+    a.image_url,
+    b.code,
+    a.barcode,
+    b.name,
+    a.name AS variant_name,
+    b.brand_id,
+    c.name AS brand_name,
+    b.group_id,
+    d.name AS group_name,
+    b.tag,
+    b.description,
+    a.is_default,
+    a.price
 FROM inventory.item_variants a
-JOIN inventory.items b ON a.item_id = b.id
-JOIN inventory.brands c ON b.brand_id = c.id
-JOIN inventory.groups d ON b.group_id = d.id
+    JOIN inventory.items b ON a.item_id = b.id
+    JOIN inventory.brands c ON b.brand_id = c.id
+    JOIN inventory.groups d ON b.group_id = d.id
 WHERE a.id = $1
 `
 
@@ -531,14 +592,28 @@ func (q *Queries) GetItemVariant(ctx context.Context, id string) (GetItemVariant
 }
 
 const getItemVariants = `-- name: GetItemVariants :many
-SELECT b.id, a.id AS variant_id, b.company_id, a.image_url, b.code, a.barcode, b.name, a.name AS variant_name,
-b.brand_id, c.name AS brand_name, b.group_id, d.name AS group_name,
-b.tag, b.description, a.is_default, a.price
+SELECT b.id,
+    a.id AS variant_id,
+    b.company_id,
+    a.image_url,
+    b.code,
+    a.barcode,
+    b.name,
+    a.name AS variant_name,
+    b.brand_id,
+    c.name AS brand_name,
+    b.group_id,
+    d.name AS group_name,
+    b.tag,
+    b.description,
+    a.is_default,
+    a.price
 FROM inventory.item_variants a
-JOIN inventory.items b ON a.item_id = b.id
-JOIN inventory.brands c ON b.brand_id = c.id
-JOIN inventory.groups d ON b.group_id = d.id
-WHERE a.item_id = $1 AND a.name LIKE $2
+    JOIN inventory.items b ON a.item_id = b.id
+    JOIN inventory.brands c ON b.brand_id = c.id
+    JOIN inventory.groups d ON b.group_id = d.id
+WHERE a.item_id = $1
+    AND a.name LIKE $2
 `
 
 type GetItemVariantsParams struct {
@@ -606,14 +681,28 @@ func (q *Queries) GetItemVariants(ctx context.Context, arg GetItemVariantsParams
 }
 
 const getItems = `-- name: GetItems :many
-SELECT a.id, b.id AS variant_id, a.company_id, b.image_url, a.code, b.barcode, a.name, b.name AS variant_name,
-a.brand_id, c.name AS brand_name, a.group_id, d.name AS group_name,
-a.tag, a.description, b.is_default, b.price
+SELECT a.id,
+    b.id AS variant_id,
+    a.company_id,
+    b.image_url,
+    a.code,
+    b.barcode,
+    a.name,
+    b.name AS variant_name,
+    a.brand_id,
+    c.name AS brand_name,
+    a.group_id,
+    d.name AS group_name,
+    a.tag,
+    a.description,
+    b.is_default,
+    b.price
 FROM inventory.items a
-JOIN inventory.item_variants b ON a.id = b.item_id
-JOIN inventory.brands c ON a.brand_id = c.id
-JOIN inventory.groups d ON a.group_id = d.id
-WHERE a.company_id = $1 AND b.name LIKE $2
+    JOIN inventory.item_variants b ON a.id = b.item_id
+    JOIN inventory.brands c ON a.brand_id = c.id
+    JOIN inventory.groups d ON a.group_id = d.id
+WHERE a.company_id = $1
+    AND b.name LIKE $2
 `
 
 type GetItemsParams struct {
@@ -680,8 +769,106 @@ func (q *Queries) GetItems(ctx context.Context, arg GetItemsParams) ([]GetItemsR
 	return items, nil
 }
 
+const getTransferHistory = `-- name: GetTransferHistory :many
+SELECT b.transaction_date,
+    b.form_number,
+    item.id as item_id,
+    item.name as item_name,
+    item.image_url,
+    variant.id as variant_id,
+    variant.name as variant_name,
+    b.source_warehouse_id,
+    b.destination_warehouse_id,
+    a.amount
+FROM inventory.internal_stock_transfer_items a
+    JOIN inventory.item_variants variant ON variant.id = a.variant_id
+    JOIN inventory.items item ON item.id = variant.item_id
+    JOIN inventory.internal_stock_transfers b ON b.id = a.internal_stock_transfer_id
+WHERE a.is_deleted = FALSE
+    AND b.is_deleted = FALSE
+    AND variant.item_id LIKE $1
+    AND transaction_date BETWEEN $4::date AND $5::date
+    AND (
+        source_warehouse_id LIKE $2
+        OR destination_warehouse_id LIKE $3
+    )
+GROUP BY b.transaction_date,
+    a.variant_id,
+    item.id,
+    variant.id,
+    item.image_url,
+    b.form_number,
+    b.source_warehouse_id,
+    b.destination_warehouse_id,
+    a.amount
+ORDER BY b.transaction_date DESC
+`
+
+type GetTransferHistoryParams struct {
+	ItemID                 string    `db:"item_id"`
+	SourceWarehouseID      string    `db:"source_warehouse_id"`
+	DestinationWarehouseID string    `db:"destination_warehouse_id"`
+	StartDate              time.Time `db:"start_date"`
+	EndDate                time.Time `db:"end_date"`
+}
+
+type GetTransferHistoryRow struct {
+	TransactionDate        time.Time `db:"transaction_date"`
+	FormNumber             string    `db:"form_number"`
+	ItemID                 string    `db:"item_id"`
+	ItemName               string    `db:"item_name"`
+	ImageUrl               string    `db:"image_url"`
+	VariantID              string    `db:"variant_id"`
+	VariantName            string    `db:"variant_name"`
+	SourceWarehouseID      string    `db:"source_warehouse_id"`
+	DestinationWarehouseID string    `db:"destination_warehouse_id"`
+	Amount                 int64     `db:"amount"`
+}
+
+func (q *Queries) GetTransferHistory(ctx context.Context, arg GetTransferHistoryParams) ([]GetTransferHistoryRow, error) {
+	rows, err := q.db.QueryContext(ctx, getTransferHistory,
+		arg.ItemID,
+		arg.SourceWarehouseID,
+		arg.DestinationWarehouseID,
+		arg.StartDate,
+		arg.EndDate,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetTransferHistoryRow
+	for rows.Next() {
+		var i GetTransferHistoryRow
+		if err := rows.Scan(
+			&i.TransactionDate,
+			&i.FormNumber,
+			&i.ItemID,
+			&i.ItemName,
+			&i.ImageUrl,
+			&i.VariantID,
+			&i.VariantName,
+			&i.SourceWarehouseID,
+			&i.DestinationWarehouseID,
+			&i.Amount,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getUnit = `-- name: GetUnit :one
-SELECT id, company_id, name
+SELECT id,
+    company_id,
+    name
 FROM inventory.units
 WHERE id = $1
 `
@@ -700,9 +887,12 @@ func (q *Queries) GetUnit(ctx context.Context, id string) (GetUnitRow, error) {
 }
 
 const getUnitCategories = `-- name: GetUnitCategories :many
-SELECT id, company_id, name
+SELECT id,
+    company_id,
+    name
 FROM inventory.unit_categories
-WHERE company_id = $1 AND name LIKE $2
+WHERE company_id = $1
+    AND name LIKE $2
 `
 
 type GetUnitCategoriesParams struct {
@@ -740,8 +930,14 @@ func (q *Queries) GetUnitCategories(ctx context.Context, arg GetUnitCategoriesPa
 }
 
 const getUnits = `-- name: GetUnits :many
-SELECT id, company_id, unit_category_id, name FROM inventory.units
-WHERE company_id = $1 AND unit_category_id LIKE $2 AND name LIKE $3
+SELECT id,
+    company_id,
+    unit_category_id,
+    name
+FROM inventory.units
+WHERE company_id = $1
+    AND unit_category_id LIKE $2
+    AND name LIKE $3
 `
 
 type GetUnitsParams struct {
@@ -972,8 +1168,13 @@ func (q *Queries) InsertGroup(ctx context.Context, arg InsertGroupParams) (Inven
 }
 
 const insertInternalStockTransfer = `-- name: InsertInternalStockTransfer :one
-INSERT INTO inventory.internal_stock_transfers(id,
-source_warehouse_id, destination_warehouse_id, form_number, transaction_date)
+INSERT INTO inventory.internal_stock_transfers(
+        id,
+        source_warehouse_id,
+        destination_warehouse_id,
+        form_number,
+        transaction_date
+    )
 VALUES ($1, $2, $3, $4, $5)
 RETURNING id, source_warehouse_id, destination_warehouse_id, form_number, transaction_date, is_deleted, created_at, updated_at
 `
@@ -1009,10 +1210,18 @@ func (q *Queries) InsertInternalStockTransfer(ctx context.Context, arg InsertInt
 }
 
 const insertInternalStockTransferItem = `-- name: InsertInternalStockTransferItem :exec
-INSERT INTO inventory.internal_stock_transfer_items(id,
-internal_stock_transfer_id, warehouse_rack_id, variant_id,
-item_unit_id, item_unit_value, amount, batch, expired_date,
-item_barcode_id)
+INSERT INTO inventory.internal_stock_transfer_items(
+        id,
+        internal_stock_transfer_id,
+        warehouse_rack_id,
+        variant_id,
+        item_unit_id,
+        item_unit_value,
+        amount,
+        batch,
+        expired_date,
+        item_barcode_id
+    )
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
 `
 
@@ -1046,8 +1255,17 @@ func (q *Queries) InsertInternalStockTransferItem(ctx context.Context, arg Inser
 }
 
 const insertItem = `-- name: InsertItem :one
-INSERT INTO inventory.items(id, company_id, image_url,
-code, name, brand_id, group_id, tag, description)
+INSERT INTO inventory.items(
+        id,
+        company_id,
+        image_url,
+        code,
+        name,
+        brand_id,
+        group_id,
+        tag,
+        description
+    )
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
 RETURNING id, company_id, image_url, code, name, brand_id, group_id, tag, description, created_at, updated_at
 `
@@ -1116,8 +1334,15 @@ func (q *Queries) InsertItemBarcode(ctx context.Context, arg InsertItemBarcodePa
 }
 
 const insertItemVariant = `-- name: InsertItemVariant :one
-INSERT INTO inventory.item_variants(id, item_id, image_url,
-barcode, name, price, is_default)
+INSERT INTO inventory.item_variants(
+        id,
+        item_id,
+        image_url,
+        barcode,
+        name,
+        price,
+        is_default
+    )
 VALUES ($1, $2, $3, $4, $5, $6, $7)
 RETURNING id, item_id, image_url, barcode, name, price, is_default, created_at, updated_at
 `
@@ -1158,9 +1383,18 @@ func (q *Queries) InsertItemVariant(ctx context.Context, arg InsertItemVariantPa
 }
 
 const insertStockMovement = `-- name: InsertStockMovement :exec
-INSERT INTO inventory.stock_movements(id, transaction_id, transaction_date,
-transaction_reference, detail_transaction_id, warehouse_id, warehouse_rack_id,
-variant_id, item_barcode_id, amount)
+INSERT INTO inventory.stock_movements(
+        id,
+        transaction_id,
+        transaction_date,
+        transaction_reference,
+        detail_transaction_id,
+        warehouse_id,
+        warehouse_rack_id,
+        variant_id,
+        item_barcode_id,
+        amount
+    )
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
 `
 
@@ -1270,8 +1504,7 @@ func (q *Queries) InsertUpdateStock(ctx context.Context, arg InsertUpdateStockPa
 
 const updateBrand = `-- name: UpdateBrand :one
 UPDATE inventory.brands
-SET 
-    name = $2,
+SET name = $2,
     updated_at = NOW()
 WHERE id = $1
 RETURNING id, company_id, name, created_at, updated_at
@@ -1297,8 +1530,7 @@ func (q *Queries) UpdateBrand(ctx context.Context, arg UpdateBrandParams) (Inven
 
 const updateGroup = `-- name: UpdateGroup :one
 UPDATE inventory.groups
-SET 
-    name = $2,
+SET name = $2,
     updated_at = NOW()
 WHERE id = $1
 RETURNING id, company_id, name, created_at, updated_at
@@ -1324,8 +1556,7 @@ func (q *Queries) UpdateGroup(ctx context.Context, arg UpdateGroupParams) (Inven
 
 const updateItem = `-- name: UpdateItem :one
 UPDATE inventory.items
-SET 
-    image_url = $2,
+SET image_url = $2,
     name = $3,
     brand_id = $4,
     group_id = $5,
@@ -1375,13 +1606,12 @@ func (q *Queries) UpdateItem(ctx context.Context, arg UpdateItemParams) (Invento
 
 const updateItemVariantDefault = `-- name: UpdateItemVariantDefault :one
 UPDATE inventory.item_variants
-SET 
-    image_url = $2,
+SET image_url = $2,
     barcode = $3,
     price = $4,
     updated_at = NOW()
 WHERE item_id = $1
-AND is_default = true
+    AND is_default = true
 RETURNING id, item_id, image_url, barcode, name, price, is_default, created_at, updated_at
 `
 
@@ -1416,8 +1646,7 @@ func (q *Queries) UpdateItemVariantDefault(ctx context.Context, arg UpdateItemVa
 
 const updateUnit = `-- name: UpdateUnit :one
 UPDATE inventory.units
-SET 
-    unit_category_id = $2,
+SET unit_category_id = $2,
     name = $3,
     updated_at = NOW()
 WHERE id = $1
@@ -1445,12 +1674,19 @@ func (q *Queries) UpdateUnit(ctx context.Context, arg UpdateUnitParams) (Invento
 }
 
 const upsertItemInfo = `-- name: UpsertItemInfo :exec
-INSERT INTO inventory.item_infos(item_id, is_purchase, is_sale, is_raw_material, is_asset,
-purchase_chart_of_account_id, sale_chart_of_account_id, purchase_item_unit_id)
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-ON CONFLICT (item_id)
-DO UPDATE SET
-    is_purchase = EXCLUDED.is_purchase,
+INSERT INTO inventory.item_infos(
+        item_id,
+        is_purchase,
+        is_sale,
+        is_raw_material,
+        is_asset,
+        purchase_chart_of_account_id,
+        sale_chart_of_account_id,
+        purchase_item_unit_id
+    )
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8) ON CONFLICT (item_id) DO
+UPDATE
+SET is_purchase = EXCLUDED.is_purchase,
     is_sale = EXCLUDED.is_sale,
     is_raw_material = EXCLUDED.is_raw_material,
     is_asset = EXCLUDED.is_asset,
@@ -1486,11 +1722,16 @@ func (q *Queries) UpsertItemInfo(ctx context.Context, arg UpsertItemInfoParams) 
 }
 
 const upsertItemReorder = `-- name: UpsertItemReorder :one
-INSERT INTO inventory.item_reorders(id, variant_id, item_unit_id, warehouse_id, minimum_stock)
-VALUES ($1, $2, $3, $4, $5)
-ON CONFLICT (id)
-DO UPDATE SET
-    variant_id = EXCLUDED.variant_id,
+INSERT INTO inventory.item_reorders(
+        id,
+        variant_id,
+        item_unit_id,
+        warehouse_id,
+        minimum_stock
+    )
+VALUES ($1, $2, $3, $4, $5) ON CONFLICT (id) DO
+UPDATE
+SET variant_id = EXCLUDED.variant_id,
     item_unit_id = EXCLUDED.item_unit_id,
     warehouse_id = EXCLUDED.warehouse_id,
     minimum_stock = EXCLUDED.minimum_stock,
@@ -1529,10 +1770,9 @@ func (q *Queries) UpsertItemReorder(ctx context.Context, arg UpsertItemReorderPa
 
 const upsertItemUnit = `-- name: UpsertItemUnit :one
 INSERT INTO inventory.item_units(id, item_id, unit_id, value, is_default)
-VALUES ($1, $2, $3, $4, $5)
-ON CONFLICT (id)
-DO UPDATE SET
-    item_id = EXCLUDED.item_id,
+VALUES ($1, $2, $3, $4, $5) ON CONFLICT (id) DO
+UPDATE
+SET item_id = EXCLUDED.item_id,
     unit_id = EXCLUDED.unit_id,
     value = EXCLUDED.value,
     is_default = EXCLUDED.is_default,
@@ -1571,10 +1811,9 @@ func (q *Queries) UpsertItemUnit(ctx context.Context, arg UpsertItemUnitParams) 
 
 const upsertItemVariant = `-- name: UpsertItemVariant :exec
 INSERT INTO inventory.item_variants(id, item_id, image_url, barcode, name, price)
-VALUES ($1, $2, $3, $4, $5, $6)
-ON CONFLICT (id)
-DO UPDATE SET
-    item_id = EXCLUDED.item_id,
+VALUES ($1, $2, $3, $4, $5, $6) ON CONFLICT (id) DO
+UPDATE
+SET item_id = EXCLUDED.item_id,
     image_url = EXCLUDED.image_url,
     barcode = EXCLUDED.barcode,
     name = EXCLUDED.name,
@@ -1605,10 +1844,9 @@ func (q *Queries) UpsertItemVariant(ctx context.Context, arg UpsertItemVariantPa
 
 const upsertUnitCategory = `-- name: UpsertUnitCategory :one
 INSERT INTO inventory.unit_categories(id, company_id, name)
-VALUES ($1, $2, $3)
-ON CONFLICT (id)
-DO UPDATE SET
-    company_id = EXCLUDED.company_id,
+VALUES ($1, $2, $3) ON CONFLICT (id) DO
+UPDATE
+SET company_id = EXCLUDED.company_id,
     name = EXCLUDED.name,
     updated_at = NOW()
 RETURNING id, company_id, name, created_at, updated_at
