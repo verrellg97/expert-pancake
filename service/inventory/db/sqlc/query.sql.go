@@ -1267,6 +1267,54 @@ func (q *Queries) GetVariantWarehouseRacks(ctx context.Context, arg GetVariantWa
 	return items, nil
 }
 
+const getVariantWarehouseStocks = `-- name: GetVariantWarehouseStocks :many
+SELECT c.id AS item_id, c.name AS item_name,
+b.id AS variant_id, b.name AS variant_name,
+SUM(a.amount) AS stock
+FROM inventory.stock_movements a
+JOIN inventory.item_variants b ON a.variant_id = b.id
+JOIN inventory.items c ON b.item_id = c.id
+WHERE a.warehouse_id = $1
+GROUP BY c.id, c.name, b.id, b.name
+`
+
+type GetVariantWarehouseStocksRow struct {
+	ItemID      string `db:"item_id"`
+	ItemName    string `db:"item_name"`
+	VariantID   string `db:"variant_id"`
+	VariantName string `db:"variant_name"`
+	Stock       int64  `db:"stock"`
+}
+
+func (q *Queries) GetVariantWarehouseStocks(ctx context.Context, warehouseID string) ([]GetVariantWarehouseStocksRow, error) {
+	rows, err := q.db.QueryContext(ctx, getVariantWarehouseStocks, warehouseID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetVariantWarehouseStocksRow
+	for rows.Next() {
+		var i GetVariantWarehouseStocksRow
+		if err := rows.Scan(
+			&i.ItemID,
+			&i.ItemName,
+			&i.VariantID,
+			&i.VariantName,
+			&i.Stock,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const insertBrand = `-- name: InsertBrand :one
 INSERT INTO inventory.brands(id, company_id, name)
 VALUES ($1, $2, $3)

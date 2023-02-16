@@ -516,6 +516,16 @@ AND CASE
     ELSE b.expired_date = $4
 END;
 
+-- name: GetVariantWarehouseStocks :many
+SELECT c.id AS item_id, c.name AS item_name,
+b.id AS variant_id, b.name AS variant_name,
+SUM(a.amount) AS stock
+FROM inventory.stock_movements a
+JOIN inventory.item_variants b ON a.variant_id = b.id
+JOIN inventory.items c ON b.item_id = c.id
+WHERE a.warehouse_id = $1
+GROUP BY c.id, c.name, b.id, b.name;
+
 -- name: GetTransferHistory :many
 SELECT b.transaction_date,
     b.form_number,
