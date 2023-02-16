@@ -1200,6 +1200,45 @@ func (q *Queries) GetVariantWarehouseRackBatches(ctx context.Context, arg GetVar
 	return items, nil
 }
 
+const getVariantWarehouseRackStock = `-- name: GetVariantWarehouseRackStock :one
+SELECT SUM(a.amount) AS stock
+FROM inventory.stock_movements a
+JOIN inventory.item_barcodes b ON a.item_barcode_id = b.id
+WHERE a.variant_id = $1
+AND a.warehouse_rack_id = $2
+AND CASE
+    WHEN $5::bool THEN b.batch is null
+    ELSE b.batch = $3
+END
+AND CASE
+    WHEN $6::bool THEN b.expired_date is null
+    ELSE b.expired_date = $4
+END
+`
+
+type GetVariantWarehouseRackStockParams struct {
+	VariantID         string         `db:"variant_id"`
+	WarehouseRackID   string         `db:"warehouse_rack_id"`
+	Batch             sql.NullString `db:"batch"`
+	ExpiredDate       sql.NullTime   `db:"expired_date"`
+	IsNullBatch       bool           `db:"is_null_batch"`
+	IsNullExpiredDate bool           `db:"is_null_expired_date"`
+}
+
+func (q *Queries) GetVariantWarehouseRackStock(ctx context.Context, arg GetVariantWarehouseRackStockParams) (int64, error) {
+	row := q.db.QueryRowContext(ctx, getVariantWarehouseRackStock,
+		arg.VariantID,
+		arg.WarehouseRackID,
+		arg.Batch,
+		arg.ExpiredDate,
+		arg.IsNullBatch,
+		arg.IsNullExpiredDate,
+	)
+	var stock int64
+	err := row.Scan(&stock)
+	return stock, err
+}
+
 const getVariantWarehouseRacks = `-- name: GetVariantWarehouseRacks :many
 SELECT DISTINCT a.warehouse_rack_id
 FROM inventory.stock_movements a
