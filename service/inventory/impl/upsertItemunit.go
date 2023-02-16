@@ -44,6 +44,16 @@ func (a inventoryService) UpsertItemUnit(w http.ResponseWriter, r *http.Request)
 		return errors.NewServerError(model.UpsertItemUnitError, err.Error())
 	}
 
+	if req.IsDefault {
+		err := a.dbTrx.UpdateItemUnitIsDefaultToFalse(context.Background(), db.UpdateItemUnitIsDefaultToFalseParams{
+			ID:     id,
+			ItemID: req.ItemId,
+		})
+		if err != nil {
+			return errors.NewServerError(model.UpsertItemUnitError, err.Error())
+		}
+	}
+
 	unitRes, err := a.dbTrx.GetUnit(context.Background(), result.UnitID)
 	if err != nil {
 		return errors.NewServerError(model.UpsertItemUnitError, err.Error())

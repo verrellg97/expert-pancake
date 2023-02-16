@@ -257,6 +257,13 @@ SET item_id = EXCLUDED.item_id,
     updated_at = NOW()
 RETURNING *;
 
+-- name: UpdateItemUnitIsDefaultToFalse :exec
+UPDATE inventory.item_units
+SET is_default = false,
+    updated_at = NOW()
+WHERE item_id = $1
+AND id <> $2;
+
 -- name: GetUnit :one
 SELECT id,
     company_id,
