@@ -7,4 +7,5 @@ const (
 
 	UpsertWarehouseRackError = 800004
 	GetWarehouseRacksError   = 800005
+	DeleteWarehouseRackError   = 800006
 )

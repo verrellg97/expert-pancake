@@ -10,6 +10,7 @@ import (
 
 type Querier interface {
 	DeleteWarehouse(ctx context.Context, id string) error
+	DeleteWarehouseRack(ctx context.Context, id string) error
 	GetWarehouseRacks(ctx context.Context, arg GetWarehouseRacksParams) ([]GetWarehouseRacksRow, error)
 	GetWarehouses(ctx context.Context, arg GetWarehousesParams) ([]GetWarehousesRow, error)
 	UpsertWarehouse(ctx context.Context, arg UpsertWarehouseParams) (WarehouseWarehouse, error)

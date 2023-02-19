@@ -10,6 +10,7 @@ type WarehouseService interface {
 	DeleteWarehouse(w http.ResponseWriter, r *http.Request) error
 
 	UpsertWarehouseRack(w http.ResponseWriter, r *http.Request) error
+	DeleteWarehouseRack(w http.ResponseWriter, r *http.Request) error
 	GetWarehouseRacks(w http.ResponseWriter, r *http.Request) error
 }
 
@@ -75,5 +76,13 @@ type DeleteWarehouseRequest struct {
 }
 
 type DeleteWarehouseResponse struct {
+	Message string `json:"message"`
+}
+
+type DeleteWarehouseRackRequest struct {
+	Id string `json:"id" validate:"required"`
+}
+
+type DeleteWarehouseRackResponse struct {
 	Message string `json:"message"`
 }

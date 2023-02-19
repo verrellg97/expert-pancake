@@ -20,11 +20,22 @@ func (q *Queries) DeleteWarehouse(ctx context.Context, id string) error {
 	return err
 }
 
+const deleteWarehouseRack = `-- name: DeleteWarehouseRack :exec
+UPDATE warehouse.warehouse_racks
+SET is_deleted = true
+WHERE id = $1
+`
+
+func (q *Queries) DeleteWarehouseRack(ctx context.Context, id string) error {
+	_, err := q.db.ExecContext(ctx, deleteWarehouseRack, id)
+	return err
+}
+
 const getWarehouseRacks = `-- name: GetWarehouseRacks :many
 SELECT id, warehouse_id, name
 FROM warehouse.warehouse_racks
 WHERE CASE WHEN $4::bool THEN id = $1
-ELSE warehouse_id = $2 AND name LIKE $3 END
+ELSE warehouse_id = $2 AND name LIKE $3 AND is_deleted = false END
 `
 
 type GetWarehouseRacksParams struct {
@@ -181,7 +192,7 @@ DO UPDATE SET
     warehouse_id = EXCLUDED.warehouse_id,
     name = EXCLUDED.name,
     updated_at = NOW()
-RETURNING id, warehouse_id, name, created_at, updated_at
+RETURNING id, warehouse_id, name, created_at, updated_at, is_deleted
 `
 
 type UpsertWarehouseRackParams struct {
@@ -199,6 +210,7 @@ func (q *Queries) UpsertWarehouseRack(ctx context.Context, arg UpsertWarehouseRa
 		&i.Name,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.IsDeleted,
 	)
 	return i, err
 }
