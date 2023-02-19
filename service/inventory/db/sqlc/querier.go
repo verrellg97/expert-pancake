@@ -10,6 +10,8 @@ import (
 )
 
 type Querier interface {
+	DeleteBrand(ctx context.Context, id string) error
+	DeleteGroup(ctx context.Context, id string) error
 	GetBrandById(ctx context.Context, id string) (GetBrandByIdRow, error)
 	GetBrands(ctx context.Context, arg GetBrandsParams) ([]GetBrandsRow, error)
 	GetGroupById(ctx context.Context, id string) (GetGroupByIdRow, error)

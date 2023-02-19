@@ -3,10 +3,12 @@ package model
 const (
 	AddNewBrandError = 700001
 	UpdateBrandError = 700002
+	DeleteBrandError = 700033
 	GetBrandsError   = 700003
 
 	AddNewGroupError = 700004
 	UpdateGroupError = 700005
+	DeleteGroupError = 700034
 	GetGroupsError   = 700006
 
 	AddNewUnitError = 700007
