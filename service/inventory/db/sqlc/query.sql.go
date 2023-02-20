@@ -797,6 +797,83 @@ func (q *Queries) GetItems(ctx context.Context, arg GetItemsParams) ([]GetItemsR
 	return items, nil
 }
 
+const getStockHistory = `-- name: GetStockHistory :many
+SELECT a.transaction_date,
+    a.form_number,
+    item.id as item_id,
+    item.name as item_name,
+    item.image_url,
+    variant.id as variant_id,
+    variant.name as variant_name,
+    SUM(a.ending_stock) as onhand,
+    SUM(a.ending_stock) as calculated
+FROM inventory.update_stocks a
+    JOIN inventory.item_variants variant ON variant.id = a.variant_id
+    JOIN inventory.items item ON item.id = variant.item_id
+WHERE a.is_deleted = FALSE
+    AND variant.item_id LIKE $1
+    AND transaction_date BETWEEN $2::date AND $3::date
+GROUP BY a.transaction_date,
+    a.form_number,
+    item.id,
+    item.name,
+    item.image_url,
+    variant.id,
+    variant.name
+ORDER BY b.transaction_date DESC
+`
+
+type GetStockHistoryParams struct {
+	ItemID    string    `db:"item_id"`
+	StartDate time.Time `db:"start_date"`
+	EndDate   time.Time `db:"end_date"`
+}
+
+type GetStockHistoryRow struct {
+	TransactionDate time.Time `db:"transaction_date"`
+	FormNumber      string    `db:"form_number"`
+	ItemID          string    `db:"item_id"`
+	ItemName        string    `db:"item_name"`
+	ImageUrl        string    `db:"image_url"`
+	VariantID       string    `db:"variant_id"`
+	VariantName     string    `db:"variant_name"`
+	Onhand          int64     `db:"onhand"`
+	Calculated      int64     `db:"calculated"`
+}
+
+func (q *Queries) GetStockHistory(ctx context.Context, arg GetStockHistoryParams) ([]GetStockHistoryRow, error) {
+	rows, err := q.db.QueryContext(ctx, getStockHistory, arg.ItemID, arg.StartDate, arg.EndDate)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetStockHistoryRow
+	for rows.Next() {
+		var i GetStockHistoryRow
+		if err := rows.Scan(
+			&i.TransactionDate,
+			&i.FormNumber,
+			&i.ItemID,
+			&i.ItemName,
+			&i.ImageUrl,
+			&i.VariantID,
+			&i.VariantName,
+			&i.Onhand,
+			&i.Calculated,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getTransferHistory = `-- name: GetTransferHistory :many
 SELECT b.transaction_date,
     b.form_number,

@@ -564,3 +564,28 @@ WHERE a.is_deleted = FALSE
         OR destination_warehouse_id LIKE $3
     )
 ORDER BY b.transaction_date DESC;
+
+-- name: GetStockHistory :many
+SELECT a.transaction_date,
+    a.form_number,
+    item.id as item_id,
+    item.name as item_name,
+    item.image_url,
+    variant.id as variant_id,
+    variant.name as variant_name,
+    SUM(a.ending_stock) as onhand,
+    SUM(a.ending_stock) as calculated
+FROM inventory.update_stocks a
+    JOIN inventory.item_variants variant ON variant.id = a.variant_id
+    JOIN inventory.items item ON item.id = variant.item_id
+WHERE a.is_deleted = FALSE
+    AND variant.item_id LIKE $1
+    AND transaction_date BETWEEN @start_date::date AND @end_date::date
+GROUP BY a.transaction_date,
+    a.form_number,
+    item.id,
+    item.name,
+    item.image_url,
+    variant.id,
+    variant.name
+ORDER BY b.transaction_date DESC;
