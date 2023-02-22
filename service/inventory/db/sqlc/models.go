@@ -15,6 +15,7 @@ type InventoryBrand struct {
 	Name      string       `db:"name"`
 	CreatedAt sql.NullTime `db:"created_at"`
 	UpdatedAt sql.NullTime `db:"updated_at"`
+	IsDeleted bool         `db:"is_deleted"`
 }
 
 type InventoryGroup struct {
@@ -23,6 +24,7 @@ type InventoryGroup struct {
 	Name      string       `db:"name"`
 	CreatedAt sql.NullTime `db:"created_at"`
 	UpdatedAt sql.NullTime `db:"updated_at"`
+	IsDeleted bool         `db:"is_deleted"`
 }
 
 type InventoryInternalStockTransfer struct {

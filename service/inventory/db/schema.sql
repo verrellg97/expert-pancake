@@ -6,6 +6,7 @@ CREATE TABLE "inventory"."brands" (
   "name" text NOT NULL,
   "created_at" timestamptz DEFAULT (now()),
   "updated_at" timestamptz DEFAULT (now()),
+  "is_deleted" bool NOT NULL DEFAULT FALSE,
   PRIMARY KEY ("id")
 );
 
@@ -15,6 +16,7 @@ CREATE TABLE "inventory"."groups" (
   "name" text NOT NULL,
   "created_at" timestamptz DEFAULT (now()),
   "updated_at" timestamptz DEFAULT (now()),
+  "is_deleted" bool NOT NULL DEFAULT FALSE,
   PRIMARY KEY ("id")
 );
 

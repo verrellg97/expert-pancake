@@ -10,13 +10,20 @@ SET name = $2,
 WHERE id = $1
 RETURNING *;
 
+-- name: DeleteBrand :exec
+UPDATE inventory.brands
+SET is_deleted = TRUE,
+    updated_at = NOW()
+WHERE id = $1;
+
 -- name: GetBrands :many
 SELECT id,
     company_id,
     name
 FROM inventory.brands
 WHERE company_id = $1
-    AND name LIKE $2;
+    AND name LIKE $2
+    AND is_deleted = false;
 
 -- name: InsertGroup :one
 INSERT INTO inventory.groups(id, company_id, name)
@@ -30,13 +37,20 @@ SET name = $2,
 WHERE id = $1
 RETURNING *;
 
+-- name: DeleteGroup :exec
+UPDATE inventory.groups
+SET is_deleted = TRUE,
+    updated_at = NOW()
+WHERE id = $1;
+
 -- name: GetGroups :many
 SELECT id,
     company_id,
     name
 FROM inventory.groups
 WHERE company_id = $1
-    AND name LIKE $2;
+    AND name LIKE $2
+    AND is_deleted = false;
 
 -- name: InsertUnit :one
 INSERT INTO inventory.units(id, company_id, unit_category_id, name)

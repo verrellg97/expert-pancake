@@ -7,10 +7,12 @@ import (
 type InventoryService interface {
 	AddBrand(w http.ResponseWriter, r *http.Request) error
 	UpdateBrand(w http.ResponseWriter, r *http.Request) error
+	DeleteBrand(w http.ResponseWriter, r *http.Request) error
 	GetBrands(w http.ResponseWriter, r *http.Request) error
 
 	AddGroup(w http.ResponseWriter, r *http.Request) error
 	UpdateGroup(w http.ResponseWriter, r *http.Request) error
+	DeleteGroup(w http.ResponseWriter, r *http.Request) error
 	GetGroups(w http.ResponseWriter, r *http.Request) error
 
 	AddUnit(w http.ResponseWriter, r *http.Request) error
@@ -75,6 +77,14 @@ type UpdateBrandResponse struct {
 	Brand
 }
 
+type DeleteBrandRequest struct {
+	Id   string `json:"id" validate:"required"`
+}
+
+type DeleteBrandResponse struct {
+	Message string `json:"message" validate:"required"` 
+}
+
 type GetBrandsRequest struct {
 	CompanyId string `json:"company_id" validate:"required"`
 	Keyword   string `json:"keyword"`
@@ -102,6 +112,14 @@ type UpdateGroupRequest struct {
 
 type UpdateGroupResponse struct {
 	Group
+}
+
+type DeleteGroupRequest struct {
+	Id   string `json:"id" validate:"required"`
+}
+
+type DeleteGroupResponse struct {
+	Message string `json:"message" validate:"required"` 
 }
 
 type GetGroupsRequest struct {

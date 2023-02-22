@@ -13,10 +13,12 @@ import (
 const (
 	AddBrandPath    = "/inventory/brand/add"
 	UpdateBrandPath = "/inventory/brand/update"
+	DeleteBrandPath = "/inventory/brand/delete"
 	GetBrandsPath   = "/inventory/brands"
 
 	AddGroupPath    = "/inventory/group/add"
 	UpdateGroupPath = "/inventory/group/update"
+	DeleteGroupPath = "/inventory/group/delete"
 	GetGroupsPath   = "/inventory/groups"
 
 	AddUnitPath    = "/inventory/unit/add"
@@ -75,10 +77,12 @@ func (c *component) Routes(inventoryService model.InventoryService) http.Handler
 
 	mux.Method("POST", AddBrandPath, httpHandler.New(inventoryService.AddBrand))
 	mux.Method("POST", UpdateBrandPath, httpHandler.New(inventoryService.UpdateBrand))
+	mux.Method("POST", DeleteBrandPath, httpHandler.New(inventoryService.DeleteBrand))
 	mux.Method("POST", GetBrandsPath, httpHandler.New(inventoryService.GetBrands))
 
 	mux.Method("POST", AddGroupPath, httpHandler.New(inventoryService.AddGroup))
 	mux.Method("POST", UpdateGroupPath, httpHandler.New(inventoryService.UpdateGroup))
+	mux.Method("POST", DeleteGroupPath, httpHandler.New(inventoryService.DeleteGroup))
 	mux.Method("POST", GetGroupsPath, httpHandler.New(inventoryService.GetGroups))
 
 	mux.Method("POST", AddUnitPath, httpHandler.New(inventoryService.AddUnit))

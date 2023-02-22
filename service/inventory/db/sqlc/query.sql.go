@@ -13,6 +13,30 @@ import (
 	"github.com/lib/pq"
 )
 
+const deleteBrand = `-- name: DeleteBrand :exec
+UPDATE inventory.brands
+SET is_deleted = TRUE,
+    updated_at = NOW()
+WHERE id = $1
+`
+
+func (q *Queries) DeleteBrand(ctx context.Context, id string) error {
+	_, err := q.db.ExecContext(ctx, deleteBrand, id)
+	return err
+}
+
+const deleteGroup = `-- name: DeleteGroup :exec
+UPDATE inventory.groups
+SET is_deleted = TRUE,
+    updated_at = NOW()
+WHERE id = $1
+`
+
+func (q *Queries) DeleteGroup(ctx context.Context, id string) error {
+	_, err := q.db.ExecContext(ctx, deleteGroup, id)
+	return err
+}
+
 const getBrandById = `-- name: GetBrandById :one
 SELECT id,
     company_id,
@@ -41,6 +65,7 @@ SELECT id,
 FROM inventory.brands
 WHERE company_id = $1
     AND name LIKE $2
+    AND is_deleted = false
 `
 
 type GetBrandsParams struct {
@@ -105,6 +130,7 @@ SELECT id,
 FROM inventory.groups
 WHERE company_id = $1
     AND name LIKE $2
+    AND is_deleted = false
 `
 
 type GetGroupsParams struct {
@@ -1318,7 +1344,7 @@ func (q *Queries) GetVariantWarehouseStocks(ctx context.Context, warehouseID str
 const insertBrand = `-- name: InsertBrand :one
 INSERT INTO inventory.brands(id, company_id, name)
 VALUES ($1, $2, $3)
-RETURNING id, company_id, name, created_at, updated_at
+RETURNING id, company_id, name, created_at, updated_at, is_deleted
 `
 
 type InsertBrandParams struct {
@@ -1336,6 +1362,7 @@ func (q *Queries) InsertBrand(ctx context.Context, arg InsertBrandParams) (Inven
 		&i.Name,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.IsDeleted,
 	)
 	return i, err
 }
@@ -1343,7 +1370,7 @@ func (q *Queries) InsertBrand(ctx context.Context, arg InsertBrandParams) (Inven
 const insertGroup = `-- name: InsertGroup :one
 INSERT INTO inventory.groups(id, company_id, name)
 VALUES ($1, $2, $3)
-RETURNING id, company_id, name, created_at, updated_at
+RETURNING id, company_id, name, created_at, updated_at, is_deleted
 `
 
 type InsertGroupParams struct {
@@ -1361,6 +1388,7 @@ func (q *Queries) InsertGroup(ctx context.Context, arg InsertGroupParams) (Inven
 		&i.Name,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.IsDeleted,
 	)
 	return i, err
 }
@@ -1705,7 +1733,7 @@ UPDATE inventory.brands
 SET name = $2,
     updated_at = NOW()
 WHERE id = $1
-RETURNING id, company_id, name, created_at, updated_at
+RETURNING id, company_id, name, created_at, updated_at, is_deleted
 `
 
 type UpdateBrandParams struct {
@@ -1722,6 +1750,7 @@ func (q *Queries) UpdateBrand(ctx context.Context, arg UpdateBrandParams) (Inven
 		&i.Name,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.IsDeleted,
 	)
 	return i, err
 }
@@ -1731,7 +1760,7 @@ UPDATE inventory.groups
 SET name = $2,
     updated_at = NOW()
 WHERE id = $1
-RETURNING id, company_id, name, created_at, updated_at
+RETURNING id, company_id, name, created_at, updated_at, is_deleted
 `
 
 type UpdateGroupParams struct {
@@ -1748,6 +1777,7 @@ func (q *Queries) UpdateGroup(ctx context.Context, arg UpdateGroupParams) (Inven
 		&i.Name,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.IsDeleted,
 	)
 	return i, err
 }
