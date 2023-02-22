@@ -3,3 +3,4 @@
 
 20230125_warehouse_schema_and_tables 2023-01-25T08:40:58Z Verrell <verrell@Verrells-MacBook-Air.local> # Add warehouse schema and tables
 20230201_drop_old_table_definition_and_create_new_table_definition 2023-02-01T09:57:26Z Verrell <verrell@Verrells-MacBook-Air.local> # Drop old table definition and create new table definition
+20230222_alter_table_warehouse_racks 2023-02-22T08:33:31Z Verrell <verrell@Verrells-MacBook-Air.local> # Alter table warehouse_racks
