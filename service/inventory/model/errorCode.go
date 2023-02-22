@@ -47,4 +47,5 @@ const (
 	GetVariantWarehouseStocksError                = 700031
 
 	GetTransferHistoryError = 700032
+	GetStockHistoryError = 700033
 )

@@ -51,6 +51,7 @@ type InventoryService interface {
 	GetVariantWarehouseStocks(w http.ResponseWriter, r *http.Request) error
 
 	GetTransferHistory(w http.ResponseWriter, r *http.Request) error
+	GetStockHistory(w http.ResponseWriter, r *http.Request) error
 }
 
 type Brand struct {
@@ -78,11 +79,11 @@ type UpdateBrandResponse struct {
 }
 
 type DeleteBrandRequest struct {
-	Id   string `json:"id" validate:"required"`
+	Id string `json:"id" validate:"required"`
 }
 
 type DeleteBrandResponse struct {
-	Message string `json:"message" validate:"required"` 
+	Message string `json:"message" validate:"required"`
 }
 
 type GetBrandsRequest struct {
@@ -115,11 +116,11 @@ type UpdateGroupResponse struct {
 }
 
 type DeleteGroupRequest struct {
-	Id   string `json:"id" validate:"required"`
+	Id string `json:"id" validate:"required"`
 }
 
 type DeleteGroupResponse struct {
-	Message string `json:"message" validate:"required"` 
+	Message string `json:"message" validate:"required"`
 }
 
 type GetGroupsRequest struct {
@@ -558,4 +559,26 @@ type GetTransferHistoryRequest struct {
 
 type GetTransferHistoryResponse struct {
 	TransferHistories []TransferHistory `json:"transfer_histories" validate:"required"`
+}
+
+type StockHistory struct {
+	FormNumber      string `json:"form_number" validate:"required"`
+	TransactionDate string `json:"transaction_date" validate:"required"`
+	ItemId          string `json:"item_id" validate:"required"`
+	ItemName        string `json:"item_name" validate:"required"`
+	ItemImageUrl    string `json:"item_image_url" validate:"required"`
+	VariantId       string `json:"variant_id" validate:"required"`
+	VariantName     string `json:"variant_name" validate:"required"`
+	Onhand          string `json:"onhand" validate:"required"`
+	Calculated      string `json:"calculated" validate:"required"`
+}
+
+type GetStockHistoryRequest struct {
+	ItemId    string `json:"item_id"`
+	StartDate string `json:"start_date"`
+	EndDate   string `json:"end_date"`
+}
+
+type GetStockHistoryResponse struct {
+	StockHistories []StockHistory `json:"stock_histories" validate:"required"`
 }
