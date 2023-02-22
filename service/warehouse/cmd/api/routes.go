@@ -16,6 +16,7 @@ const (
 	DeleteWarehousePath = "/warehouse/delete"
 
 	UpsertWarehouseRackPath = "/warehouse/rack/upsert"
+	DeleteWarehouseRackPath = "/warehouse/rack/delete"
 	GetWarehouseRacksPath   = "/warehouse/racks"
 )
 
@@ -40,6 +41,7 @@ func (c *component) Routes(warehouseService model.WarehouseService) http.Handler
 	mux.Method("POST", DeleteWarehousePath, httpHandler.New(warehouseService.DeleteWarehouse))
 
 	mux.Method("POST", UpsertWarehouseRackPath, httpHandler.New(warehouseService.UpsertWarehouseRack))
+	mux.Method("POST", DeleteWarehouseRackPath, httpHandler.New(warehouseService.DeleteWarehouseRack))
 	mux.Method("POST", GetWarehouseRacksPath, httpHandler.New(warehouseService.GetWarehouseRacks))
 
 	return mux

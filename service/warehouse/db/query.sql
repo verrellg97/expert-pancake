@@ -31,9 +31,14 @@ RETURNING *;
 SELECT id, warehouse_id, name
 FROM warehouse.warehouse_racks
 WHERE CASE WHEN @is_filter_id::bool THEN id = $1
-ELSE warehouse_id = $2 AND name LIKE $3 END;
+ELSE warehouse_id = $2 AND name LIKE $3 AND is_deleted = false END;
 
 -- name: DeleteWarehouse :exec
 UPDATE warehouse.warehouses
+SET is_deleted = true
+WHERE id = $1;
+
+-- name: DeleteWarehouseRack :exec
+UPDATE warehouse.warehouse_racks
 SET is_deleted = true
 WHERE id = $1;
