@@ -46,7 +46,7 @@ func (a inventoryService) GetItemVariants(w http.ResponseWriter, r *http.Request
 			BrandName:   d.BrandName,
 			GroupId:     d.GroupID,
 			GroupName:   d.GroupName,
-			Tag:         d.Tag,
+			Tag:         util.StringToArray(d.Tag),
 			Description: d.Description,
 			IsDefault:   d.IsDefault,
 			Price:       strconv.FormatInt(d.Price, 10),
