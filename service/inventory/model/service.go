@@ -162,34 +162,34 @@ type GetUnitsRequest struct {
 }
 
 type Item struct {
-	CompanyId   string `json:"company_id" validate:"required"`
-	ItemId      string `json:"item_id" validate:"required"`
-	VariantId   string `json:"variant_id" validate:"required"`
-	ImageUrl    string `json:"image_url" validate:"required"`
-	Code        string `json:"code" validate:"required"`
-	Barcode     string `json:"barcode" validate:"required"`
-	Name        string `json:"name" validate:"required"`
-	VariantName string `json:"variant_name" validate:"required"`
-	BrandId     string `json:"brand_id" validate:"required"`
-	BrandName   string `json:"brand_name" validate:"required"`
-	GroupId     string `json:"group_id" validate:"required"`
-	GroupName   string `json:"group_name" validate:"required"`
-	Tag         string `json:"tag" validate:"required"`
-	Description string `json:"description" validate:"required"`
-	IsDefault   bool   `json:"is_default" validate:"required"`
-	Price       string `json:"price" validate:"required"`
+	CompanyId   string   `json:"company_id" validate:"required"`
+	ItemId      string   `json:"item_id" validate:"required"`
+	VariantId   string   `json:"variant_id" validate:"required"`
+	ImageUrl    string   `json:"image_url" validate:"required"`
+	Code        string   `json:"code" validate:"required"`
+	Barcode     string   `json:"barcode" validate:"required"`
+	Name        string   `json:"name" validate:"required"`
+	VariantName string   `json:"variant_name" validate:"required"`
+	BrandId     string   `json:"brand_id" validate:"required"`
+	BrandName   string   `json:"brand_name" validate:"required"`
+	GroupId     string   `json:"group_id" validate:"required"`
+	GroupName   string   `json:"group_name" validate:"required"`
+	Tag         []string `json:"tag" validate:"required"`
+	Description string   `json:"description" validate:"required"`
+	IsDefault   bool     `json:"is_default" validate:"required"`
+	Price       string   `json:"price" validate:"required"`
 }
 
 type AddItemRequest struct {
-	CompanyId   string `json:"company_id" validate:"required"`
-	ImageUrl    string `json:"image_url"`
-	Barcode     string `json:"barcode"`
-	Name        string `json:"name" validate:"required"`
-	BrandId     string `json:"brand_id" validate:"required"`
-	GroupId     string `json:"group_id" validate:"required"`
-	Tag         string `json:"tag"`
-	Price       string `json:"price" validate:"required"`
-	Description string `json:"description"`
+	CompanyId   string   `json:"company_id" validate:"required"`
+	ImageUrl    string   `json:"image_url"`
+	Barcode     string   `json:"barcode"`
+	Name        string   `json:"name" validate:"required"`
+	BrandId     string   `json:"brand_id" validate:"required"`
+	GroupId     string   `json:"group_id" validate:"required"`
+	Tag         []string `json:"tag"`
+	Price       string   `json:"price" validate:"required"`
+	Description string   `json:"description"`
 }
 
 type AddItemResponse struct {
@@ -197,15 +197,15 @@ type AddItemResponse struct {
 }
 
 type UpdateItemRequest struct {
-	ItemId      string `json:"item_id" validate:"required"`
-	ImageUrl    string `json:"image_url"`
-	Barcode     string `json:"barcode"`
-	Name        string `json:"name" validate:"required"`
-	BrandId     string `json:"brand_id" validate:"required"`
-	GroupId     string `json:"group_id" validate:"required"`
-	Tag         string `json:"tag"`
-	Price       string `json:"price" validate:"required"`
-	Description string `json:"description"`
+	ItemId      string   `json:"item_id" validate:"required"`
+	ImageUrl    string   `json:"image_url"`
+	Barcode     string   `json:"barcode"`
+	Name        string   `json:"name" validate:"required"`
+	BrandId     string   `json:"brand_id" validate:"required"`
+	GroupId     string   `json:"group_id" validate:"required"`
+	Tag         []string `json:"tag"`
+	Price       string   `json:"price" validate:"required"`
+	Description string   `json:"description"`
 }
 
 type UpdateItemResponse struct {

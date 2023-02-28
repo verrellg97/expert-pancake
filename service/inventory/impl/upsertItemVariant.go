@@ -10,6 +10,7 @@ import (
 	db "github.com/expert-pancake/service/inventory/db/sqlc"
 	"github.com/expert-pancake/service/inventory/model"
 	uuid "github.com/satori/go.uuid"
+	"github.com/expert-pancake/service/inventory/util"
 )
 
 func (a inventoryService) UpsertItemVariant(w http.ResponseWriter, r *http.Request) error {
@@ -64,7 +65,7 @@ func (a inventoryService) UpsertItemVariant(w http.ResponseWriter, r *http.Reque
 			BrandName:   result.BrandName,
 			GroupId:     result.GroupID,
 			GroupName:   result.GroupName,
-			Tag:         result.Tag,
+			Tag:         util.StringToArray(result.Tag),
 			Description: result.Description,
 			IsDefault:   result.IsDefault,
 			Price:       strconv.FormatInt(result.Price, 10),

@@ -9,6 +9,7 @@ import (
 	"github.com/calvinkmts/expert-pancake/engine/httpHandler"
 	db "github.com/expert-pancake/service/inventory/db/transaction"
 	"github.com/expert-pancake/service/inventory/model"
+	"github.com/expert-pancake/service/inventory/util"
 )
 
 func (a inventoryService) UpdateItem(w http.ResponseWriter, r *http.Request) error {
@@ -29,7 +30,7 @@ func (a inventoryService) UpdateItem(w http.ResponseWriter, r *http.Request) err
 		Name:        req.Name,
 		BrandId:     req.BrandId,
 		GroupId:     req.GroupId,
-		Tag:         req.Tag,
+		Tag:         util.ArrayToString(req.Tag),
 		Price:       req.Price,
 		Description: req.Description,
 	}
@@ -53,7 +54,7 @@ func (a inventoryService) UpdateItem(w http.ResponseWriter, r *http.Request) err
 			BrandName:   result.BrandName,
 			GroupId:     result.GroupId,
 			GroupName:   result.GroupName,
-			Tag:         result.Tag,
+			Tag:         util.StringToArray(result.Tag),
 			Description: result.Description,
 			IsDefault:   result.IsDefault,
 			Price:       strconv.FormatInt(result.Price, 10),
