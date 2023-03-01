@@ -813,13 +813,16 @@ FROM inventory.update_stocks a
 WHERE a.is_deleted = FALSE
     AND variant.item_id LIKE $1
     AND transaction_date BETWEEN $2::date AND $3::date
+    AND warehouse_id = ANY($4::text [])
+        
 ORDER BY a.transaction_date DESC
 `
 
 type GetStockHistoryParams struct {
-	ItemID    string    `db:"item_id"`
-	StartDate time.Time `db:"start_date"`
-	EndDate   time.Time `db:"end_date"`
+	ItemID       string    `db:"item_id"`
+	StartDate    time.Time `db:"start_date"`
+	EndDate      time.Time `db:"end_date"`
+	WarehouseIds []string  `db:"warehouse_ids"`
 }
 
 type GetStockHistoryRow struct {
@@ -835,7 +838,12 @@ type GetStockHistoryRow struct {
 }
 
 func (q *Queries) GetStockHistory(ctx context.Context, arg GetStockHistoryParams) ([]GetStockHistoryRow, error) {
-	rows, err := q.db.QueryContext(ctx, getStockHistory, arg.ItemID, arg.StartDate, arg.EndDate)
+	rows, err := q.db.QueryContext(ctx, getStockHistory,
+		arg.ItemID,
+		arg.StartDate,
+		arg.EndDate,
+		pq.Array(arg.WarehouseIds),
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -890,6 +898,10 @@ WHERE a.is_deleted = FALSE
         source_warehouse_id LIKE $2
         OR destination_warehouse_id LIKE $3
     )
+    AND (
+        source_warehouse_id = ANY($6::text [])
+        OR destination_warehouse_id = ANY($6::text [])
+    )
 ORDER BY b.transaction_date DESC
 `
 
@@ -899,6 +911,7 @@ type GetTransferHistoryParams struct {
 	DestinationWarehouseID string    `db:"destination_warehouse_id"`
 	StartDate              time.Time `db:"start_date"`
 	EndDate                time.Time `db:"end_date"`
+	WarehouseIds           []string  `db:"warehouse_ids"`
 }
 
 type GetTransferHistoryRow struct {
@@ -921,6 +934,7 @@ func (q *Queries) GetTransferHistory(ctx context.Context, arg GetTransferHistory
 		arg.DestinationWarehouseID,
 		arg.StartDate,
 		arg.EndDate,
+		pq.Array(arg.WarehouseIds),
 	)
 	if err != nil {
 		return nil, err

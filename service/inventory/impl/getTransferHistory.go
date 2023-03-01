@@ -23,10 +23,24 @@ func (a inventoryService) GetTransferHistory(w http.ResponseWriter, r *http.Requ
 		return errors.NewClientError().WithDataMap(errMapRequest)
 	}
 
+	argWarehouseIds := client.GetWarehousesRequest{
+		BranchId: req.BranchId,
+	}
+	warehouseIds, err := client.GetWarehouses(argWarehouseIds)
+	if err != nil {
+		return errors.NewServerError(model.GetInternalStockTransfersError, err.Error())
+	}
+
+	var warehouseIdsParams = make([]string, 0)
+	for _, d := range warehouseIds.Result.Warehouses {
+		warehouseIdsParams = append(warehouseIdsParams, d.WarehouseId)
+	}
+
 	result, err := a.dbTrx.GetTransferHistory(context.Background(), db.GetTransferHistoryParams{
 		StartDate:              util.StringToDate(req.StartDate),
 		EndDate:                util.StringToDate(req.EndDate),
 		ItemID:                 util.WildCardString(req.ItemId),
+		WarehouseIds:           warehouseIdsParams,
 		SourceWarehouseID:      util.WildCardString(req.WarehouseId),
 		DestinationWarehouseID: util.WildCardString(req.WarehouseId),
 	})

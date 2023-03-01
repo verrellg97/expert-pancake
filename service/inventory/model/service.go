@@ -551,6 +551,7 @@ type TransferHistory struct {
 }
 
 type GetTransferHistoryRequest struct {
+	BranchId    string `json:"branch_id" validate:"required"`
 	WarehouseId string `json:"warehouse_id"`
 	ItemId      string `json:"item_id"`
 	StartDate   string `json:"start_date"`
@@ -574,6 +575,7 @@ type StockHistory struct {
 }
 
 type GetStockHistoryRequest struct {
+	BranchId  string `json:"branch_id" validate:"required"`
 	ItemId    string `json:"item_id"`
 	StartDate string `json:"start_date"`
 	EndDate   string `json:"end_date"`
