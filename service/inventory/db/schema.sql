@@ -89,6 +89,7 @@ CREATE TABLE "inventory"."internal_stock_transfers" (
   "destination_warehouse_id" text NOT NULL,
   "form_number" text NOT NULL,
   "transaction_date" date NOT NULL DEFAULT CURRENT_DATE,
+  "is_received" bool NOT NULL DEFAULT false,
   "is_deleted" bool NOT NULL DEFAULT false,
   "created_at" timestamptz DEFAULT (now()),
   "updated_at" timestamptz DEFAULT (now()),
