@@ -28,7 +28,7 @@ func (a inventoryService) GetTransferHistory(w http.ResponseWriter, r *http.Requ
 	}
 	warehouseIds, err := client.GetWarehouses(argWarehouseIds)
 	if err != nil {
-		return errors.NewServerError(model.GetInternalStockTransfersError, err.Error())
+		return errors.NewServerError(model.GetTransferHistoryError, err.Error())
 	}
 
 	var warehouseIdsParams = make([]string, 0)
