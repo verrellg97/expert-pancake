@@ -8,6 +8,7 @@ import (
 	"github.com/calvinkmts/expert-pancake/engine/errors"
 	"github.com/calvinkmts/expert-pancake/engine/httpHandler"
 	db "github.com/expert-pancake/service/inventory/db/sqlc"
+	"github.com/expert-pancake/service/inventory/impl/client"
 	"github.com/expert-pancake/service/inventory/model"
 	"github.com/expert-pancake/service/inventory/util"
 )
@@ -22,10 +23,24 @@ func (a inventoryService) GetStockHistory(w http.ResponseWriter, r *http.Request
 		return errors.NewClientError().WithDataMap(errMapRequest)
 	}
 
+	argWarehouseIds := client.GetWarehousesRequest{
+		BranchId: req.BranchId,
+	}
+	warehouseIds, err := client.GetWarehouses(argWarehouseIds)
+	if err != nil {
+		return errors.NewServerError(model.GetInternalStockTransfersError, err.Error())
+	}
+
+	var warehouseIdsParams = make([]string, 0)
+	for _, d := range warehouseIds.Result.Warehouses {
+		warehouseIdsParams = append(warehouseIdsParams, d.WarehouseId)
+	}
+
 	result, err := a.dbTrx.GetStockHistory(context.Background(), db.GetStockHistoryParams{
-		StartDate: util.StringToDate(req.StartDate),
-		EndDate:   util.StringToDate(req.EndDate),
-		ItemID:    util.WildCardString(req.ItemId),
+		StartDate:    util.StringToDate(req.StartDate),
+		EndDate:      util.StringToDate(req.EndDate),
+		ItemID:       util.WildCardString(req.ItemId),
+		WarehouseIds: warehouseIdsParams,
 	})
 	if err != nil {
 		return errors.NewServerError(model.GetStockHistoryError, err.Error())

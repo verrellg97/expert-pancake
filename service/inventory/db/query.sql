@@ -563,6 +563,10 @@ WHERE a.is_deleted = FALSE
         source_warehouse_id LIKE $2
         OR destination_warehouse_id LIKE $3
     )
+    AND (
+        source_warehouse_id = ANY(@warehouse_ids::text [])
+        OR destination_warehouse_id = ANY(@warehouse_ids::text [])
+    )
 ORDER BY b.transaction_date DESC;
 
 -- name: GetStockHistory :many
@@ -581,4 +585,6 @@ FROM inventory.update_stocks a
 WHERE a.is_deleted = FALSE
     AND variant.item_id LIKE $1
     AND transaction_date BETWEEN @start_date::date AND @end_date::date
+    AND warehouse_id = ANY(@warehouse_ids::text [])
+        
 ORDER BY a.transaction_date DESC;
