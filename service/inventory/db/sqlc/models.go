@@ -33,6 +33,7 @@ type InventoryInternalStockTransfer struct {
 	DestinationWarehouseID string       `db:"destination_warehouse_id"`
 	FormNumber             string       `db:"form_number"`
 	TransactionDate        time.Time    `db:"transaction_date"`
+	IsReceived             bool         `db:"is_received"`
 	IsDeleted              bool         `db:"is_deleted"`
 	CreatedAt              sql.NullTime `db:"created_at"`
 	UpdatedAt              sql.NullTime `db:"updated_at"`

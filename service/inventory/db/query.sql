@@ -559,9 +559,11 @@ WHERE a.is_deleted = FALSE
     AND b.is_deleted = FALSE
     AND variant.item_id LIKE $1
     AND transaction_date BETWEEN @start_date::date AND @end_date::date
+    AND CASE WHEN @is_received_filter::bool
+        THEN b.is_received = $2 ELSE TRUE END
     AND (
-        source_warehouse_id LIKE $2
-        OR destination_warehouse_id LIKE $3
+        source_warehouse_id LIKE $3
+        OR destination_warehouse_id LIKE $4
     )
     AND (
         source_warehouse_id = ANY(@warehouse_ids::text [])

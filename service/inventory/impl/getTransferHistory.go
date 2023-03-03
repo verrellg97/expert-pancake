@@ -36,10 +36,19 @@ func (a inventoryService) GetTransferHistory(w http.ResponseWriter, r *http.Requ
 		warehouseIdsParams = append(warehouseIdsParams, d.WarehouseId)
 	}
 
+	var isReceivedFilter = false
+	if req.IsReceivedFilter != nil {
+		isReceivedFilter = true
+	} else {
+		req.IsReceivedFilter = &isReceivedFilter
+	}
+
 	result, err := a.dbTrx.GetTransferHistory(context.Background(), db.GetTransferHistoryParams{
 		StartDate:              util.StringToDate(req.StartDate),
 		EndDate:                util.StringToDate(req.EndDate),
 		ItemID:                 util.WildCardString(req.ItemId),
+		IsReceivedFilter:       isReceivedFilter,
+		IsReceived:             *req.IsReceivedFilter,
 		WarehouseIds:           warehouseIdsParams,
 		SourceWarehouseID:      util.WildCardString(req.WarehouseId),
 		DestinationWarehouseID: util.WildCardString(req.WarehouseId),

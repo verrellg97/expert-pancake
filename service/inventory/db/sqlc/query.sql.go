@@ -893,24 +893,28 @@ FROM inventory.internal_stock_transfer_items a
 WHERE a.is_deleted = FALSE
     AND b.is_deleted = FALSE
     AND variant.item_id LIKE $1
-    AND transaction_date BETWEEN $4::date AND $5::date
+    AND transaction_date BETWEEN $5::date AND $6::date
+    AND CASE WHEN $7::bool
+        THEN b.is_received = $2 ELSE TRUE END
     AND (
-        source_warehouse_id LIKE $2
-        OR destination_warehouse_id LIKE $3
+        source_warehouse_id LIKE $3
+        OR destination_warehouse_id LIKE $4
     )
     AND (
-        source_warehouse_id = ANY($6::text [])
-        OR destination_warehouse_id = ANY($6::text [])
+        source_warehouse_id = ANY($8::text [])
+        OR destination_warehouse_id = ANY($8::text [])
     )
 ORDER BY b.transaction_date DESC
 `
 
 type GetTransferHistoryParams struct {
 	ItemID                 string    `db:"item_id"`
+	IsReceived             bool      `db:"is_received"`
 	SourceWarehouseID      string    `db:"source_warehouse_id"`
 	DestinationWarehouseID string    `db:"destination_warehouse_id"`
 	StartDate              time.Time `db:"start_date"`
 	EndDate                time.Time `db:"end_date"`
+	IsReceivedFilter       bool      `db:"is_received_filter"`
 	WarehouseIds           []string  `db:"warehouse_ids"`
 }
 
@@ -930,10 +934,12 @@ type GetTransferHistoryRow struct {
 func (q *Queries) GetTransferHistory(ctx context.Context, arg GetTransferHistoryParams) ([]GetTransferHistoryRow, error) {
 	rows, err := q.db.QueryContext(ctx, getTransferHistory,
 		arg.ItemID,
+		arg.IsReceived,
 		arg.SourceWarehouseID,
 		arg.DestinationWarehouseID,
 		arg.StartDate,
 		arg.EndDate,
+		arg.IsReceivedFilter,
 		pq.Array(arg.WarehouseIds),
 	)
 	if err != nil {
@@ -1486,7 +1492,7 @@ INSERT INTO inventory.internal_stock_transfers(
         transaction_date
     )
 VALUES ($1, $2, $3, $4, $5)
-RETURNING id, source_warehouse_id, destination_warehouse_id, form_number, transaction_date, is_deleted, created_at, updated_at
+RETURNING id, source_warehouse_id, destination_warehouse_id, form_number, transaction_date, is_received, is_deleted, created_at, updated_at
 `
 
 type InsertInternalStockTransferParams struct {
@@ -1512,6 +1518,7 @@ func (q *Queries) InsertInternalStockTransfer(ctx context.Context, arg InsertInt
 		&i.DestinationWarehouseID,
 		&i.FormNumber,
 		&i.TransactionDate,
+		&i.IsReceived,
 		&i.IsDeleted,
 		&i.CreatedAt,
 		&i.UpdatedAt,

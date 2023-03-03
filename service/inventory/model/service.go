@@ -551,11 +551,12 @@ type TransferHistory struct {
 }
 
 type GetTransferHistoryRequest struct {
-	BranchId    string `json:"branch_id" validate:"required"`
-	WarehouseId string `json:"warehouse_id"`
-	ItemId      string `json:"item_id"`
-	StartDate   string `json:"start_date"`
-	EndDate     string `json:"end_date"`
+	BranchId         string `json:"branch_id" validate:"required"`
+	WarehouseId      string `json:"warehouse_id"`
+	ItemId           string `json:"item_id"`
+	StartDate        string `json:"start_date"`
+	EndDate          string `json:"end_date"`
+	IsReceivedFilter *bool  `json:"is_received_filter"`
 }
 
 type GetTransferHistoryResponse struct {
