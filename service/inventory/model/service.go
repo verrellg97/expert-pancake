@@ -185,7 +185,7 @@ type AddItemRequest struct {
 	ImageUrl    string   `json:"image_url"`
 	Barcode     string   `json:"barcode"`
 	Name        string   `json:"name" validate:"required"`
-	BrandId     string   `json:"brand_id" validate:"required"`
+	BrandId     string   `json:"brand_id"`
 	GroupId     string   `json:"group_id" validate:"required"`
 	Tag         []string `json:"tag"`
 	Price       string   `json:"price" validate:"required"`
@@ -201,7 +201,7 @@ type UpdateItemRequest struct {
 	ImageUrl    string   `json:"image_url"`
 	Barcode     string   `json:"barcode"`
 	Name        string   `json:"name" validate:"required"`
-	BrandId     string   `json:"brand_id" validate:"required"`
+	BrandId     string   `json:"brand_id"`
 	GroupId     string   `json:"group_id" validate:"required"`
 	Tag         []string `json:"tag"`
 	Price       string   `json:"price" validate:"required"`
@@ -428,6 +428,7 @@ type ItemReorder struct {
 	WarehouseName string `json:"warehouse_name" validate:"required"`
 	MinimumStock  string `json:"minimum_stock" validate:"required"`
 }
+
 type UpsertItemReorderRequest struct {
 	Id           string `json:"id"`
 	VariantId    string `json:"variant_id" validate:"required"`

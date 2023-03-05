@@ -562,7 +562,7 @@ SELECT b.id,
     b.name,
     a.name AS variant_name,
     b.brand_id,
-    c.name AS brand_name,
+    COALESCE(c.name, '') AS brand_name,
     b.group_id,
     d.name AS group_name,
     b.tag,
@@ -571,7 +571,7 @@ SELECT b.id,
     a.price
 FROM inventory.item_variants a
     JOIN inventory.items b ON a.item_id = b.id
-    JOIN inventory.brands c ON b.brand_id = c.id
+    LEFT JOIN inventory.brands c ON b.brand_id = c.id
     JOIN inventory.groups d ON b.group_id = d.id
 WHERE a.id = $1
 `
@@ -629,7 +629,7 @@ SELECT b.id,
     b.name,
     a.name AS variant_name,
     b.brand_id,
-    c.name AS brand_name,
+    COALESCE(c.name, '') AS brand_name,
     b.group_id,
     d.name AS group_name,
     b.tag,
@@ -638,7 +638,7 @@ SELECT b.id,
     a.price
 FROM inventory.item_variants a
     JOIN inventory.items b ON a.item_id = b.id
-    JOIN inventory.brands c ON b.brand_id = c.id
+    LEFT JOIN inventory.brands c ON b.brand_id = c.id
     JOIN inventory.groups d ON b.group_id = d.id
 WHERE a.item_id = $1
     AND a.name LIKE $2
@@ -718,7 +718,7 @@ SELECT a.id,
     a.name,
     b.name AS variant_name,
     a.brand_id,
-    c.name AS brand_name,
+    COALESCE(c.name, '') AS brand_name,
     a.group_id,
     d.name AS group_name,
     a.tag,
@@ -727,7 +727,7 @@ SELECT a.id,
     b.price
 FROM inventory.items a
     JOIN inventory.item_variants b ON a.id = b.item_id
-    JOIN inventory.brands c ON a.brand_id = c.id
+    LEFT JOIN inventory.brands c ON a.brand_id = c.id
     JOIN inventory.groups d ON a.group_id = d.id
 WHERE a.company_id = $1
     AND b.name LIKE $2

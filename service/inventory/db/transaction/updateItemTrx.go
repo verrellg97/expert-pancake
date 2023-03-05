@@ -57,9 +57,12 @@ func (trx *Trx) UpdateItemTrx(ctx context.Context, arg UpdateItemTrxParams) (Upd
 			return err
 		}
 
-		brandRes, err := q.GetBrandById(ctx, arg.BrandId)
-		if err != nil {
-			return err
+		if arg.BrandId != "" {
+			brandRes, err := q.GetBrandById(ctx, arg.BrandId)
+			if err != nil {
+				return err
+			}
+			result.BrandName = brandRes.Name
 		}
 
 		groupRes, err := q.GetGroupById(ctx, arg.GroupId)
@@ -87,7 +90,6 @@ func (trx *Trx) UpdateItemTrx(ctx context.Context, arg UpdateItemTrxParams) (Upd
 		result.Name = arg.Name
 		result.VariantName = itemVariantRes.Name
 		result.BrandId = arg.BrandId
-		result.BrandName = brandRes.Name
 		result.GroupId = arg.GroupId
 		result.GroupName = groupRes.Name
 		result.Tag = arg.Tag

@@ -36,7 +36,7 @@ CREATE TABLE "inventory"."items" (
   "image_url" text NOT NULL DEFAULT '',
   "code" text NOT NULL,
   "name" text NOT NULL,
-  "brand_id" text NOT NULL,
+  "brand_id" text NOT NULL DEFAULT '',
   "group_id" text NOT NULL,
   "tag" text NOT NULL DEFAULT '',
   "description" text NOT NULL DEFAULT '',
