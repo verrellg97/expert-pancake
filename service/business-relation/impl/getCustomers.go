@@ -31,6 +31,7 @@ func (a businessRelationService) GetCustomers(w http.ResponseWriter, r *http.Req
 		var customer = model.CustomerInfo{
 			ContactBookId:    d.ID,
 			KonekinId:        d.KonekinID,
+			CompanyId:        d.SecondaryCompanyID,
 			ContactGroupName: d.ContactGroupName,
 			Name:             d.Name,
 			Email:            d.Email,

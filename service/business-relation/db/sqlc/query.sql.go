@@ -513,7 +513,7 @@ func (q *Queries) GetCountKonekinId(ctx context.Context, konekinID string) (int6
 }
 
 const getCustomers = `-- name: GetCustomers :many
-SELECT a.id, a.konekin_id, a.primary_company_id, a.contact_group_id,
+SELECT a.id, a.konekin_id, a.primary_company_id, a.secondary_company_id, a.contact_group_id,
 COALESCE(b.name, '') AS contact_group_name, a.name, a.email, a.phone,
 a.mobile, a.web, a.is_all_branches, a.is_customer, a.is_supplier,
 a.is_tax, a.tax_id, a.is_default, a.is_deleted, COALESCE(c.pic, '') AS pic,
@@ -525,26 +525,27 @@ WHERE a.primary_company_id = $1 AND a.is_customer
 `
 
 type GetCustomersRow struct {
-	ID               string `db:"id"`
-	KonekinID        string `db:"konekin_id"`
-	PrimaryCompanyID string `db:"primary_company_id"`
-	ContactGroupID   string `db:"contact_group_id"`
-	ContactGroupName string `db:"contact_group_name"`
-	Name             string `db:"name"`
-	Email            string `db:"email"`
-	Phone            string `db:"phone"`
-	Mobile           string `db:"mobile"`
-	Web              string `db:"web"`
-	IsAllBranches    bool   `db:"is_all_branches"`
-	IsCustomer       bool   `db:"is_customer"`
-	IsSupplier       bool   `db:"is_supplier"`
-	IsTax            bool   `db:"is_tax"`
-	TaxID            string `db:"tax_id"`
-	IsDefault        bool   `db:"is_default"`
-	IsDeleted        bool   `db:"is_deleted"`
-	Pic              string `db:"pic"`
-	CreditLimit      int64  `db:"credit_limit"`
-	PaymentTerm      int32  `db:"payment_term"`
+	ID                 string `db:"id"`
+	KonekinID          string `db:"konekin_id"`
+	PrimaryCompanyID   string `db:"primary_company_id"`
+	SecondaryCompanyID string `db:"secondary_company_id"`
+	ContactGroupID     string `db:"contact_group_id"`
+	ContactGroupName   string `db:"contact_group_name"`
+	Name               string `db:"name"`
+	Email              string `db:"email"`
+	Phone              string `db:"phone"`
+	Mobile             string `db:"mobile"`
+	Web                string `db:"web"`
+	IsAllBranches      bool   `db:"is_all_branches"`
+	IsCustomer         bool   `db:"is_customer"`
+	IsSupplier         bool   `db:"is_supplier"`
+	IsTax              bool   `db:"is_tax"`
+	TaxID              string `db:"tax_id"`
+	IsDefault          bool   `db:"is_default"`
+	IsDeleted          bool   `db:"is_deleted"`
+	Pic                string `db:"pic"`
+	CreditLimit        int64  `db:"credit_limit"`
+	PaymentTerm        int32  `db:"payment_term"`
 }
 
 func (q *Queries) GetCustomers(ctx context.Context, primaryCompanyID string) ([]GetCustomersRow, error) {
@@ -560,6 +561,7 @@ func (q *Queries) GetCustomers(ctx context.Context, primaryCompanyID string) ([]
 			&i.ID,
 			&i.KonekinID,
 			&i.PrimaryCompanyID,
+			&i.SecondaryCompanyID,
 			&i.ContactGroupID,
 			&i.ContactGroupName,
 			&i.Name,
@@ -817,7 +819,7 @@ func (q *Queries) GetRequestInvitations(ctx context.Context, primaryCompanyID st
 }
 
 const getSuppliers = `-- name: GetSuppliers :many
-SELECT a.id, a.konekin_id, a.primary_company_id, a.contact_group_id,
+SELECT a.id, a.konekin_id, a.primary_company_id, a.secondary_company_id, a.contact_group_id,
 COALESCE(b.name, '') AS contact_group_name, a.name, a.email, a.phone,
 a.mobile, a.web, a.is_all_branches, a.is_customer, a.is_supplier,
 a.is_tax, a.tax_id, a.is_default, a.is_deleted, COALESCE(c.pic, '') AS pic,
@@ -829,26 +831,27 @@ WHERE a.primary_company_id = $1 AND a.is_supplier
 `
 
 type GetSuppliersRow struct {
-	ID               string `db:"id"`
-	KonekinID        string `db:"konekin_id"`
-	PrimaryCompanyID string `db:"primary_company_id"`
-	ContactGroupID   string `db:"contact_group_id"`
-	ContactGroupName string `db:"contact_group_name"`
-	Name             string `db:"name"`
-	Email            string `db:"email"`
-	Phone            string `db:"phone"`
-	Mobile           string `db:"mobile"`
-	Web              string `db:"web"`
-	IsAllBranches    bool   `db:"is_all_branches"`
-	IsCustomer       bool   `db:"is_customer"`
-	IsSupplier       bool   `db:"is_supplier"`
-	IsTax            bool   `db:"is_tax"`
-	TaxID            string `db:"tax_id"`
-	IsDefault        bool   `db:"is_default"`
-	IsDeleted        bool   `db:"is_deleted"`
-	Pic              string `db:"pic"`
-	CreditLimit      int64  `db:"credit_limit"`
-	PaymentTerm      int32  `db:"payment_term"`
+	ID                 string `db:"id"`
+	KonekinID          string `db:"konekin_id"`
+	PrimaryCompanyID   string `db:"primary_company_id"`
+	SecondaryCompanyID string `db:"secondary_company_id"`
+	ContactGroupID     string `db:"contact_group_id"`
+	ContactGroupName   string `db:"contact_group_name"`
+	Name               string `db:"name"`
+	Email              string `db:"email"`
+	Phone              string `db:"phone"`
+	Mobile             string `db:"mobile"`
+	Web                string `db:"web"`
+	IsAllBranches      bool   `db:"is_all_branches"`
+	IsCustomer         bool   `db:"is_customer"`
+	IsSupplier         bool   `db:"is_supplier"`
+	IsTax              bool   `db:"is_tax"`
+	TaxID              string `db:"tax_id"`
+	IsDefault          bool   `db:"is_default"`
+	IsDeleted          bool   `db:"is_deleted"`
+	Pic                string `db:"pic"`
+	CreditLimit        int64  `db:"credit_limit"`
+	PaymentTerm        int32  `db:"payment_term"`
 }
 
 func (q *Queries) GetSuppliers(ctx context.Context, primaryCompanyID string) ([]GetSuppliersRow, error) {
@@ -864,6 +867,7 @@ func (q *Queries) GetSuppliers(ctx context.Context, primaryCompanyID string) ([]
 			&i.ID,
 			&i.KonekinID,
 			&i.PrimaryCompanyID,
+			&i.SecondaryCompanyID,
 			&i.ContactGroupID,
 			&i.ContactGroupName,
 			&i.Name,

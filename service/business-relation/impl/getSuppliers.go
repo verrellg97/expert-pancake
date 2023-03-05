@@ -31,6 +31,7 @@ func (a businessRelationService) GetSuppliers(w http.ResponseWriter, r *http.Req
 		var supplier = model.SupplierInfo{
 			ContactBookId:    d.ID,
 			KonekinId:        d.KonekinID,
+			CompanyId:        d.SecondaryCompanyID,
 			ContactGroupName: d.ContactGroupName,
 			Name:             d.Name,
 			Email:            d.Email,
