@@ -137,6 +137,7 @@ type ContactBookAddress struct {
 type CustomerInfo struct {
 	ContactBookId    string `json:"contact_book_id" validate:"required"`
 	KonekinId        string `json:"konekin_id" validate:"required"`
+	CompanyId        string `json:"company_id" validate:"required"`
 	ContactGroupName string `json:"contact_group_name" validate:"required"`
 	Name             string `json:"name" validate:"required"`
 	Email            string `json:"email" validate:"required"`
@@ -154,6 +155,7 @@ type CustomerInfo struct {
 type SupplierInfo struct {
 	ContactBookId    string `json:"contact_book_id" validate:"required"`
 	KonekinId        string `json:"konekin_id" validate:"required"`
+	CompanyId        string `json:"company_id" validate:"required"`
 	ContactGroupName string `json:"contact_group_name" validate:"required"`
 	Name             string `json:"name" validate:"required"`
 	Email            string `json:"email" validate:"required"`

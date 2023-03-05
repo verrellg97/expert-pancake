@@ -167,7 +167,7 @@ FROM business_relation.contact_books a
 WHERE a.konekin_id LIKE $1;
 
 -- name: GetCustomers :many
-SELECT a.id, a.konekin_id, a.primary_company_id, a.contact_group_id,
+SELECT a.id, a.konekin_id, a.primary_company_id, a.secondary_company_id, a.contact_group_id,
 COALESCE(b.name, '') AS contact_group_name, a.name, a.email, a.phone,
 a.mobile, a.web, a.is_all_branches, a.is_customer, a.is_supplier,
 a.is_tax, a.tax_id, a.is_default, a.is_deleted, COALESCE(c.pic, '') AS pic,
@@ -178,7 +178,7 @@ LEFT JOIN business_relation.contact_book_customer_infos c ON a.id = c.contact_bo
 WHERE a.primary_company_id = $1 AND a.is_customer;
 
 -- name: GetSuppliers :many
-SELECT a.id, a.konekin_id, a.primary_company_id, a.contact_group_id,
+SELECT a.id, a.konekin_id, a.primary_company_id, a.secondary_company_id, a.contact_group_id,
 COALESCE(b.name, '') AS contact_group_name, a.name, a.email, a.phone,
 a.mobile, a.web, a.is_all_branches, a.is_customer, a.is_supplier,
 a.is_tax, a.tax_id, a.is_default, a.is_deleted, COALESCE(c.pic, '') AS pic,
