@@ -60,6 +60,8 @@ const (
 	GetStockHistoryPath    = "/inventory/stock-history"
 
 	GetItemReorderNotificationsPath = "/inventory/item-reorder/notifications"
+
+	UpsertItemVariantMapPath = "/inventory/item/variant/mapping/upsert"
 )
 
 func (c *component) Routes(inventoryService model.InventoryService) http.Handler {
@@ -127,6 +129,8 @@ func (c *component) Routes(inventoryService model.InventoryService) http.Handler
 	mux.Method("POST", GetStockHistoryPath, httpHandler.New(inventoryService.GetStockHistory))
 
 	mux.Method("POST", GetItemReorderNotificationsPath, httpHandler.New(inventoryService.GetItemReorderNotifications))
+
+	mux.Method("POST", UpsertItemVariantMapPath, httpHandler.New(inventoryService.UpsertItemVariantMap))
 
 	return mux
 }

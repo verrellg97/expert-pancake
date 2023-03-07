@@ -54,6 +54,8 @@ type InventoryService interface {
 	GetStockHistory(w http.ResponseWriter, r *http.Request) error
 
 	GetItemReorderNotifications(w http.ResponseWriter, r *http.Request) error
+
+	UpsertItemVariantMap(w http.ResponseWriter, r *http.Request) error
 }
 
 type Brand struct {
@@ -605,4 +607,34 @@ type GetItemReorderNotificationsRequest struct {
 
 type GetItemReorderNotificationsResponse struct {
 	ItemVariants []ItemReorderNotification `json:"item_variants" validate:"required"`
+}
+
+type ItemVariantMap struct {
+	ItemVariantMap            string `json:"item_variant_map_id" validate:"required"`
+	PrimaryItemId             string `json:"primary_item_id" validate:"required"`
+	PrimaryItemName           string `json:"primary_item_name" validate:"required"`
+	PrimaryItemVariantId      string `json:"primary_item_variant_id" validate:"required"`
+	PrimaryItemVariantName    string `json:"primary_item_variant_name" validate:"required"`
+	PrimaryItemVariantPrice   string `json:"primary_item_variant_price" validate:"required"`
+	PrimaryItemUnitId         string `json:"primary_item_unit_id" validate:"required"`
+	PrimaryItemUnitName       string `json:"primary_item_unit_name" validate:"required"`
+	SecondaryItemId           string `json:"secondary_item_id" validate:"required"`
+	SecondaryItemName         string `json:"secondary_item_name" validate:"required"`
+	SecondaryItemVariantId    string `json:"secondary_item_variant_id" validate:"required"`
+	SecondaryItemVariantName  string `json:"secondary_item_variant_name" validate:"required"`
+	SecondaryItemVariantPrice string `json:"secondary_item_variant_price" validate:"required"`
+	SecondaryItemUnitId       string `json:"secondary_item_unit_id" validate:"required"`
+	SecondaryItemUnitName     string `json:"secondary_item_unit_name" validate:"required"`
+}
+
+type UpsertItemVariantMapRequest struct {
+	ItemVariantMapId       string `json:"item_variant_map_id"`
+	PrimaryItemVariantId   string `json:"primary_item_variant_id" validate:"required"`
+	PrimaryItemUnitId      string `json:"primary_item_unit_id" validate:"required"`
+	SecondaryItemVariantId string `json:"secondary_item_variant_id" validate:"required"`
+	SecondaryItemUnitId    string `json:"secondary_item_unit_id" validate:"required"`
+}
+
+type UpsertItemVariantMapResponse struct {
+	ItemVariantMap
 }

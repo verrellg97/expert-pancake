@@ -50,4 +50,6 @@ const (
 	GetStockHistoryError    = 700035
 
 	GetItemReorderNotificationsError = 700036
+
+	UpsertItemVariantMapError = 700037
 )

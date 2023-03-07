@@ -683,6 +683,74 @@ func (q *Queries) GetItemVariant(ctx context.Context, id string) (GetItemVariant
 	return i, err
 }
 
+const getItemVariantMap = `-- name: GetItemVariantMap :one
+SELECT a.id,
+
+e.id AS primary_item_id, e.name AS primary_item_name,
+b.id AS primary_item_variant_id, b.name AS primary_item_variant_name,
+b.price AS primary_item_variant_price,
+d.id AS primary_item_unit_id, d.name AS primary_item_unit_name,
+
+i.id AS secondary_item_id, i.name AS secondary_item_name,
+f.id AS secondary_item_variant_id, f.name AS secondary_item_variant_name,
+f.price AS secondary_item_variant_price,
+h.id AS secondary_item_unit_id, h.name AS secondary_item_unit_name
+
+FROM inventory.item_variant_maps a
+
+JOIN inventory.item_variants b ON a.primary_item_variant_id = b.id
+JOIN inventory.item_units c ON a.primary_item_unit_id = c.id
+JOIN inventory.units d ON c.unit_id = d.id
+JOIN inventory.items e ON b.item_id = e.id
+
+JOIN inventory.item_variants f ON a.secondary_item_variant_id = f.id
+JOIN inventory.item_units g ON a.secondary_item_unit_id = g.id
+JOIN inventory.units h ON g.unit_id = h.id
+JOIN inventory.items i ON f.item_id = i.id
+WHERE a.id = $1
+`
+
+type GetItemVariantMapRow struct {
+	ID                        string `db:"id"`
+	PrimaryItemID             string `db:"primary_item_id"`
+	PrimaryItemName           string `db:"primary_item_name"`
+	PrimaryItemVariantID      string `db:"primary_item_variant_id"`
+	PrimaryItemVariantName    string `db:"primary_item_variant_name"`
+	PrimaryItemVariantPrice   int64  `db:"primary_item_variant_price"`
+	PrimaryItemUnitID         string `db:"primary_item_unit_id"`
+	PrimaryItemUnitName       string `db:"primary_item_unit_name"`
+	SecondaryItemID           string `db:"secondary_item_id"`
+	SecondaryItemName         string `db:"secondary_item_name"`
+	SecondaryItemVariantID    string `db:"secondary_item_variant_id"`
+	SecondaryItemVariantName  string `db:"secondary_item_variant_name"`
+	SecondaryItemVariantPrice int64  `db:"secondary_item_variant_price"`
+	SecondaryItemUnitID       string `db:"secondary_item_unit_id"`
+	SecondaryItemUnitName     string `db:"secondary_item_unit_name"`
+}
+
+func (q *Queries) GetItemVariantMap(ctx context.Context, id string) (GetItemVariantMapRow, error) {
+	row := q.db.QueryRowContext(ctx, getItemVariantMap, id)
+	var i GetItemVariantMapRow
+	err := row.Scan(
+		&i.ID,
+		&i.PrimaryItemID,
+		&i.PrimaryItemName,
+		&i.PrimaryItemVariantID,
+		&i.PrimaryItemVariantName,
+		&i.PrimaryItemVariantPrice,
+		&i.PrimaryItemUnitID,
+		&i.PrimaryItemUnitName,
+		&i.SecondaryItemID,
+		&i.SecondaryItemName,
+		&i.SecondaryItemVariantID,
+		&i.SecondaryItemVariantName,
+		&i.SecondaryItemVariantPrice,
+		&i.SecondaryItemUnitID,
+		&i.SecondaryItemUnitName,
+	)
+	return i, err
+}
+
 const getItemVariants = `-- name: GetItemVariants :many
 SELECT b.id,
     a.id AS variant_id,
@@ -2238,6 +2306,38 @@ func (q *Queries) UpsertItemVariant(ctx context.Context, arg UpsertItemVariantPa
 		arg.Barcode,
 		arg.Name,
 		arg.Price,
+	)
+	return err
+}
+
+const upsertItemVariantMap = `-- name: UpsertItemVariantMap :exec
+INSERT INTO inventory.item_variant_maps(id,
+primary_item_variant_id, secondary_item_variant_id,
+primary_item_unit_id, secondary_item_unit_id)
+VALUES ($1, $2, $3, $4, $5) ON CONFLICT (id) DO
+UPDATE
+SET primary_item_variant_id = EXCLUDED.primary_item_variant_id,
+    secondary_item_variant_id = EXCLUDED.secondary_item_variant_id,
+    primary_item_unit_id = EXCLUDED.primary_item_unit_id,
+    secondary_item_unit_id = EXCLUDED.secondary_item_unit_id,
+    updated_at = NOW()
+`
+
+type UpsertItemVariantMapParams struct {
+	ID                     string `db:"id"`
+	PrimaryItemVariantID   string `db:"primary_item_variant_id"`
+	SecondaryItemVariantID string `db:"secondary_item_variant_id"`
+	PrimaryItemUnitID      string `db:"primary_item_unit_id"`
+	SecondaryItemUnitID    string `db:"secondary_item_unit_id"`
+}
+
+func (q *Queries) UpsertItemVariantMap(ctx context.Context, arg UpsertItemVariantMapParams) error {
+	_, err := q.db.ExecContext(ctx, upsertItemVariantMap,
+		arg.ID,
+		arg.PrimaryItemVariantID,
+		arg.SecondaryItemVariantID,
+		arg.PrimaryItemUnitID,
+		arg.SecondaryItemUnitID,
 	)
 	return err
 }
