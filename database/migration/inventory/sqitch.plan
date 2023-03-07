@@ -11,3 +11,4 @@
 20230222_alter_table_brands_and_groups 2023-02-22T08:29:12Z Verrell <verrell@Verrells-MacBook-Air.local> # Alter table brands and groups
 20230303_alter_table_internal_stock_transfers 2023-03-03T04:32:09Z Verrell <verrell@Verrells-MacBook-Air.local> # Alter table internal stock transfers
 20230305_alter_table_items 2023-03-05T20:34:46Z Verrell <verrell@Verrells-MacBook-Air.local> # Alter table items
+20230307_add_item_variant_maps_table 2023-03-07T07:02:45Z Verrell <verrell@Verrells-MacBook-Air.local> # Add item_variant_maps table
