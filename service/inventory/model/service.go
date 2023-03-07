@@ -52,6 +52,8 @@ type InventoryService interface {
 
 	GetTransferHistory(w http.ResponseWriter, r *http.Request) error
 	GetStockHistory(w http.ResponseWriter, r *http.Request) error
+
+	GetItemReorderNotifications(w http.ResponseWriter, r *http.Request) error
 }
 
 type Brand struct {
@@ -585,4 +587,22 @@ type GetStockHistoryRequest struct {
 
 type GetStockHistoryResponse struct {
 	StockHistories []StockHistory `json:"stock_histories" validate:"required"`
+}
+
+type ItemReorderNotification struct {
+	ItemId       string  `json:"item_id" validate:"required"`
+	ItemName     string  `json:"item_name" validate:"required"`
+	VariantId    string  `json:"variant_id" validate:"required"`
+	VariantName  string  `json:"variant_name" validate:"required"`
+	CurrentStock string  `json:"current_stock" validate:"required"`
+	MinimumStock *string `json:"minimum_stock" validate:"required"`
+}
+
+type GetItemReorderNotificationsRequest struct {
+	WarehouseId string   `json:"warehouse_id" validate:"required"`
+	VariantIds  []string `json:"variant_ids" validate:"required"`
+}
+
+type GetItemReorderNotificationsResponse struct {
+	ItemVariants []ItemReorderNotification `json:"item_variants" validate:"required"`
 }

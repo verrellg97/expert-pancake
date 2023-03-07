@@ -588,5 +588,21 @@ WHERE a.is_deleted = FALSE
     AND variant.item_id LIKE $1
     AND transaction_date BETWEEN @start_date::date AND @end_date::date
     AND warehouse_id = ANY(@warehouse_ids::text [])
-        
 ORDER BY a.transaction_date DESC;
+
+-- name: GetItemReorderNotifications :many
+SELECT b.id AS item_id, b.name AS item_name,
+a.id AS variant_id, a.name AS variant_name,
+COALESCE(SUM(c.amount), 0)::bigint AS current_stock,
+d.id AS item_reorder_id,
+COALESCE((d.minimum_stock*e.value), 0)::bigint AS minimum_stock
+FROM inventory.item_variants a
+JOIN inventory.items b ON a.item_id = b.id
+LEFT JOIN inventory.stock_movements c ON a.id = c.variant_id
+AND c.warehouse_id = $1
+LEFT JOIN inventory.item_reorders d ON a.id = d.variant_id
+AND d.warehouse_id = $1
+LEFT JOIN inventory.item_units e ON b.id = e.item_id
+AND d.item_unit_id = e.id
+WHERE a.id = ANY(@item_variant_ids::text [])
+GROUP BY b.id, b.name, a.id, a.name, d.id, d.minimum_stock, e.value;
