@@ -123,6 +123,16 @@ type InventoryItemVariant struct {
 	UpdatedAt sql.NullTime `db:"updated_at"`
 }
 
+type InventoryItemVariantMap struct {
+	ID                     string       `db:"id"`
+	PrimaryItemVariantID   string       `db:"primary_item_variant_id"`
+	SecondaryItemVariantID string       `db:"secondary_item_variant_id"`
+	PrimaryItemUnitID      string       `db:"primary_item_unit_id"`
+	SecondaryItemUnitID    string       `db:"secondary_item_unit_id"`
+	CreatedAt              sql.NullTime `db:"created_at"`
+	UpdatedAt              sql.NullTime `db:"updated_at"`
+}
+
 type InventoryStockMovement struct {
 	ID                   string       `db:"id"`
 	TransactionID        string       `db:"transaction_id"`

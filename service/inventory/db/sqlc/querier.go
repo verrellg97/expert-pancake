@@ -25,6 +25,7 @@ type Querier interface {
 	GetItemReorders(ctx context.Context, arg GetItemReordersParams) ([]GetItemReordersRow, error)
 	GetItemUnits(ctx context.Context, arg GetItemUnitsParams) ([]GetItemUnitsRow, error)
 	GetItemVariant(ctx context.Context, id string) (GetItemVariantRow, error)
+	GetItemVariantMap(ctx context.Context, id string) (GetItemVariantMapRow, error)
 	GetItemVariants(ctx context.Context, arg GetItemVariantsParams) ([]GetItemVariantsRow, error)
 	GetItems(ctx context.Context, arg GetItemsParams) ([]GetItemsRow, error)
 	GetStockHistory(ctx context.Context, arg GetStockHistoryParams) ([]GetStockHistoryRow, error)
@@ -59,6 +60,7 @@ type Querier interface {
 	UpsertItemReorder(ctx context.Context, arg UpsertItemReorderParams) (InventoryItemReorder, error)
 	UpsertItemUnit(ctx context.Context, arg UpsertItemUnitParams) (InventoryItemUnit, error)
 	UpsertItemVariant(ctx context.Context, arg UpsertItemVariantParams) error
+	UpsertItemVariantMap(ctx context.Context, arg UpsertItemVariantMapParams) error
 	UpsertUnitCategory(ctx context.Context, arg UpsertUnitCategoryParams) (InventoryUnitCategory, error)
 }
 
