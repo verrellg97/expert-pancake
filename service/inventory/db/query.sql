@@ -644,3 +644,30 @@ JOIN inventory.item_units g ON a.secondary_item_unit_id = g.id
 JOIN inventory.units h ON g.unit_id = h.id
 JOIN inventory.items i ON f.item_id = i.id
 WHERE a.id = $1;
+
+-- name: GetItemVariantMaps :many
+SELECT a.id,
+
+e.id AS primary_item_id, e.name AS primary_item_name,
+b.id AS primary_item_variant_id, b.name AS primary_item_variant_name,
+b.price AS primary_item_variant_price,
+d.id AS primary_item_unit_id, d.name AS primary_item_unit_name,
+
+i.id AS secondary_item_id, i.name AS secondary_item_name,
+f.id AS secondary_item_variant_id, f.name AS secondary_item_variant_name,
+f.price AS secondary_item_variant_price,
+h.id AS secondary_item_unit_id, h.name AS secondary_item_unit_name
+
+FROM inventory.item_variant_maps a
+
+JOIN inventory.item_variants b ON a.primary_item_variant_id = b.id
+JOIN inventory.item_units c ON a.primary_item_unit_id = c.id
+JOIN inventory.units d ON c.unit_id = d.id
+JOIN inventory.items e ON b.item_id = e.id
+
+JOIN inventory.item_variants f ON a.secondary_item_variant_id = f.id
+JOIN inventory.item_units g ON a.secondary_item_unit_id = g.id
+JOIN inventory.units h ON g.unit_id = h.id
+JOIN inventory.items i ON f.item_id = i.id
+WHERE i.company_id = $1 AND e.id = @primary_item_id
+ORDER BY b.created_at, c.value;

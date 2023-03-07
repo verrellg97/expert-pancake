@@ -751,6 +751,96 @@ func (q *Queries) GetItemVariantMap(ctx context.Context, id string) (GetItemVari
 	return i, err
 }
 
+const getItemVariantMaps = `-- name: GetItemVariantMaps :many
+SELECT a.id,
+
+e.id AS primary_item_id, e.name AS primary_item_name,
+b.id AS primary_item_variant_id, b.name AS primary_item_variant_name,
+b.price AS primary_item_variant_price,
+d.id AS primary_item_unit_id, d.name AS primary_item_unit_name,
+
+i.id AS secondary_item_id, i.name AS secondary_item_name,
+f.id AS secondary_item_variant_id, f.name AS secondary_item_variant_name,
+f.price AS secondary_item_variant_price,
+h.id AS secondary_item_unit_id, h.name AS secondary_item_unit_name
+
+FROM inventory.item_variant_maps a
+
+JOIN inventory.item_variants b ON a.primary_item_variant_id = b.id
+JOIN inventory.item_units c ON a.primary_item_unit_id = c.id
+JOIN inventory.units d ON c.unit_id = d.id
+JOIN inventory.items e ON b.item_id = e.id
+
+JOIN inventory.item_variants f ON a.secondary_item_variant_id = f.id
+JOIN inventory.item_units g ON a.secondary_item_unit_id = g.id
+JOIN inventory.units h ON g.unit_id = h.id
+JOIN inventory.items i ON f.item_id = i.id
+WHERE i.company_id = $1 AND e.id = $2
+ORDER BY b.created_at, c.value
+`
+
+type GetItemVariantMapsParams struct {
+	CompanyID     string `db:"company_id"`
+	PrimaryItemID string `db:"primary_item_id"`
+}
+
+type GetItemVariantMapsRow struct {
+	ID                        string `db:"id"`
+	PrimaryItemID             string `db:"primary_item_id"`
+	PrimaryItemName           string `db:"primary_item_name"`
+	PrimaryItemVariantID      string `db:"primary_item_variant_id"`
+	PrimaryItemVariantName    string `db:"primary_item_variant_name"`
+	PrimaryItemVariantPrice   int64  `db:"primary_item_variant_price"`
+	PrimaryItemUnitID         string `db:"primary_item_unit_id"`
+	PrimaryItemUnitName       string `db:"primary_item_unit_name"`
+	SecondaryItemID           string `db:"secondary_item_id"`
+	SecondaryItemName         string `db:"secondary_item_name"`
+	SecondaryItemVariantID    string `db:"secondary_item_variant_id"`
+	SecondaryItemVariantName  string `db:"secondary_item_variant_name"`
+	SecondaryItemVariantPrice int64  `db:"secondary_item_variant_price"`
+	SecondaryItemUnitID       string `db:"secondary_item_unit_id"`
+	SecondaryItemUnitName     string `db:"secondary_item_unit_name"`
+}
+
+func (q *Queries) GetItemVariantMaps(ctx context.Context, arg GetItemVariantMapsParams) ([]GetItemVariantMapsRow, error) {
+	rows, err := q.db.QueryContext(ctx, getItemVariantMaps, arg.CompanyID, arg.PrimaryItemID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetItemVariantMapsRow
+	for rows.Next() {
+		var i GetItemVariantMapsRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.PrimaryItemID,
+			&i.PrimaryItemName,
+			&i.PrimaryItemVariantID,
+			&i.PrimaryItemVariantName,
+			&i.PrimaryItemVariantPrice,
+			&i.PrimaryItemUnitID,
+			&i.PrimaryItemUnitName,
+			&i.SecondaryItemID,
+			&i.SecondaryItemName,
+			&i.SecondaryItemVariantID,
+			&i.SecondaryItemVariantName,
+			&i.SecondaryItemVariantPrice,
+			&i.SecondaryItemUnitID,
+			&i.SecondaryItemUnitName,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getItemVariants = `-- name: GetItemVariants :many
 SELECT b.id,
     a.id AS variant_id,

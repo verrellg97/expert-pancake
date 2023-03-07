@@ -52,4 +52,5 @@ const (
 	GetItemReorderNotificationsError = 700036
 
 	UpsertItemVariantMapError = 700037
+	GetItemVariantMapsError   = 700038
 )
