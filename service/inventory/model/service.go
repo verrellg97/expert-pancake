@@ -56,6 +56,7 @@ type InventoryService interface {
 	GetItemReorderNotifications(w http.ResponseWriter, r *http.Request) error
 
 	UpsertItemVariantMap(w http.ResponseWriter, r *http.Request) error
+	GetItemVariantMaps(w http.ResponseWriter, r *http.Request) error
 }
 
 type Brand struct {
@@ -637,4 +638,13 @@ type UpsertItemVariantMapRequest struct {
 
 type UpsertItemVariantMapResponse struct {
 	ItemVariantMap
+}
+
+type GetItemVariantMapsRequest struct {
+	CompanyId string `json:"company_id"  validate:"required"`
+	ItemId    string `json:"item_id" validate:"required"`
+}
+
+type GetItemVariantMapsResponse struct {
+	ItemVariantMaps []ItemVariantMap `json:"item_variant_mappings" validate:"required"`
 }
