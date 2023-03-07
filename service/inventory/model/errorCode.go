@@ -3,49 +3,51 @@ package model
 const (
 	AddNewBrandError = 700001
 	UpdateBrandError = 700002
-	DeleteBrandError = 700033
-	GetBrandsError   = 700003
+	DeleteBrandError = 700003
+	GetBrandsError   = 700004
 
-	AddNewGroupError = 700004
-	UpdateGroupError = 700005
-	DeleteGroupError = 700034
-	GetGroupsError   = 700006
+	AddNewGroupError = 700005
+	UpdateGroupError = 700006
+	DeleteGroupError = 700007
+	GetGroupsError   = 700008
 
-	AddNewUnitError = 700007
-	UpdateUnitError = 700008
-	GetUnitsError   = 700009
+	AddNewUnitError = 700009
+	UpdateUnitError = 700010
+	GetUnitsError   = 700011
 
-	AddNewItemError = 700010
-	UpdateItemError = 700011
-	GetItemsError   = 700012
+	AddNewItemError = 700012
+	UpdateItemError = 700013
+	GetItemsError   = 700014
 
-	UpsertItemVariantError = 700013
-	GetItemVariantsError   = 700014
+	UpsertItemVariantError = 700015
+	GetItemVariantsError   = 700016
 
-	UpsertItemUnitError = 700015
-	GetItemUnitsError   = 700016
+	UpsertItemUnitError = 700017
+	GetItemUnitsError   = 700018
 
-	AddNewInternalStockTransferError = 700017
-	GetInternalStockTransfersError   = 700018
+	AddNewInternalStockTransferError = 700019
+	GetInternalStockTransfersError   = 700020
 
-	UpsertItemReorderError = 700019
-	GetItemReordersError   = 700020
+	UpsertItemReorderError = 700021
+	GetItemReordersError   = 700022
 
-	UpsertUnitCategoryError = 700021
-	GetUnitCategoriesError  = 700022
+	UpsertUnitCategoryError = 700023
+	GetUnitCategoriesError  = 700024
 
-	UpsertItemInfoError = 700023
-	GetItemInfoError    = 700024
+	UpsertItemInfoError = 700025
+	GetItemInfoError    = 700026
 
-	AddNewUpdateStockError = 700025
-	GetUpdateStocksError   = 700026
+	AddNewUpdateStockError = 700027
+	GetUpdateStocksError   = 700028
 
-	GetVariantWarehouseRacksError                 = 700027
-	GetVariantWarehouseRackBatchesError           = 700028
-	GetVariantWarehouseRackBatchExpiredDatesError = 700029
-	GetVariantWarehouseRackStockError             = 700030
-	GetVariantWarehouseStocksError                = 700031
+	GetVariantWarehouseRacksError                 = 700029
+	GetVariantWarehouseRackBatchesError           = 700030
+	GetVariantWarehouseRackBatchExpiredDatesError = 700031
+	GetVariantWarehouseRackStockError             = 700032
+	GetVariantWarehouseStocksError                = 700033
 
-	GetTransferHistoryError = 700032
-	GetStockHistoryError = 700033
+	GetTransferHistoryError = 700034
+	GetStockHistoryError    = 700035
+
+	GetItemReorderNotificationsError = 700036
 )

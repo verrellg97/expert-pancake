@@ -57,7 +57,9 @@ const (
 	GetVariantWarehouseStocksPath                = "/inventory/item/variant/warehouse/stocks"
 
 	GetTransferHistoryPath = "/inventory/transfer-history"
-	GetStockHistoryPath = "/inventory/stock-history"
+	GetStockHistoryPath    = "/inventory/stock-history"
+
+	GetItemReorderNotificationsPath = "/inventory/item-reorder/notifications"
 )
 
 func (c *component) Routes(inventoryService model.InventoryService) http.Handler {
@@ -123,6 +125,8 @@ func (c *component) Routes(inventoryService model.InventoryService) http.Handler
 
 	mux.Method("POST", GetTransferHistoryPath, httpHandler.New(inventoryService.GetTransferHistory))
 	mux.Method("POST", GetStockHistoryPath, httpHandler.New(inventoryService.GetStockHistory))
+
+	mux.Method("POST", GetItemReorderNotificationsPath, httpHandler.New(inventoryService.GetItemReorderNotifications))
 
 	return mux
 }
