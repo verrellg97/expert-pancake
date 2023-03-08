@@ -26,7 +26,6 @@ func (a inventoryService) AddInternalStockTransfer(w http.ResponseWriter, r *htt
 	arg := db.AddInternalStockTransferTrxParams{
 		SourceWarehouseId:      req.SourceWarehouseId,
 		DestinationWarehouseId: req.DestinationWarehouseId,
-		FormNumber:             req.FormNumber,
 		TransactionDate:        util.StringToDate(req.TransactionDate),
 		Items:                  req.Items,
 	}
