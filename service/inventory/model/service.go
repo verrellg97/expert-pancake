@@ -354,7 +354,6 @@ type InternalStockTransferItemRequest struct {
 type AddInternalStockTransferRequest struct {
 	SourceWarehouseId      string                             `json:"source_warehouse_id" validate:"required"`
 	DestinationWarehouseId string                             `json:"destination_warehouse_id" validate:"required"`
-	FormNumber             string                             `json:"form_number" validate:"required"`
 	TransactionDate        string                             `json:"transaction_date" validate:"required"`
 	Items                  []InternalStockTransferItemRequest `json:"items" validate:"required"`
 }

@@ -3,6 +3,8 @@ package db
 import (
 	"context"
 	"database/sql"
+	"fmt"
+	"math/rand"
 	"strconv"
 	"time"
 
@@ -15,7 +17,6 @@ import (
 type AddInternalStockTransferTrxParams struct {
 	SourceWarehouseId      string
 	DestinationWarehouseId string
-	FormNumber             string
 	TransactionDate        time.Time
 	Items                  []model.InternalStockTransferItemRequest
 }
@@ -40,7 +41,7 @@ func (trx *Trx) AddInternalStockTransferTrx(ctx context.Context, arg AddInternal
 			ID:                     id,
 			SourceWarehouseID:      arg.SourceWarehouseId,
 			DestinationWarehouseID: arg.DestinationWarehouseId,
-			FormNumber:             arg.FormNumber,
+			FormNumber:             "IST-" + fmt.Sprintf("%08d", rand.Intn(100000000)),
 			TransactionDate:        arg.TransactionDate,
 		})
 		if err != nil {
@@ -114,7 +115,7 @@ func (trx *Trx) AddInternalStockTransferTrx(ctx context.Context, arg AddInternal
 		result.TransactionId = headerRes.ID
 		result.SourceWarehouseId = arg.SourceWarehouseId
 		result.DestinationWarehouseId = arg.DestinationWarehouseId
-		result.FormNumber = arg.FormNumber
+		result.FormNumber = headerRes.FormNumber
 		result.TransactionDate = headerRes.TransactionDate.Format(util.DateLayoutYMD)
 
 		return err
