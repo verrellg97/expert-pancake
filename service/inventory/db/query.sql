@@ -117,6 +117,12 @@ SELECT id,
 FROM inventory.groups
 WHERE id = $1;
 
+-- name: GetItemGroups :one
+SELECT string_agg(CONCAT(id, '|', name), ',')::text AS groups
+FROM inventory.groups
+WHERE is_deleted = false
+AND id = ANY(@group_ids::text []);
+
 -- name: UpdateItem :one
 UPDATE inventory.items
 SET image_url = $2,
@@ -151,7 +157,7 @@ SELECT a.id,
     a.brand_id,
     COALESCE(c.name, '') AS brand_name,
     a.group_id,
-    d.name AS group_name,
+    string_agg(CONCAT(d.id, '|', d.name), ',')::text AS groups,
     a.tag,
     a.description,
     b.is_default,
@@ -159,9 +165,10 @@ SELECT a.id,
 FROM inventory.items a
     JOIN inventory.item_variants b ON a.id = b.item_id
     LEFT JOIN inventory.brands c ON a.brand_id = c.id
-    JOIN inventory.groups d ON a.group_id = d.id
+    JOIN inventory.groups d ON d.id = ANY(string_to_array(a.group_id, ','))
 WHERE a.company_id = $1
-    AND b.name LIKE $2;
+    AND (b.name LIKE @keyword OR a.tag LIKE @keyword)
+GROUP BY a.id, b.id, c.id;
 
 -- name: UpsertItemInfo :exec
 INSERT INTO inventory.item_infos(
@@ -225,7 +232,7 @@ SELECT b.id,
     b.brand_id,
     COALESCE(c.name, '') AS brand_name,
     b.group_id,
-    d.name AS group_name,
+    string_agg(CONCAT(d.id, '|', d.name), ',')::text AS groups,
     b.tag,
     b.description,
     a.is_default,
@@ -233,8 +240,9 @@ SELECT b.id,
 FROM inventory.item_variants a
     JOIN inventory.items b ON a.item_id = b.id
     LEFT JOIN inventory.brands c ON b.brand_id = c.id
-    JOIN inventory.groups d ON b.group_id = d.id
-WHERE a.id = $1;
+    JOIN inventory.groups d ON d.id = ANY(string_to_array(b.group_id, ','))
+WHERE a.id = $1
+GROUP BY a.id, b.id, c.id;
 
 -- name: GetItemVariants :many
 SELECT b.id,
@@ -248,7 +256,7 @@ SELECT b.id,
     b.brand_id,
     COALESCE(c.name, '') AS brand_name,
     b.group_id,
-    d.name AS group_name,
+    string_agg(CONCAT(d.id, '|', d.name), ',')::text AS groups,
     b.tag,
     b.description,
     a.is_default,
@@ -256,9 +264,10 @@ SELECT b.id,
 FROM inventory.item_variants a
     JOIN inventory.items b ON a.item_id = b.id
     LEFT JOIN inventory.brands c ON b.brand_id = c.id
-    JOIN inventory.groups d ON b.group_id = d.id
+    JOIN inventory.groups d ON d.id = ANY(string_to_array(b.group_id, ','))
 WHERE a.item_id = $1
-    AND a.name LIKE $2;
+    AND a.name LIKE $2
+GROUP BY a.id, b.id, c.id;
 
 -- name: UpsertItemUnit :one
 INSERT INTO inventory.item_units(id, item_id, unit_id, value, is_default)
@@ -538,7 +547,7 @@ FROM inventory.stock_movements a
 JOIN inventory.item_variants b ON a.variant_id = b.id
 JOIN inventory.items c ON b.item_id = c.id
 WHERE a.warehouse_id = $1
-GROUP BY c.id, c.name, b.id, b.name;
+GROUP BY c.id, b.id;
 
 -- name: GetTransferHistory :many
 SELECT b.transaction_date,
@@ -605,7 +614,7 @@ AND d.warehouse_id = $1
 LEFT JOIN inventory.item_units e ON b.id = e.item_id
 AND d.item_unit_id = e.id
 WHERE a.id = ANY(@item_variant_ids::text [])
-GROUP BY b.id, b.name, a.id, a.name, d.id, d.minimum_stock, e.value;
+GROUP BY b.id, a.id, d.id, e.value;
 
 -- name: UpsertItemVariantMap :exec
 INSERT INTO inventory.item_variant_maps(id,

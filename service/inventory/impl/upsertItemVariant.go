@@ -9,8 +9,8 @@ import (
 	"github.com/calvinkmts/expert-pancake/engine/httpHandler"
 	db "github.com/expert-pancake/service/inventory/db/sqlc"
 	"github.com/expert-pancake/service/inventory/model"
-	uuid "github.com/satori/go.uuid"
 	"github.com/expert-pancake/service/inventory/util"
+	uuid "github.com/satori/go.uuid"
 )
 
 func (a inventoryService) UpsertItemVariant(w http.ResponseWriter, r *http.Request) error {
@@ -63,8 +63,7 @@ func (a inventoryService) UpsertItemVariant(w http.ResponseWriter, r *http.Reque
 			VariantName: result.VariantName,
 			BrandId:     result.BrandID,
 			BrandName:   result.BrandName,
-			GroupId:     result.GroupID,
-			GroupName:   result.GroupName,
+			Groups:      util.StringToArrayOfGroup(result.Groups, result.CompanyID),
 			Tag:         util.StringToArray(result.Tag),
 			Description: result.Description,
 			IsDefault:   result.IsDefault,

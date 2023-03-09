@@ -24,7 +24,7 @@ func (a inventoryService) GetItems(w http.ResponseWriter, r *http.Request) error
 
 	result, err := a.dbTrx.GetItems(context.Background(), db.GetItemsParams{
 		CompanyID: req.CompanyId,
-		Name:      util.WildCardString(req.Keyword),
+		Keyword:   util.WildCardString(req.Keyword),
 	})
 	if err != nil {
 		return errors.NewServerError(model.GetItemsError, err.Error())
@@ -44,8 +44,7 @@ func (a inventoryService) GetItems(w http.ResponseWriter, r *http.Request) error
 			VariantName: d.VariantName,
 			BrandId:     d.BrandID,
 			BrandName:   d.BrandName,
-			GroupId:     d.GroupID,
-			GroupName:   d.GroupName,
+			Groups:      util.StringToArrayOfGroup(d.Groups, d.CompanyID),
 			Tag:         util.StringToArray(d.Tag),
 			Description: d.Description,
 			IsDefault:   d.IsDefault,

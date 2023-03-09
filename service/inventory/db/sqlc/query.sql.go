@@ -330,6 +330,20 @@ func (q *Queries) GetItemBarcode(ctx context.Context, arg GetItemBarcodeParams) 
 	return id, err
 }
 
+const getItemGroups = `-- name: GetItemGroups :one
+SELECT string_agg(CONCAT(id, '|', name), ',')::text AS groups
+FROM inventory.groups
+WHERE is_deleted = false
+AND id = ANY($1::text [])
+`
+
+func (q *Queries) GetItemGroups(ctx context.Context, groupIds []string) (string, error) {
+	row := q.db.QueryRowContext(ctx, getItemGroups, pq.Array(groupIds))
+	var groups string
+	err := row.Scan(&groups)
+	return groups, err
+}
+
 const getItemInfo = `-- name: GetItemInfo :one
 SELECT a.item_id,
     d.company_id,
@@ -441,7 +455,7 @@ AND d.warehouse_id = $1
 LEFT JOIN inventory.item_units e ON b.id = e.item_id
 AND d.item_unit_id = e.id
 WHERE a.id = ANY($2::text [])
-GROUP BY b.id, b.name, a.id, a.name, d.id, d.minimum_stock, e.value
+GROUP BY b.id, a.id, d.id, e.value
 `
 
 type GetItemReorderNotificationsParams struct {
@@ -628,7 +642,7 @@ SELECT b.id,
     b.brand_id,
     COALESCE(c.name, '') AS brand_name,
     b.group_id,
-    d.name AS group_name,
+    string_agg(CONCAT(d.id, '|', d.name), ',')::text AS groups,
     b.tag,
     b.description,
     a.is_default,
@@ -636,8 +650,9 @@ SELECT b.id,
 FROM inventory.item_variants a
     JOIN inventory.items b ON a.item_id = b.id
     LEFT JOIN inventory.brands c ON b.brand_id = c.id
-    JOIN inventory.groups d ON b.group_id = d.id
+    JOIN inventory.groups d ON d.id = ANY(string_to_array(b.group_id, ','))
 WHERE a.id = $1
+GROUP BY a.id, b.id, c.id
 `
 
 type GetItemVariantRow struct {
@@ -652,7 +667,7 @@ type GetItemVariantRow struct {
 	BrandID     string `db:"brand_id"`
 	BrandName   string `db:"brand_name"`
 	GroupID     string `db:"group_id"`
-	GroupName   string `db:"group_name"`
+	Groups      string `db:"groups"`
 	Tag         string `db:"tag"`
 	Description string `db:"description"`
 	IsDefault   bool   `db:"is_default"`
@@ -674,7 +689,7 @@ func (q *Queries) GetItemVariant(ctx context.Context, id string) (GetItemVariant
 		&i.BrandID,
 		&i.BrandName,
 		&i.GroupID,
-		&i.GroupName,
+		&i.Groups,
 		&i.Tag,
 		&i.Description,
 		&i.IsDefault,
@@ -853,7 +868,7 @@ SELECT b.id,
     b.brand_id,
     COALESCE(c.name, '') AS brand_name,
     b.group_id,
-    d.name AS group_name,
+    string_agg(CONCAT(d.id, '|', d.name), ',')::text AS groups,
     b.tag,
     b.description,
     a.is_default,
@@ -861,9 +876,10 @@ SELECT b.id,
 FROM inventory.item_variants a
     JOIN inventory.items b ON a.item_id = b.id
     LEFT JOIN inventory.brands c ON b.brand_id = c.id
-    JOIN inventory.groups d ON b.group_id = d.id
+    JOIN inventory.groups d ON d.id = ANY(string_to_array(b.group_id, ','))
 WHERE a.item_id = $1
     AND a.name LIKE $2
+GROUP BY a.id, b.id, c.id
 `
 
 type GetItemVariantsParams struct {
@@ -883,7 +899,7 @@ type GetItemVariantsRow struct {
 	BrandID     string `db:"brand_id"`
 	BrandName   string `db:"brand_name"`
 	GroupID     string `db:"group_id"`
-	GroupName   string `db:"group_name"`
+	Groups      string `db:"groups"`
 	Tag         string `db:"tag"`
 	Description string `db:"description"`
 	IsDefault   bool   `db:"is_default"`
@@ -911,7 +927,7 @@ func (q *Queries) GetItemVariants(ctx context.Context, arg GetItemVariantsParams
 			&i.BrandID,
 			&i.BrandName,
 			&i.GroupID,
-			&i.GroupName,
+			&i.Groups,
 			&i.Tag,
 			&i.Description,
 			&i.IsDefault,
@@ -942,7 +958,7 @@ SELECT a.id,
     a.brand_id,
     COALESCE(c.name, '') AS brand_name,
     a.group_id,
-    d.name AS group_name,
+    string_agg(CONCAT(d.id, '|', d.name), ',')::text AS groups,
     a.tag,
     a.description,
     b.is_default,
@@ -950,14 +966,15 @@ SELECT a.id,
 FROM inventory.items a
     JOIN inventory.item_variants b ON a.id = b.item_id
     LEFT JOIN inventory.brands c ON a.brand_id = c.id
-    JOIN inventory.groups d ON a.group_id = d.id
+    JOIN inventory.groups d ON d.id = ANY(string_to_array(a.group_id, ','))
 WHERE a.company_id = $1
-    AND b.name LIKE $2
+    AND (b.name LIKE $2 OR a.tag LIKE $2)
+GROUP BY a.id, b.id, c.id
 `
 
 type GetItemsParams struct {
 	CompanyID string `db:"company_id"`
-	Name      string `db:"name"`
+	Keyword   string `db:"keyword"`
 }
 
 type GetItemsRow struct {
@@ -972,7 +989,7 @@ type GetItemsRow struct {
 	BrandID     string `db:"brand_id"`
 	BrandName   string `db:"brand_name"`
 	GroupID     string `db:"group_id"`
-	GroupName   string `db:"group_name"`
+	Groups      string `db:"groups"`
 	Tag         string `db:"tag"`
 	Description string `db:"description"`
 	IsDefault   bool   `db:"is_default"`
@@ -980,7 +997,7 @@ type GetItemsRow struct {
 }
 
 func (q *Queries) GetItems(ctx context.Context, arg GetItemsParams) ([]GetItemsRow, error) {
-	rows, err := q.db.QueryContext(ctx, getItems, arg.CompanyID, arg.Name)
+	rows, err := q.db.QueryContext(ctx, getItems, arg.CompanyID, arg.Keyword)
 	if err != nil {
 		return nil, err
 	}
@@ -1000,7 +1017,7 @@ func (q *Queries) GetItems(ctx context.Context, arg GetItemsParams) ([]GetItemsR
 			&i.BrandID,
 			&i.BrandName,
 			&i.GroupID,
-			&i.GroupName,
+			&i.Groups,
 			&i.Tag,
 			&i.Description,
 			&i.IsDefault,
@@ -1612,7 +1629,7 @@ FROM inventory.stock_movements a
 JOIN inventory.item_variants b ON a.variant_id = b.id
 JOIN inventory.items c ON b.item_id = c.id
 WHERE a.warehouse_id = $1
-GROUP BY c.id, c.name, b.id, b.name
+GROUP BY c.id, b.id
 `
 
 type GetVariantWarehouseStocksRow struct {

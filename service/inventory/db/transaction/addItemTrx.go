@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	db "github.com/expert-pancake/service/inventory/db/sqlc"
+	"github.com/expert-pancake/service/inventory/util"
 	uuid "github.com/satori/go.uuid"
 )
 
@@ -16,7 +17,7 @@ type AddItemTrxParams struct {
 	Name        string
 	Barcode     string
 	BrandId     string
-	GroupId     string
+	GroupIds    []string
 	Tag         string
 	Price       string
 	Description string
@@ -33,8 +34,7 @@ type AddItemTrxResult struct {
 	VariantName string
 	BrandId     string
 	BrandName   string
-	GroupId     string
-	GroupName   string
+	Groups      string
 	Tag         string
 	Description string
 	IsDefault   bool
@@ -56,7 +56,7 @@ func (trx *Trx) AddItemTrx(ctx context.Context, arg AddItemTrxParams) (AddItemTr
 			Code:        "BRG-" + fmt.Sprintf("%08d", rand.Intn(100000000)),
 			Name:        arg.Name,
 			BrandID:     arg.BrandId,
-			GroupID:     arg.GroupId,
+			GroupID:     util.ArrayToString(arg.GroupIds),
 			Tag:         arg.Tag,
 			Description: arg.Description,
 		})
@@ -72,7 +72,7 @@ func (trx *Trx) AddItemTrx(ctx context.Context, arg AddItemTrxParams) (AddItemTr
 			result.BrandName = brandRes.Name
 		}
 
-		groupRes, err := q.GetGroupById(ctx, arg.GroupId)
+		groupRes, err := q.GetItemGroups(ctx, arg.GroupIds)
 		if err != nil {
 			return err
 		}
@@ -99,8 +99,7 @@ func (trx *Trx) AddItemTrx(ctx context.Context, arg AddItemTrxParams) (AddItemTr
 		result.Name = arg.Name
 		result.VariantName = itemVariantRes.Name
 		result.BrandId = arg.BrandId
-		result.GroupId = arg.GroupId
-		result.GroupName = groupRes.Name
+		result.Groups = groupRes
 		result.Tag = arg.Tag
 		result.Description = arg.Description
 		result.IsDefault = itemVariantRes.IsDefault
