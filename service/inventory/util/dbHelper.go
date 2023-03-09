@@ -4,6 +4,8 @@ import (
 	"database/sql"
 	"strings"
 	"time"
+
+	"github.com/expert-pancake/service/inventory/model"
 )
 
 func WildCardString(keyword string) string {
@@ -54,4 +56,21 @@ func ArrayToString(value []string) string {
 		result = strings.Join(value, `,`)
 	}
 	return result
+}
+
+func StringToArrayOfGroup(value string, companyId string) []model.ItemGroup {
+	var datas = make([]model.ItemGroup, 0)
+
+	if len(value) > 0 {
+		result := strings.Split(value, `,`)
+		for _, d := range result {
+			item := strings.Split(d, `|`)
+			var data = model.ItemGroup{
+				Id:   item[0],
+				Name: item[1],
+			}
+			datas = append(datas, data)
+		}
+	}
+	return datas
 }

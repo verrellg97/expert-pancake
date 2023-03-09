@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	db "github.com/expert-pancake/service/inventory/db/sqlc"
+	"github.com/expert-pancake/service/inventory/util"
 )
 
 type UpdateItemTrxParams struct {
@@ -13,7 +14,7 @@ type UpdateItemTrxParams struct {
 	Barcode     string
 	Name        string
 	BrandId     string
-	GroupId     string
+	GroupIds    []string
 	Tag         string
 	Price       string
 	Description string
@@ -30,8 +31,7 @@ type UpdateItemTrxResult struct {
 	VariantName string
 	BrandId     string
 	BrandName   string
-	GroupId     string
-	GroupName   string
+	Groups      string
 	Tag         string
 	Description string
 	IsDefault   bool
@@ -49,7 +49,7 @@ func (trx *Trx) UpdateItemTrx(ctx context.Context, arg UpdateItemTrxParams) (Upd
 			ImageUrl:    arg.ImageUrl,
 			Name:        arg.Name,
 			BrandID:     arg.BrandId,
-			GroupID:     arg.GroupId,
+			GroupID:     util.ArrayToString(arg.GroupIds),
 			Tag:         arg.Tag,
 			Description: arg.Description,
 		})
@@ -65,7 +65,7 @@ func (trx *Trx) UpdateItemTrx(ctx context.Context, arg UpdateItemTrxParams) (Upd
 			result.BrandName = brandRes.Name
 		}
 
-		groupRes, err := q.GetGroupById(ctx, arg.GroupId)
+		groupRes, err := q.GetItemGroups(ctx, arg.GroupIds)
 		if err != nil {
 			return err
 		}
@@ -90,8 +90,7 @@ func (trx *Trx) UpdateItemTrx(ctx context.Context, arg UpdateItemTrxParams) (Upd
 		result.Name = arg.Name
 		result.VariantName = itemVariantRes.Name
 		result.BrandId = arg.BrandId
-		result.GroupId = arg.GroupId
-		result.GroupName = groupRes.Name
+		result.Groups = groupRes
 		result.Tag = arg.Tag
 		result.Description = arg.Description
 		result.IsDefault = itemVariantRes.IsDefault
