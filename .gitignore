@@ -22,4 +22,6 @@ service/business/businessService
 service/accounting/accountingService
 service/business-relation/businessRelationService
 service/inventory/inventoryService
+service/warehouse/warehouseService
+service/notification/notificationService
 .DS_Store
