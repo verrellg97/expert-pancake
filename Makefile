@@ -4,6 +4,7 @@ ACCOUNTING_BINARY=accountingService
 BUSINESS_RELATION_BINARY=businessRelationService
 INVENTORY_BINARY=inventoryService
 WAREHOUSE_BINARY=warehouseService
+NOTIFICATION_BINARY=notificationService
 
 ## up: starts all containers in the background without forcing build
 up:
@@ -59,6 +60,12 @@ build_inventory:
 build_warehouse:
 	@echo "Building warehouse binary..."
 	cd ./service/warehouse && env GOOS=linux CGO_ENABLED=0 go build -o ${WAREHOUSE_BINARY} ./cmd/api
+	@echo "Done!"
+
+## build_notification: builds the notification binary as a linux executable
+build_notification:
+	@echo "Building notification binary..."
+	cd ./service/notification && env GOOS=linux CGO_ENABLED=0 go build -o ${NOTIFICATION_BINARY} ./cmd/api
 	@echo "Done!"
 
 ## up_appwrite: starts appwrite in the background
