@@ -8,6 +8,15 @@ import (
 	"github.com/expert-pancake/service/inventory/model"
 )
 
+func WarehouseApiToMap(data []client.Warehouse) map[string]string {
+	dataMap := map[string]string{}
+	for _, v := range data {
+		dataMap[v.WarehouseId] = v.Name
+	}
+
+	return dataMap
+}
+
 func InternalStockTransferItemDbToApi(data []db.GetInternalStockTransferItemsRow) []model.InternalStockTransferItem {
 	var items = make([]model.InternalStockTransferItem, 0)
 
@@ -21,16 +30,22 @@ func InternalStockTransferItemDbToApi(data []db.GetInternalStockTransferItemsRow
 			*expired_date = d.ExpiredDate.Time.Format(DateLayoutYMD)
 		}
 
-		argWarehouseRack := client.GetWarehouseRacksRequest{
-			Id:          d.WarehouseRackID,
-			WarehouseId: "1",
+		var warehouseRackName = ""
+
+		if d.WarehouseRackID != "" {
+			argWarehouseRack := client.GetWarehouseRacksRequest{
+				Id:          d.WarehouseRackID,
+				WarehouseId: "1",
+			}
+			warehouseRack, _ := client.GetWarehouseRacks(argWarehouseRack)
+
+			warehouseRackName = warehouseRack.Result.WarehouseRacks[0].Name
 		}
-		warehouseRack, _ := client.GetWarehouseRacks(argWarehouseRack)
 
 		items = append(items, model.InternalStockTransferItem{
 			DetailId:          d.ID,
 			WarehouseRackId:   d.WarehouseRackID,
-			WarehouseRackName: warehouseRack.Result.WarehouseRacks[0].Name,
+			WarehouseRackName: warehouseRackName,
 			ItemName:          d.ItemName,
 			VariantId:         d.VariantID,
 			VariantName:       d.VariantName,

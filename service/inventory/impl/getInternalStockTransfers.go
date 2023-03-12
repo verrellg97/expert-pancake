@@ -44,35 +44,23 @@ func (a inventoryService) GetInternalStockTransfers(w http.ResponseWriter, r *ht
 		return errors.NewServerError(model.GetInternalStockTransfersError, err.Error())
 	}
 
+	warehouseMap := util.WarehouseApiToMap(warehouseIds.Result.Warehouses)
+
 	var datas = make([]model.InternalStockTransfer, 0)
 
 	for _, d := range result {
-		argSourceWarehouse := client.GetWarehousesRequest{
-			Id:       d.SourceWarehouseID,
-			BranchId: "1",
-		}
-		sourceWarehouse, err := client.GetWarehouses(argSourceWarehouse)
-		if err != nil {
-			return errors.NewServerError(model.GetInternalStockTransfersError, err.Error())
-		}
-
-		argDestinationWarehouse := client.GetWarehousesRequest{
-			Id:       d.DestinationWarehouseID,
-			BranchId: "1",
-		}
-		destinationWarehouse, err := client.GetWarehouses(argDestinationWarehouse)
-		if err != nil {
-			return errors.NewServerError(model.GetInternalStockTransfersError, err.Error())
-		}
 
 		resultItems, err := a.dbTrx.GetInternalStockTransferItems(context.Background(), d.ID)
+		if err != nil {
+			return errors.NewServerError(model.GetInternalStockTransfersError, err.Error())
+		}
 
 		var data = model.InternalStockTransfer{
 			TransactionId:            d.ID,
 			SourceWarehouseId:        d.SourceWarehouseID,
-			SourceWarehouseName:      sourceWarehouse.Result.Warehouses[0].Name,
+			SourceWarehouseName:      warehouseMap[d.SourceWarehouseID],
 			DestinationWarehouseId:   d.DestinationWarehouseID,
-			DestinationWarehouseName: destinationWarehouse.Result.Warehouses[0].Name,
+			DestinationWarehouseName: warehouseMap[d.DestinationWarehouseID],
 			FormNumber:               d.FormNumber,
 			TransactionDate:          d.TransactionDate.Format(util.DateLayoutYMD),
 			Items:                    util.InternalStockTransferItemDbToApi(resultItems),
