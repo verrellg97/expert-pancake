@@ -73,6 +73,18 @@ services:
     deploy:
       mode: replicated
       replicas: 1
+  notification-service:
+    build:
+      context: ./service/notification
+      dockerfile: Dockerfile
+    networks:
+      - postgres
+    restart: always
+    ports:
+      - "4060:4060"
+    deploy:
+      mode: replicated
+      replicas: 1
 
   postgres:
     container_name: postgres_container
