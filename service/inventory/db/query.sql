@@ -616,6 +616,29 @@ AND d.item_unit_id = e.id
 WHERE a.id = ANY(@item_variant_ids::text [])
 GROUP BY b.id, a.id, d.id, e.value;
 
+-- name: GetSupplierCatalogs :many
+SELECT a.id,
+    b.id AS variant_id,
+    a.company_id,
+    b.image_url,
+    a.code,
+    b.barcode,
+    a.name,
+    b.name AS variant_name,
+    a.brand_id,
+    COALESCE(c.name, '') AS brand_name,
+    b.is_default,
+    b.price,
+    CASE WHEN COUNT(d.id) > 0 THEN true ELSE false END AS is_mapped
+FROM inventory.items a
+    JOIN inventory.item_variants b ON a.id = b.item_id
+    LEFT JOIN inventory.brands c ON a.brand_id = c.id
+    LEFT JOIN inventory.item_variant_maps d ON b.id = d.primary_item_variant_id
+    AND d.secondary_company_id = $2
+WHERE a.company_id = $1
+    AND b.name LIKE @keyword
+GROUP BY a.id, b.id, c.id;
+
 -- name: UpsertItemVariantMap :exec
 INSERT INTO inventory.item_variant_maps(id,
 primary_item_variant_id, secondary_item_variant_id,

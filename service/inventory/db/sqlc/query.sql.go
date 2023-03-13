@@ -1113,6 +1113,89 @@ func (q *Queries) GetStockHistory(ctx context.Context, arg GetStockHistoryParams
 	return items, nil
 }
 
+const getSupplierCatalogs = `-- name: GetSupplierCatalogs :many
+SELECT a.id,
+    b.id AS variant_id,
+    a.company_id,
+    b.image_url,
+    a.code,
+    b.barcode,
+    a.name,
+    b.name AS variant_name,
+    a.brand_id,
+    COALESCE(c.name, '') AS brand_name,
+    b.is_default,
+    b.price,
+    CASE WHEN COUNT(d.id) > 0 THEN true ELSE false END AS is_mapped
+FROM inventory.items a
+    JOIN inventory.item_variants b ON a.id = b.item_id
+    LEFT JOIN inventory.brands c ON a.brand_id = c.id
+    LEFT JOIN inventory.item_variant_maps d ON b.id = d.primary_item_variant_id
+    AND d.secondary_company_id = $2
+WHERE a.company_id = $1
+    AND b.name LIKE $3
+GROUP BY a.id, b.id, c.id
+`
+
+type GetSupplierCatalogsParams struct {
+	CompanyID          string `db:"company_id"`
+	SecondaryCompanyID string `db:"secondary_company_id"`
+	Keyword            string `db:"keyword"`
+}
+
+type GetSupplierCatalogsRow struct {
+	ID          string `db:"id"`
+	VariantID   string `db:"variant_id"`
+	CompanyID   string `db:"company_id"`
+	ImageUrl    string `db:"image_url"`
+	Code        string `db:"code"`
+	Barcode     string `db:"barcode"`
+	Name        string `db:"name"`
+	VariantName string `db:"variant_name"`
+	BrandID     string `db:"brand_id"`
+	BrandName   string `db:"brand_name"`
+	IsDefault   bool   `db:"is_default"`
+	Price       int64  `db:"price"`
+	IsMapped    bool   `db:"is_mapped"`
+}
+
+func (q *Queries) GetSupplierCatalogs(ctx context.Context, arg GetSupplierCatalogsParams) ([]GetSupplierCatalogsRow, error) {
+	rows, err := q.db.QueryContext(ctx, getSupplierCatalogs, arg.CompanyID, arg.SecondaryCompanyID, arg.Keyword)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetSupplierCatalogsRow
+	for rows.Next() {
+		var i GetSupplierCatalogsRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.VariantID,
+			&i.CompanyID,
+			&i.ImageUrl,
+			&i.Code,
+			&i.Barcode,
+			&i.Name,
+			&i.VariantName,
+			&i.BrandID,
+			&i.BrandName,
+			&i.IsDefault,
+			&i.Price,
+			&i.IsMapped,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getTransferHistory = `-- name: GetTransferHistory :many
 SELECT b.transaction_date,
     b.form_number,
