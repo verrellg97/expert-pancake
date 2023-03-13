@@ -2502,11 +2502,14 @@ func (q *Queries) UpsertItemVariant(ctx context.Context, arg UpsertItemVariantPa
 
 const upsertItemVariantMap = `-- name: UpsertItemVariantMap :exec
 INSERT INTO inventory.item_variant_maps(id,
+primary_company_id, secondary_company_id,
 primary_item_variant_id, secondary_item_variant_id,
 primary_item_unit_id, secondary_item_unit_id)
-VALUES ($1, $2, $3, $4, $5) ON CONFLICT (id) DO
+VALUES ($1, $2, $3, $4, $5, $6, $7) ON CONFLICT (id) DO
 UPDATE
-SET primary_item_variant_id = EXCLUDED.primary_item_variant_id,
+SET primary_company_id = EXCLUDED.primary_company_id,
+    secondary_company_id = EXCLUDED.secondary_company_id,
+    primary_item_variant_id = EXCLUDED.primary_item_variant_id,
     secondary_item_variant_id = EXCLUDED.secondary_item_variant_id,
     primary_item_unit_id = EXCLUDED.primary_item_unit_id,
     secondary_item_unit_id = EXCLUDED.secondary_item_unit_id,
@@ -2515,6 +2518,8 @@ SET primary_item_variant_id = EXCLUDED.primary_item_variant_id,
 
 type UpsertItemVariantMapParams struct {
 	ID                     string `db:"id"`
+	PrimaryCompanyID       string `db:"primary_company_id"`
+	SecondaryCompanyID     string `db:"secondary_company_id"`
 	PrimaryItemVariantID   string `db:"primary_item_variant_id"`
 	SecondaryItemVariantID string `db:"secondary_item_variant_id"`
 	PrimaryItemUnitID      string `db:"primary_item_unit_id"`
@@ -2524,6 +2529,8 @@ type UpsertItemVariantMapParams struct {
 func (q *Queries) UpsertItemVariantMap(ctx context.Context, arg UpsertItemVariantMapParams) error {
 	_, err := q.db.ExecContext(ctx, upsertItemVariantMap,
 		arg.ID,
+		arg.PrimaryCompanyID,
+		arg.SecondaryCompanyID,
 		arg.PrimaryItemVariantID,
 		arg.SecondaryItemVariantID,
 		arg.PrimaryItemUnitID,

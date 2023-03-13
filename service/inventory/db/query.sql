@@ -641,11 +641,14 @@ GROUP BY a.id, b.id, c.id;
 
 -- name: UpsertItemVariantMap :exec
 INSERT INTO inventory.item_variant_maps(id,
+primary_company_id, secondary_company_id,
 primary_item_variant_id, secondary_item_variant_id,
 primary_item_unit_id, secondary_item_unit_id)
-VALUES ($1, $2, $3, $4, $5) ON CONFLICT (id) DO
+VALUES ($1, $2, $3, $4, $5, $6, $7) ON CONFLICT (id) DO
 UPDATE
-SET primary_item_variant_id = EXCLUDED.primary_item_variant_id,
+SET primary_company_id = EXCLUDED.primary_company_id,
+    secondary_company_id = EXCLUDED.secondary_company_id,
+    primary_item_variant_id = EXCLUDED.primary_item_variant_id,
     secondary_item_variant_id = EXCLUDED.secondary_item_variant_id,
     primary_item_unit_id = EXCLUDED.primary_item_unit_id,
     secondary_item_unit_id = EXCLUDED.secondary_item_unit_id,
