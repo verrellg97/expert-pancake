@@ -125,6 +125,8 @@ type InventoryItemVariant struct {
 
 type InventoryItemVariantMap struct {
 	ID                     string       `db:"id"`
+	PrimaryCompanyID       string       `db:"primary_company_id"`
+	SecondaryCompanyID     string       `db:"secondary_company_id"`
 	PrimaryItemVariantID   string       `db:"primary_item_variant_id"`
 	SecondaryItemVariantID string       `db:"secondary_item_variant_id"`
 	PrimaryItemUnitID      string       `db:"primary_item_unit_id"`

@@ -55,6 +55,7 @@ type InventoryService interface {
 
 	GetItemReorderNotifications(w http.ResponseWriter, r *http.Request) error
 
+	GetSupplierCatalogs(w http.ResponseWriter, r *http.Request) error
 	UpsertItemVariantMap(w http.ResponseWriter, r *http.Request) error
 	GetItemVariantMaps(w http.ResponseWriter, r *http.Request) error
 }
@@ -611,6 +612,32 @@ type GetItemReorderNotificationsRequest struct {
 
 type GetItemReorderNotificationsResponse struct {
 	ItemVariants []ItemReorderNotification `json:"item_variants" validate:"required"`
+}
+
+type SupplierCatalog struct {
+	CompanyId   string `json:"company_id" validate:"required"`
+	ItemId      string `json:"item_id" validate:"required"`
+	VariantId   string `json:"variant_id" validate:"required"`
+	ImageUrl    string `json:"image_url" validate:"required"`
+	Code        string `json:"code" validate:"required"`
+	Barcode     string `json:"barcode" validate:"required"`
+	Name        string `json:"name" validate:"required"`
+	VariantName string `json:"variant_name" validate:"required"`
+	BrandId     string `json:"brand_id" validate:"required"`
+	BrandName   string `json:"brand_name" validate:"required"`
+	IsDefault   bool   `json:"is_default" validate:"required"`
+	Price       string `json:"price" validate:"required"`
+	IsMapped    bool   `json:"is_mapped" validate:"required"`
+}
+
+type GetSupplierCatalogsRequest struct {
+	PrimaryCompanyId   string `json:"primary_company_id"  validate:"required"`
+	SecondaryCompanyId string `json:"secondary_company_id"  validate:"required"`
+	Keyword            string `json:"keyword"`
+}
+
+type GetSupplierCatalogsResponse struct {
+	SupplierCatalogs []SupplierCatalog `json:"supplier_catalogs" validate:"required"`
 }
 
 type ItemVariantMap struct {
