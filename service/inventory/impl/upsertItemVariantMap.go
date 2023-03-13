@@ -32,8 +32,10 @@ func (a inventoryService) UpsertItemVariantMap(w http.ResponseWriter, r *http.Re
 
 	arg := db.UpsertItemVariantMapParams{
 		ID:                     id,
+		PrimaryCompanyID:       req.PrimaryCompanyId,
 		PrimaryItemVariantID:   req.PrimaryItemVariantId,
 		PrimaryItemUnitID:      req.PrimaryItemUnitId,
+		SecondaryCompanyID:     req.SecondaryCompanyId,
 		SecondaryItemVariantID: req.SecondaryItemVariantId,
 		SecondaryItemUnitID:    req.SecondaryItemUnitId,
 	}

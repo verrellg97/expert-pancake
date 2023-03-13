@@ -660,8 +660,10 @@ type ItemVariantMap struct {
 
 type UpsertItemVariantMapRequest struct {
 	ItemVariantMapId       string `json:"item_variant_map_id"`
+	PrimaryCompanyId       string `json:"primary_company_id" validate:"required"`
 	PrimaryItemVariantId   string `json:"primary_item_variant_id" validate:"required"`
 	PrimaryItemUnitId      string `json:"primary_item_unit_id" validate:"required"`
+	SecondaryCompanyId     string `json:"secondary_company_id" validate:"required"`
 	SecondaryItemVariantId string `json:"secondary_item_variant_id" validate:"required"`
 	SecondaryItemUnitId    string `json:"secondary_item_unit_id" validate:"required"`
 }
