@@ -1,3 +1,7 @@
+-- Deploy notification:20230314_notification_schema_and_tables to pg
+
+BEGIN;
+
 CREATE SCHEMA IF NOT EXISTS notification;
 
 CREATE TABLE "notification"."notifications" (
@@ -12,3 +16,5 @@ CREATE TABLE "notification"."notifications" (
   "created_at" timestamptz DEFAULT (now()),
   PRIMARY KEY ("id")
 );
+
+COMMIT;
