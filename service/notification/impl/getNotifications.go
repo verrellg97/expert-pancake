@@ -21,10 +21,18 @@ func (a notificationService) GetNotifications(w http.ResponseWriter, r *http.Req
 		return errors.NewClientError().WithDataMap(errMapRequest)
 	}
 
+	var isReadFilter = false
+	if req.IsReadFilter != nil {
+		isReadFilter = true
+	} else {
+		req.IsReadFilter = &isReadFilter
+	}
+
 	result, err := a.dbTrx.GetNotifications(context.Background(), db.GetNotificationsParams{
-		CompanyID: req.CompanyId,
-		BranchID:  util.WildCardString(req.BranchId),
-		IsUnread:  req.IsUnread,
+		CompanyID:    req.CompanyId,
+		BranchID:     util.WildCardString(req.BranchId),
+		IsReadFilter: isReadFilter,
+		IsRead:       *req.IsReadFilter,
 	})
 	if err != nil {
 		return errors.NewServerError(model.GetNotificationsError, err.Error())
@@ -37,10 +45,10 @@ func (a notificationService) GetNotifications(w http.ResponseWriter, r *http.Req
 			NotificationId: d.ID,
 			CompanyId:      d.CompanyID,
 			BranchId:       d.BranchID,
-			Type:           d.Type,
 			Title:          d.Title,
 			Content:        d.Content,
-			CreatedAt:      d.CreatedAt,
+			Type:           d.Type,
+			CreatedAt:      d.CreatedAt.Time,
 		}
 		notifications = append(notifications, notification)
 	}

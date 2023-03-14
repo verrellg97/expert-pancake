@@ -44,7 +44,7 @@ func (a notificationService) InsertNotification(w http.ResponseWriter, r *http.R
 			Title:          result.Title,
 			Content:        result.Content,
 			Type:           result.Type,
-			CreatedAt:      result.CreatedAt,
+			CreatedAt:      result.CreatedAt.Time,
 		},
 	}
 

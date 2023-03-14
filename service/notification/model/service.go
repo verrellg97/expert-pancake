@@ -1,8 +1,8 @@
 package model
 
 import (
-	"database/sql"
 	"net/http"
+	"time"
 )
 
 type NotificationService interface {
@@ -13,20 +13,20 @@ type NotificationService interface {
 }
 
 type Notification struct {
-	NotificationId string       `json:"notification_id" validate:"required"`
-	CompanyId      string       `json:"company_id" validate:"required"`
-	BranchId       string       `json:"branch_id" validate:"required"`
-	Type           string       `json:"type" validate:"required"`
-	Title          string       `json:"Title" validate:"required"`
-	Content        string       `json:"Content" validate:"required"`
-	CreatedAt      sql.NullTime `json:"created_at" validate:"required"`
+	NotificationId string    `json:"notification_id" validate:"required"`
+	CompanyId      string    `json:"company_id" validate:"required"`
+	BranchId       string    `json:"branch_id" validate:"required"`
+	Title          string    `json:"title" validate:"required"`
+	Content        string    `json:"content" validate:"required"`
+	Type           string    `json:"type" validate:"required"`
+	CreatedAt      time.Time `json:"created_at" validate:"required"`
 }
 
 type InsertNotificationRequest struct {
 	CompanyId string `json:"company_id" validate:"required"`
 	BranchId  string `json:"branch_id" validate:"required"`
-	Title     string `json:"Title" validate:"required"`
-	Content   string `json:"Content" validate:"required"`
+	Title     string `json:"title" validate:"required"`
+	Content   string `json:"content" validate:"required"`
 	Type      string `json:"type" validate:"required"`
 }
 
@@ -35,9 +35,9 @@ type InsertNotificationResponse struct {
 }
 
 type GetNotificationsRequest struct {
-	CompanyId string `json:"Company_id" validate:"required"`
-	BranchId  string `json:"Branch_id"`
-	IsUnread  bool   `json:"Is_unread"`
+	CompanyId    string `json:"company_id" validate:"required"`
+	BranchId     string `json:"branch_id"`
+	IsReadFilter *bool  `json:"is_read_filter"`
 }
 
 type GetNotificationsResponse struct {
