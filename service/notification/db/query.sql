@@ -9,8 +9,8 @@ FROM notification.notifications
 WHERE 
     company_id = $1
     AND branch_id LIKE $2
-    AND CASE 
-        WHEN @is_unread::bool THEN is_read = FALSE ELSE TRUE END
+    AND CASE WHEN @is_read_filter::bool
+    THEN is_read = $3 ELSE TRUE END
     AND is_deleted = false
 ORDER BY created_at DESC;
 
