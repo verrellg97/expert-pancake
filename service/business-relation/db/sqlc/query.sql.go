@@ -883,6 +883,71 @@ func (q *Queries) GetRequestInvitations(ctx context.Context, primaryCompanyID st
 	return items, nil
 }
 
+const getSupplier = `-- name: GetSupplier :one
+SELECT a.id, a.konekin_id, a.primary_company_id, a.secondary_company_id, a.contact_group_id,
+COALESCE(b.name, '') AS contact_group_name, a.name, a.email, a.phone,
+a.mobile, a.web, a.is_all_branches, a.is_customer, a.is_supplier,
+a.is_tax, a.tax_id, a.is_default, a.is_deleted, COALESCE(c.pic, '') AS pic,
+COALESCE(c.credit_limit, 0) AS credit_limit, COALESCE(c.payment_term, 0) AS payment_term
+FROM business_relation.contact_books a
+LEFT JOIN business_relation.contact_groups b ON a.contact_group_id = b.id
+LEFT JOIN business_relation.contact_book_supplier_infos c ON a.id = c.contact_book_id
+WHERE a.id = $1
+`
+
+type GetSupplierRow struct {
+	ID                 string `db:"id"`
+	KonekinID          string `db:"konekin_id"`
+	PrimaryCompanyID   string `db:"primary_company_id"`
+	SecondaryCompanyID string `db:"secondary_company_id"`
+	ContactGroupID     string `db:"contact_group_id"`
+	ContactGroupName   string `db:"contact_group_name"`
+	Name               string `db:"name"`
+	Email              string `db:"email"`
+	Phone              string `db:"phone"`
+	Mobile             string `db:"mobile"`
+	Web                string `db:"web"`
+	IsAllBranches      bool   `db:"is_all_branches"`
+	IsCustomer         bool   `db:"is_customer"`
+	IsSupplier         bool   `db:"is_supplier"`
+	IsTax              bool   `db:"is_tax"`
+	TaxID              string `db:"tax_id"`
+	IsDefault          bool   `db:"is_default"`
+	IsDeleted          bool   `db:"is_deleted"`
+	Pic                string `db:"pic"`
+	CreditLimit        int64  `db:"credit_limit"`
+	PaymentTerm        int32  `db:"payment_term"`
+}
+
+func (q *Queries) GetSupplier(ctx context.Context, id string) (GetSupplierRow, error) {
+	row := q.db.QueryRowContext(ctx, getSupplier, id)
+	var i GetSupplierRow
+	err := row.Scan(
+		&i.ID,
+		&i.KonekinID,
+		&i.PrimaryCompanyID,
+		&i.SecondaryCompanyID,
+		&i.ContactGroupID,
+		&i.ContactGroupName,
+		&i.Name,
+		&i.Email,
+		&i.Phone,
+		&i.Mobile,
+		&i.Web,
+		&i.IsAllBranches,
+		&i.IsCustomer,
+		&i.IsSupplier,
+		&i.IsTax,
+		&i.TaxID,
+		&i.IsDefault,
+		&i.IsDeleted,
+		&i.Pic,
+		&i.CreditLimit,
+		&i.PaymentTerm,
+	)
+	return i, err
+}
+
 const getSuppliers = `-- name: GetSuppliers :many
 SELECT a.id, a.konekin_id, a.primary_company_id, a.secondary_company_id, a.contact_group_id,
 COALESCE(b.name, '') AS contact_group_name, a.name, a.email, a.phone,

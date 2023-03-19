@@ -23,6 +23,7 @@ type BusinessRelationService interface {
 	AddSupplier(w http.ResponseWriter, r *http.Request) error
 	UpdateSupplier(w http.ResponseWriter, r *http.Request) error
 	GetSuppliers(w http.ResponseWriter, r *http.Request) error
+	GetSupplier(w http.ResponseWriter, r *http.Request) error
 
 	AddContactInvitation(w http.ResponseWriter, r *http.Request) error
 	UpdateContactInvitation(w http.ResponseWriter, r *http.Request) error
@@ -259,6 +260,14 @@ type UpdateSupplierResponse struct {
 
 type GetSuppliersRequest struct {
 	CompanyId string `json:"company_id" validate:"required"`
+}
+
+type GetSupplierRequest struct {
+	ContactBookId string `json:"contact_book_id" validate:"required"`
+}
+
+type GetSupplierResponse struct {
+	SupplierInfo
 }
 
 type AddDefaultContactBookRequest struct {
