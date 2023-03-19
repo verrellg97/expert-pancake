@@ -199,6 +199,17 @@ LEFT JOIN business_relation.contact_groups b ON a.contact_group_id = b.id
 LEFT JOIN business_relation.contact_book_supplier_infos c ON a.id = c.contact_book_id
 WHERE a.primary_company_id = $1 AND a.is_supplier;
 
+-- name: GetSupplier :one
+SELECT a.id, a.konekin_id, a.primary_company_id, a.secondary_company_id, a.contact_group_id,
+COALESCE(b.name, '') AS contact_group_name, a.name, a.email, a.phone,
+a.mobile, a.web, a.is_all_branches, a.is_customer, a.is_supplier,
+a.is_tax, a.tax_id, a.is_default, a.is_deleted, COALESCE(c.pic, '') AS pic,
+COALESCE(c.credit_limit, 0) AS credit_limit, COALESCE(c.payment_term, 0) AS payment_term
+FROM business_relation.contact_books a
+LEFT JOIN business_relation.contact_groups b ON a.contact_group_id = b.id
+LEFT JOIN business_relation.contact_book_supplier_infos c ON a.id = c.contact_book_id
+WHERE a.id = $1;
+
 -- name: InsertContactBookAdditionalInfo :exec
 INSERT INTO business_relation.contact_book_additional_infos(contact_book_id,
 nickname, tag, note)
