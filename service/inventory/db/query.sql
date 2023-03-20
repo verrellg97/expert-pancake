@@ -280,6 +280,12 @@ SET item_id = EXCLUDED.item_id,
     updated_at = NOW()
 RETURNING *;
 
+-- name: DeleteItemUnit :exec
+UPDATE inventory.item_units
+SET is_deleted = TRUE,
+    updated_at = NOW()
+WHERE id = $1;
+
 -- name: UpdateItemUnitIsDefaultToFalse :exec
 UPDATE inventory.item_units
 SET is_default = false,
@@ -304,7 +310,8 @@ SELECT a.id,
 FROM inventory.item_units a
     JOIN inventory.units b ON a.unit_id = b.id
 WHERE a.item_id = $1
-    AND b.name LIKE $2;
+    AND b.name LIKE $2
+	AND is_deleted = false;
 
 -- name: InsertInternalStockTransfer :one
 INSERT INTO inventory.internal_stock_transfers(

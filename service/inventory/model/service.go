@@ -30,6 +30,7 @@ type InventoryService interface {
 	GetItemVariants(w http.ResponseWriter, r *http.Request) error
 
 	UpsertItemUnit(w http.ResponseWriter, r *http.Request) error
+	DeleteItemUnit(w http.ResponseWriter, r *http.Request) error
 	GetItemUnits(w http.ResponseWriter, r *http.Request) error
 
 	AddInternalStockTransfer(w http.ResponseWriter, r *http.Request) error
@@ -309,6 +310,14 @@ type UpsertItemUnitRequest struct {
 
 type UpsertItemUnitResponse struct {
 	ItemUnit
+}
+
+type DeleteItemUnitRequest struct {
+	ItemUnitId string `json:"item_unit_id"`
+}
+
+type DeleteItemUnitResponse struct {
+	Message string `json:"message" validate:"required"`
 }
 
 type GetItemUnitsRequest struct {
