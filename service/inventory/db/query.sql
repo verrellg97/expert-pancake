@@ -311,7 +311,7 @@ FROM inventory.item_units a
     JOIN inventory.units b ON a.unit_id = b.id
 WHERE a.item_id = $1
     AND b.name LIKE $2
-	AND is_deleted = false;
+	AND a.is_deleted = false;
 
 -- name: InsertInternalStockTransfer :one
 INSERT INTO inventory.internal_stock_transfers(
