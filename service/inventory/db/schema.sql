@@ -91,6 +91,7 @@ CREATE TABLE "inventory"."item_units" (
   "unit_id" text NOT NULL,
   "value" bigint NOT NULL DEFAULT 0,
   "is_default" bool NOT NULL DEFAULT false,
+  "is_deleted" bool NOT NULL DEFAULT false,
   "created_at" timestamptz DEFAULT (now()),
   "updated_at" timestamptz DEFAULT (now()),
   PRIMARY KEY ("id")

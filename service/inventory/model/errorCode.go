@@ -24,6 +24,7 @@ const (
 
 	UpsertItemUnitError = 700017
 	GetItemUnitsError   = 700018
+	DeleteItemUnitError = 700619
 
 	AddNewInternalStockTransferError = 700019
 	GetInternalStockTransfersError   = 700020
