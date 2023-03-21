@@ -571,8 +571,8 @@ FROM inventory.internal_stock_transfer_items a
     JOIN inventory.item_variants variant ON variant.id = a.variant_id
     JOIN inventory.items item ON item.id = variant.item_id
     JOIN inventory.internal_stock_transfers b ON b.id = a.internal_stock_transfer_id
-WHERE a.is_deleted = FALSE
-    AND b.is_deleted = FALSE
+WHERE a.is_deleted = false
+    AND b.is_deleted = false
     AND variant.item_id LIKE $1
     AND transaction_date BETWEEN @start_date::date AND @end_date::date
     AND CASE WHEN @is_received_filter::bool
@@ -600,7 +600,7 @@ SELECT a.transaction_date,
 FROM inventory.update_stocks a
     JOIN inventory.item_variants variant ON variant.id = a.variant_id
     JOIN inventory.items item ON item.id = variant.item_id
-WHERE a.is_deleted = FALSE
+WHERE a.is_deleted = false
     AND variant.item_id LIKE $1
     AND transaction_date BETWEEN @start_date::date AND @end_date::date
     AND warehouse_id = ANY(@warehouse_ids::text [])
@@ -724,6 +724,12 @@ SET company_id = EXCLUDED.company_id,
     end_date = EXCLUDED.end_date,
     updated_at = NOW()
 RETURNING *;
+
+-- name: GetPricelists :many
+SELECT id, name, start_date, end_date, is_default
+FROM inventory.pricelists
+WHERE company_id = $1
+AND is_deleted = false;
 
 -- name: UpsertPricelistItem :exec
 INSERT INTO inventory.pricelist_items(pricelist_id, variant_id, price)
