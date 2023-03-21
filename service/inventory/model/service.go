@@ -63,6 +63,7 @@ type InventoryService interface {
 	UpsertPricelist(w http.ResponseWriter, r *http.Request) error
 	GetPricelists(w http.ResponseWriter, r *http.Request) error
 
+	UpsertPricelistItems(w http.ResponseWriter, r *http.Request) error
 	GetPricelistItems(w http.ResponseWriter, r *http.Request) error
 }
 
@@ -729,6 +730,20 @@ type PricelistItem struct {
 	VariantId   string `json:"variant_id" validate:"required"`
 	VariantName string `json:"variant_name" validate:"required"`
 	Price       string `json:"price" validate:"required"`
+}
+
+type PricelistItemRequest struct {
+	VariantId string `json:"variant_id" validate:"required"`
+	Price     string `json:"price" validate:"required"`
+}
+
+type UpsertPricelistItemsRequest struct {
+	PricelistId    string                 `json:"pricelist_id" validate:"required"`
+	PricelistItems []PricelistItemRequest `json:"pricelist_items" validate:"required"`
+}
+
+type UpsertPricelistItemsResponse struct {
+	Message string `json:"message" validate:"required"`
 }
 
 type GetPricelistItemsRequest struct {
