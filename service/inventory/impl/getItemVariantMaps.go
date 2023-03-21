@@ -35,7 +35,7 @@ func (a inventoryService) GetItemVariantMaps(w http.ResponseWriter, r *http.Requ
 
 	for _, d := range result {
 		var data = model.ItemVariantMap{
-			ItemVariantMap:            d.ID,
+			ItemVariantMapId:          d.ID,
 			PrimaryItemId:             d.PrimaryItemID,
 			PrimaryItemName:           d.PrimaryItemName,
 			PrimaryItemVariantId:      d.PrimaryItemVariantID,

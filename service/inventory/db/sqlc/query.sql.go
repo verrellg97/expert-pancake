@@ -2553,6 +2553,68 @@ func (q *Queries) UpsertItemVariantMap(ctx context.Context, arg UpsertItemVarian
 	return err
 }
 
+const upsertPricelist = `-- name: UpsertPricelist :one
+INSERT INTO inventory.pricelists(id, company_id, name, start_date, end_date)
+VALUES ($1, $2, $3, $4, $5) ON CONFLICT (id) DO
+UPDATE
+SET company_id = EXCLUDED.company_id,
+    name = EXCLUDED.name,
+    start_date = EXCLUDED.start_date,
+    end_date = EXCLUDED.end_date,
+    updated_at = NOW()
+RETURNING id, company_id, name, start_date, end_date, is_default, is_deleted, created_at, updated_at
+`
+
+type UpsertPricelistParams struct {
+	ID        string       `db:"id"`
+	CompanyID string       `db:"company_id"`
+	Name      string       `db:"name"`
+	StartDate time.Time    `db:"start_date"`
+	EndDate   sql.NullTime `db:"end_date"`
+}
+
+func (q *Queries) UpsertPricelist(ctx context.Context, arg UpsertPricelistParams) (InventoryPricelist, error) {
+	row := q.db.QueryRowContext(ctx, upsertPricelist,
+		arg.ID,
+		arg.CompanyID,
+		arg.Name,
+		arg.StartDate,
+		arg.EndDate,
+	)
+	var i InventoryPricelist
+	err := row.Scan(
+		&i.ID,
+		&i.CompanyID,
+		&i.Name,
+		&i.StartDate,
+		&i.EndDate,
+		&i.IsDefault,
+		&i.IsDeleted,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const upsertPricelistItem = `-- name: UpsertPricelistItem :exec
+INSERT INTO inventory.pricelist_items(pricelist_id, variant_id, price)
+VALUES ($1, $2, $3) ON CONFLICT (pricelist_id, variant_id) DO
+UPDATE
+SET price = EXCLUDED.price,
+    updated_at = NOW()
+`
+
+type UpsertPricelistItemParams struct {
+	PricelistID string `db:"pricelist_id"`
+	VariantID   string `db:"variant_id"`
+	Price       int64  `db:"price"`
+}
+
+func (q *Queries) UpsertPricelistItem(ctx context.Context, arg UpsertPricelistItemParams) error {
+	_, err := q.db.ExecContext(ctx, upsertPricelistItem, arg.PricelistID, arg.VariantID, arg.Price)
+	return err
+}
+
 const upsertUnitCategory = `-- name: UpsertUnitCategory :one
 INSERT INTO inventory.unit_categories(id, company_id, name)
 VALUES ($1, $2, $3) ON CONFLICT (id) DO

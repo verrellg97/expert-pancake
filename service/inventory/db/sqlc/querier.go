@@ -65,6 +65,8 @@ type Querier interface {
 	UpsertItemUnit(ctx context.Context, arg UpsertItemUnitParams) (InventoryItemUnit, error)
 	UpsertItemVariant(ctx context.Context, arg UpsertItemVariantParams) error
 	UpsertItemVariantMap(ctx context.Context, arg UpsertItemVariantMapParams) error
+	UpsertPricelist(ctx context.Context, arg UpsertPricelistParams) (InventoryPricelist, error)
+	UpsertPricelistItem(ctx context.Context, arg UpsertPricelistItemParams) error
 	UpsertUnitCategory(ctx context.Context, arg UpsertUnitCategoryParams) (InventoryUnitCategory, error)
 }
 

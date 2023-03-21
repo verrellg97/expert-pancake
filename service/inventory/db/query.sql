@@ -713,3 +713,21 @@ JOIN inventory.units h ON g.unit_id = h.id
 JOIN inventory.items i ON f.item_id = i.id
 WHERE i.company_id = $1 AND e.id = @primary_item_id
 ORDER BY b.created_at, c.value;
+
+-- name: UpsertPricelist :one
+INSERT INTO inventory.pricelists(id, company_id, name, start_date, end_date)
+VALUES ($1, $2, $3, $4, $5) ON CONFLICT (id) DO
+UPDATE
+SET company_id = EXCLUDED.company_id,
+    name = EXCLUDED.name,
+    start_date = EXCLUDED.start_date,
+    end_date = EXCLUDED.end_date,
+    updated_at = NOW()
+RETURNING *;
+
+-- name: UpsertPricelistItem :exec
+INSERT INTO inventory.pricelist_items(pricelist_id, variant_id, price)
+VALUES ($1, $2, $3) ON CONFLICT (pricelist_id, variant_id) DO
+UPDATE
+SET price = EXCLUDED.price,
+    updated_at = NOW();

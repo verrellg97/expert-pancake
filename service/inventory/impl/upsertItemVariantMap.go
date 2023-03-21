@@ -52,7 +52,7 @@ func (a inventoryService) UpsertItemVariantMap(w http.ResponseWriter, r *http.Re
 
 	res := model.UpsertItemVariantMapResponse{
 		ItemVariantMap: model.ItemVariantMap{
-			ItemVariantMap:            result.ID,
+			ItemVariantMapId:          result.ID,
 			PrimaryItemId:             result.PrimaryItemID,
 			PrimaryItemName:           result.PrimaryItemName,
 			PrimaryItemVariantId:      result.PrimaryItemVariantID,
