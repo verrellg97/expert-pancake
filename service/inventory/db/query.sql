@@ -737,3 +737,14 @@ VALUES ($1, $2, $3) ON CONFLICT (pricelist_id, variant_id) DO
 UPDATE
 SET price = EXCLUDED.price,
     updated_at = NOW();
+
+-- name: GetPricelistItems :many
+SELECT a.id AS item_id, a.name AS item_name,
+b.id AS variant_id, b.name AS variant_name,
+COALESCE(c.price, 0)::bigint AS price
+FROM inventory.items a
+JOIN inventory.item_variants b ON a.id = b.item_id
+LEFT JOIN inventory.pricelist_items c ON b.id = c.variant_id
+AND c.pricelist_id = $2
+WHERE a.company_id = $1
+AND a.name LIKE $3;
