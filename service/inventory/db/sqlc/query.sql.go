@@ -1049,6 +1049,61 @@ func (q *Queries) GetItems(ctx context.Context, arg GetItemsParams) ([]GetItemsR
 	return items, nil
 }
 
+const getPricelistItems = `-- name: GetPricelistItems :many
+SELECT a.id AS item_id, a.name AS item_name,
+b.id AS variant_id, b.name AS variant_name,
+COALESCE(c.price, 0)::bigint AS price
+FROM inventory.items a
+JOIN inventory.item_variants b ON a.id = b.item_id
+LEFT JOIN inventory.pricelist_items c ON b.id = c.variant_id
+AND c.pricelist_id = $2
+WHERE a.company_id = $1
+AND a.name LIKE $3
+`
+
+type GetPricelistItemsParams struct {
+	CompanyID   string `db:"company_id"`
+	PricelistID string `db:"pricelist_id"`
+	Name        string `db:"name"`
+}
+
+type GetPricelistItemsRow struct {
+	ItemID      string `db:"item_id"`
+	ItemName    string `db:"item_name"`
+	VariantID   string `db:"variant_id"`
+	VariantName string `db:"variant_name"`
+	Price       int64  `db:"price"`
+}
+
+func (q *Queries) GetPricelistItems(ctx context.Context, arg GetPricelistItemsParams) ([]GetPricelistItemsRow, error) {
+	rows, err := q.db.QueryContext(ctx, getPricelistItems, arg.CompanyID, arg.PricelistID, arg.Name)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetPricelistItemsRow
+	for rows.Next() {
+		var i GetPricelistItemsRow
+		if err := rows.Scan(
+			&i.ItemID,
+			&i.ItemName,
+			&i.VariantID,
+			&i.VariantName,
+			&i.Price,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getPricelists = `-- name: GetPricelists :many
 SELECT id, name, start_date, end_date, is_default
 FROM inventory.pricelists

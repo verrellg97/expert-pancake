@@ -58,4 +58,6 @@ const (
 
 	UpsertPricelistError = 700040
 	GetPricelistsError   = 700041
+
+	GetPricelistItemsError = 700043
 )
