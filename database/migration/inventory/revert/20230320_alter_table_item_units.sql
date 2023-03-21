@@ -1,4 +1,4 @@
--- Revert inventory:202303020_alter_table_item_units from pg
+-- Revert inventory:20230320_alter_table_item_units from pg
 
 BEGIN;
 
