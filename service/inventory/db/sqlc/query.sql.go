@@ -1049,6 +1049,50 @@ func (q *Queries) GetItems(ctx context.Context, arg GetItemsParams) ([]GetItemsR
 	return items, nil
 }
 
+const getPricelists = `-- name: GetPricelists :many
+SELECT id, name, start_date, end_date, is_default
+FROM inventory.pricelists
+WHERE company_id = $1
+AND is_deleted = false
+`
+
+type GetPricelistsRow struct {
+	ID        string       `db:"id"`
+	Name      string       `db:"name"`
+	StartDate time.Time    `db:"start_date"`
+	EndDate   sql.NullTime `db:"end_date"`
+	IsDefault bool         `db:"is_default"`
+}
+
+func (q *Queries) GetPricelists(ctx context.Context, companyID string) ([]GetPricelistsRow, error) {
+	rows, err := q.db.QueryContext(ctx, getPricelists, companyID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetPricelistsRow
+	for rows.Next() {
+		var i GetPricelistsRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.StartDate,
+			&i.EndDate,
+			&i.IsDefault,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getStockHistory = `-- name: GetStockHistory :many
 SELECT a.transaction_date,
     a.form_number,
@@ -1062,7 +1106,7 @@ SELECT a.transaction_date,
 FROM inventory.update_stocks a
     JOIN inventory.item_variants variant ON variant.id = a.variant_id
     JOIN inventory.items item ON item.id = variant.item_id
-WHERE a.is_deleted = FALSE
+WHERE a.is_deleted = false
     AND variant.item_id LIKE $1
     AND transaction_date BETWEEN $2::date AND $3::date
     AND warehouse_id = ANY($4::text [])
@@ -1224,8 +1268,8 @@ FROM inventory.internal_stock_transfer_items a
     JOIN inventory.item_variants variant ON variant.id = a.variant_id
     JOIN inventory.items item ON item.id = variant.item_id
     JOIN inventory.internal_stock_transfers b ON b.id = a.internal_stock_transfer_id
-WHERE a.is_deleted = FALSE
-    AND b.is_deleted = FALSE
+WHERE a.is_deleted = false
+    AND b.is_deleted = false
     AND variant.item_id LIKE $1
     AND transaction_date BETWEEN $5::date AND $6::date
     AND CASE WHEN $7::bool

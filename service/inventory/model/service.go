@@ -61,6 +61,7 @@ type InventoryService interface {
 	GetItemVariantMaps(w http.ResponseWriter, r *http.Request) error
 
 	UpsertPricelist(w http.ResponseWriter, r *http.Request) error
+	GetPricelists(w http.ResponseWriter, r *http.Request) error
 }
 
 type Brand struct {
@@ -710,4 +711,12 @@ type UpsertPricelistRequest struct {
 
 type UpsertPricelistResponse struct {
 	Pricelist
+}
+
+type GetPricelistsRequest struct {
+	CompanyId string `json:"company_id"  validate:"required"`
+}
+
+type GetPricelistsResponse struct {
+	Pricelists []Pricelist `json:"pricelists" validate:"required"`
 }

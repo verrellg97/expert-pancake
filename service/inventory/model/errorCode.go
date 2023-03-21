@@ -57,4 +57,5 @@ const (
 	GetItemVariantMapsError   = 700039
 
 	UpsertPricelistError = 700040
+	GetPricelistsError   = 700041
 )
