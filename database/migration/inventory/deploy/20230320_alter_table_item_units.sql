@@ -1,4 +1,4 @@
--- Deploy inventory:202303020_alter_table_item_units to pg
+-- Deploy inventory:20230320_alter_table_item_units to pg
 
 BEGIN;
 

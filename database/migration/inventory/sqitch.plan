@@ -13,4 +13,5 @@
 20230305_alter_table_items 2023-03-05T20:34:46Z Verrell <verrell@Verrells-MacBook-Air.local> # Alter table items
 20230307_add_item_variant_maps_table 2023-03-07T07:02:45Z Verrell <verrell@Verrells-MacBook-Air.local> # Add item_variant_maps table
 20230310_alter_table_item_variant_maps 2023-03-09T21:13:08Z Verrell <verrell@Verrells-MacBook-Air.local> # Alter table item_variant_maps
-202303020_alter_table_item_units 2023-03-20T05:22:47Z Verrell <verrell@Verrells-MacBook-Air.local> # Alter table item_units
+20230320_alter_table_item_units 2023-03-20T05:22:47Z Verrell <verrell@Verrells-MacBook-Air.local> # Alter table item_units
+20230322_add_pricelists_and_pricelist_items_table 2023-03-21T21:00:49Z Verrell <verrell@Verrells-MacBook-Air.local> # Add pricelists and pricelist_items table
