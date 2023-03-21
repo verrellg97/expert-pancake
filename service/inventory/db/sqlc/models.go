@@ -136,6 +136,27 @@ type InventoryItemVariantMap struct {
 	UpdatedAt              sql.NullTime `db:"updated_at"`
 }
 
+type InventoryPricelist struct {
+	ID        string       `db:"id"`
+	CompanyID string       `db:"company_id"`
+	Name      string       `db:"name"`
+	StartDate time.Time    `db:"start_date"`
+	EndDate   sql.NullTime `db:"end_date"`
+	IsDefault bool         `db:"is_default"`
+	IsDeleted bool         `db:"is_deleted"`
+	CreatedAt sql.NullTime `db:"created_at"`
+	UpdatedAt sql.NullTime `db:"updated_at"`
+}
+
+type InventoryPricelistItem struct {
+	PricelistID string       `db:"pricelist_id"`
+	VariantID   string       `db:"variant_id"`
+	Price       int64        `db:"price"`
+	IsDeleted   bool         `db:"is_deleted"`
+	CreatedAt   sql.NullTime `db:"created_at"`
+	UpdatedAt   sql.NullTime `db:"updated_at"`
+}
+
 type InventoryStockMovement struct {
 	ID                   string       `db:"id"`
 	TransactionID        string       `db:"transaction_id"`

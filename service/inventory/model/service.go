@@ -59,6 +59,8 @@ type InventoryService interface {
 	GetSupplierCatalogs(w http.ResponseWriter, r *http.Request) error
 	UpsertItemVariantMap(w http.ResponseWriter, r *http.Request) error
 	GetItemVariantMaps(w http.ResponseWriter, r *http.Request) error
+
+	UpsertPricelist(w http.ResponseWriter, r *http.Request) error
 }
 
 type Brand struct {
@@ -650,7 +652,7 @@ type GetSupplierCatalogsResponse struct {
 }
 
 type ItemVariantMap struct {
-	ItemVariantMap            string `json:"item_variant_map_id" validate:"required"`
+	ItemVariantMapId          string `json:"item_variant_map_id" validate:"required"`
 	PrimaryItemId             string `json:"primary_item_id" validate:"required"`
 	PrimaryItemName           string `json:"primary_item_name" validate:"required"`
 	PrimaryItemVariantId      string `json:"primary_item_variant_id" validate:"required"`
@@ -688,4 +690,24 @@ type GetItemVariantMapsRequest struct {
 
 type GetItemVariantMapsResponse struct {
 	ItemVariantMaps []ItemVariantMap `json:"item_variant_mappings" validate:"required"`
+}
+
+type Pricelist struct {
+	Id        string  `json:"pricelist_id" validate:"required"`
+	Name      string  `json:"name" validate:"required"`
+	StartDate string  `json:"start_date" validate:"required"`
+	EndDate   *string `json:"end_date" validate:"required"`
+	IsDefault bool    `json:"is_default" validate:"required"`
+}
+
+type UpsertPricelistRequest struct {
+	PricelistId string `json:"pricelist_id"`
+	CompanyId   string `json:"company_id" validate:"required"`
+	Name        string `json:"name" validate:"required"`
+	StartDate   string `json:"start_date" validate:"required"`
+	EndDate     string `json:"end_date"`
+}
+
+type UpsertPricelistResponse struct {
+	Pricelist
 }
