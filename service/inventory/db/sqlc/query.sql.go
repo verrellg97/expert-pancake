@@ -1061,7 +1061,7 @@ AND c.id =
 CASE WHEN $4::bool THEN e.primary_item_unit_id ELSE e.secondary_item_unit_id END
 AND CASE WHEN $4::bool THEN e.secondary_company_id = $2 ELSE e.primary_company_id = $3 END
 WHERE a.id = $1
-AND e.id IS NULL
+AND e.id is null
 `
 
 type GetMappingItemUnitsParams struct {
@@ -1091,6 +1091,104 @@ func (q *Queries) GetMappingItemUnits(ctx context.Context, arg GetMappingItemUni
 	for rows.Next() {
 		var i GetMappingItemUnitsRow
 		if err := rows.Scan(&i.ItemUnitID, &i.UnitName); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getMappingItemVariants = `-- name: GetMappingItemVariants :many
+SELECT b.id,
+    a.id AS variant_id,
+    b.company_id,
+    a.image_url,
+    b.code,
+    a.barcode,
+    b.name,
+    a.name AS variant_name,
+    b.brand_id,
+    COALESCE(c.name, '') AS brand_name,
+    a.is_default,
+    a.price
+FROM inventory.item_variants a
+    JOIN inventory.items b ON a.item_id = b.id
+    LEFT JOIN inventory.brands c ON b.brand_id = c.id
+    LEFT JOIN inventory.item_variant_maps d ON a.id = d.secondary_item_variant_id
+    AND d.primary_company_id = $3 AND d.secondary_company_id = $4
+WHERE a.item_id = $1
+    AND a.name LIKE $2
+    AND d.id is null
+    AND CASE WHEN a.is_default THEN
+    NOT EXISTS (
+		SELECT
+			1
+		FROM
+			inventory.item_variants a1
+		WHERE
+			a1.item_id = a.item_id
+            AND a1.is_default is false
+	)
+    ELSE TRUE END
+GROUP BY a.id, b.id, c.id
+`
+
+type GetMappingItemVariantsParams struct {
+	ItemID             string `db:"item_id"`
+	Name               string `db:"name"`
+	PrimaryCompanyID   string `db:"primary_company_id"`
+	SecondaryCompanyID string `db:"secondary_company_id"`
+}
+
+type GetMappingItemVariantsRow struct {
+	ID          string `db:"id"`
+	VariantID   string `db:"variant_id"`
+	CompanyID   string `db:"company_id"`
+	ImageUrl    string `db:"image_url"`
+	Code        string `db:"code"`
+	Barcode     string `db:"barcode"`
+	Name        string `db:"name"`
+	VariantName string `db:"variant_name"`
+	BrandID     string `db:"brand_id"`
+	BrandName   string `db:"brand_name"`
+	IsDefault   bool   `db:"is_default"`
+	Price       int64  `db:"price"`
+}
+
+func (q *Queries) GetMappingItemVariants(ctx context.Context, arg GetMappingItemVariantsParams) ([]GetMappingItemVariantsRow, error) {
+	rows, err := q.db.QueryContext(ctx, getMappingItemVariants,
+		arg.ItemID,
+		arg.Name,
+		arg.PrimaryCompanyID,
+		arg.SecondaryCompanyID,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetMappingItemVariantsRow
+	for rows.Next() {
+		var i GetMappingItemVariantsRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.VariantID,
+			&i.CompanyID,
+			&i.ImageUrl,
+			&i.Code,
+			&i.Barcode,
+			&i.Name,
+			&i.VariantName,
+			&i.BrandID,
+			&i.BrandName,
+			&i.IsDefault,
+			&i.Price,
+		); err != nil {
 			return nil, err
 		}
 		items = append(items, i)

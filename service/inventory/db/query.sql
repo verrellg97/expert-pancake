@@ -646,6 +646,40 @@ WHERE a.company_id = $1
     AND b.name LIKE @keyword
 GROUP BY a.id, b.id, c.id;
 
+-- name: GetMappingItemVariants :many
+SELECT b.id,
+    a.id AS variant_id,
+    b.company_id,
+    a.image_url,
+    b.code,
+    a.barcode,
+    b.name,
+    a.name AS variant_name,
+    b.brand_id,
+    COALESCE(c.name, '') AS brand_name,
+    a.is_default,
+    a.price
+FROM inventory.item_variants a
+    JOIN inventory.items b ON a.item_id = b.id
+    LEFT JOIN inventory.brands c ON b.brand_id = c.id
+    LEFT JOIN inventory.item_variant_maps d ON a.id = d.secondary_item_variant_id
+    AND d.primary_company_id = $3 AND d.secondary_company_id = $4
+WHERE a.item_id = $1
+    AND a.name LIKE $2
+    AND d.id is null
+    AND CASE WHEN a.is_default THEN
+    NOT EXISTS (
+		SELECT
+			1
+		FROM
+			inventory.item_variants a1
+		WHERE
+			a1.item_id = a.item_id
+            AND a1.is_default is false
+	)
+    ELSE TRUE END
+GROUP BY a.id, b.id, c.id;
+
 -- name: GetMappingItemUnits :many
 SELECT c.id AS item_unit_id, d.name AS unit_name
 FROM inventory.item_variants a
@@ -658,7 +692,7 @@ AND c.id =
 CASE WHEN @is_supplier::bool THEN e.primary_item_unit_id ELSE e.secondary_item_unit_id END
 AND CASE WHEN @is_supplier::bool THEN e.secondary_company_id = $2 ELSE e.primary_company_id = $3 END
 WHERE a.id = $1
-AND e.id IS NULL;
+AND e.id is null;
 
 -- name: UpsertItemVariantMap :exec
 INSERT INTO inventory.item_variant_maps(id,
