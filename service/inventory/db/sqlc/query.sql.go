@@ -1202,6 +1202,90 @@ func (q *Queries) GetMappingItemVariants(ctx context.Context, arg GetMappingItem
 	return items, nil
 }
 
+const getMappingItems = `-- name: GetMappingItems :many
+SELECT a.id,
+    a.code,
+    a.name
+FROM inventory.items a
+WHERE a.company_id = $3
+AND a.name LIKE $1
+AND NOT EXISTS (
+    SELECT
+        1
+    FROM
+        inventory.item_variant_maps a1
+    JOIN inventory.item_variants b1 ON a1.secondary_item_variant_id = b1.id
+    WHERE
+        a1.primary_company_id = $4
+        AND a1.secondary_company_id = $3
+        AND b1.item_id = a.id
+)
+UNION ALL
+SELECT a.id,
+    a.code,
+    a.name
+FROM inventory.items a
+JOIN inventory.item_variants b ON a.id = b.item_id
+JOIN inventory.item_variant_maps c ON b.id = c.secondary_item_variant_id
+AND c.primary_company_id = $4
+JOIN inventory.item_variants d ON c.primary_item_variant_id = d.id
+AND d.item_id = $2
+WHERE a.company_id = $3
+AND a.name LIKE $1
+AND EXISTS (
+    SELECT
+        1
+    FROM
+        inventory.item_variants a2
+    LEFT JOIN inventory.item_variant_maps b2 ON a2.id = b2.secondary_item_variant_id
+    AND b2.primary_company_id = $4
+    WHERE
+        a2.item_id = a.id
+        AND b2.id is null
+)
+`
+
+type GetMappingItemsParams struct {
+	Name               string `db:"name"`
+	ItemID             string `db:"item_id"`
+	SecondaryCompanyID string `db:"secondary_company_id"`
+	PrimaryCompanyID   string `db:"primary_company_id"`
+}
+
+type GetMappingItemsRow struct {
+	ID   string `db:"id"`
+	Code string `db:"code"`
+	Name string `db:"name"`
+}
+
+func (q *Queries) GetMappingItems(ctx context.Context, arg GetMappingItemsParams) ([]GetMappingItemsRow, error) {
+	rows, err := q.db.QueryContext(ctx, getMappingItems,
+		arg.Name,
+		arg.ItemID,
+		arg.SecondaryCompanyID,
+		arg.PrimaryCompanyID,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetMappingItemsRow
+	for rows.Next() {
+		var i GetMappingItemsRow
+		if err := rows.Scan(&i.ID, &i.Code, &i.Name); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getPricelistItems = `-- name: GetPricelistItems :many
 SELECT a.id AS item_id, a.name AS item_name,
 b.id AS variant_id, b.name AS variant_name,

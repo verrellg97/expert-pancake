@@ -32,10 +32,10 @@ func (a inventoryService) GetMappingItemVariants(w http.ResponseWriter, r *http.
 		return errors.NewServerError(model.GetMappingItemVariantsError, err.Error())
 	}
 
-	var mappingItems = make([]model.MappingItem, 0)
+	var mappingItemVariants = make([]model.MappingItemVariant, 0)
 
 	for _, d := range result {
-		var mappingItem = model.MappingItem{
+		var mappingItemVariant = model.MappingItemVariant{
 			CompanyId:   d.CompanyID,
 			ItemId:      d.ID,
 			VariantId:   d.VariantID,
@@ -49,11 +49,11 @@ func (a inventoryService) GetMappingItemVariants(w http.ResponseWriter, r *http.
 			IsDefault:   d.IsDefault,
 			Price:       strconv.FormatInt(d.Price, 10),
 		}
-		mappingItems = append(mappingItems, mappingItem)
+		mappingItemVariants = append(mappingItemVariants, mappingItemVariant)
 	}
 
 	res := model.GetMappingItemVariantsResponse{
-		ItemVariants: mappingItems,
+		ItemVariants: mappingItemVariants,
 	}
 	httpHandler.WriteResponse(w, res)
 

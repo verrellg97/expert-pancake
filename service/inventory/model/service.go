@@ -57,6 +57,7 @@ type InventoryService interface {
 	GetItemReorderNotifications(w http.ResponseWriter, r *http.Request) error
 
 	GetSupplierCatalogs(w http.ResponseWriter, r *http.Request) error
+	GetMappingItems(w http.ResponseWriter, r *http.Request) error
 	GetMappingItemVariants(w http.ResponseWriter, r *http.Request) error
 	GetMappingItemUnits(w http.ResponseWriter, r *http.Request) error
 
@@ -659,6 +660,23 @@ type GetSupplierCatalogsResponse struct {
 }
 
 type MappingItem struct {
+	ItemId string `json:"item_id" validate:"required"`
+	Code   string `json:"code" validate:"required"`
+	Name   string `json:"name" validate:"required"`
+}
+
+type GetMappingItemsRequest struct {
+	PrimaryCompanyId   string `json:"primary_company_id" validate:"required"`
+	SecondaryCompanyId string `json:"secondary_company_id" validate:"required"`
+	ItemId             string `json:"item_id" validate:"required"`
+	Keyword            string `json:"keyword"`
+}
+
+type GetMappingItemsResponse struct {
+	Items []MappingItem `json:"items" validate:"required"`
+}
+
+type MappingItemVariant struct {
 	CompanyId   string `json:"company_id" validate:"required"`
 	ItemId      string `json:"item_id" validate:"required"`
 	VariantId   string `json:"variant_id" validate:"required"`
@@ -681,7 +699,7 @@ type GetMappingItemVariantsRequest struct {
 }
 
 type GetMappingItemVariantsResponse struct {
-	ItemVariants []MappingItem `json:"item_variants" validate:"required"`
+	ItemVariants []MappingItemVariant `json:"item_variants" validate:"required"`
 }
 
 type MappingItemUnit struct {
