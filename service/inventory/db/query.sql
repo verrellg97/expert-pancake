@@ -646,6 +646,20 @@ WHERE a.company_id = $1
     AND b.name LIKE @keyword
 GROUP BY a.id, b.id, c.id;
 
+-- name: GetMappingItemUnits :many
+SELECT c.id AS item_unit_id, d.name AS unit_name
+FROM inventory.item_variants a
+JOIN inventory.items b ON a.item_id = b.id
+JOIN inventory.item_units c ON b.id = c.item_id
+JOIN inventory.units d ON c.unit_id = d.id
+LEFT JOIN inventory.item_variant_maps e ON a.id = 
+CASE WHEN @is_supplier::bool THEN e.primary_item_variant_id ELSE e.secondary_item_variant_id END
+AND c.id =
+CASE WHEN @is_supplier::bool THEN e.primary_item_unit_id ELSE e.secondary_item_unit_id END
+AND CASE WHEN @is_supplier::bool THEN e.secondary_company_id = $2 ELSE e.primary_company_id = $3 END
+WHERE a.id = $1
+AND e.id IS NULL;
+
 -- name: UpsertItemVariantMap :exec
 INSERT INTO inventory.item_variant_maps(id,
 primary_company_id, secondary_company_id,

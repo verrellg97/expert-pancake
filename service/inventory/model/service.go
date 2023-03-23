@@ -57,6 +57,8 @@ type InventoryService interface {
 	GetItemReorderNotifications(w http.ResponseWriter, r *http.Request) error
 
 	GetSupplierCatalogs(w http.ResponseWriter, r *http.Request) error
+	GetMappingItemUnits(w http.ResponseWriter, r *http.Request) error
+
 	UpsertItemVariantMap(w http.ResponseWriter, r *http.Request) error
 	GetItemVariantMaps(w http.ResponseWriter, r *http.Request) error
 
@@ -646,13 +648,29 @@ type SupplierCatalog struct {
 }
 
 type GetSupplierCatalogsRequest struct {
-	PrimaryCompanyId   string `json:"primary_company_id"  validate:"required"`
-	SecondaryCompanyId string `json:"secondary_company_id"  validate:"required"`
+	PrimaryCompanyId   string `json:"primary_company_id" validate:"required"`
+	SecondaryCompanyId string `json:"secondary_company_id" validate:"required"`
 	Keyword            string `json:"keyword"`
 }
 
 type GetSupplierCatalogsResponse struct {
 	SupplierCatalogs []SupplierCatalog `json:"supplier_catalogs" validate:"required"`
+}
+
+type MappingItemUnit struct {
+	ItemUnitId string `json:"item_unit_id" validate:"required"`
+	UnitName   string `json:"unit_name" validate:"required"`
+}
+
+type GetMappingItemUnitsRequest struct {
+	PrimaryCompanyId   string `json:"primary_company_id" validate:"required"`
+	SecondaryCompanyId string `json:"secondary_company_id" validate:"required"`
+	VariantId          string `json:"variant_id" validate:"required"`
+	IsSupplier         bool   `json:"is_supplier"`
+}
+
+type GetMappingItemUnitsResponse struct {
+	ItemUnits []MappingItemUnit `json:"item_units" validate:"required"`
 }
 
 type ItemVariantMap struct {
@@ -688,7 +706,7 @@ type UpsertItemVariantMapResponse struct {
 }
 
 type GetItemVariantMapsRequest struct {
-	CompanyId string `json:"company_id"  validate:"required"`
+	CompanyId string `json:"company_id" validate:"required"`
 	ItemId    string `json:"item_id" validate:"required"`
 }
 
@@ -718,7 +736,7 @@ type UpsertPricelistResponse struct {
 }
 
 type GetPricelistsRequest struct {
-	CompanyId string `json:"company_id"  validate:"required"`
+	CompanyId string `json:"company_id" validate:"required"`
 }
 
 type GetPricelistsResponse struct {
@@ -751,8 +769,8 @@ type UpsertPricelistItemsResponse struct {
 }
 
 type GetPricelistItemsRequest struct {
-	CompanyId   string `json:"company_id"  validate:"required"`
-	PricelistId string `json:"pricelist_id"  validate:"required"`
+	CompanyId   string `json:"company_id" validate:"required"`
+	PricelistId string `json:"pricelist_id" validate:"required"`
 	Keyword     string `json:"keyword"`
 }
 
