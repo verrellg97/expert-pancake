@@ -1049,6 +1049,61 @@ func (q *Queries) GetItems(ctx context.Context, arg GetItemsParams) ([]GetItemsR
 	return items, nil
 }
 
+const getMappingItemUnits = `-- name: GetMappingItemUnits :many
+SELECT c.id AS item_unit_id, d.name AS unit_name
+FROM inventory.item_variants a
+JOIN inventory.items b ON a.item_id = b.id
+JOIN inventory.item_units c ON b.id = c.item_id
+JOIN inventory.units d ON c.unit_id = d.id
+LEFT JOIN inventory.item_variant_maps e ON a.id = 
+CASE WHEN $4::bool THEN e.primary_item_variant_id ELSE e.secondary_item_variant_id END
+AND c.id =
+CASE WHEN $4::bool THEN e.primary_item_unit_id ELSE e.secondary_item_unit_id END
+AND CASE WHEN $4::bool THEN e.secondary_company_id = $2 ELSE e.primary_company_id = $3 END
+WHERE a.id = $1
+AND e.id IS NULL
+`
+
+type GetMappingItemUnitsParams struct {
+	ID                 string `db:"id"`
+	SecondaryCompanyID string `db:"secondary_company_id"`
+	PrimaryCompanyID   string `db:"primary_company_id"`
+	IsSupplier         bool   `db:"is_supplier"`
+}
+
+type GetMappingItemUnitsRow struct {
+	ItemUnitID string `db:"item_unit_id"`
+	UnitName   string `db:"unit_name"`
+}
+
+func (q *Queries) GetMappingItemUnits(ctx context.Context, arg GetMappingItemUnitsParams) ([]GetMappingItemUnitsRow, error) {
+	rows, err := q.db.QueryContext(ctx, getMappingItemUnits,
+		arg.ID,
+		arg.SecondaryCompanyID,
+		arg.PrimaryCompanyID,
+		arg.IsSupplier,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetMappingItemUnitsRow
+	for rows.Next() {
+		var i GetMappingItemUnitsRow
+		if err := rows.Scan(&i.ItemUnitID, &i.UnitName); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getPricelistItems = `-- name: GetPricelistItems :many
 SELECT a.id AS item_id, a.name AS item_name,
 b.id AS variant_id, b.name AS variant_name,
