@@ -487,7 +487,7 @@ type UpsertUnitCategoryRequest struct {
 }
 
 type UpsertUnitCategoryResponse struct {
-	UnitCategory UnitCategory `json:"unit_category" validate:"required"`
+	UnitCategory
 }
 
 type GetUnitCategoriesRequest struct {
@@ -710,6 +710,7 @@ type UpsertPricelistRequest struct {
 	Name        string `json:"name" validate:"required"`
 	StartDate   string `json:"start_date" validate:"required"`
 	EndDate     string `json:"end_date"`
+	IsDefault   bool   `json:"is_default"`
 }
 
 type UpsertPricelistResponse struct {

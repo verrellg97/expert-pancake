@@ -36,6 +36,7 @@ func (a inventoryService) UpsertPricelist(w http.ResponseWriter, r *http.Request
 		Name:      req.Name,
 		StartDate: util.StringToDate(req.StartDate),
 		EndDate:   util.NewNullableDate(util.StringToDate(req.EndDate)),
+		IsDefault: req.IsDefault,
 	}
 
 	result, err := a.dbTrx.UpsertPricelist(context.Background(), arg)
