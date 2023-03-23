@@ -646,6 +646,48 @@ WHERE a.company_id = $1
     AND b.name LIKE @keyword
 GROUP BY a.id, b.id, c.id;
 
+-- name: GetMappingItems :many
+SELECT a.id,
+    a.code,
+    a.name
+FROM inventory.items a
+WHERE a.company_id = @secondary_company_id
+AND a.name LIKE $1
+AND NOT EXISTS (
+    SELECT
+        1
+    FROM
+        inventory.item_variant_maps a1
+    JOIN inventory.item_variants b1 ON a1.secondary_item_variant_id = b1.id
+    WHERE
+        a1.primary_company_id = @primary_company_id
+        AND a1.secondary_company_id = @secondary_company_id
+        AND b1.item_id = a.id
+)
+UNION ALL
+SELECT a.id,
+    a.code,
+    a.name
+FROM inventory.items a
+JOIN inventory.item_variants b ON a.id = b.item_id
+JOIN inventory.item_variant_maps c ON b.id = c.secondary_item_variant_id
+AND c.primary_company_id = @primary_company_id
+JOIN inventory.item_variants d ON c.primary_item_variant_id = d.id
+AND d.item_id = $2
+WHERE a.company_id = @secondary_company_id
+AND a.name LIKE $1
+AND EXISTS (
+    SELECT
+        1
+    FROM
+        inventory.item_variants a2
+    LEFT JOIN inventory.item_variant_maps b2 ON a2.id = b2.secondary_item_variant_id
+    AND b2.primary_company_id = @primary_company_id
+    WHERE
+        a2.item_id = a.id
+        AND b2.id is null
+);
+
 -- name: GetMappingItemVariants :many
 SELECT b.id,
     a.id AS variant_id,

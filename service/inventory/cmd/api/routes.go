@@ -63,6 +63,7 @@ const (
 	GetItemReorderNotificationsPath = "/inventory/item-reorder/notifications"
 
 	GetSupplierCatalogsPath    = "/inventory/supplier/catalogs"
+	GetMappingItemsPath        = "/inventory/mapping/items"
 	GetMappingItemVariantsPath = "/inventory/mapping/item/variants"
 	GetMappingItemUnitsPath    = "/inventory/mapping/item/units"
 
@@ -144,6 +145,7 @@ func (c *component) Routes(inventoryService model.InventoryService) http.Handler
 	mux.Method("POST", GetItemReorderNotificationsPath, httpHandler.New(inventoryService.GetItemReorderNotifications))
 
 	mux.Method("POST", GetSupplierCatalogsPath, httpHandler.New(inventoryService.GetSupplierCatalogs))
+	mux.Method("POST", GetMappingItemsPath, httpHandler.New(inventoryService.GetMappingItems))
 	mux.Method("POST", GetMappingItemVariantsPath, httpHandler.New(inventoryService.GetMappingItemVariants))
 	mux.Method("POST", GetMappingItemUnitsPath, httpHandler.New(inventoryService.GetMappingItemUnits))
 

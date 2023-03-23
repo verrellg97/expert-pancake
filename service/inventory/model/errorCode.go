@@ -53,15 +53,16 @@ const (
 	GetItemReorderNotificationsError = 700036
 
 	GetSupplierCatalogsError    = 700037
-	GetMappingItemVariantsError = 700038
-	GetMappingItemUnitsError    = 700039
+	GetMappingItemsError        = 700038
+	GetMappingItemVariantsError = 700039
+	GetMappingItemUnitsError    = 700040
 
-	UpsertItemVariantMapError = 700040
-	GetItemVariantMapsError   = 700041
+	UpsertItemVariantMapError = 700041
+	GetItemVariantMapsError   = 700042
 
-	UpsertPricelistError = 700042
-	GetPricelistsError   = 700043
+	UpsertPricelistError = 700043
+	GetPricelistsError   = 700044
 
-	UpsertPricelistItemsError = 700044
-	GetPricelistItemsError    = 700045
+	UpsertPricelistItemsError = 700045
+	GetPricelistItemsError    = 700046
 )
