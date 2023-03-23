@@ -2661,13 +2661,14 @@ func (q *Queries) UpsertItemVariantMap(ctx context.Context, arg UpsertItemVarian
 }
 
 const upsertPricelist = `-- name: UpsertPricelist :one
-INSERT INTO inventory.pricelists(id, company_id, name, start_date, end_date)
-VALUES ($1, $2, $3, $4, $5) ON CONFLICT (id) DO
+INSERT INTO inventory.pricelists(id, company_id, name, start_date, end_date, is_default)
+VALUES ($1, $2, $3, $4, $5, $6) ON CONFLICT (id) DO
 UPDATE
 SET company_id = EXCLUDED.company_id,
     name = EXCLUDED.name,
     start_date = EXCLUDED.start_date,
     end_date = EXCLUDED.end_date,
+    is_default = EXCLUDED.is_default,
     updated_at = NOW()
 RETURNING id, company_id, name, start_date, end_date, is_default, is_deleted, created_at, updated_at
 `
@@ -2678,6 +2679,7 @@ type UpsertPricelistParams struct {
 	Name      string       `db:"name"`
 	StartDate time.Time    `db:"start_date"`
 	EndDate   sql.NullTime `db:"end_date"`
+	IsDefault bool         `db:"is_default"`
 }
 
 func (q *Queries) UpsertPricelist(ctx context.Context, arg UpsertPricelistParams) (InventoryPricelist, error) {
@@ -2687,6 +2689,7 @@ func (q *Queries) UpsertPricelist(ctx context.Context, arg UpsertPricelistParams
 		arg.Name,
 		arg.StartDate,
 		arg.EndDate,
+		arg.IsDefault,
 	)
 	var i InventoryPricelist
 	err := row.Scan(

@@ -715,13 +715,14 @@ WHERE i.company_id = $1 AND e.id = @primary_item_id
 ORDER BY b.created_at, c.value;
 
 -- name: UpsertPricelist :one
-INSERT INTO inventory.pricelists(id, company_id, name, start_date, end_date)
-VALUES ($1, $2, $3, $4, $5) ON CONFLICT (id) DO
+INSERT INTO inventory.pricelists(id, company_id, name, start_date, end_date, is_default)
+VALUES ($1, $2, $3, $4, $5, $6) ON CONFLICT (id) DO
 UPDATE
 SET company_id = EXCLUDED.company_id,
     name = EXCLUDED.name,
     start_date = EXCLUDED.start_date,
     end_date = EXCLUDED.end_date,
+    is_default = EXCLUDED.is_default,
     updated_at = NOW()
 RETURNING *;
 
