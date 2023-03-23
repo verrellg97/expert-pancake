@@ -729,12 +729,15 @@ type PricelistItem struct {
 	ItemName    string `json:"item_name" validate:"required"`
 	VariantId   string `json:"variant_id" validate:"required"`
 	VariantName string `json:"variant_name" validate:"required"`
+	ItemUnitId  string `json:"item_unit_id" validate:"required"`
+	UnitName    string `json:"unit_name" validate:"required"`
 	Price       string `json:"price" validate:"required"`
 }
 
 type PricelistItemRequest struct {
-	VariantId string `json:"variant_id" validate:"required"`
-	Price     string `json:"price" validate:"required"`
+	VariantId  string `json:"variant_id" validate:"required"`
+	ItemUnitId string `json:"item_unit_id" validate:"required"`
+	Price      string `json:"price" validate:"required"`
 }
 
 type UpsertPricelistItemsRequest struct {

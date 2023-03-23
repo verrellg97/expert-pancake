@@ -209,9 +209,10 @@ CREATE TABLE "inventory"."pricelists" (
 CREATE TABLE "inventory"."pricelist_items" (
   "pricelist_id" text NOT NULL,
   "variant_id" text NOT NULL,
+  "item_unit_id" text NOT NULL,
   "price" bigint NOT NULL DEFAULT 0,
   "is_deleted" bool NOT NULL DEFAULT false,
   "created_at" timestamptz DEFAULT (now()),
   "updated_at" timestamptz DEFAULT (now()),
-  PRIMARY KEY ("pricelist_id", "variant_id")
+  PRIMARY KEY ("pricelist_id", "variant_id", "item_unit_id")
 );

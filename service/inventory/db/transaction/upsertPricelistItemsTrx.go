@@ -30,6 +30,7 @@ func (trx *Trx) UpsertPricelistItemsTrx(ctx context.Context, arg UpsertPricelist
 			arg := db.UpsertPricelistItemParams{
 				PricelistID: arg.PricelistId,
 				VariantID:   d.VariantId,
+				ItemUnitID:  d.ItemUnitId,
 				Price:       price,
 			}
 
