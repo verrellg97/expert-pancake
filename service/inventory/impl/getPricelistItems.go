@@ -39,6 +39,8 @@ func (a inventoryService) GetPricelistItems(w http.ResponseWriter, r *http.Reque
 			ItemName:    d.ItemName,
 			VariantId:   d.VariantID,
 			VariantName: d.VariantName,
+			ItemUnitId:  d.ItemUnitID,
+			UnitName:    d.UnitName,
 			Price:       strconv.FormatInt(d.Price, 10),
 		}
 		pricelistItems = append(pricelistItems, pricelistItem)

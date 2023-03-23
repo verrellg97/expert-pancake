@@ -151,6 +151,7 @@ type InventoryPricelist struct {
 type InventoryPricelistItem struct {
 	PricelistID string       `db:"pricelist_id"`
 	VariantID   string       `db:"variant_id"`
+	ItemUnitID  string       `db:"item_unit_id"`
 	Price       int64        `db:"price"`
 	IsDeleted   bool         `db:"is_deleted"`
 	CreatedAt   sql.NullTime `db:"created_at"`

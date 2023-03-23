@@ -732,8 +732,8 @@ WHERE company_id = $1
 AND is_deleted = false;
 
 -- name: UpsertPricelistItem :exec
-INSERT INTO inventory.pricelist_items(pricelist_id, variant_id, price)
-VALUES ($1, $2, $3) ON CONFLICT (pricelist_id, variant_id) DO
+INSERT INTO inventory.pricelist_items(pricelist_id, variant_id, item_unit_id, price)
+VALUES ($1, $2, $3, $4) ON CONFLICT (pricelist_id, variant_id, item_unit_id) DO
 UPDATE
 SET price = EXCLUDED.price,
     updated_at = NOW();
@@ -741,10 +741,14 @@ SET price = EXCLUDED.price,
 -- name: GetPricelistItems :many
 SELECT a.id AS item_id, a.name AS item_name,
 b.id AS variant_id, b.name AS variant_name,
-COALESCE(c.price, 0)::bigint AS price
+c.id AS item_unit_id, d.name AS unit_name,
+COALESCE(e.price, 0)::bigint AS price
 FROM inventory.items a
 JOIN inventory.item_variants b ON a.id = b.item_id
-LEFT JOIN inventory.pricelist_items c ON b.id = c.variant_id
-AND c.pricelist_id = $2
+JOIN inventory.item_units c ON b.item_id = c.item_id
+JOIN inventory.units d ON c.unit_id = d.id
+LEFT JOIN inventory.pricelist_items e ON b.id = e.variant_id
+AND c.id = e.item_unit_id AND e.pricelist_id = $2
 WHERE a.company_id = $1
-AND a.name LIKE $3;
+AND a.name LIKE $3
+ORDER BY a.name, b.name, c.value;
