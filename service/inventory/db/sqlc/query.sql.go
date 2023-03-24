@@ -1299,6 +1299,17 @@ LEFT JOIN inventory.pricelist_items e ON b.id = e.variant_id
 AND c.id = e.item_unit_id AND e.pricelist_id = $2
 WHERE a.company_id = $1
 AND a.name LIKE $3
+AND CASE WHEN b.is_default THEN
+NOT EXISTS (
+    SELECT
+        1
+    FROM
+        inventory.item_variants a1
+    WHERE
+        a1.item_id = b.item_id
+        AND a1.is_default is false
+)
+ELSE TRUE END
 ORDER BY a.name, b.name, c.value
 `
 
