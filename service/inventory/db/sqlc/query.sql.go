@@ -1491,6 +1491,17 @@ FROM inventory.items a
     AND d.secondary_company_id = $2
 WHERE a.company_id = $1
     AND b.name LIKE $3
+    AND CASE WHEN b.is_default THEN
+    NOT EXISTS (
+		SELECT
+			1
+		FROM
+			inventory.item_variants a1
+		WHERE
+			a1.item_id = b.item_id
+            AND a1.is_default is false
+	)
+    ELSE TRUE END
 GROUP BY a.id, b.id, c.id
 `
 
