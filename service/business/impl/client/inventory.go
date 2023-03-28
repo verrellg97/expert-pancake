@@ -1,7 +1,7 @@
 package client
 
 const (
-	InventoryRootPath      = "http://localhost:3000"
+	InventoryRootPath      = "http://inventory-service:4040"
 	UpsertUnitCategoryPath = "/inventory/unit-category/upsert"
 	AddUnitPath            = "/inventory/unit/add"
 	UpsertPricelistPath    = "/inventory/pricelist/upsert"
