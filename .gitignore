@@ -24,4 +24,5 @@ service/business-relation/businessRelationService
 service/inventory/inventoryService
 service/warehouse/warehouseService
 service/notification/notificationService
+service/purchasing/purchasingService
 .DS_Store
