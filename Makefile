@@ -5,6 +5,7 @@ BUSINESS_RELATION_BINARY=businessRelationService
 INVENTORY_BINARY=inventoryService
 WAREHOUSE_BINARY=warehouseService
 NOTIFICATION_BINARY=notificationService
+PURCHASING_BINARY=purchasingService
 
 ## up: starts all containers in the background without forcing build
 up:
@@ -13,7 +14,7 @@ up:
 	@echo "Docker images started!"
 
 ## up_build: stops docker-compose (if running), builds all projects and starts docker compose
-up_build: build_account build_business build_accounting build_business_relation build_inventory build_warehouse build_notification
+up_build: build_account build_business build_accounting build_business_relation build_inventory build_warehouse build_notification build_purchasing
 	@echo "Stopping docker images (if running...)"
 	docker compose down
 	@echo "Building (when required) and starting docker images..."
@@ -66,6 +67,12 @@ build_warehouse:
 build_notification:
 	@echo "Building notification binary..."
 	cd ./service/notification && env GOOS=linux CGO_ENABLED=0 go build -o ${NOTIFICATION_BINARY} ./cmd/api
+	@echo "Done!"
+
+## build_purchasing: builds the purchasing binary as a linux executable
+build_purchasing:
+	@echo "Building purchasing binary..."
+	cd ./service/purchasing && env GOOS=linux CGO_ENABLED=0 go build -o ${PURCHASING_BINARY} ./cmd/api
 	@echo "Done!"
 
 ## up_appwrite: starts appwrite in the background
