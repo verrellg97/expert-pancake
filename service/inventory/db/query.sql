@@ -265,8 +265,8 @@ FROM inventory.item_variants a
     JOIN inventory.items b ON a.item_id = b.id
     LEFT JOIN inventory.brands c ON b.brand_id = c.id
     JOIN inventory.groups d ON d.id = ANY(string_to_array(b.group_id, ','))
-WHERE a.item_id = $1
-    AND a.name LIKE $2
+WHERE CASE WHEN @is_filter_id::bool THEN a.id = $1 ELSE a.item_id = $2
+    AND a.name LIKE $3 END
 GROUP BY a.id, b.id, c.id;
 
 -- name: UpsertItemUnit :one
