@@ -225,15 +225,15 @@ JOIN business_relation.contact_book_additional_infos b ON a.id = b.contact_book_
 JOIN business_relation.contact_book_mailing_addresses c ON a.id = c.contact_book_id
 JOIN business_relation.contact_book_shipping_addresses d ON a.id = d.contact_book_id
 LEFT JOIN business_relation.contact_groups e ON a.contact_group_id = e.id
-WHERE a.primary_company_id = $1
+WHERE CASE WHEN $4::bool THEN a.id = $1 ELSE a.primary_company_id = $2
 AND a.konekin_id = ''
 AND a.is_default = FALSE
-AND CASE WHEN $3::bool
-THEN a.contact_group_id = $2 ELSE TRUE END
-AND CASE WHEN $4::bool
+AND CASE WHEN $5::bool
+THEN a.contact_group_id = $3 ELSE TRUE END
+AND CASE WHEN $6::bool
 THEN a.is_customer = FALSE
-WHEN $5::bool
-THEN a.is_supplier = FALSE ELSE TRUE END
+WHEN $7::bool
+THEN a.is_supplier = FALSE ELSE TRUE END END
 UNION ALL
 SELECT a.id, a.konekin_id, a.primary_company_id, a.secondary_company_id, 
 a.contact_group_id, COALESCE(f.name, '') AS contact_group_name,
@@ -252,20 +252,22 @@ JOIN business_relation.contact_book_additional_infos c ON b.id = c.contact_book_
 JOIN business_relation.contact_book_mailing_addresses d ON b.id = d.contact_book_id
 JOIN business_relation.contact_book_shipping_addresses e ON b.id = e.contact_book_id
 LEFT JOIN business_relation.contact_groups f ON a.contact_group_id = f.id
-WHERE a.primary_company_id = $1
+WHERE CASE WHEN $4::bool THEN a.id = $1 ELSE a.primary_company_id = $2
 AND a.konekin_id <> ''
 AND a.is_default = FALSE
-AND CASE WHEN $3::bool
-THEN a.contact_group_id = $2 ELSE TRUE END
-AND CASE WHEN $4::bool
+AND CASE WHEN $5::bool
+THEN a.contact_group_id = $3 ELSE TRUE END
+AND CASE WHEN $6::bool
 THEN a.is_customer = FALSE
-WHEN $5::bool
-THEN a.is_supplier = FALSE ELSE TRUE END
+WHEN $7::bool
+THEN a.is_supplier = FALSE ELSE TRUE END END
 `
 
 type GetContactBooksParams struct {
+	ID                  string `db:"id"`
 	PrimaryCompanyID    string `db:"primary_company_id"`
 	ContactGroupID      string `db:"contact_group_id"`
+	IsFilterID          bool   `db:"is_filter_id"`
 	IsFilterGroupID     bool   `db:"is_filter_group_id"`
 	IsCustomerApplicant bool   `db:"is_customer_applicant"`
 	IsSupplierApplicant bool   `db:"is_supplier_applicant"`
@@ -303,8 +305,10 @@ type GetContactBooksRow struct {
 
 func (q *Queries) GetContactBooks(ctx context.Context, arg GetContactBooksParams) ([]GetContactBooksRow, error) {
 	rows, err := q.db.QueryContext(ctx, getContactBooks,
+		arg.ID,
 		arg.PrimaryCompanyID,
 		arg.ContactGroupID,
+		arg.IsFilterID,
 		arg.IsFilterGroupID,
 		arg.IsCustomerApplicant,
 		arg.IsSupplierApplicant,
