@@ -22,9 +22,16 @@ func (a inventoryService) GetItemUnits(w http.ResponseWriter, r *http.Request) e
 		return errors.NewClientError().WithDataMap(errMapRequest)
 	}
 
+	var isFilterId = false
+	if req.Id != "" {
+		isFilterId = true
+	}
+
 	result, err := a.dbTrx.GetItemUnits(context.Background(), db.GetItemUnitsParams{
-		ItemID: req.ItemId,
-		Name:   util.WildCardString(req.Keyword),
+		IsFilterID: isFilterId,
+		ID:         req.Id,
+		ItemID:     req.ItemId,
+		Name:       util.WildCardString(req.Keyword),
 	})
 	if err != nil {
 		return errors.NewServerError(model.GetItemUnitsError, err.Error())
