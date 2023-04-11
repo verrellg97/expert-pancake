@@ -897,14 +897,16 @@ FROM inventory.item_variants a
     JOIN inventory.items b ON a.item_id = b.id
     LEFT JOIN inventory.brands c ON b.brand_id = c.id
     JOIN inventory.groups d ON d.id = ANY(string_to_array(b.group_id, ','))
-WHERE a.item_id = $1
-    AND a.name LIKE $2
+WHERE CASE WHEN $4::bool THEN a.id = $1 ELSE a.item_id = $2
+    AND a.name LIKE $3 END
 GROUP BY a.id, b.id, c.id
 `
 
 type GetItemVariantsParams struct {
-	ItemID string `db:"item_id"`
-	Name   string `db:"name"`
+	ID         string `db:"id"`
+	ItemID     string `db:"item_id"`
+	Name       string `db:"name"`
+	IsFilterID bool   `db:"is_filter_id"`
 }
 
 type GetItemVariantsRow struct {
@@ -927,7 +929,12 @@ type GetItemVariantsRow struct {
 }
 
 func (q *Queries) GetItemVariants(ctx context.Context, arg GetItemVariantsParams) ([]GetItemVariantsRow, error) {
-	rows, err := q.db.QueryContext(ctx, getItemVariants, arg.ItemID, arg.Name)
+	rows, err := q.db.QueryContext(ctx, getItemVariants,
+		arg.ID,
+		arg.ItemID,
+		arg.Name,
+		arg.IsFilterID,
+	)
 	if err != nil {
 		return nil, err
 	}

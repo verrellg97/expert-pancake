@@ -293,7 +293,8 @@ type UpsertItemVariantResponse struct {
 }
 
 type GetItemVariantsRequest struct {
-	ItemId  string `json:"item_id" validate:"required"`
+	Id      string `json:"id"`
+	ItemId  string `json:"item_id"`
 	Keyword string `json:"keyword"`
 }
 

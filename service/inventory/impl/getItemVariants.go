@@ -22,9 +22,16 @@ func (a inventoryService) GetItemVariants(w http.ResponseWriter, r *http.Request
 		return errors.NewClientError().WithDataMap(errMapRequest)
 	}
 
+	var isFilterId = false
+	if req.Id != "" {
+		isFilterId = true
+	}
+
 	result, err := a.dbTrx.GetItemVariants(context.Background(), db.GetItemVariantsParams{
-		ItemID: req.ItemId,
-		Name:   util.WildCardString(req.Keyword),
+		IsFilterID: isFilterId,
+		ID:         req.Id,
+		ItemID:     req.ItemId,
+		Name:       util.WildCardString(req.Keyword),
 	})
 	if err != nil {
 		return errors.NewServerError(model.GetItemVariantsError, err.Error())
