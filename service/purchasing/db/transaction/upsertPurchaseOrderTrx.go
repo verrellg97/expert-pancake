@@ -13,27 +13,29 @@ import (
 )
 
 type UpsertPurchaseOrderTrxParams struct {
-	Id              string
-	CompanyId       string
-	BranchId        string
-	TransactionDate time.Time
-	ContactBookId   string
-	KonekinId       string
-	CurrencyCode    string
+	Id                 string
+	CompanyId          string
+	BranchId           string
+	TransactionDate    time.Time
+	ContactBookId      string
+	SecondaryCompanyId string
+	KonekinId          string
+	CurrencyCode       string
 }
 
 type UpsertPurchaseOrderTrxResult struct {
-	TransactionId   string
-	CompanyId       string
-	BranchId        string
-	FormNumber      string
-	TransactionDate string
-	ContactBookId   string
-	KonekinId       string
-	CurrencyCode    string
-	TotalItems      string
-	Total           string
-	Status          string
+	TransactionId      string
+	CompanyId          string
+	BranchId           string
+	FormNumber         string
+	TransactionDate    string
+	ContactBookId      string
+	SecondaryCompanyId string
+	KonekinId          string
+	CurrencyCode       string
+	TotalItems         string
+	Total              string
+	Status             string
 }
 
 func (trx *Trx) UpsertPurchaseOrderTrx(ctx context.Context, arg UpsertPurchaseOrderTrxParams) (UpsertPurchaseOrderTrxResult, error) {
@@ -50,14 +52,15 @@ func (trx *Trx) UpsertPurchaseOrderTrx(ctx context.Context, arg UpsertPurchaseOr
 		}
 
 		headerRes, err := q.UpsertPurchaseOrder(ctx, db.UpsertPurchaseOrderParams{
-			ID:              id,
-			CompanyID:       arg.CompanyId,
-			BranchID:        arg.BranchId,
-			FormNumber:      "PO-" + fmt.Sprintf("%08d", rand.Intn(100000000)),
-			TransactionDate: arg.TransactionDate,
-			ContactBookID:   arg.ContactBookId,
-			KonekinID:       arg.KonekinId,
-			CurrencyCode:    arg.CurrencyCode,
+			ID:                 id,
+			CompanyID:          arg.CompanyId,
+			BranchID:           arg.BranchId,
+			FormNumber:         "PO-" + fmt.Sprintf("%08d", rand.Intn(100000000)),
+			TransactionDate:    arg.TransactionDate,
+			ContactBookID:      arg.ContactBookId,
+			SecondaryCompanyID: arg.SecondaryCompanyId,
+			KonekinID:          arg.KonekinId,
+			CurrencyCode:       arg.CurrencyCode,
 		})
 
 		if err != nil {
@@ -70,6 +73,7 @@ func (trx *Trx) UpsertPurchaseOrderTrx(ctx context.Context, arg UpsertPurchaseOr
 		result.FormNumber = headerRes.FormNumber
 		result.TransactionDate = headerRes.TransactionDate.Format(util.DateLayoutYMD)
 		result.ContactBookId = headerRes.ContactBookID
+		result.SecondaryCompanyId = headerRes.SecondaryCompanyID
 		result.KonekinId = headerRes.KonekinID
 		result.CurrencyCode = headerRes.CurrencyCode
 		result.TotalItems = strconv.FormatInt(headerRes.TotalItems, 10)

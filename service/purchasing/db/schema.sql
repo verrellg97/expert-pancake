@@ -8,6 +8,7 @@ CREATE TABLE "purchasing"."purchase_orders" (
   "form_number" text NOT NULL,
   "transaction_date" date NOT NULL DEFAULT CURRENT_DATE,
   "contact_book_id" text NOT NULL,
+  "secondary_company_id" text NOT NULL DEFAULT '',
   "konekin_id" text NOT NULL DEFAULT '',
   "currency_code" text NOT NULL,
   "total_items" bigint NOT NULL DEFAULT 0,
