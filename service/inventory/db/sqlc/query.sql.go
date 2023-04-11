@@ -594,14 +594,16 @@ SELECT a.id,
     a.is_default
 FROM inventory.item_units a
     JOIN inventory.units b ON a.unit_id = b.id
-WHERE a.item_id = $1
-    AND b.name LIKE $2
-	AND a.is_deleted = false
+WHERE CASE WHEN $4::bool THEN a.id = $1 ELSE a.item_id = $2
+    AND b.name LIKE $3
+	AND a.is_deleted = false END
 `
 
 type GetItemUnitsParams struct {
-	ItemID string `db:"item_id"`
-	Name   string `db:"name"`
+	ID         string `db:"id"`
+	ItemID     string `db:"item_id"`
+	Name       string `db:"name"`
+	IsFilterID bool   `db:"is_filter_id"`
 }
 
 type GetItemUnitsRow struct {
@@ -614,7 +616,12 @@ type GetItemUnitsRow struct {
 }
 
 func (q *Queries) GetItemUnits(ctx context.Context, arg GetItemUnitsParams) ([]GetItemUnitsRow, error) {
-	rows, err := q.db.QueryContext(ctx, getItemUnits, arg.ItemID, arg.Name)
+	rows, err := q.db.QueryContext(ctx, getItemUnits,
+		arg.ID,
+		arg.ItemID,
+		arg.Name,
+		arg.IsFilterID,
+	)
 	if err != nil {
 		return nil, err
 	}

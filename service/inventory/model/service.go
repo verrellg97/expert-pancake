@@ -331,6 +331,7 @@ type DeleteItemUnitResponse struct {
 }
 
 type GetItemUnitsRequest struct {
+	Id      string `json:"id"`
 	ItemId  string `json:"item_id" validate:"required"`
 	Keyword string `json:"keyword"`
 }

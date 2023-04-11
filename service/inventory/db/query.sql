@@ -309,9 +309,9 @@ SELECT a.id,
     a.is_default
 FROM inventory.item_units a
     JOIN inventory.units b ON a.unit_id = b.id
-WHERE a.item_id = $1
-    AND b.name LIKE $2
-	AND a.is_deleted = false;
+WHERE CASE WHEN @is_filter_id::bool THEN a.id = $1 ELSE a.item_id = $2
+    AND b.name LIKE $3
+	AND a.is_deleted = false END;
 
 -- name: InsertInternalStockTransfer :one
 INSERT INTO inventory.internal_stock_transfers(
