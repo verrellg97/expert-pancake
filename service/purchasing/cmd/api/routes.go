@@ -3,7 +3,7 @@ package main
 import (
 	"net/http"
 
-	// "github.com/calvinkmts/expert-pancake/engine/httpHandler"
+	"github.com/calvinkmts/expert-pancake/engine/httpHandler"
 	"github.com/expert-pancake/service/purchasing/model"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -11,7 +11,7 @@ import (
 )
 
 const (
-
+	UpsertPurchaseOrderPath = "/purchasing/order/upsert"
 )
 
 func (c *component) Routes(purchasingService model.PurchasingService) http.Handler {
@@ -29,6 +29,8 @@ func (c *component) Routes(purchasingService model.PurchasingService) http.Handl
 	}))
 
 	mux.Use(middleware.Heartbeat("/ping"))
+
+	mux.Method("POST", UpsertPurchaseOrderPath, httpHandler.New(purchasingService.UpsertPurchaseOrder))
 
 	return mux
 }
