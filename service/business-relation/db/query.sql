@@ -91,15 +91,15 @@ JOIN business_relation.contact_book_additional_infos b ON a.id = b.contact_book_
 JOIN business_relation.contact_book_mailing_addresses c ON a.id = c.contact_book_id
 JOIN business_relation.contact_book_shipping_addresses d ON a.id = d.contact_book_id
 LEFT JOIN business_relation.contact_groups e ON a.contact_group_id = e.id
-WHERE a.primary_company_id = $1
+WHERE CASE WHEN @is_filter_id::bool THEN a.id = $1 ELSE a.primary_company_id = $2
 AND a.konekin_id = ''
 AND a.is_default = FALSE
 AND CASE WHEN @is_filter_group_id::bool
-THEN a.contact_group_id = $2 ELSE TRUE END
+THEN a.contact_group_id = $3 ELSE TRUE END
 AND CASE WHEN @is_customer_applicant::bool
 THEN a.is_customer = FALSE
 WHEN @is_supplier_applicant::bool
-THEN a.is_supplier = FALSE ELSE TRUE END
+THEN a.is_supplier = FALSE ELSE TRUE END END
 UNION ALL
 SELECT a.id, a.konekin_id, a.primary_company_id, a.secondary_company_id, 
 a.contact_group_id, COALESCE(f.name, '') AS contact_group_name,
@@ -118,15 +118,15 @@ JOIN business_relation.contact_book_additional_infos c ON b.id = c.contact_book_
 JOIN business_relation.contact_book_mailing_addresses d ON b.id = d.contact_book_id
 JOIN business_relation.contact_book_shipping_addresses e ON b.id = e.contact_book_id
 LEFT JOIN business_relation.contact_groups f ON a.contact_group_id = f.id
-WHERE a.primary_company_id = $1
+WHERE CASE WHEN @is_filter_id::bool THEN a.id = $1 ELSE a.primary_company_id = $2
 AND a.konekin_id <> ''
 AND a.is_default = FALSE
 AND CASE WHEN @is_filter_group_id::bool
-THEN a.contact_group_id = $2 ELSE TRUE END
+THEN a.contact_group_id = $3 ELSE TRUE END
 AND CASE WHEN @is_customer_applicant::bool
 THEN a.is_customer = FALSE
 WHEN @is_supplier_applicant::bool
-THEN a.is_supplier = FALSE ELSE TRUE END;
+THEN a.is_supplier = FALSE ELSE TRUE END END;
 
 -- name: GetContactBookById :one
 SELECT a.id, a.konekin_id, a.primary_company_id, a.secondary_company_id,

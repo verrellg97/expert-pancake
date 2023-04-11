@@ -21,6 +21,11 @@ func (a businessRelationService) GetContactBooks(w http.ResponseWriter, r *http.
 		return errors.NewClientError().WithDataMap(errMapRequest)
 	}
 
+	var isFilterId = false
+	if req.Id != "" {
+		isFilterId = true
+	}
+
 	var isFilterGroupId = false
 	if req.ContactGroupId != "" {
 		isFilterGroupId = true
@@ -35,6 +40,8 @@ func (a businessRelationService) GetContactBooks(w http.ResponseWriter, r *http.
 	}
 
 	result, err := a.dbTrx.GetContactBooks(context.Background(), db.GetContactBooksParams{
+		IsFilterID:          isFilterId,
+		ID:                  req.Id,
 		PrimaryCompanyID:    req.CompanyId,
 		IsFilterGroupID:     isFilterGroupId,
 		ContactGroupID:      req.ContactGroupId,
