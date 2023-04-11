@@ -10,6 +10,22 @@ import (
 	"time"
 )
 
+const updatePurchaseOrderAddItem = `-- name: UpdatePurchaseOrderAddItem :exec
+UPDATE purchasing.purchase_orders
+SET total_items=sub.total_items,
+    total=sub.total
+FROM (SELECT purchase_order_id, COUNT(id) AS total_items, SUM(amount*price) AS total
+      FROM purchasing.purchase_order_items
+      WHERE purchase_order_id = $1
+      GROUP BY purchase_order_id) AS sub
+WHERE purchasing.purchase_orders.id = sub.purchase_order_id
+`
+
+func (q *Queries) UpdatePurchaseOrderAddItem(ctx context.Context, purchaseOrderID string) error {
+	_, err := q.db.ExecContext(ctx, updatePurchaseOrderAddItem, purchaseOrderID)
+	return err
+}
+
 const upsertPurchaseOrder = `-- name: UpsertPurchaseOrder :one
 INSERT INTO purchasing.purchase_orders(
         id, sales_order_id, company_id, branch_id, form_number, transaction_date,
@@ -72,6 +88,78 @@ func (q *Queries) UpsertPurchaseOrder(ctx context.Context, arg UpsertPurchaseOrd
 		&i.Total,
 		&i.IsDeleted,
 		&i.Status,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const upsertPurchaseOrderItem = `-- name: UpsertPurchaseOrderItem :one
+INSERT INTO purchasing.purchase_order_items(
+        id, sales_order_item_id, purchase_order_id,
+        primary_item_variant_id, secondary_item_variant_id,
+        primary_item_unit_id, secondary_item_unit_id,
+        primary_item_unit_value, secondary_item_unit_value,
+        amount, price
+    )
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) ON CONFLICT (id) DO
+UPDATE
+SET sales_order_item_id = EXCLUDED.sales_order_item_id,
+    purchase_order_id = EXCLUDED.purchase_order_id,
+    primary_item_variant_id = EXCLUDED.primary_item_variant_id,
+    secondary_item_variant_id = EXCLUDED.secondary_item_variant_id,
+    primary_item_unit_id = EXCLUDED.primary_item_unit_id,
+    secondary_item_unit_id = EXCLUDED.secondary_item_unit_id,
+    primary_item_unit_value = EXCLUDED.primary_item_unit_value,
+    secondary_item_unit_value = EXCLUDED.secondary_item_unit_value,
+    amount = EXCLUDED.amount,
+    price = EXCLUDED.price,
+    updated_at = NOW()
+RETURNING id, sales_order_item_id, purchase_order_id, primary_item_variant_id, secondary_item_variant_id, primary_item_unit_id, secondary_item_unit_id, primary_item_unit_value, secondary_item_unit_value, amount, price, is_deleted, created_at, updated_at
+`
+
+type UpsertPurchaseOrderItemParams struct {
+	ID                     string `db:"id"`
+	SalesOrderItemID       string `db:"sales_order_item_id"`
+	PurchaseOrderID        string `db:"purchase_order_id"`
+	PrimaryItemVariantID   string `db:"primary_item_variant_id"`
+	SecondaryItemVariantID string `db:"secondary_item_variant_id"`
+	PrimaryItemUnitID      string `db:"primary_item_unit_id"`
+	SecondaryItemUnitID    string `db:"secondary_item_unit_id"`
+	PrimaryItemUnitValue   int64  `db:"primary_item_unit_value"`
+	SecondaryItemUnitValue int64  `db:"secondary_item_unit_value"`
+	Amount                 int64  `db:"amount"`
+	Price                  int64  `db:"price"`
+}
+
+func (q *Queries) UpsertPurchaseOrderItem(ctx context.Context, arg UpsertPurchaseOrderItemParams) (PurchasingPurchaseOrderItem, error) {
+	row := q.db.QueryRowContext(ctx, upsertPurchaseOrderItem,
+		arg.ID,
+		arg.SalesOrderItemID,
+		arg.PurchaseOrderID,
+		arg.PrimaryItemVariantID,
+		arg.SecondaryItemVariantID,
+		arg.PrimaryItemUnitID,
+		arg.SecondaryItemUnitID,
+		arg.PrimaryItemUnitValue,
+		arg.SecondaryItemUnitValue,
+		arg.Amount,
+		arg.Price,
+	)
+	var i PurchasingPurchaseOrderItem
+	err := row.Scan(
+		&i.ID,
+		&i.SalesOrderItemID,
+		&i.PurchaseOrderID,
+		&i.PrimaryItemVariantID,
+		&i.SecondaryItemVariantID,
+		&i.PrimaryItemUnitID,
+		&i.SecondaryItemUnitID,
+		&i.PrimaryItemUnitValue,
+		&i.SecondaryItemUnitValue,
+		&i.Amount,
+		&i.Price,
+		&i.IsDeleted,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)

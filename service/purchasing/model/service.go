@@ -4,6 +4,7 @@ import "net/http"
 
 type PurchasingService interface {
 	UpsertPurchaseOrder(w http.ResponseWriter, r *http.Request) error
+	UpsertPurchaseOrderItem(w http.ResponseWriter, r *http.Request) error
 }
 
 type PurchaseOrder struct {
@@ -35,4 +36,38 @@ type UpsertPurchaseOrderRequest struct {
 
 type UpsertPurchaseOrderResponse struct {
 	PurchaseOrder
+}
+
+type PurchaseOrderItem struct {
+	DetailId               string `json:"detail_id" validate:"required"`
+	PurchaseOrderId        string `json:"purchase_order_id" validate:"required"`
+	PrimaryItemVariantId   string `json:"primary_item_variant_id" validate:"required"`
+	ItemCode               string `json:"item_code" validate:"required"`
+	ItemName               string `json:"item_name" validate:"required"`
+	ItemVariantName        string `json:"item_variant_name" validate:"required"`
+	SecondaryItemVariantId string `json:"secondary_item_variant_id" validate:"required"`
+	PrimaryItemUnitId      string `json:"primary_item_unit_id" validate:"required"`
+	ItemUnitName           string `json:"item_unit_name" validate:"required"`
+	SecondaryItemUnitId    string `json:"secondary_item_unit_id" validate:"required"`
+	PrimaryItemUnitValue   string `json:"primary_item_unit_value" validate:"required"`
+	SecondaryItemUnitValue string `json:"secondary_item_unit_value" validate:"required"`
+	Amount                 string `json:"amount" validate:"required"`
+	Price                  string `json:"price" validate:"required"`
+}
+
+type UpsertPurchaseOrderItemRequest struct {
+	Id                     string `json:"id"`
+	PurchaseOrderId        string `json:"purchase_order_id" validate:"required"`
+	PrimaryItemVariantId   string `json:"primary_item_variant_id" validate:"required"`
+	SecondaryItemVariantId string `json:"secondary_item_variant_id" validate:"required"`
+	PrimaryItemUnitId      string `json:"primary_item_unit_id" validate:"required"`
+	SecondaryItemUnitId    string `json:"secondary_item_unit_id" validate:"required"`
+	PrimaryItemUnitValue   string `json:"primary_item_unit_value" validate:"required"`
+	SecondaryItemUnitValue string `json:"secondary_item_unit_value" validate:"required"`
+	Amount                 string `json:"amount" validate:"required"`
+	Price                  string `json:"price" validate:"required"`
+}
+
+type UpsertPurchaseOrderItemResponse struct {
+	PurchaseOrderItem
 }

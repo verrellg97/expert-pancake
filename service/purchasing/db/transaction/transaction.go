@@ -11,6 +11,7 @@ import (
 type PurchasingTrx interface {
 	Querier
 	UpsertPurchaseOrderTrx(ctx context.Context, arg UpsertPurchaseOrderTrxParams) (UpsertPurchaseOrderTrxResult, error)
+	UpsertPurchaseOrderItemTrx(ctx context.Context, arg UpsertPurchaseOrderItemTrxParams) (UpsertPurchaseOrderItemTrxResult, error)
 }
 
 // Trx provides all functions to execute SQL queries and transactions
