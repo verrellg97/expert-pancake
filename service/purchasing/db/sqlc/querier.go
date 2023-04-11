@@ -9,7 +9,9 @@ import (
 )
 
 type Querier interface {
+	UpdatePurchaseOrderAddItem(ctx context.Context, purchaseOrderID string) error
 	UpsertPurchaseOrder(ctx context.Context, arg UpsertPurchaseOrderParams) (PurchasingPurchaseOrder, error)
+	UpsertPurchaseOrderItem(ctx context.Context, arg UpsertPurchaseOrderItemParams) (PurchasingPurchaseOrderItem, error)
 }
 
 var _ Querier = (*Queries)(nil)
