@@ -13,7 +13,8 @@ import (
 const (
 	UpsertPurchaseOrderPath     = "/purchasing/order/upsert"
 	UpsertPurchaseOrderItemPath = "/purchasing/order/item/upsert"
-	GetPurchaseOrdersPath				= "/purchasing/order/get"
+	GetPurchaseOrdersPath       = "/purchasing/order/get"
+	GetPurcaseOrderItemsPath    = "/purchasing/order/item/get"
 )
 
 func (c *component) Routes(purchasingService model.PurchasingService) http.Handler {
@@ -35,6 +36,7 @@ func (c *component) Routes(purchasingService model.PurchasingService) http.Handl
 	mux.Method("POST", UpsertPurchaseOrderPath, httpHandler.New(purchasingService.UpsertPurchaseOrder))
 	mux.Method("POST", UpsertPurchaseOrderItemPath, httpHandler.New(purchasingService.UpsertPurchaseOrderItem))
 	mux.Method("POST", GetPurchaseOrdersPath, httpHandler.New(purchasingService.GetPurchaseOrders))
+	mux.Method("POST", GetPurcaseOrderItemsPath, httpHandler.New(purchasingService.GetPurchaseOrderItems))
 
 	return mux
 }
