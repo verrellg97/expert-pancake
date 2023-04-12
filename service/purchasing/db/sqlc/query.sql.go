@@ -10,6 +10,51 @@ import (
 	"time"
 )
 
+const getPurchaseOrderItems = `-- name: GetPurchaseOrderItems :many
+SELECT 
+    id, sales_order_item_id, purchase_order_id, primary_item_variant_id, secondary_item_variant_id, primary_item_unit_id, secondary_item_unit_id, primary_item_unit_value, secondary_item_unit_value, amount, price, is_deleted, created_at, updated_at
+FROM purchasing.purchase_order_items
+WHERE purchase_order_id = $1 AND is_deleted = FALSE
+`
+
+func (q *Queries) GetPurchaseOrderItems(ctx context.Context, purchaseOrderID string) ([]PurchasingPurchaseOrderItem, error) {
+	rows, err := q.db.QueryContext(ctx, getPurchaseOrderItems, purchaseOrderID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []PurchasingPurchaseOrderItem
+	for rows.Next() {
+		var i PurchasingPurchaseOrderItem
+		if err := rows.Scan(
+			&i.ID,
+			&i.SalesOrderItemID,
+			&i.PurchaseOrderID,
+			&i.PrimaryItemVariantID,
+			&i.SecondaryItemVariantID,
+			&i.PrimaryItemUnitID,
+			&i.SecondaryItemUnitID,
+			&i.PrimaryItemUnitValue,
+			&i.SecondaryItemUnitValue,
+			&i.Amount,
+			&i.Price,
+			&i.IsDeleted,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getPurchaseOrders = `-- name: GetPurchaseOrders :many
 SELECT 
     id, sales_order_id, company_id, branch_id, form_number, transaction_date, contact_book_id, secondary_company_id, konekin_id, currency_code, total_items, total, is_deleted, status, created_at, updated_at

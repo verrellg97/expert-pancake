@@ -26,6 +26,12 @@ WHERE company_id = $1
     AND transaction_date BETWEEN @start_date::date AND @end_date::date 
     AND is_deleted = FALSE;
 
+-- name: GetPurchaseOrderItems :many
+SELECT 
+    *
+FROM purchasing.purchase_order_items
+WHERE purchase_order_id = $1 AND is_deleted = FALSE;
+
 -- name: UpdatePurchaseOrderAddItem :exec
 UPDATE purchasing.purchase_orders
 SET total_items=sub.total_items,
