@@ -13,8 +13,8 @@ import (
 const (
 	UpsertPurchaseOrderPath     = "/purchasing/order/upsert"
 	UpsertPurchaseOrderItemPath = "/purchasing/order/item/upsert"
-	GetPurchaseOrdersPath       = "/purchasing/order/get"
-	GetPurcaseOrderItemsPath    = "/purchasing/order/item/get"
+	GetPurchaseOrdersPath       = "/purchasing/orders"
+	GetPurcaseOrderItemsPath    = "/purchasing/order/items"
 )
 
 func (c *component) Routes(purchasingService model.PurchasingService) http.Handler {

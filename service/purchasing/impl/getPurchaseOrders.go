@@ -8,9 +8,9 @@ import (
 	"github.com/calvinkmts/expert-pancake/engine/errors"
 	"github.com/calvinkmts/expert-pancake/engine/httpHandler"
 	db "github.com/expert-pancake/service/purchasing/db/sqlc"
+	"github.com/expert-pancake/service/purchasing/impl/client"
 	"github.com/expert-pancake/service/purchasing/model"
 	"github.com/expert-pancake/service/purchasing/util"
-	"github.com/expert-pancake/service/purchasing/impl/client"
 )
 
 func (a purchasingService) GetPurchaseOrders(w http.ResponseWriter, r *http.Request) error {
@@ -42,7 +42,7 @@ func (a purchasingService) GetPurchaseOrders(w http.ResponseWriter, r *http.Requ
 		}
 		contactBook, err := client.GetContactBooks(argContactBook)
 		if err != nil {
-			return errors.NewServerError(model.UpsertPurchaseOrderError, err.Error())
+			return errors.NewServerError(model.GetPurchaseOrdersError, err.Error())
 		}
 
 		var purchaseOrder = model.PurchaseOrder{
