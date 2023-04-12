@@ -34,7 +34,7 @@ func (a purchasingService) GetPurchaseOrderItems(w http.ResponseWriter, r *http.
 		}
 		itemVariant, err := client.GetItemVariants(argItemVariant)
 		if err != nil {
-			return errors.NewServerError(model.UpsertPurchaseOrderItemError, err.Error())
+			return errors.NewServerError(model.GetPurchaseOrderItemsError, err.Error())
 		}
 
 		argItemUnit := client.GetItemUnitsRequest{
@@ -43,7 +43,7 @@ func (a purchasingService) GetPurchaseOrderItems(w http.ResponseWriter, r *http.
 		}
 		itemUnit, err := client.GetItemUnits(argItemUnit)
 		if err != nil {
-			return errors.NewServerError(model.UpsertPurchaseOrderItemError, err.Error())
+			return errors.NewServerError(model.GetPurchaseOrderItemsError, err.Error())
 		}
 		var purchaseOrderItem = model.PurchaseOrderItem{
 			DetailId:               d.ID,
