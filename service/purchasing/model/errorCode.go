@@ -1,6 +1,7 @@
 package model
 
 const (
-	UpsertPurchaseOrderError     = 800001
-	UpsertPurchaseOrderItemError = 800002
+	UpsertPurchaseOrderError     = 800101
+	UpsertPurchaseOrderItemError = 800102
+	GetPurchaseOrdersError = 800103
 )

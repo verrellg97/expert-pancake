@@ -17,6 +17,15 @@ SET sales_order_id = EXCLUDED.sales_order_id,
     updated_at = NOW()
 RETURNING *;
 
+-- name: GetPurchaseOrders :many
+SELECT 
+    *
+FROM purchasing.purchase_orders
+WHERE company_id = $1
+    AND branch_id = $2
+    AND transaction_date BETWEEN @start_date::date AND @end_date::date 
+    AND is_deleted = FALSE;
+
 -- name: UpdatePurchaseOrderAddItem :exec
 UPDATE purchasing.purchase_orders
 SET total_items=sub.total_items,

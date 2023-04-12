@@ -5,6 +5,8 @@ import "net/http"
 type PurchasingService interface {
 	UpsertPurchaseOrder(w http.ResponseWriter, r *http.Request) error
 	UpsertPurchaseOrderItem(w http.ResponseWriter, r *http.Request) error
+	
+	GetPurchaseOrders(w http.ResponseWriter, r *http.Request) error
 }
 
 type PurchaseOrder struct {
@@ -70,4 +72,15 @@ type UpsertPurchaseOrderItemRequest struct {
 
 type UpsertPurchaseOrderItemResponse struct {
 	PurchaseOrderItem
+}
+
+type GetPurchaseOrdersRequest struct {
+	CompanyId string `json:"company_id" validate:"required"`
+	BranchId  string `json:"branch_id" validate:"required"`
+	StartDate string `json:"start_date" validate:"required"`
+	EndDate   string `json:"end_date" validate:"required"`
+}
+
+type GetPurchaseOrdersResponse struct {
+	PurchaseOrders []PurchaseOrder `json:"purchase_orders"`
 }
