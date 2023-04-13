@@ -97,6 +97,18 @@ services:
     deploy:
       mode: replicated
       replicas: 1
+  sales-service:
+    build:
+      context: ./service/sales
+      dockerfile: Dockerfile
+    networks:
+      - postgres
+    restart: always
+    ports:
+      - "4080:4080"
+    deploy:
+      mode: replicated
+      replicas: 1
 
   postgres:
     container_name: postgres_container
