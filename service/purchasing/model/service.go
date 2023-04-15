@@ -5,6 +5,7 @@ import "net/http"
 type PurchasingService interface {
 	UpsertPurchaseOrder(w http.ResponseWriter, r *http.Request) error
 	UpsertPurchaseOrderItem(w http.ResponseWriter, r *http.Request) error
+	UpdatePurchaseOrderItems(w http.ResponseWriter, r *http.Request) error
 	GetPurchaseOrders(w http.ResponseWriter, r *http.Request) error
 	GetPurchaseOrderItems(w http.ResponseWriter, r *http.Request) error
 }
@@ -72,6 +73,26 @@ type UpsertPurchaseOrderItemRequest struct {
 
 type UpsertPurchaseOrderItemResponse struct {
 	PurchaseOrderItem
+}
+
+type PurchaseOrderItemsRequest struct {
+	PrimaryItemVariantId   string `json:"primary_item_variant_id" validate:"required"`
+	SecondaryItemVariantId string `json:"secondary_item_variant_id" validate:"required"`
+	PrimaryItemUnitId      string `json:"primary_item_unit_id" validate:"required"`
+	SecondaryItemUnitId    string `json:"secondary_item_unit_id" validate:"required"`
+	PrimaryItemUnitValue   string `json:"primary_item_unit_value" validate:"required"`
+	SecondaryItemUnitValue string `json:"secondary_item_unit_value" validate:"required"`
+	Amount                 string `json:"amount" validate:"required"`
+	Price                  string `json:"price" validate:"required"`
+}
+
+type UpdatePurchaseOrderItemsRequest struct {
+	PurchaseOrderId    string                      `json:"purchase_order_id" validate:"required"`
+	PurchaseOrderItems []PurchaseOrderItemsRequest `json:"purchase_order_items" validate:"required"`
+}
+
+type UpdatePurchaseOrderItemsResponse struct {
+	PurchaseOrderItems []PurchaseOrderItem `json:"purchase_order_items"`
 }
 
 type GetPurchaseOrdersRequest struct {

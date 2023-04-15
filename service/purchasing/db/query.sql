@@ -35,7 +35,8 @@ WHERE purchase_order_id = $1 AND is_deleted = FALSE;
 -- name: UpdatePurchaseOrderAddItem :exec
 UPDATE purchasing.purchase_orders
 SET total_items=sub.total_items,
-    total=sub.total
+    total=sub.total,
+    updated_at = NOW()
 FROM (SELECT purchase_order_id, COUNT(id) AS total_items, SUM(amount*price) AS total
       FROM purchasing.purchase_order_items
       WHERE purchase_order_id = @purchase_order_id
@@ -64,3 +65,7 @@ SET sales_order_item_id = EXCLUDED.sales_order_item_id,
     price = EXCLUDED.price,
     updated_at = NOW()
 RETURNING *;
+
+-- name: DeletePurchaseOrderItems :exec
+DELETE FROM purchasing.purchase_order_items
+WHERE purchase_order_id = $1;
