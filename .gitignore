@@ -25,4 +25,5 @@ service/inventory/inventoryService
 service/warehouse/warehouseService
 service/notification/notificationService
 service/purchasing/purchasingService
+service/sales/salesService
 .DS_Store
