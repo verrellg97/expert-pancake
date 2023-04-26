@@ -768,12 +768,12 @@ SELECT a.id,
 e.id AS primary_item_id, e.name AS primary_item_name,
 b.id AS primary_item_variant_id, b.name AS primary_item_variant_name,
 b.price AS primary_item_variant_price,
-d.id AS primary_item_unit_id, d.name AS primary_item_unit_name,
+c.id AS primary_item_unit_id, d.name AS primary_item_unit_name,
 
 i.id AS secondary_item_id, i.name AS secondary_item_name,
 f.id AS secondary_item_variant_id, f.name AS secondary_item_variant_name,
 f.price AS secondary_item_variant_price,
-h.id AS secondary_item_unit_id, h.name AS secondary_item_unit_name
+g.id AS secondary_item_unit_id, h.name AS secondary_item_unit_name
 
 FROM inventory.item_variant_maps a
 
@@ -794,12 +794,12 @@ SELECT a.id,
 e.id AS primary_item_id, e.name AS primary_item_name,
 b.id AS primary_item_variant_id, b.name AS primary_item_variant_name,
 b.price AS primary_item_variant_price,
-d.id AS primary_item_unit_id, d.name AS primary_item_unit_name,
+c.id AS primary_item_unit_id, d.name AS primary_item_unit_name,
 
 i.id AS secondary_item_id, i.name AS secondary_item_name,
 f.id AS secondary_item_variant_id, f.name AS secondary_item_variant_name,
 f.price AS secondary_item_variant_price,
-h.id AS secondary_item_unit_id, h.name AS secondary_item_unit_name
+g.id AS secondary_item_unit_id, h.name AS secondary_item_unit_name
 
 FROM inventory.item_variant_maps a
 
