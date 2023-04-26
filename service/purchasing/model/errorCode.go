@@ -7,4 +7,5 @@ const (
 	GetPurchaseOrdersError        = 800104
 	GetPurchaseOrderItemsError    = 800105
 	UpdatePurchaseSettingError    = 800106
+	GetPurchaseSettingError       = 800107
 )
