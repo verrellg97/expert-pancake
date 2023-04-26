@@ -72,6 +72,7 @@ type InventoryService interface {
 
 	GetPurchaseItems(w http.ResponseWriter, r *http.Request) error
 	GetPurchaseItemVariants(w http.ResponseWriter, r *http.Request) error
+	GetPurchaseItemVariantUnits(w http.ResponseWriter, r *http.Request) error
 }
 
 type Brand struct {
@@ -862,4 +863,24 @@ type GetPurchaseItemVariantsRequest struct {
 
 type GetPurchaseItemVariantsResponse struct {
 	PurchaseItemVariants []PurchaseItemVariant `json:"purchase_item_variants" validate:"required"`
+}
+
+type PurchaseItemVariantUnit struct {
+	PrimaryItemUnitId      string `json:"primary_item_unit_id" validate:"required"`
+	PrimaryItemUnitName    string `json:"primary_item_unit_name" validate:"required"`
+	PrimaryItemUnitValue   string `json:"primary_item_unit_value" validate:"required"`
+	SecondaryItemUnitId    string `json:"secondary_item_unit_id" validate:"required"`
+	SecondaryItemUnitName  string `json:"secondary_item_unit_name" validate:"required"`
+	SecondaryItemUnitValue string `json:"secondary_item_unit_value" validate:"required"`
+	Price                  string `json:"price" validate:"required"`
+}
+
+type GetPurchaseItemVariantUnitsRequest struct {
+	SecondaryCompanyId   string `json:"secondary_company_id" validate:"required"`
+	PrimaryItemVariantId string `json:"primary_item_variant_id" validate:"required"`
+	Keyword              string `json:"keyword"`
+}
+
+type GetPurchaseItemVariantUnitsResponse struct {
+	PurchaseItemVariantUnits []PurchaseItemVariantUnit `json:"purchase_item_variant_units" validate:"required"`
 }

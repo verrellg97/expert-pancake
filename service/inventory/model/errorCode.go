@@ -66,6 +66,7 @@ const (
 	UpsertPricelistItemsError = 700045
 	GetPricelistItemsError    = 700046
 
-	GetPurchaseItemsError        = 700047
-	GetPurchaseItemVariantsError = 700048
+	GetPurchaseItemsError            = 700047
+	GetPurchaseItemVariantsError     = 700048
+	GetPurchaseItemVariantUnitsError = 700049
 )

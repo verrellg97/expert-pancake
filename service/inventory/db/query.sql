@@ -889,3 +889,18 @@ JOIN inventory.item_variants c ON a.secondary_item_variant_id = c.id
 WHERE a.secondary_company_id = $1
 AND b.item_id = @primary_item_id
 AND b.name LIKE $2;
+
+-- name: GetPurchaseItemVariantUnits :many
+SELECT DISTINCT a.primary_item_unit_id, d.name AS primary_item_unit_name,
+b.value AS primary_item_unit_value,
+a.secondary_item_unit_id, e.name AS secondary_item_unit_name,
+c.value AS secondary_item_unit_value, f.price
+FROM inventory.item_variant_maps a
+JOIN inventory.item_units b ON a.primary_item_unit_id = b.id
+JOIN inventory.item_units c ON a.secondary_item_unit_id = c.id
+JOIN inventory.units d ON b.unit_id = d.id
+JOIN inventory.units e ON c.unit_id = e.id
+JOIN inventory.item_variants f ON a.secondary_item_variant_id = f.id
+WHERE a.secondary_company_id = $1
+AND a.primary_item_variant_id = $2
+AND d.name LIKE $3;

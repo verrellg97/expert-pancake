@@ -76,8 +76,9 @@ const (
 	UpsertPricelistItemsPath = "/inventory/pricelist/items/upsert"
 	GetPricelistItemsPath    = "/inventory/pricelist/items"
 
-	GetPurchaseItemsPath        = "/inventory/purchase/items"
-	GetPurchaseItemVariantsPath = "/inventory/purchase/item/variants"
+	GetPurchaseItemsPath            = "/inventory/purchase/items"
+	GetPurchaseItemVariantsPath     = "/inventory/purchase/item/variants"
+	GetPurchaseItemVariantUnitsPath = "/inventory/purchase/item/variant/units"
 )
 
 func (c *component) Routes(inventoryService model.InventoryService) http.Handler {
@@ -163,6 +164,7 @@ func (c *component) Routes(inventoryService model.InventoryService) http.Handler
 
 	mux.Method("POST", GetPurchaseItemsPath, httpHandler.New(inventoryService.GetPurchaseItems))
 	mux.Method("POST", GetPurchaseItemVariantsPath, httpHandler.New(inventoryService.GetPurchaseItemVariants))
+	mux.Method("POST", GetPurchaseItemVariantUnitsPath, httpHandler.New(inventoryService.GetPurchaseItemVariantUnits))
 
 	return mux
 }
