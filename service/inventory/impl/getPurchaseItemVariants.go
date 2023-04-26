@@ -23,9 +23,9 @@ func (a inventoryService) GetPurchaseItemVariants(w http.ResponseWriter, r *http
 	}
 
 	result, err := a.dbTrx.GetPurchaseItemVariants(context.Background(), db.GetPurchaseItemVariantsParams{
-		SecondaryCompanyID: req.SecondaryCompanyId,
-		PrimaryItemID:      req.PrimaryItemId,
-		Name:               util.WildCardString(req.Keyword),
+		PrimaryCompanyID: req.PrimaryCompanyId,
+		SecondaryItemID:  req.SecondaryItemId,
+		Name:             util.WildCardString(req.Keyword),
 	})
 	log.Println(err)
 	if err != nil {

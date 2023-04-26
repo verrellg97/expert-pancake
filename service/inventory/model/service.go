@@ -856,9 +856,9 @@ type PurchaseItemVariant struct {
 }
 
 type GetPurchaseItemVariantsRequest struct {
-	SecondaryCompanyId string `json:"secondary_company_id" validate:"required"`
-	PrimaryItemId      string `json:"primary_item_id" validate:"required"`
-	Keyword            string `json:"keyword"`
+	PrimaryCompanyId string `json:"primary_company_id" validate:"required"`
+	SecondaryItemId  string `json:"secondary_item_id" validate:"required"`
+	Keyword          string `json:"keyword"`
 }
 
 type GetPurchaseItemVariantsResponse struct {

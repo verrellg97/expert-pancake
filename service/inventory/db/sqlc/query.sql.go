@@ -1487,15 +1487,15 @@ a.secondary_item_variant_id, c.name AS secondary_item_variant_name
 FROM inventory.item_variant_maps a
 JOIN inventory.item_variants b ON a.primary_item_variant_id = b.id
 JOIN inventory.item_variants c ON a.secondary_item_variant_id = c.id
-WHERE a.secondary_company_id = $1
-AND b.item_id = $3
-AND b.name LIKE $2
+WHERE a.primary_company_id = $1
+AND c.item_id = $3
+AND c.name LIKE $2
 `
 
 type GetPurchaseItemVariantsParams struct {
-	SecondaryCompanyID string `db:"secondary_company_id"`
-	Name               string `db:"name"`
-	PrimaryItemID      string `db:"primary_item_id"`
+	PrimaryCompanyID string `db:"primary_company_id"`
+	Name             string `db:"name"`
+	SecondaryItemID  string `db:"secondary_item_id"`
 }
 
 type GetPurchaseItemVariantsRow struct {
@@ -1506,7 +1506,7 @@ type GetPurchaseItemVariantsRow struct {
 }
 
 func (q *Queries) GetPurchaseItemVariants(ctx context.Context, arg GetPurchaseItemVariantsParams) ([]GetPurchaseItemVariantsRow, error) {
-	rows, err := q.db.QueryContext(ctx, getPurchaseItemVariants, arg.SecondaryCompanyID, arg.Name, arg.PrimaryItemID)
+	rows, err := q.db.QueryContext(ctx, getPurchaseItemVariants, arg.PrimaryCompanyID, arg.Name, arg.SecondaryItemID)
 	if err != nil {
 		return nil, err
 	}
