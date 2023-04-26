@@ -879,3 +879,13 @@ JOIN inventory.items e ON c.item_id = e.id
 WHERE a.primary_company_id = $1
 AND a.secondary_company_id = $2
 AND e.name LIKE $3;
+
+-- name: GetPurchaseItemVariants :many
+SELECT DISTINCT a.primary_item_variant_id, b.name AS primary_item_variant_name,
+a.secondary_item_variant_id, c.name AS secondary_item_variant_name
+FROM inventory.item_variant_maps a
+JOIN inventory.item_variants b ON a.primary_item_variant_id = b.id
+JOIN inventory.item_variants c ON a.secondary_item_variant_id = c.id
+WHERE a.secondary_company_id = $1
+AND b.item_id = @primary_item_id
+AND b.name LIKE $2;

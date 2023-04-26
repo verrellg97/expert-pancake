@@ -71,6 +71,7 @@ type InventoryService interface {
 	GetPricelistItems(w http.ResponseWriter, r *http.Request) error
 
 	GetPurchaseItems(w http.ResponseWriter, r *http.Request) error
+	GetPurchaseItemVariants(w http.ResponseWriter, r *http.Request) error
 }
 
 type Brand struct {
@@ -844,4 +845,21 @@ type GetPurchaseItemsRequest struct {
 
 type GetPurchaseItemsResponse struct {
 	PurchaseItems []PurchaseItem `json:"purchase_items" validate:"required"`
+}
+
+type PurchaseItemVariant struct {
+	PrimaryItemVariantId     string `json:"primary_item_variant_id" validate:"required"`
+	PrimaryItemVariantName   string `json:"primary_item_variant_name" validate:"required"`
+	SecondaryItemVariantId   string `json:"secondary_item_variant_id" validate:"required"`
+	SecondaryItemVariantName string `json:"secondary_item_variant_name" validate:"required"`
+}
+
+type GetPurchaseItemVariantsRequest struct {
+	SecondaryCompanyId string `json:"secondary_company_id" validate:"required"`
+	PrimaryItemId      string `json:"primary_item_id" validate:"required"`
+	Keyword            string `json:"keyword"`
+}
+
+type GetPurchaseItemVariantsResponse struct {
+	PurchaseItemVariants []PurchaseItemVariant `json:"purchase_item_variants" validate:"required"`
 }
