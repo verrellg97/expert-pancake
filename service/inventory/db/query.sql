@@ -900,7 +900,7 @@ JOIN inventory.item_units b ON a.primary_item_unit_id = b.id
 JOIN inventory.item_units c ON a.secondary_item_unit_id = c.id
 JOIN inventory.units d ON b.unit_id = d.id
 JOIN inventory.units e ON c.unit_id = e.id
-JOIN inventory.item_variants f ON a.secondary_item_variant_id = f.id
-WHERE a.secondary_company_id = $1
-AND a.primary_item_variant_id = $2
-AND d.name LIKE $3;
+JOIN inventory.item_variants f ON a.primary_item_variant_id = f.id
+WHERE a.primary_company_id = $1
+AND a.secondary_item_variant_id = $2
+AND e.name LIKE $3;
