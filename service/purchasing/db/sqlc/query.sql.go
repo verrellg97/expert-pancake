@@ -127,6 +127,25 @@ func (q *Queries) GetPurchaseOrders(ctx context.Context, arg GetPurchaseOrdersPa
 	return items, nil
 }
 
+const getPurchaseSetting = `-- name: GetPurchaseSetting :one
+SELECT 
+    company_id, is_auto_approve_order, created_at, updated_at
+FROM purchasing.purchase_settings
+WHERE company_id = $1
+`
+
+func (q *Queries) GetPurchaseSetting(ctx context.Context, companyID string) (PurchasingPurchaseSetting, error) {
+	row := q.db.QueryRowContext(ctx, getPurchaseSetting, companyID)
+	var i PurchasingPurchaseSetting
+	err := row.Scan(
+		&i.CompanyID,
+		&i.IsAutoApproveOrder,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
 const updatePurchaseOrderAddItem = `-- name: UpdatePurchaseOrderAddItem :exec
 UPDATE purchasing.purchase_orders
 SET total_items=sub.total_items,
@@ -278,6 +297,34 @@ func (q *Queries) UpsertPurchaseOrderItem(ctx context.Context, arg UpsertPurchas
 		&i.Amount,
 		&i.Price,
 		&i.IsDeleted,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const upsertPurchaseSetting = `-- name: UpsertPurchaseSetting :one
+INSERT INTO purchasing.purchase_settings(
+        company_id, is_auto_approve_order
+    )
+VALUES ($1, $2) ON CONFLICT (company_id) DO
+UPDATE
+SET is_auto_approve_order = EXCLUDED.is_auto_approve_order,
+    updated_at = NOW()
+RETURNING company_id, is_auto_approve_order, created_at, updated_at
+`
+
+type UpsertPurchaseSettingParams struct {
+	CompanyID          string `db:"company_id"`
+	IsAutoApproveOrder bool   `db:"is_auto_approve_order"`
+}
+
+func (q *Queries) UpsertPurchaseSetting(ctx context.Context, arg UpsertPurchaseSettingParams) (PurchasingPurchaseSetting, error) {
+	row := q.db.QueryRowContext(ctx, upsertPurchaseSetting, arg.CompanyID, arg.IsAutoApproveOrder)
+	var i PurchasingPurchaseSetting
+	err := row.Scan(
+		&i.CompanyID,
+		&i.IsAutoApproveOrder,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)

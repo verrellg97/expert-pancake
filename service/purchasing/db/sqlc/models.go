@@ -44,3 +44,10 @@ type PurchasingPurchaseOrderItem struct {
 	CreatedAt              sql.NullTime `db:"created_at"`
 	UpdatedAt              sql.NullTime `db:"updated_at"`
 }
+
+type PurchasingPurchaseSetting struct {
+	CompanyID          string       `db:"company_id"`
+	IsAutoApproveOrder bool         `db:"is_auto_approve_order"`
+	CreatedAt          sql.NullTime `db:"created_at"`
+	UpdatedAt          sql.NullTime `db:"updated_at"`
+}

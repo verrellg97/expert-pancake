@@ -8,6 +8,7 @@ type PurchasingService interface {
 	UpdatePurchaseOrderItems(w http.ResponseWriter, r *http.Request) error
 	GetPurchaseOrders(w http.ResponseWriter, r *http.Request) error
 	GetPurchaseOrderItems(w http.ResponseWriter, r *http.Request) error
+	UpdatePurchaseSetting(w http.ResponseWriter, r *http.Request) error
 }
 
 type PurchaseOrder struct {
@@ -112,4 +113,18 @@ type GetPurchaseOrderItemsRequest struct {
 
 type GetPurchaseOrderItemsResponse struct {
 	PurchaseOrderItems []PurchaseOrderItem `json:"purchase_order_items"`
+}
+
+type PurchaseSetting struct {
+	CompanyId          string `json:"company_id" validate:"required"`
+	IsAutoApproveOrder bool   `json:"is_auto_approve_order" validate:"required"`
+}
+
+type UpdatePurchaseSettingRequest struct {
+	CompanyId          string `json:"company_id" validate:"required"`
+	IsAutoApproveOrder bool   `json:"is_auto_approve_order"`
+}
+
+type UpdatePurchaseSettingResponse struct {
+	PurchaseSetting PurchaseSetting `json:"purchase_setting"`
 }

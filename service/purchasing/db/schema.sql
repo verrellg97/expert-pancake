@@ -37,3 +37,11 @@ CREATE TABLE "purchasing"."purchase_order_items" (
   "updated_at" timestamptz DEFAULT (now()),
   PRIMARY KEY ("id")
 );
+
+CREATE TABLE "purchasing"."purchase_settings" (
+  "company_id" text NOT NULL,
+  "is_auto_approve_order" bool NOT NULL DEFAULT false,
+  "created_at" timestamptz DEFAULT (now()),
+  "updated_at" timestamptz DEFAULT (now()),
+  PRIMARY KEY ("company_id")
+);

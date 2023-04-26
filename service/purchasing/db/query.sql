@@ -69,3 +69,19 @@ RETURNING *;
 -- name: DeletePurchaseOrderItems :exec
 DELETE FROM purchasing.purchase_order_items
 WHERE purchase_order_id = $1;
+
+-- name: GetPurchaseSetting :one
+SELECT 
+    *
+FROM purchasing.purchase_settings
+WHERE company_id = $1;
+
+-- name: UpsertPurchaseSetting :one
+INSERT INTO purchasing.purchase_settings(
+        company_id, is_auto_approve_order
+    )
+VALUES ($1, $2) ON CONFLICT (company_id) DO
+UPDATE
+SET is_auto_approve_order = EXCLUDED.is_auto_approve_order,
+    updated_at = NOW()
+RETURNING *;
