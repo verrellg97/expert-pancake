@@ -69,6 +69,8 @@ type InventoryService interface {
 
 	UpsertPricelistItems(w http.ResponseWriter, r *http.Request) error
 	GetPricelistItems(w http.ResponseWriter, r *http.Request) error
+
+	GetPurchaseItems(w http.ResponseWriter, r *http.Request) error
 }
 
 type Brand struct {
@@ -823,4 +825,23 @@ type GetPricelistItemsRequest struct {
 
 type GetPricelistItemsResponse struct {
 	PricelistItems []PricelistItem `json:"pricelist_items" validate:"required"`
+}
+
+type PurchaseItem struct {
+	PrimaryItemId     string `json:"primary_item_id" validate:"required"`
+	PrimaryItemCode   string `json:"primary_item_code" validate:"required"`
+	PrimaryItemName   string `json:"primary_item_name" validate:"required"`
+	SecondaryItemId   string `json:"secondary_item_id" validate:"required"`
+	SecondaryItemCode string `json:"secondary_item_code" validate:"required"`
+	SecondaryItemName string `json:"secondary_item_name" validate:"required"`
+}
+
+type GetPurchaseItemsRequest struct {
+	PrimaryCompanyId   string `json:"primary_company_id" validate:"required"`
+	SecondaryCompanyId string `json:"secondary_company_id" validate:"required"`
+	Keyword            string `json:"keyword"`
+}
+
+type GetPurchaseItemsResponse struct {
+	PurchaseItems []PurchaseItem `json:"purchase_items" validate:"required"`
 }

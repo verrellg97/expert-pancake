@@ -865,3 +865,17 @@ NOT EXISTS (
 )
 ELSE TRUE END
 ORDER BY a.name, b.name, c.value;
+
+-- name: GetPurchaseItems :many
+SELECT DISTINCT d.id AS primary_item_id,
+d.code AS primary_item_code, d.name AS primary_item_name,
+e.id AS secondary_item_id,
+e.code AS secondary_item_code, e.name AS secondary_item_name
+FROM inventory.item_variant_maps a
+JOIN inventory.item_variants b ON a.primary_item_variant_id = b.id
+JOIN inventory.item_variants c ON a.secondary_item_variant_id = c.id
+JOIN inventory.items d ON b.item_id = d.id
+JOIN inventory.items e ON c.item_id = e.id
+WHERE a.primary_company_id = $1
+AND a.secondary_company_id = $2
+AND e.name LIKE $3;

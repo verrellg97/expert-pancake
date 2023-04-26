@@ -1418,6 +1418,66 @@ func (q *Queries) GetPricelists(ctx context.Context, companyID string) ([]GetPri
 	return items, nil
 }
 
+const getPurchaseItems = `-- name: GetPurchaseItems :many
+SELECT DISTINCT d.id AS primary_item_id,
+d.code AS primary_item_code, d.name AS primary_item_name,
+e.id AS secondary_item_id,
+e.code AS secondary_item_code, e.name AS secondary_item_name
+FROM inventory.item_variant_maps a
+JOIN inventory.item_variants b ON a.primary_item_variant_id = b.id
+JOIN inventory.item_variants c ON a.secondary_item_variant_id = c.id
+JOIN inventory.items d ON b.item_id = d.id
+JOIN inventory.items e ON c.item_id = e.id
+WHERE a.primary_company_id = $1
+AND a.secondary_company_id = $2
+AND e.name LIKE $3
+`
+
+type GetPurchaseItemsParams struct {
+	PrimaryCompanyID   string `db:"primary_company_id"`
+	SecondaryCompanyID string `db:"secondary_company_id"`
+	Name               string `db:"name"`
+}
+
+type GetPurchaseItemsRow struct {
+	PrimaryItemID     string `db:"primary_item_id"`
+	PrimaryItemCode   string `db:"primary_item_code"`
+	PrimaryItemName   string `db:"primary_item_name"`
+	SecondaryItemID   string `db:"secondary_item_id"`
+	SecondaryItemCode string `db:"secondary_item_code"`
+	SecondaryItemName string `db:"secondary_item_name"`
+}
+
+func (q *Queries) GetPurchaseItems(ctx context.Context, arg GetPurchaseItemsParams) ([]GetPurchaseItemsRow, error) {
+	rows, err := q.db.QueryContext(ctx, getPurchaseItems, arg.PrimaryCompanyID, arg.SecondaryCompanyID, arg.Name)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetPurchaseItemsRow
+	for rows.Next() {
+		var i GetPurchaseItemsRow
+		if err := rows.Scan(
+			&i.PrimaryItemID,
+			&i.PrimaryItemCode,
+			&i.PrimaryItemName,
+			&i.SecondaryItemID,
+			&i.SecondaryItemCode,
+			&i.SecondaryItemName,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getStockHistory = `-- name: GetStockHistory :many
 SELECT a.transaction_date,
     a.form_number,
