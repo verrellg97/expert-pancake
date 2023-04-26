@@ -1418,6 +1418,59 @@ func (q *Queries) GetPricelists(ctx context.Context, companyID string) ([]GetPri
 	return items, nil
 }
 
+const getPurchaseItemVariants = `-- name: GetPurchaseItemVariants :many
+SELECT DISTINCT
+a.primary_item_variant_id, b.name AS primary_item_variant_name,
+a.secondary_item_variant_id, c.name AS secondary_item_variant_name
+FROM inventory.item_variant_maps a
+JOIN inventory.item_variants b ON a.primary_item_variant_id = b.id
+JOIN inventory.item_variants c ON a.secondary_item_variant_id = c.id
+WHERE a.secondary_company_id = $1
+AND b.item_id = $3
+AND b.name LIKE $2
+`
+
+type GetPurchaseItemVariantsParams struct {
+	SecondaryCompanyID string `db:"secondary_company_id"`
+	Name               string `db:"name"`
+	PrimaryItemID      string `db:"primary_item_id"`
+}
+
+type GetPurchaseItemVariantsRow struct {
+	PrimaryItemVariantID     string `db:"primary_item_variant_id"`
+	PrimaryItemVariantName   string `db:"primary_item_variant_name"`
+	SecondaryItemVariantID   string `db:"secondary_item_variant_id"`
+	SecondaryItemVariantName string `db:"secondary_item_variant_name"`
+}
+
+func (q *Queries) GetPurchaseItemVariants(ctx context.Context, arg GetPurchaseItemVariantsParams) ([]GetPurchaseItemVariantsRow, error) {
+	rows, err := q.db.QueryContext(ctx, getPurchaseItemVariants, arg.SecondaryCompanyID, arg.Name, arg.PrimaryItemID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetPurchaseItemVariantsRow
+	for rows.Next() {
+		var i GetPurchaseItemVariantsRow
+		if err := rows.Scan(
+			&i.PrimaryItemVariantID,
+			&i.PrimaryItemVariantName,
+			&i.SecondaryItemVariantID,
+			&i.SecondaryItemVariantName,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getPurchaseItems = `-- name: GetPurchaseItems :many
 SELECT DISTINCT d.id AS primary_item_id,
 d.code AS primary_item_code, d.name AS primary_item_name,
