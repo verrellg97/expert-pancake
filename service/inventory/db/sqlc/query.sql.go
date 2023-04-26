@@ -1418,9 +1418,71 @@ func (q *Queries) GetPricelists(ctx context.Context, companyID string) ([]GetPri
 	return items, nil
 }
 
+const getPurchaseItemVariantUnits = `-- name: GetPurchaseItemVariantUnits :many
+SELECT DISTINCT a.primary_item_unit_id, d.name AS primary_item_unit_name,
+b.value AS primary_item_unit_value,
+a.secondary_item_unit_id, e.name AS secondary_item_unit_name,
+c.value AS secondary_item_unit_value, f.price
+FROM inventory.item_variant_maps a
+JOIN inventory.item_units b ON a.primary_item_unit_id = b.id
+JOIN inventory.item_units c ON a.secondary_item_unit_id = c.id
+JOIN inventory.units d ON b.unit_id = d.id
+JOIN inventory.units e ON c.unit_id = e.id
+JOIN inventory.item_variants f ON a.secondary_item_variant_id = f.id
+WHERE a.secondary_company_id = $1
+AND a.primary_item_variant_id = $2
+AND d.name LIKE $3
+`
+
+type GetPurchaseItemVariantUnitsParams struct {
+	SecondaryCompanyID   string `db:"secondary_company_id"`
+	PrimaryItemVariantID string `db:"primary_item_variant_id"`
+	Name                 string `db:"name"`
+}
+
+type GetPurchaseItemVariantUnitsRow struct {
+	PrimaryItemUnitID      string `db:"primary_item_unit_id"`
+	PrimaryItemUnitName    string `db:"primary_item_unit_name"`
+	PrimaryItemUnitValue   int64  `db:"primary_item_unit_value"`
+	SecondaryItemUnitID    string `db:"secondary_item_unit_id"`
+	SecondaryItemUnitName  string `db:"secondary_item_unit_name"`
+	SecondaryItemUnitValue int64  `db:"secondary_item_unit_value"`
+	Price                  int64  `db:"price"`
+}
+
+func (q *Queries) GetPurchaseItemVariantUnits(ctx context.Context, arg GetPurchaseItemVariantUnitsParams) ([]GetPurchaseItemVariantUnitsRow, error) {
+	rows, err := q.db.QueryContext(ctx, getPurchaseItemVariantUnits, arg.SecondaryCompanyID, arg.PrimaryItemVariantID, arg.Name)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetPurchaseItemVariantUnitsRow
+	for rows.Next() {
+		var i GetPurchaseItemVariantUnitsRow
+		if err := rows.Scan(
+			&i.PrimaryItemUnitID,
+			&i.PrimaryItemUnitName,
+			&i.PrimaryItemUnitValue,
+			&i.SecondaryItemUnitID,
+			&i.SecondaryItemUnitName,
+			&i.SecondaryItemUnitValue,
+			&i.Price,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getPurchaseItemVariants = `-- name: GetPurchaseItemVariants :many
-SELECT DISTINCT
-a.primary_item_variant_id, b.name AS primary_item_variant_name,
+SELECT DISTINCT a.primary_item_variant_id, b.name AS primary_item_variant_name,
 a.secondary_item_variant_id, c.name AS secondary_item_variant_name
 FROM inventory.item_variant_maps a
 JOIN inventory.item_variants b ON a.primary_item_variant_id = b.id
