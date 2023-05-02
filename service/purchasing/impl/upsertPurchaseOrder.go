@@ -32,14 +32,16 @@ func (a purchasingService) UpsertPurchaseOrder(w http.ResponseWriter, r *http.Re
 	}
 
 	arg := db.UpsertPurchaseOrderTrxParams{
-		Id:                 id,
-		CompanyId:          req.CompanyId,
-		BranchId:           req.BranchId,
-		TransactionDate:    util.StringToDate(req.TransactionDate),
-		ContactBookId:      req.ContactBookId,
-		SecondaryCompanyId: req.SecondaryCompanyId,
-		KonekinId:          req.KonekinId,
-		CurrencyCode:       req.CurrencyCode,
+		Id:                   id,
+		CompanyId:            req.CompanyId,
+		BranchId:             req.BranchId,
+		TransactionDate:      util.StringToDate(req.TransactionDate),
+		ContactBookId:        req.ContactBookId,
+		SecondaryCompanyId:   req.SecondaryCompanyId,
+		KonekinId:            req.KonekinId,
+		CurrencyCode:         req.CurrencyCode,
+		ShippingDate:         util.StringToDate(req.ShippingDate),
+		ReceivingWarehouseId: req.ReceivingWarehouseId,
 	}
 
 	result, err := a.dbTrx.UpsertPurchaseOrderTrx(context.Background(), arg)
@@ -56,21 +58,34 @@ func (a purchasingService) UpsertPurchaseOrder(w http.ResponseWriter, r *http.Re
 		return errors.NewServerError(model.UpsertPurchaseOrderError, err.Error())
 	}
 
+	argReceivingWarehouse := client.GetWarehousesRequest{
+		Id:       result.ReceivingWarehouseId,
+		BranchId: "1",
+	}
+	receivingWarehouse, err := client.GetWarehouses(argReceivingWarehouse)
+	if err != nil {
+		return errors.NewServerError(model.UpsertPurchaseOrderError, err.Error())
+	}
+
 	res := model.UpsertPurchaseOrderResponse{
 		PurchaseOrder: model.PurchaseOrder{
-			TransactionId:      result.TransactionId,
-			CompanyId:          result.CompanyId,
-			BranchId:           result.BranchId,
-			FormNumber:         result.FormNumber,
-			TransactionDate:    result.TransactionDate,
-			ContactBookId:      result.ContactBookId,
-			SecondaryCompanyId: result.SecondaryCompanyId,
-			SupplierName:       contactBook.Result[0].Name,
-			KonekinId:          result.KonekinId,
-			CurrencyCode:       result.CurrencyCode,
-			TotalItems:         result.TotalItems,
-			Total:              result.Total,
-			Status:             result.Status,
+			TransactionId:             result.TransactionId,
+			CompanyId:                 result.CompanyId,
+			BranchId:                  result.BranchId,
+			FormNumber:                result.FormNumber,
+			TransactionDate:           result.TransactionDate,
+			ContactBookId:             result.ContactBookId,
+			SecondaryCompanyId:        result.SecondaryCompanyId,
+			SupplierName:              contactBook.Result[0].Name,
+			KonekinId:                 result.KonekinId,
+			CurrencyCode:              result.CurrencyCode,
+			ShippingDate:              result.ShippingDate,
+			ReceivingWarehouseId:      result.ReceivingWarehouseId,
+			ReceivingWarehouseName:    receivingWarehouse.Result.Warehouses[0].Name,
+			ReceivingWarehouseAddress: receivingWarehouse.Result.Warehouses[0].Address,
+			TotalItems:                result.TotalItems,
+			Total:                     result.Total,
+			Status:                    result.Status,
 		},
 	}
 
