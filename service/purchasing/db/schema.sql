@@ -11,6 +11,8 @@ CREATE TABLE "purchasing"."purchase_orders" (
   "secondary_company_id" text NOT NULL DEFAULT '',
   "konekin_id" text NOT NULL DEFAULT '',
   "currency_code" text NOT NULL,
+  "shipping_date" date NOT NULL DEFAULT CURRENT_DATE,
+  "receiving_warehouse_id" text NOT NULL DEFAULT '',
   "total_items" bigint NOT NULL DEFAULT 0,
   "total" bigint NOT NULL DEFAULT 0,
   "is_deleted" bool NOT NULL DEFAULT false,

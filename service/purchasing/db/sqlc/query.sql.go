@@ -67,7 +67,7 @@ func (q *Queries) GetPurchaseOrderItems(ctx context.Context, purchaseOrderID str
 
 const getPurchaseOrders = `-- name: GetPurchaseOrders :many
 SELECT 
-    id, sales_order_id, company_id, branch_id, form_number, transaction_date, contact_book_id, secondary_company_id, konekin_id, currency_code, total_items, total, is_deleted, status, created_at, updated_at
+    id, sales_order_id, company_id, branch_id, form_number, transaction_date, contact_book_id, secondary_company_id, konekin_id, currency_code, shipping_date, receiving_warehouse_id, total_items, total, is_deleted, status, created_at, updated_at
 FROM purchasing.purchase_orders
 WHERE company_id = $1
     AND branch_id = $2
@@ -107,6 +107,8 @@ func (q *Queries) GetPurchaseOrders(ctx context.Context, arg GetPurchaseOrdersPa
 			&i.SecondaryCompanyID,
 			&i.KonekinID,
 			&i.CurrencyCode,
+			&i.ShippingDate,
+			&i.ReceivingWarehouseID,
 			&i.TotalItems,
 			&i.Total,
 			&i.IsDeleted,
@@ -166,9 +168,10 @@ func (q *Queries) UpdatePurchaseOrderAddItem(ctx context.Context, purchaseOrderI
 const upsertPurchaseOrder = `-- name: UpsertPurchaseOrder :one
 INSERT INTO purchasing.purchase_orders(
         id, sales_order_id, company_id, branch_id, form_number, transaction_date,
-        contact_book_id, secondary_company_id, konekin_id, currency_code
+        contact_book_id, secondary_company_id, konekin_id, currency_code, shipping_date,
+        receiving_warehouse_id
     )
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) ON CONFLICT (id) DO
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) ON CONFLICT (id) DO
 UPDATE
 SET sales_order_id = EXCLUDED.sales_order_id,
     company_id = EXCLUDED.company_id,
@@ -179,21 +182,25 @@ SET sales_order_id = EXCLUDED.sales_order_id,
     secondary_company_id = EXCLUDED.secondary_company_id,
     konekin_id = EXCLUDED.konekin_id,
     currency_code = EXCLUDED.currency_code,
+    shipping_date = EXCLUDED.shipping_date,
+    receiving_warehouse_id = EXCLUDED.receiving_warehouse_id,
     updated_at = NOW()
-RETURNING id, sales_order_id, company_id, branch_id, form_number, transaction_date, contact_book_id, secondary_company_id, konekin_id, currency_code, total_items, total, is_deleted, status, created_at, updated_at
+RETURNING id, sales_order_id, company_id, branch_id, form_number, transaction_date, contact_book_id, secondary_company_id, konekin_id, currency_code, shipping_date, receiving_warehouse_id, total_items, total, is_deleted, status, created_at, updated_at
 `
 
 type UpsertPurchaseOrderParams struct {
-	ID                 string    `db:"id"`
-	SalesOrderID       string    `db:"sales_order_id"`
-	CompanyID          string    `db:"company_id"`
-	BranchID           string    `db:"branch_id"`
-	FormNumber         string    `db:"form_number"`
-	TransactionDate    time.Time `db:"transaction_date"`
-	ContactBookID      string    `db:"contact_book_id"`
-	SecondaryCompanyID string    `db:"secondary_company_id"`
-	KonekinID          string    `db:"konekin_id"`
-	CurrencyCode       string    `db:"currency_code"`
+	ID                   string    `db:"id"`
+	SalesOrderID         string    `db:"sales_order_id"`
+	CompanyID            string    `db:"company_id"`
+	BranchID             string    `db:"branch_id"`
+	FormNumber           string    `db:"form_number"`
+	TransactionDate      time.Time `db:"transaction_date"`
+	ContactBookID        string    `db:"contact_book_id"`
+	SecondaryCompanyID   string    `db:"secondary_company_id"`
+	KonekinID            string    `db:"konekin_id"`
+	CurrencyCode         string    `db:"currency_code"`
+	ShippingDate         time.Time `db:"shipping_date"`
+	ReceivingWarehouseID string    `db:"receiving_warehouse_id"`
 }
 
 func (q *Queries) UpsertPurchaseOrder(ctx context.Context, arg UpsertPurchaseOrderParams) (PurchasingPurchaseOrder, error) {
@@ -208,6 +215,8 @@ func (q *Queries) UpsertPurchaseOrder(ctx context.Context, arg UpsertPurchaseOrd
 		arg.SecondaryCompanyID,
 		arg.KonekinID,
 		arg.CurrencyCode,
+		arg.ShippingDate,
+		arg.ReceivingWarehouseID,
 	)
 	var i PurchasingPurchaseOrder
 	err := row.Scan(
@@ -221,6 +230,8 @@ func (q *Queries) UpsertPurchaseOrder(ctx context.Context, arg UpsertPurchaseOrd
 		&i.SecondaryCompanyID,
 		&i.KonekinID,
 		&i.CurrencyCode,
+		&i.ShippingDate,
+		&i.ReceivingWarehouseID,
 		&i.TotalItems,
 		&i.Total,
 		&i.IsDeleted,

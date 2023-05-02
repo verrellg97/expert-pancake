@@ -1,9 +1,10 @@
 -- name: UpsertPurchaseOrder :one
 INSERT INTO purchasing.purchase_orders(
         id, sales_order_id, company_id, branch_id, form_number, transaction_date,
-        contact_book_id, secondary_company_id, konekin_id, currency_code
+        contact_book_id, secondary_company_id, konekin_id, currency_code, shipping_date,
+        receiving_warehouse_id
     )
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) ON CONFLICT (id) DO
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) ON CONFLICT (id) DO
 UPDATE
 SET sales_order_id = EXCLUDED.sales_order_id,
     company_id = EXCLUDED.company_id,
@@ -14,6 +15,8 @@ SET sales_order_id = EXCLUDED.sales_order_id,
     secondary_company_id = EXCLUDED.secondary_company_id,
     konekin_id = EXCLUDED.konekin_id,
     currency_code = EXCLUDED.currency_code,
+    shipping_date = EXCLUDED.shipping_date,
+    receiving_warehouse_id = EXCLUDED.receiving_warehouse_id,
     updated_at = NOW()
 RETURNING *;
 
