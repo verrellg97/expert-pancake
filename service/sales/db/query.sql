@@ -28,3 +28,6 @@ RETURNING *;
 
 -- name: DeletePOSItemsPOS :exec
 DELETE FROM sales.point_of_sale_items WHERE point_of_sale_id = $1;
+
+-- name: DeletePOS :exec
+UPDATE sales.point_of_sales SET is_deleted = TRUE WHERE id = $1;

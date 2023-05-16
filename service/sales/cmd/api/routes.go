@@ -12,6 +12,7 @@ import (
 
 const (
 	UpsertPOSPath    = "/sales/pos/upsert"
+	DeletePOSPath    = "/sales/pos/delete"
 )
 
 func (c *component) Routes(salesService model.SalesService) http.Handler {
@@ -30,6 +31,7 @@ func (c *component) Routes(salesService model.SalesService) http.Handler {
 
 	mux.Use(middleware.Heartbeat("/ping"))
 	mux.Method("POST", UpsertPOSPath, httpHandler.New(salesService.UpsertPOS))
+	mux.Method("POST", DeletePOSPath, httpHandler.New(salesService.DeletePOS))
 
 	return mux
 }

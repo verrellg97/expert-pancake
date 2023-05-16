@@ -11,6 +11,15 @@ import (
 	"time"
 )
 
+const deletePOS = `-- name: DeletePOS :exec
+UPDATE sales.point_of_sales SET is_deleted = TRUE WHERE id = $1
+`
+
+func (q *Queries) DeletePOS(ctx context.Context, id string) error {
+	_, err := q.db.ExecContext(ctx, deletePOS, id)
+	return err
+}
+
 const deletePOSItemsPOS = `-- name: DeletePOSItemsPOS :exec
 DELETE FROM sales.point_of_sale_items WHERE point_of_sale_id = $1
 `

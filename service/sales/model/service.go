@@ -4,6 +4,7 @@ import "net/http"
 
 type SalesService interface {
 	UpsertPOS(w http.ResponseWriter, r *http.Request) error
+	DeletePOS(w http.ResponseWriter, r *http.Request) error
 }
 
 type POS struct {
@@ -80,3 +81,12 @@ type UpsertPOSRequest struct {
 type UpsertPOSResponse struct {
 	Message string `json:"message"`
 }
+
+type DeletePOSRequest struct {
+	Id string `json:"id" validate:"required"`
+}
+
+type DeletePOSResponse struct {
+	Message string `json:"message"`
+}
+

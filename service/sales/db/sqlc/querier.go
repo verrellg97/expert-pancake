@@ -9,6 +9,7 @@ import (
 )
 
 type Querier interface {
+	DeletePOS(ctx context.Context, id string) error
 	DeletePOSItemsPOS(ctx context.Context, pointOfSaleID string) error
 	InsertPOSItem(ctx context.Context, arg InsertPOSItemParams) (SalesPointOfSaleItem, error)
 	UpsertPOS(ctx context.Context, arg UpsertPOSParams) (SalesPointOfSale, error)
