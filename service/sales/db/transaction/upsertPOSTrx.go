@@ -11,8 +11,20 @@ import (
 )
 
 type UpsertPOSTrxParams struct {
-	POS      model.POSRequest
-	POSItems []model.POSItemRequest
+	Id                 string
+	CompanyId          string
+	BranchId           string
+	WarehouseId        string
+	FormNumber         string
+	TransactionDate    string
+	ContactBookId      string
+	SecondaryCompanyId string
+	KonekinId          string
+	CurrencyCode       string
+	ChartOfAccountId   string
+	TotalItems         string
+	Total              string
+	POSItems           []model.POSItemRequest
 }
 
 type UpsertPOSTrxResult struct {
@@ -26,54 +38,56 @@ func (trx *Trx) UpsertPOSTrx(ctx context.Context, arg UpsertPOSTrxParams) (Upser
 		var err error
 
 		var id = ""
-		if arg.POS.Id == "" {
+		if arg.Id == "" {
 			id = uuid.NewV4().String()
 		} else {
-			id = arg.POS.Id
+			id = arg.Id
 		}
 
-		totalItems := strconv.ParseInt(arg.POS.TotalItems, 10, 64)
-		total := strconv.ParseInt(arg.POS.Total, 10, 64)
-
+		totalItems, _ := strconv.ParseInt(arg.TotalItems, 10, 64)
+		total, _ := strconv.ParseInt(arg.Total, 10, 64)
 
 		headerRes, err := q.UpsertPOS(ctx, db.UpsertPOSParams{
 			ID:                 id,
-			CompanyID:          arg.POS.CompanyId,
-			BranchID:           arg.POS.BranchId,
-			WarehouseID:        arg.POS.WarehouseId,
-			FormNumber:         arg.POS.FormNumber,
-			TransactionDate:    util.StringToDate(arg.POS.TransactionDate),
-			ContactBookID:      arg.POS.ContactBookId,
-			SecondaryCompanyID: arg.POS.SecondaryCompanyId,
-			KonekinID:          arg.POS.KonekinId,
-			CurrencyCode:       arg.POS.CurrencyCode,
-			ChartOfAccountID:   arg.POS.ChartOfAccountId,
+			CompanyID:          arg.CompanyId,
+			BranchID:           arg.BranchId,
+			WarehouseID:        arg.WarehouseId,
+			FormNumber:         arg.FormNumber,
+			TransactionDate:    util.StringToDate(arg.TransactionDate),
+			ContactBookID:      arg.ContactBookId,
+			SecondaryCompanyID: arg.SecondaryCompanyId,
+			KonekinID:          arg.KonekinId,
+			CurrencyCode:       arg.CurrencyCode,
+			ChartOfAccountID:   arg.ChartOfAccountId,
 			TotalItems:         totalItems,
-			Total:              strconv.ParseInt(arg.POS.Total, 10, 64),
+			Total:              total,
 		})
 		if err != nil {
 			return err
 		}
 
-		err = q.DeletePOSItemsPOS(ctx, arg.POS.Id)
+		err = q.DeletePOSItemsPOS(ctx, arg.Id)
 		if err != nil {
 			return err
 		}
 
 		for _, d := range arg.POSItems {
+			itemUnitValue, _ := strconv.ParseInt(d.ItemUnitValue, 10, 64)
+			amount, _ := strconv.ParseInt(d.Amount, 10, 64)
+			price, _ := strconv.ParseInt(d.Price, 10, 64)
 
-			detailRes, err := q.InsertPOSItem(ctx, db.InsertPOSItemParams{
+			_, err := q.InsertPOSItem(ctx, db.InsertPOSItemParams{
 				ID:              uuid.NewV4().String(),
 				PointOfSaleID:   headerRes.ID,
 				WarehouseRackID: d.WarehouseRackId,
 				ItemVariantID:   d.ItemVariantId,
 				ItemUnitID:      d.ItemUnitId,
-				ItemUnitValue:   strconv.ParseInt(d.ItemUnitValue, 10, 64),
-				Batch:           d.Batch,
-				ExpiredDate:     util.StringToDate(d.ExpiredDate),
+				ItemUnitValue:   itemUnitValue,
+				Batch:           util.NewNullableString(d.Batch),
+				ExpiredDate:     util.NewNullableDate(util.StringToDate(d.ExpiredDate)),
 				ItemBarcodeID:   d.ItemBarcodeId,
-				Amount:          strconv.ParseInt(d.Amount, 10, 64),
-				Price:           strconv.ParseInt(d.Price, 10, 64),
+				Amount:          amount,
+				Price:           price,
 			})
 			if err != nil {
 				return err

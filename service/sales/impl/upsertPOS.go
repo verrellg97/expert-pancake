@@ -22,11 +22,23 @@ func (a salesService) UpsertPOS(w http.ResponseWriter, r *http.Request) error {
 	}
 
 	arg := db.UpsertPOSTrxParams{
-		POS:      req.POS,
-		POSItems: req.POSItems,
+		Id                 : req.Id,
+		CompanyId          : req.CompanyId,
+		BranchId           : req.BranchId,
+		WarehouseId        : req.WarehouseId,
+		FormNumber         : req.FormNumber,
+		TransactionDate    : req.TransactionDate,
+		ContactBookId      : req.ContactBookId,
+		SecondaryCompanyId : req.SecondaryCompanyId,
+		KonekinId          : req.KonekinId,
+		CurrencyCode       : req.CurrencyCode,
+		ChartOfAccountId   : req.ChartOfAccountId,
+		TotalItems         : req.TotalItems,
+		Total              : req.Total,
+		POSItems           : req.POSItems,
 	}
 
-	result, err := a.dbTrx.UpsertPOSTrx(context.Background(), arg)
+	_, err := a.dbTrx.UpsertPOSTrx(context.Background(), arg)
 	if err != nil {
 		return errors.NewServerError(model.UpsertPOSError, err.Error())
 	}

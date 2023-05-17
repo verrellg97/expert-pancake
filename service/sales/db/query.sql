@@ -31,3 +31,13 @@ DELETE FROM sales.point_of_sale_items WHERE point_of_sale_id = $1;
 
 -- name: DeletePOS :exec
 UPDATE sales.point_of_sales SET is_deleted = TRUE WHERE id = $1;
+
+-- name: GetPOS :many
+SELECT a.* FROM sales.point_of_sales a 
+WHERE company_id LIKE $1
+    AND branch_id LIKE $2
+    AND transaction_date BETWEEN @start_date::date AND @end_date::date 
+    AND is_deleted = FALSE;
+
+-- name: GetPOSItemsByPOSId :many
+SELECT a.* FROM sales.point_of_sale_items a WHERE a.point_of_sale_id = $1 ORDER BY a.id;

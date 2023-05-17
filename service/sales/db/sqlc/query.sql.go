@@ -29,6 +29,108 @@ func (q *Queries) DeletePOSItemsPOS(ctx context.Context, pointOfSaleID string) e
 	return err
 }
 
+const getPOS = `-- name: GetPOS :many
+SELECT a.id, a.company_id, a.branch_id, a.warehouse_id, a.form_number, a.transaction_date, a.contact_book_id, a.secondary_company_id, a.konekin_id, a.currency_code, a.chart_of_account_id, a.total_items, a.total, a.is_deleted, a.created_at, a.updated_at FROM sales.point_of_sales a 
+WHERE company_id LIKE $1
+    AND branch_id LIKE $2
+    AND transaction_date BETWEEN $3::date AND $4::date 
+    AND is_deleted = FALSE
+`
+
+type GetPOSParams struct {
+	CompanyID string    `db:"company_id"`
+	BranchID  string    `db:"branch_id"`
+	StartDate time.Time `db:"start_date"`
+	EndDate   time.Time `db:"end_date"`
+}
+
+func (q *Queries) GetPOS(ctx context.Context, arg GetPOSParams) ([]SalesPointOfSale, error) {
+	rows, err := q.db.QueryContext(ctx, getPOS,
+		arg.CompanyID,
+		arg.BranchID,
+		arg.StartDate,
+		arg.EndDate,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []SalesPointOfSale
+	for rows.Next() {
+		var i SalesPointOfSale
+		if err := rows.Scan(
+			&i.ID,
+			&i.CompanyID,
+			&i.BranchID,
+			&i.WarehouseID,
+			&i.FormNumber,
+			&i.TransactionDate,
+			&i.ContactBookID,
+			&i.SecondaryCompanyID,
+			&i.KonekinID,
+			&i.CurrencyCode,
+			&i.ChartOfAccountID,
+			&i.TotalItems,
+			&i.Total,
+			&i.IsDeleted,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPOSItemsByPOSId = `-- name: GetPOSItemsByPOSId :many
+SELECT a.id, a.point_of_sale_id, a.warehouse_rack_id, a.item_variant_id, a.item_unit_id, a.item_unit_value, a.batch, a.expired_date, a.item_barcode_id, a.amount, a.price, a.is_deleted, a.created_at, a.updated_at FROM sales.point_of_sale_items a WHERE a.point_of_sale_id = $1 ORDER BY a.id
+`
+
+func (q *Queries) GetPOSItemsByPOSId(ctx context.Context, pointOfSaleID string) ([]SalesPointOfSaleItem, error) {
+	rows, err := q.db.QueryContext(ctx, getPOSItemsByPOSId, pointOfSaleID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []SalesPointOfSaleItem
+	for rows.Next() {
+		var i SalesPointOfSaleItem
+		if err := rows.Scan(
+			&i.ID,
+			&i.PointOfSaleID,
+			&i.WarehouseRackID,
+			&i.ItemVariantID,
+			&i.ItemUnitID,
+			&i.ItemUnitValue,
+			&i.Batch,
+			&i.ExpiredDate,
+			&i.ItemBarcodeID,
+			&i.Amount,
+			&i.Price,
+			&i.IsDeleted,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const insertPOSItem = `-- name: InsertPOSItem :one
 INSERT INTO sales.point_of_sale_items(
   id, point_of_sale_id, warehouse_rack_id, item_variant_id, item_unit_id, item_unit_value, batch, expired_date, item_barcode_id, amount, price, updated_at
