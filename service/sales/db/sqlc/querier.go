@@ -9,11 +9,12 @@ import (
 )
 
 type Querier interface {
-	GetPurchaseOrderItems(ctx context.Context, purchaseOrderID string) ([]SalesPurchaseOrderItem, error)
-	GetPurchaseOrders(ctx context.Context, arg GetPurchaseOrdersParams) ([]SalesPurchaseOrder, error)
-	UpdatePurchaseOrderAddItem(ctx context.Context, purchaseOrderID string) error
-	UpsertPurchaseOrder(ctx context.Context, arg UpsertPurchaseOrderParams) (SalesPurchaseOrder, error)
-	UpsertPurchaseOrderItem(ctx context.Context, arg UpsertPurchaseOrderItemParams) (SalesPurchaseOrderItem, error)
+	DeletePOS(ctx context.Context, id string) error
+	DeletePOSItemsPOS(ctx context.Context, pointOfSaleID string) error
+	GetPOS(ctx context.Context, arg GetPOSParams) ([]SalesPointOfSale, error)
+	GetPOSItemsByPOSId(ctx context.Context, pointOfSaleID string) ([]SalesPointOfSaleItem, error)
+	InsertPOSItem(ctx context.Context, arg InsertPOSItemParams) (SalesPointOfSaleItem, error)
+	UpsertPOS(ctx context.Context, arg UpsertPOSParams) (SalesPointOfSale, error)
 }
 
 var _ Querier = (*Queries)(nil)

@@ -10,6 +10,7 @@ import (
 
 type SalesTrx interface {
 	Querier
+	UpsertPOSTrx(ctx context.Context, arg UpsertPOSTrxParams) (UpsertPOSTrxResult, error)
 }
 
 // Trx provides all functions to execute SQL queries and transactions
