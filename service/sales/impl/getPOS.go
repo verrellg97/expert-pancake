@@ -62,69 +62,6 @@ func (a salesService) GetPOS(w http.ResponseWriter, r *http.Request) error {
 			return errors.NewServerError(model.GetPOSError, err.Error())
 		}
 
-		var posItems = make([]model.POSItem, 0)
-		detailResult, err := a.dbTrx.GetPOSItemsByPOSId(context.Background(), d.ID)
-		if err != nil {
-			return errors.NewServerError(model.GetPOSError, err.Error())
-		}
-
-		for _, dd := range detailResult {
-			argItemVariant := client.GetItemVariantsRequest{
-				Id: dd.ItemVariantID,
-			}
-			itemVariant, err := client.GetItemVariants(argItemVariant)
-			if err != nil {
-				return errors.NewServerError(model.GetPOSError, err.Error())
-			}
-
-			argItemUnit := client.GetItemUnitsRequest{
-				Id:     dd.ItemUnitID,
-				ItemId: itemVariant.Result.ItemVariants[0].ItemId,
-			}
-			itemUnit, err := client.GetItemUnits(argItemUnit)
-			if err != nil {
-				return errors.NewServerError(model.GetPOSError, err.Error())
-			}
-
-			argWarehouseRack := client.GetWarehouseRacksRequest{
-				Id:          dd.WarehouseRackID,
-				WarehouseId: "1",
-			}
-			warehouseRack, err := client.GetWarehouseRacks(argWarehouseRack)
-			if err != nil {
-				return errors.NewServerError(model.GetPOSError, err.Error())
-			}
-
-			var batch, expiredDate *string
-			if dd.Batch.Valid {
-				batch = &dd.Batch.String
-			}
-			if dd.ExpiredDate.Valid {
-				expiredDate = new(string)
-				*expiredDate = dd.ExpiredDate.Time.Format(util.DateLayoutYMD)
-			}
-
-			var posItem = model.POSItem{
-				DetailId:          dd.ID,
-				POSId:             d.ID,
-				WarehouseRackId:   dd.WarehouseRackID,
-				WarehouseRackName: warehouseRack.Result.WarehouseRacks[0].Name,
-				ItemVariantId:     dd.ItemVariantID,
-				ItemVariantName:   itemVariant.Result.ItemVariants[0].VariantName,
-				ItemUnitId:        dd.ItemUnitID,
-				ItemUnitName:      itemUnit.Result.ItemUnits[0].UnitName,
-				ItemUnitValue:     strconv.FormatInt(dd.ItemUnitValue, 10),
-				ItemCode:          itemVariant.Result.ItemVariants[0].Code,
-				ItemName:          itemVariant.Result.ItemVariants[0].Name,
-				Batch:             batch,
-				ExpiredDate:       expiredDate,
-				ItemBarcodeId:     dd.ItemBarcodeID,
-				Amount:            strconv.FormatInt(dd.Amount, 10),
-				Price:             strconv.FormatInt(dd.Price, 10),
-			}
-			posItems = append(posItems, posItem)
-		}
-
 		var pos = model.POS{
 			Id:                 d.ID,
 			CompanyId:          d.CompanyID,
@@ -142,7 +79,6 @@ func (a salesService) GetPOS(w http.ResponseWriter, r *http.Request) error {
 			ChartOfAccountName: coa.Result[0].AccountName,
 			TotalItems:         strconv.FormatInt(d.TotalItems, 10),
 			Total:              strconv.FormatInt(d.Total, 10),
-			PosItems:           posItems,
 		}
 		point_of_sales = append(point_of_sales, pos)
 	}
