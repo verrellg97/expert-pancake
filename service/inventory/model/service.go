@@ -73,6 +73,8 @@ type InventoryService interface {
 	GetPurchaseItems(w http.ResponseWriter, r *http.Request) error
 	GetPurchaseItemVariants(w http.ResponseWriter, r *http.Request) error
 	GetPurchaseItemVariantUnits(w http.ResponseWriter, r *http.Request) error
+
+	GetPOSItems(w http.ResponseWriter, r *http.Request) error
 }
 
 type Brand struct {
@@ -883,4 +885,24 @@ type GetPurchaseItemVariantUnitsRequest struct {
 
 type GetPurchaseItemVariantUnitsResponse struct {
 	PurchaseItemVariantUnits []PurchaseItemVariantUnit `json:"purchase_item_variant_units" validate:"required"`
+}
+
+type POSItem struct {
+	ItemId        string `json:"item_id" validate:"required"`
+	ItemName      string `json:"item_name" validate:"required"`
+	VariantId     string `json:"variant_id" validate:"required"`
+	VariantName   string `json:"variant_name" validate:"required"`
+	ItemUnitId    string `json:"item_unit_id" validate:"required"`
+	UnitName      string `json:"unit_name" validate:"required"`
+	ItemUnitValue string `json:"item_unit_value" validate:"required"`
+	Price         string `json:"price" validate:"required"`
+}
+
+type GetPOSItemsRequest struct {
+	CompanyId string `json:"company_id" validate:"required"`
+	Keyword   string `json:"keyword"`
+}
+
+type GetPOSItemsResponse struct {
+	POSItems []POSItem `json:"pos_items" validate:"required"`
 }

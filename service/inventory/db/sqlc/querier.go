@@ -34,6 +34,7 @@ type Querier interface {
 	GetMappingItemUnits(ctx context.Context, arg GetMappingItemUnitsParams) ([]GetMappingItemUnitsRow, error)
 	GetMappingItemVariants(ctx context.Context, arg GetMappingItemVariantsParams) ([]GetMappingItemVariantsRow, error)
 	GetMappingItems(ctx context.Context, arg GetMappingItemsParams) ([]GetMappingItemsRow, error)
+	GetPOSItems(ctx context.Context, arg GetPOSItemsParams) ([]GetPOSItemsRow, error)
 	GetPricelistItems(ctx context.Context, arg GetPricelistItemsParams) ([]GetPricelistItemsRow, error)
 	GetPricelists(ctx context.Context, companyID string) ([]GetPricelistsRow, error)
 	GetPurchaseItemVariantUnits(ctx context.Context, arg GetPurchaseItemVariantUnitsParams) ([]GetPurchaseItemVariantUnitsRow, error)
