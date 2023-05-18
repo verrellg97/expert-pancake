@@ -69,4 +69,6 @@ const (
 	GetPurchaseItemsError            = 700047
 	GetPurchaseItemVariantsError     = 700048
 	GetPurchaseItemVariantUnitsError = 700049
+
+	GetPOSItemsError = 700050
 )
