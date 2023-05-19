@@ -9,6 +9,8 @@ type SalesService interface {
 	DeletePOS(w http.ResponseWriter, r *http.Request) error
 	GetPOS(w http.ResponseWriter, r *http.Request) error
 	GetPOSItems(w http.ResponseWriter, r *http.Request) error
+
+	GetPOSUserSetting(w http.ResponseWriter, r *http.Request) error
 }
 
 type POS struct {
@@ -107,4 +109,22 @@ type GetPOSItemsRequest struct {
 
 type GetPOSItemsResponse struct {
 	POSItems []POSItem `json:"pos_items"`
+}
+
+type POSUserSetting struct {
+	UserId            string `json:"user_id" validate:"required"`
+	BranchId          string `json:"branch_id" validate:"required"`
+	WarehouseId       string `json:"warehouse_id" validate:"required"`
+	WarehouseName     string `json:"warehouse_name" validate:"required"`
+	WarehouseRackId   string `json:"warehouse_rack_id" validate:"required"`
+	WarehouseRackName string `json:"warehouse_rack_name" validate:"required"`
+}
+
+type GetPOSUserSettingRequest struct {
+	UserId   string `json:"user_id" validate:"required"`
+	BranchId string `json:"branch_id" validate:"required"`
+}
+
+type GetPOSUserSettingResponse struct {
+	POSUserSetting POSUserSetting `json:"pos_user_setting"`
 }
