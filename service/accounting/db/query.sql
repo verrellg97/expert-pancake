@@ -70,13 +70,13 @@ b.report_type, b.account_type, b.account_group_name, a.account_code, a.account_n
 a.bank_name, a.bank_account_number, a.bank_code, a.is_all_branches, a.is_deleted
 FROM accounting.company_chart_of_accounts a
 JOIN accounting.chart_of_account_groups b ON a.chart_of_account_group_id = b.id
-WHERE a.company_id = $1
+WHERE CASE WHEN @is_filter_id::bool THEN a.id = $4
+ELSE a.company_id = $1
 AND a.account_name LIKE $2
 AND CASE WHEN @is_filter_journal_type::bool
 THEN b.account_type = ANY(@account_types::text[]) ELSE TRUE END
 AND CASE WHEN @is_deleted_filter::bool
-THEN a.is_deleted = $3 ELSE TRUE END
-AND CASE WHEN @is_filter_id::bool THEN a.id = $4 ELSE TRUE END;
+THEN a.is_deleted = $3 ELSE TRUE END END;
 
 -- name: GetCompanyChartOfAccount :one
 SELECT *
