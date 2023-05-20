@@ -25,7 +25,7 @@ func (a salesService) GetPOSItems(w http.ResponseWriter, r *http.Request) error 
 	var posItems = make([]model.POSItem, 0)
 	detailResult, err := a.dbTrx.GetPOSItemsByPOSId(context.Background(), req.POSId)
 	if err != nil {
-		return errors.NewServerError(model.GetPOSError, err.Error())
+		return errors.NewServerError(model.GetPOSItemsError, err.Error())
 	}
 
 	for _, d := range detailResult {
@@ -34,7 +34,7 @@ func (a salesService) GetPOSItems(w http.ResponseWriter, r *http.Request) error 
 		}
 		itemVariant, err := client.GetItemVariants(argItemVariant)
 		if err != nil {
-			return errors.NewServerError(model.GetPOSError, err.Error())
+			return errors.NewServerError(model.GetPOSItemsError, err.Error())
 		}
 
 		argItemUnit := client.GetItemUnitsRequest{
@@ -43,7 +43,7 @@ func (a salesService) GetPOSItems(w http.ResponseWriter, r *http.Request) error 
 		}
 		itemUnit, err := client.GetItemUnits(argItemUnit)
 		if err != nil {
-			return errors.NewServerError(model.GetPOSError, err.Error())
+			return errors.NewServerError(model.GetPOSItemsError, err.Error())
 		}
 
 		argWarehouseRack := client.GetWarehouseRacksRequest{
@@ -52,7 +52,7 @@ func (a salesService) GetPOSItems(w http.ResponseWriter, r *http.Request) error 
 		}
 		warehouseRack, err := client.GetWarehouseRacks(argWarehouseRack)
 		if err != nil {
-			return errors.NewServerError(model.GetPOSError, err.Error())
+			return errors.NewServerError(model.GetPOSItemsError, err.Error())
 		}
 
 		var batch, expiredDate *string

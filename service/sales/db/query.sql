@@ -41,3 +41,21 @@ WHERE company_id LIKE $1
 
 -- name: GetPOSItemsByPOSId :many
 SELECT a.* FROM sales.point_of_sale_items a WHERE a.point_of_sale_id = $1 ORDER BY a.id;
+
+-- name: GetPOSUserSetting :one
+SELECT 
+    *
+FROM sales.pos_user_settings
+WHERE user_id = $1
+AND branch_id = $2;
+
+-- name: UpsertPOSUserSetting :one
+INSERT INTO sales.pos_user_settings(
+  user_id, branch_id, warehouse_id, warehouse_rack_id
+)
+VALUES ($1, $2, $3, $4) ON CONFLICT (user_id, branch_id) DO
+UPDATE
+SET warehouse_id = EXCLUDED.warehouse_id,
+  warehouse_rack_id = EXCLUDED.warehouse_rack_id,
+  updated_at = NOW()
+RETURNING *;
