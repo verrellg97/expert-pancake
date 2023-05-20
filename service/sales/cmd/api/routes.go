@@ -11,12 +11,15 @@ import (
 )
 
 const (
-	UpsertPOSPath            = "/sales/pos/upsert"
-	DeletePOSPath            = "/sales/pos/delete"
-	GetPOSPath               = "/sales/pos"
-	GetPOSItemsPath          = "/sales/pos/items"
+	UpsertPOSPath   = "/sales/pos/upsert"
+	DeletePOSPath   = "/sales/pos/delete"
+	GetPOSPath      = "/sales/pos"
+	GetPOSItemsPath = "/sales/pos/items"
+
 	GetPOSUserSettingPath    = "/sales/pos/user/setting"
 	UpdatePOSUserSettingPath = "/sales/pos/user/setting/update"
+
+	UpdatePOSCOASettingPath = "/sales/pos/coa/setting/update"
 )
 
 func (c *component) Routes(salesService model.SalesService) http.Handler {
@@ -38,8 +41,11 @@ func (c *component) Routes(salesService model.SalesService) http.Handler {
 	mux.Method("POST", DeletePOSPath, httpHandler.New(salesService.DeletePOS))
 	mux.Method("POST", GetPOSPath, httpHandler.New(salesService.GetPOS))
 	mux.Method("POST", GetPOSItemsPath, httpHandler.New(salesService.GetPOSItems))
+
 	mux.Method("POST", GetPOSUserSettingPath, httpHandler.New(salesService.GetPOSUserSetting))
 	mux.Method("POST", UpdatePOSUserSettingPath, httpHandler.New(salesService.UpdatePOSUserSetting))
+
+	mux.Method("POST", UpdatePOSCOASettingPath, httpHandler.New(salesService.UpdatePOSCOASetting))
 
 	return mux
 }
