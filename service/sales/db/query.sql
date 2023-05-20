@@ -69,3 +69,9 @@ RETURNING *;
 
 -- name: DeletePOSCOASetting :exec
 DELETE FROM sales.pos_chart_of_account_settings WHERE branch_id = $1;
+
+-- name: GetPOSCOASetting :many
+SELECT 
+    *
+FROM sales.pos_chart_of_account_settings
+WHERE branch_id = $1;
