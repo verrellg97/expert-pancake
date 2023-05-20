@@ -59,3 +59,13 @@ SET warehouse_id = EXCLUDED.warehouse_id,
   warehouse_rack_id = EXCLUDED.warehouse_rack_id,
   updated_at = NOW()
 RETURNING *;
+
+-- name: InsertPOSCOASetting :one
+INSERT INTO sales.pos_chart_of_account_settings(
+  branch_id, chart_of_account_id
+)
+VALUES ($1, $2)
+RETURNING *;
+
+-- name: DeletePOSCOASetting :exec
+DELETE FROM sales.pos_chart_of_account_settings WHERE branch_id = $1;

@@ -95,6 +95,8 @@ func (trx *Trx) UpsertPOSTrx(ctx context.Context, arg UpsertPOSTrxParams) (Upser
 
 		}
 
+		result.Message = "OK"
+
 		return err
 	})
 
