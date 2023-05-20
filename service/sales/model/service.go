@@ -11,6 +11,7 @@ type SalesService interface {
 	GetPOSItems(w http.ResponseWriter, r *http.Request) error
 
 	GetPOSUserSetting(w http.ResponseWriter, r *http.Request) error
+	UpdatePOSUserSetting(w http.ResponseWriter, r *http.Request) error
 }
 
 type POS struct {
@@ -126,5 +127,16 @@ type GetPOSUserSettingRequest struct {
 }
 
 type GetPOSUserSettingResponse struct {
+	POSUserSetting POSUserSetting `json:"pos_user_setting"`
+}
+
+type UpdatePOSUserSettingRequest struct {
+	UserId          string `json:"user_id" validate:"required"`
+	BranchId        string `json:"branch_id" validate:"required"`
+	WarehouseId     string `json:"warehouse_id" validate:"required"`
+	WarehouseRackId string `json:"warehouse_rack_id" validate:"required"`
+}
+
+type UpdatePOSUserSettingResponse struct {
 	POSUserSetting POSUserSetting `json:"pos_user_setting"`
 }
