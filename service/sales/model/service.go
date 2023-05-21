@@ -17,6 +17,7 @@ type SalesService interface {
 	GetPOSCOASetting(w http.ResponseWriter, r *http.Request) error
 
 	UpdatePOSCustomerSetting(w http.ResponseWriter, r *http.Request) error
+	GetPOSCustomerSetting(w http.ResponseWriter, r *http.Request) error
 }
 
 type POS struct {
@@ -175,4 +176,19 @@ type UpdatePOSCustomerSettingRequest struct {
 
 type UpdatePOSCustomerSettingResponse struct {
 	Message string `json:"message"`
+}
+
+type POSCustomer struct {
+	ContactBookId      string `json:"contact_book_id" validate:"required"`
+	ContactBookName    string `json:"contact_book_name" validate:"required"`
+	SecondaryCompanyId string `json:"secondary_company_id" validate:"required"`
+	KonekinId          string `json:"konekin_id" validate:"required"`
+}
+
+type GetPOSCustomerSettingRequest struct {
+	BranchId string `json:"branch_id" validate:"required"`
+}
+
+type GetPOSCustomerSettingResponse struct {
+	POSCustomers []POSCustomer `json:"pos_customers"`
 }

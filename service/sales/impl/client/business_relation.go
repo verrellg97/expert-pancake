@@ -1,7 +1,7 @@
 package client
 
 const (
-	BusinessRelationRootPath = "http://127.0.0.1:4030"
+	BusinessRelationRootPath = "http://business-relation-service:4030"
 	GetContactBooksPath      = "/business-relation/contact-books"
 )
 
