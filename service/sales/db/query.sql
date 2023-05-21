@@ -85,3 +85,9 @@ RETURNING *;
 
 -- name: DeletePOSCustomerSetting :exec
 DELETE FROM sales.pos_customer_settings WHERE branch_id = $1;
+
+-- name: GetPOSCustomerSetting :many
+SELECT 
+    *
+FROM sales.pos_customer_settings
+WHERE branch_id = $1;

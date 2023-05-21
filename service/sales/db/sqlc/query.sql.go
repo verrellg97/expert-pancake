@@ -142,6 +142,41 @@ func (q *Queries) GetPOSCOASetting(ctx context.Context, branchID string) ([]Sale
 	return items, nil
 }
 
+const getPOSCustomerSetting = `-- name: GetPOSCustomerSetting :many
+SELECT 
+    branch_id, contact_book_id, created_at, updated_at
+FROM sales.pos_customer_settings
+WHERE branch_id = $1
+`
+
+func (q *Queries) GetPOSCustomerSetting(ctx context.Context, branchID string) ([]SalesPosCustomerSetting, error) {
+	rows, err := q.db.QueryContext(ctx, getPOSCustomerSetting, branchID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []SalesPosCustomerSetting
+	for rows.Next() {
+		var i SalesPosCustomerSetting
+		if err := rows.Scan(
+			&i.BranchID,
+			&i.ContactBookID,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getPOSItemsByPOSId = `-- name: GetPOSItemsByPOSId :many
 SELECT a.id, a.point_of_sale_id, a.warehouse_rack_id, a.item_variant_id, a.item_unit_id, a.item_unit_value, a.batch, a.expired_date, a.item_barcode_id, a.amount, a.price, a.is_deleted, a.created_at, a.updated_at FROM sales.point_of_sale_items a WHERE a.point_of_sale_id = $1 ORDER BY a.id
 `
