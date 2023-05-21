@@ -75,3 +75,13 @@ SELECT
     *
 FROM sales.pos_chart_of_account_settings
 WHERE branch_id = $1;
+
+-- name: InsertPOSCustomerSetting :one
+INSERT INTO sales.pos_customer_settings(
+  branch_id, contact_book_id
+)
+VALUES ($1, $2)
+RETURNING *;
+
+-- name: DeletePOSCustomerSetting :exec
+DELETE FROM sales.pos_customer_settings WHERE branch_id = $1;

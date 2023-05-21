@@ -10,5 +10,7 @@ const (
 	UpdatePOSUserSettingError = 800106
 
 	UpdatePOSCOASettingError = 800107
-	GetPOSCOASettingError    = 800107
+	GetPOSCOASettingError    = 800108
+
+	UpdatePOSCustomerSettingError = 800109
 )

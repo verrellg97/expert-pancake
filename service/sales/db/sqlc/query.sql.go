@@ -29,6 +29,15 @@ func (q *Queries) DeletePOSCOASetting(ctx context.Context, branchID string) erro
 	return err
 }
 
+const deletePOSCustomerSetting = `-- name: DeletePOSCustomerSetting :exec
+DELETE FROM sales.pos_customer_settings WHERE branch_id = $1
+`
+
+func (q *Queries) DeletePOSCustomerSetting(ctx context.Context, branchID string) error {
+	_, err := q.db.ExecContext(ctx, deletePOSCustomerSetting, branchID)
+	return err
+}
+
 const deletePOSItemsPOS = `-- name: DeletePOSItemsPOS :exec
 DELETE FROM sales.point_of_sale_items WHERE point_of_sale_id = $1
 `
@@ -221,6 +230,31 @@ func (q *Queries) InsertPOSCOASetting(ctx context.Context, arg InsertPOSCOASetti
 	err := row.Scan(
 		&i.BranchID,
 		&i.ChartOfAccountID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const insertPOSCustomerSetting = `-- name: InsertPOSCustomerSetting :one
+INSERT INTO sales.pos_customer_settings(
+  branch_id, contact_book_id
+)
+VALUES ($1, $2)
+RETURNING branch_id, contact_book_id, created_at, updated_at
+`
+
+type InsertPOSCustomerSettingParams struct {
+	BranchID      string `db:"branch_id"`
+	ContactBookID string `db:"contact_book_id"`
+}
+
+func (q *Queries) InsertPOSCustomerSetting(ctx context.Context, arg InsertPOSCustomerSettingParams) (SalesPosCustomerSetting, error) {
+	row := q.db.QueryRowContext(ctx, insertPOSCustomerSetting, arg.BranchID, arg.ContactBookID)
+	var i SalesPosCustomerSetting
+	err := row.Scan(
+		&i.BranchID,
+		&i.ContactBookID,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)

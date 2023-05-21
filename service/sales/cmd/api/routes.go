@@ -21,6 +21,8 @@ const (
 
 	UpdatePOSCOASettingPath = "/sales/pos/coa/setting/update"
 	GetPOSCOASettingPath    = "/sales/pos/coa/setting"
+
+	UpdatePOSCustomerSettingPath = "/sales/pos/customer/setting/update"
 )
 
 func (c *component) Routes(salesService model.SalesService) http.Handler {
@@ -48,6 +50,8 @@ func (c *component) Routes(salesService model.SalesService) http.Handler {
 
 	mux.Method("POST", UpdatePOSCOASettingPath, httpHandler.New(salesService.UpdatePOSCOASetting))
 	mux.Method("POST", GetPOSCOASettingPath, httpHandler.New(salesService.GetPOSCOASetting))
+
+	mux.Method("POST", UpdatePOSCustomerSettingPath, httpHandler.New(salesService.UpdatePOSCustomerSetting))
 
 	return mux
 }
