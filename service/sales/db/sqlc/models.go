@@ -52,6 +52,13 @@ type SalesPosChartOfAccountSetting struct {
 	UpdatedAt        sql.NullTime `db:"updated_at"`
 }
 
+type SalesPosCustomerSetting struct {
+	BranchID      string       `db:"branch_id"`
+	ContactBookID string       `db:"contact_book_id"`
+	CreatedAt     sql.NullTime `db:"created_at"`
+	UpdatedAt     sql.NullTime `db:"updated_at"`
+}
+
 type SalesPosUserSetting struct {
 	UserID          string       `db:"user_id"`
 	BranchID        string       `db:"branch_id"`

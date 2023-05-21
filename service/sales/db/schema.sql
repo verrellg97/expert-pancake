@@ -55,3 +55,11 @@ CREATE TABLE "sales"."pos_chart_of_account_settings" (
   "updated_at" timestamptz DEFAULT (now()),
   PRIMARY KEY ("branch_id", "chart_of_account_id")
 );
+
+CREATE TABLE "sales"."pos_customer_settings" (
+  "branch_id" text NOT NULL,
+  "contact_book_id" text NOT NULL,
+  "created_at" timestamptz DEFAULT (now()),
+  "updated_at" timestamptz DEFAULT (now()),
+  PRIMARY KEY ("branch_id", "contact_book_id")
+);
