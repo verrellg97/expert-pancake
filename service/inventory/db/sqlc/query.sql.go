@@ -2349,6 +2349,46 @@ func (q *Queries) GetVariantWarehouseRacks(ctx context.Context, arg GetVariantWa
 	return items, nil
 }
 
+const getVariantWarehouseRacksByBranch = `-- name: GetVariantWarehouseRacksByBranch :many
+SELECT DISTINCT a.warehouse_id, a.warehouse_rack_id
+FROM inventory.stock_movements a
+WHERE a.variant_id = $1
+AND a.warehouse_id = ANY($2::text [])
+`
+
+type GetVariantWarehouseRacksByBranchParams struct {
+	VariantID    string   `db:"variant_id"`
+	WarehouseIds []string `db:"warehouse_ids"`
+}
+
+type GetVariantWarehouseRacksByBranchRow struct {
+	WarehouseID     string `db:"warehouse_id"`
+	WarehouseRackID string `db:"warehouse_rack_id"`
+}
+
+func (q *Queries) GetVariantWarehouseRacksByBranch(ctx context.Context, arg GetVariantWarehouseRacksByBranchParams) ([]GetVariantWarehouseRacksByBranchRow, error) {
+	rows, err := q.db.QueryContext(ctx, getVariantWarehouseRacksByBranch, arg.VariantID, pq.Array(arg.WarehouseIds))
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetVariantWarehouseRacksByBranchRow
+	for rows.Next() {
+		var i GetVariantWarehouseRacksByBranchRow
+		if err := rows.Scan(&i.WarehouseID, &i.WarehouseRackID); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getVariantWarehouseStocks = `-- name: GetVariantWarehouseStocks :many
 SELECT c.id AS item_id, c.name AS item_name,
 b.id AS variant_id, b.name AS variant_name,

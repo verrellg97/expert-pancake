@@ -52,6 +52,7 @@ type Querier interface {
 	GetVariantWarehouseRackBatches(ctx context.Context, arg GetVariantWarehouseRackBatchesParams) ([]sql.NullString, error)
 	GetVariantWarehouseRackStock(ctx context.Context, arg GetVariantWarehouseRackStockParams) (int64, error)
 	GetVariantWarehouseRacks(ctx context.Context, arg GetVariantWarehouseRacksParams) ([]string, error)
+	GetVariantWarehouseRacksByBranch(ctx context.Context, arg GetVariantWarehouseRacksByBranchParams) ([]GetVariantWarehouseRacksByBranchRow, error)
 	GetVariantWarehouseStocks(ctx context.Context, warehouseID string) ([]GetVariantWarehouseStocksRow, error)
 	InsertBrand(ctx context.Context, arg InsertBrandParams) (InventoryBrand, error)
 	InsertGroup(ctx context.Context, arg InsertGroupParams) (InventoryGroup, error)

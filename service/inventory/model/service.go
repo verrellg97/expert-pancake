@@ -75,6 +75,7 @@ type InventoryService interface {
 	GetPurchaseItemVariantUnits(w http.ResponseWriter, r *http.Request) error
 
 	GetPOSItems(w http.ResponseWriter, r *http.Request) error
+	GetVariantWarehouseRacksByBranch(w http.ResponseWriter, r *http.Request) error
 }
 
 type Brand struct {
@@ -905,4 +906,20 @@ type GetPOSItemsRequest struct {
 
 type GetPOSItemsResponse struct {
 	POSItems []POSItem `json:"pos_items" validate:"required"`
+}
+
+type WarehouseAndRack struct {
+	WarehouseId   string `json:"warehouse_id" validate:"required"`
+	WarehouseName string `json:"warehouse_name" validate:"required"`
+	RackId        string `json:"rack_id" validate:"required"`
+	RackName      string `json:"rack_name" validate:"required"`
+}
+
+type GetVariantWarehouseRacksByBranchRequest struct {
+	BranchId  string `json:"branch_id" validate:"required"`
+	VariantId string `json:"variant_id" validate:"required"`
+}
+
+type GetVariantWarehouseRacksByBranchResponse struct {
+	WarehouseAndRacks []WarehouseAndRack `json:"warehouse_racks" validate:"required"`
 }
