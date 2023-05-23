@@ -70,5 +70,6 @@ const (
 	GetPurchaseItemVariantsError     = 700048
 	GetPurchaseItemVariantUnitsError = 700049
 
-	GetPOSItemsError = 700050
+	GetPOSItemsError                      = 700050
+	GetVariantWarehouseRacksByBranchError = 700051
 )

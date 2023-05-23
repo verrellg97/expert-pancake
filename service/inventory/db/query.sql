@@ -932,3 +932,9 @@ NOT EXISTS (
 )
 ELSE TRUE END
 ORDER BY a.name, b.name, c.value;
+
+-- name: GetVariantWarehouseRacksByBranch :many
+SELECT DISTINCT a.warehouse_id, a.warehouse_rack_id
+FROM inventory.stock_movements a
+WHERE a.variant_id = $1
+AND a.warehouse_id = ANY(@warehouse_ids::text []);
