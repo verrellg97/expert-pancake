@@ -3,6 +3,8 @@ package db
 import (
 	"context"
 	"strconv"
+	"fmt"
+	"math/rand"
 
 	db "github.com/expert-pancake/service/sales/db/sqlc"
 	"github.com/expert-pancake/service/sales/model"
@@ -44,6 +46,13 @@ func (trx *Trx) UpsertPOSTrx(ctx context.Context, arg UpsertPOSTrxParams) (Upser
 			id = arg.Id
 		}
 
+		var formNumber = ""
+		if arg.FormNumber == "" {
+			formNumber = "POS-" + fmt.Sprintf("%08d", rand.Intn(100000000))
+		} else {
+			formNumber = arg.FormNumber
+		}
+
 		totalItems, _ := strconv.ParseInt(arg.TotalItems, 10, 64)
 		total, _ := strconv.ParseInt(arg.Total, 10, 64)
 
@@ -52,7 +61,7 @@ func (trx *Trx) UpsertPOSTrx(ctx context.Context, arg UpsertPOSTrxParams) (Upser
 			CompanyID:          arg.CompanyId,
 			BranchID:           arg.BranchId,
 			WarehouseID:        arg.WarehouseId,
-			FormNumber:         arg.FormNumber,
+			FormNumber:         formNumber,
 			TransactionDate:    util.StringToDate(arg.TransactionDate),
 			ContactBookID:      arg.ContactBookId,
 			SecondaryCompanyID: arg.SecondaryCompanyId,
