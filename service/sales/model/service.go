@@ -75,7 +75,7 @@ type UpsertPOSRequest struct {
 	CompanyId          string           `json:"company_id" validate:"required"`
 	BranchId           string           `json:"branch_id" validate:"required"`
 	WarehouseId        string           `json:"warehouse_id" validate:"required"`
-	FormNumber         string           `json:"form_number" validate:"required"`
+	FormNumber         string           `json:"form_number"`
 	TransactionDate    string           `json:"transaction_date" validate:"required"`
 	ContactBookId      string           `json:"contact_book_id" validate:"required"`
 	SecondaryCompanyId string           `json:"secondary_company_id" validate:"required"`
