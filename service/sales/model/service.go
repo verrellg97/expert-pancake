@@ -18,6 +18,10 @@ type SalesService interface {
 
 	UpdatePOSCustomerSetting(w http.ResponseWriter, r *http.Request) error
 	GetPOSCustomerSetting(w http.ResponseWriter, r *http.Request) error
+
+	UpsertPOSPaymentMethod(w http.ResponseWriter, r *http.Request) error
+	DeletePOSPaymentMethod(w http.ResponseWriter, r *http.Request) error
+	GetPOSPaymentMethod(w http.ResponseWriter, r *http.Request) error
 }
 
 type POS struct {
@@ -191,4 +195,39 @@ type GetPOSCustomerSettingRequest struct {
 
 type GetPOSCustomerSettingResponse struct {
 	POSCustomers []POSCustomer `json:"pos_customers"`
+}
+
+type POSPaymentMethod struct {
+	Id                 string `json:"id" validate:"required"`
+	CompanyId          string `json:"company_id" validate:"required"`
+	ChartOfAccountId   string `json:"chart_of_account_id" validate:"required"`
+	ChartOfAccountName string `json:"chart_of_account_name" validate:"required"`
+	Name               string `json:"name" validate:"required"`
+}
+
+type UpsertPOSPaymentMethodRequest struct {
+	Id               string `json:"id"`
+	CompanyId        string `json:"company_id" validate:"required"`
+	ChartOfAccountId string `json:"chart_of_account_id" validate:"required"`
+	Name             string `json:"name" validate:"required"`
+}
+
+type UpsertPOSPaymentMethodResponse struct {
+	Message string `json:"message"`
+}
+
+type DeletePOSPaymentMethodRequest struct {
+	Id string `json:"id" validate:"required"`
+}
+
+type DeletePOSPaymentMethodResponse struct {
+	Message string `json:"message"`
+}
+
+type GetPOSPaymentMethodRequest struct {
+	Keyword string `json:"keyword"`
+}
+
+type GetPOSPaymentMethodResponse struct {
+	POSPaymentMethods []POSPaymentMethod `json:"pos_payment_methods"`
 }

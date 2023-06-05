@@ -91,3 +91,21 @@ SELECT
     *
 FROM sales.pos_customer_settings
 WHERE branch_id = $1;
+
+
+-- name: UpsertPOSPaymentMethod :exec
+INSERT INTO sales.pos_payment_methods(id, company_id, chart_of_account_id, name)
+VALUES ($1, $2, $3, $4)
+ON CONFLICT (id) DO UPDATE
+SET name = EXCLUDED.name,
+  chart_of_account_id = EXCLUDED.chart_of_account_id,
+  company_id = EXCLUDED.company_id,
+  updated_at = NOW();
+
+-- name: DeletePOSPaymentMethod :exec
+UPDATE sales.pos_payment_methods SET is_deleted = TRUE WHERE id = $1;
+
+-- name: GetPOSPaymentMethod :many
+SELECT  id, company_id, chart_of_account_id, name
+FROM sales.pos_payment_methods 
+WHERE is_deleted = FALSE AND name LIKE $1;
