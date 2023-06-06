@@ -63,3 +63,14 @@ CREATE TABLE "sales"."pos_customer_settings" (
   "updated_at" timestamptz DEFAULT (now()),
   PRIMARY KEY ("branch_id", "contact_book_id")
 );
+
+CREATE TABLE "sales"."pos_payment_methods" (
+  "id" text NOT NULL,
+  "company_id" text NOT NULL,
+  "chart_of_account_id" text NOT NULL,
+  "name" text NOT NULL,
+  "is_deleted" bool NOT NULL DEFAULT false,
+  "created_at" timestamptz DEFAULT (now()),
+  "updated_at" timestamptz DEFAULT (now()),
+  PRIMARY KEY ("id")
+);

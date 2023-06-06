@@ -6,12 +6,16 @@ const (
 	GetPOSError      = 800103
 	GetPOSItemsError = 800104
 
-	GetPOSUserSettingError    = 800105
-	UpdatePOSUserSettingError = 800106
+	GetPOSUserSettingError    = 800201
+	UpdatePOSUserSettingError = 800202
 
-	UpdatePOSCOASettingError = 800107
-	GetPOSCOASettingError    = 800108
+	UpdatePOSCOASettingError = 800301
+	GetPOSCOASettingError    = 800302
 
-	UpdatePOSCustomerSettingError = 800109
-	GetPOSCustomerSettingError    = 800110
+	UpdatePOSCustomerSettingError = 800401
+	GetPOSCustomerSettingError    = 800402
+
+	UpsertPOSPaymentMethodError   = 800501
+	DeletePOSPaymentMethodError   = 800502
+	GetPOSPaymentMethodError      = 800503
 )
