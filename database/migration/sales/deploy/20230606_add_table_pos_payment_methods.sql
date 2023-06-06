@@ -2,7 +2,7 @@
 
 BEGIN;
 
-CREATE TABLE "pos_payment_methods" (
+CREATE TABLE "sales"."pos_payment_methods" (
   "id" text NOT NULL,
   "company_id" text NOT NULL,
   "chart_of_account_id" text NOT NULL,
