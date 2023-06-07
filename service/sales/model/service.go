@@ -39,8 +39,6 @@ type POS struct {
 	CurrencyCode         string `json:"currency_code" validate:"required"`
 	POSPaymentMethodId   string `json:"pos_payment_method_id" validate:"required"`
 	POSPaymentMethodName string `json:"pos_payment_method_name" validate:"required"`
-	ChartOfAccountId   string `json:"chart_of_account_id" validate:"required"`
-	ChartOfAccountName string `json:"chart_of_account_name" validate:"required"`
 	TotalItems           string `json:"total_items" validate:"required"`
 	Total                string `json:"total" validate:"required"`
 }

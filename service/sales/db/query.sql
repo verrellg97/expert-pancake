@@ -44,7 +44,6 @@ SELECT
   a.currency_code as currency_code,
   a.pos_payment_method_id as pos_payment_method_id,
   b.name as pos_payment_method_name,
-  b.chart_of_account_id as chart_of_account_id,
   a.total_items as total_items,
   a.total as total
 FROM sales.point_of_sales a 
