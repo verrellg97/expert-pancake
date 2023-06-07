@@ -225,7 +225,8 @@ type DeletePOSPaymentMethodResponse struct {
 }
 
 type GetPOSPaymentMethodRequest struct {
-	Keyword string `json:"keyword"`
+	CompanyId string `json:"company_id" validate:"required"`
+	Keyword   string `json:"keyword"`
 }
 
 type GetPOSPaymentMethodResponse struct {

@@ -108,4 +108,4 @@ UPDATE sales.pos_payment_methods SET is_deleted = TRUE WHERE id = $1;
 -- name: GetPOSPaymentMethod :many
 SELECT  id, company_id, chart_of_account_id, name
 FROM sales.pos_payment_methods 
-WHERE is_deleted = FALSE AND name LIKE $1;
+WHERE is_deleted = FALSE AND company_id = $1 AND name LIKE $2;
