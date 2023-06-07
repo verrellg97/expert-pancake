@@ -2,9 +2,9 @@ package db
 
 import (
 	"context"
-	"strconv"
 	"fmt"
 	"math/rand"
+	"strconv"
 
 	db "github.com/expert-pancake/service/sales/db/sqlc"
 	"github.com/expert-pancake/service/sales/model"
@@ -23,7 +23,7 @@ type UpsertPOSTrxParams struct {
 	SecondaryCompanyId string
 	KonekinId          string
 	CurrencyCode       string
-	ChartOfAccountId   string
+	POSPaymentMethodId string
 	TotalItems         string
 	Total              string
 	POSItems           []model.POSItemRequest
@@ -67,7 +67,7 @@ func (trx *Trx) UpsertPOSTrx(ctx context.Context, arg UpsertPOSTrxParams) (Upser
 			SecondaryCompanyID: arg.SecondaryCompanyId,
 			KonekinID:          arg.KonekinId,
 			CurrencyCode:       arg.CurrencyCode,
-			ChartOfAccountID:   arg.ChartOfAccountId,
+			PosPaymentMethodID: arg.POSPaymentMethodId,
 			TotalItems:         totalItems,
 			Total:              total,
 		})

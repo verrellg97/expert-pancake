@@ -25,22 +25,24 @@ type SalesService interface {
 }
 
 type POS struct {
-	Id                 string `json:"id" validate:"required"`
-	CompanyId          string `json:"company_id" validate:"required"`
-	BranchId           string `json:"branch_id" validate:"required"`
-	WarehouseId        string `json:"warehouse_id" validate:"required"`
-	WarehouseName      string `json:"warehouse_name" validate:"required"`
-	FormNumber         string `json:"form_number" validate:"required"`
-	TransactionDate    string `json:"transaction_date" validate:"required"`
-	ContactBookId      string `json:"contact_book_id" validate:"required"`
-	ContactBookName    string `json:"contact_book_name" validate:"required"`
-	SecondaryCompanyId string `json:"secondary_company_id" validate:"required"`
-	KonekinId          string `json:"konekin_id" validate:"required"`
-	CurrencyCode       string `json:"currency_code" validate:"required"`
+	Id                   string `json:"id" validate:"required"`
+	CompanyId            string `json:"company_id" validate:"required"`
+	BranchId             string `json:"branch_id" validate:"required"`
+	WarehouseId          string `json:"warehouse_id" validate:"required"`
+	WarehouseName        string `json:"warehouse_name" validate:"required"`
+	FormNumber           string `json:"form_number" validate:"required"`
+	TransactionDate      string `json:"transaction_date" validate:"required"`
+	ContactBookId        string `json:"contact_book_id" validate:"required"`
+	ContactBookName      string `json:"contact_book_name" validate:"required"`
+	SecondaryCompanyId   string `json:"secondary_company_id" validate:"required"`
+	KonekinId            string `json:"konekin_id" validate:"required"`
+	CurrencyCode         string `json:"currency_code" validate:"required"`
+	POSPaymentMethodId   string `json:"pos_payment_method_id" validate:"required"`
+	POSPaymentMethodName string `json:"pos_payment_method_name" validate:"required"`
 	ChartOfAccountId   string `json:"chart_of_account_id" validate:"required"`
 	ChartOfAccountName string `json:"chart_of_account_name" validate:"required"`
-	TotalItems         string `json:"total_items" validate:"required"`
-	Total              string `json:"total" validate:"required"`
+	TotalItems           string `json:"total_items" validate:"required"`
+	Total                string `json:"total" validate:"required"`
 }
 
 type POSItem struct {
@@ -85,7 +87,7 @@ type UpsertPOSRequest struct {
 	SecondaryCompanyId string           `json:"secondary_company_id" validate:"required"`
 	KonekinId          string           `json:"konekin_id" validate:"required"`
 	CurrencyCode       string           `json:"currency_code" validate:"required"`
-	ChartOfAccountId   string           `json:"chart_of_account_id" validate:"required"`
+	POSPaymentMethodId string           `json:"pos_payment_method_id" validate:"required"`
 	TotalItems         string           `json:"total_items" validate:"required"`
 	Total              string           `json:"total" validate:"required"`
 	POSItems           []POSItemRequest `json:"pos_items" validate:"required"`
@@ -225,7 +227,8 @@ type DeletePOSPaymentMethodResponse struct {
 }
 
 type GetPOSPaymentMethodRequest struct {
-	Keyword string `json:"keyword"`
+	CompanyId string `json:"company_id" validate:"required"`
+	Keyword   string `json:"keyword"`
 }
 
 type GetPOSPaymentMethodResponse struct {

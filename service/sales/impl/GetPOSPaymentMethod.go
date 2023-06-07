@@ -9,6 +9,7 @@ import (
 	"github.com/expert-pancake/service/sales/impl/client"
 	"github.com/expert-pancake/service/sales/model"
 	"github.com/expert-pancake/service/sales/util"
+	db "github.com/expert-pancake/service/sales/db/sqlc"
 )
 
 func (a salesService) GetPOSPaymentMethod(w http.ResponseWriter, r *http.Request) error {
@@ -22,7 +23,10 @@ func (a salesService) GetPOSPaymentMethod(w http.ResponseWriter, r *http.Request
 		return errors.NewClientError().WithDataMap(errMapRequest)
 	}
 
-	result, err := a.dbTrx.GetPOSPaymentMethod(context.Background(), util.WildCardString(req.Keyword))
+	result, err := a.dbTrx.GetPOSPaymentMethod(context.Background(), db.GetPOSPaymentMethodParams{
+		CompanyID: req.CompanyId,
+		Name:   util.WildCardString(req.Keyword),
+	})
 	if err != nil {
 		return errors.NewServerError(model.GetPOSPaymentMethodError, err.Error())
 	}

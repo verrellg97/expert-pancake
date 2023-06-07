@@ -11,7 +11,7 @@ CREATE TABLE "sales"."point_of_sales" (
   "secondary_company_id" text NOT NULL DEFAULT '',
   "konekin_id" text NOT NULL DEFAULT '',
   "currency_code" text NOT NULL,
-  "chart_of_account_id" text NOT NULL,
+  "pos_payment_method_id" text NOT NULL,
   "total_items" bigint NOT NULL DEFAULT 0,
   "total" bigint NOT NULL DEFAULT 0,
   "is_deleted" bool NOT NULL DEFAULT false,
