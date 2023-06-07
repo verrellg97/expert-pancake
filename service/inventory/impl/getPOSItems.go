@@ -2,7 +2,6 @@ package impl
 
 import (
 	"context"
-	"log"
 	"net/http"
 	"strconv"
 
@@ -24,10 +23,10 @@ func (a inventoryService) GetPOSItems(w http.ResponseWriter, r *http.Request) er
 	}
 
 	result, err := a.dbTrx.GetPOSItems(context.Background(), db.GetPOSItemsParams{
-		CompanyID: req.CompanyId,
-		Name:      util.WildCardString(req.Keyword),
+		CompanyID:   req.CompanyId,
+		WarehouseID: req.WarehouseId,
+		Name:        util.WildCardString(req.Keyword),
 	})
-	log.Println(err)
 	if err != nil {
 		return errors.NewServerError(model.GetPOSItemsError, err.Error())
 	}

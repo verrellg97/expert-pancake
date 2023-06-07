@@ -909,7 +909,8 @@ AND e.name LIKE $3;
 SELECT a.id AS item_id, a.name AS item_name,
 b.id AS variant_id, b.name AS variant_name,
 c.id AS item_unit_id, d.name AS unit_name,
-c.value AS item_unit_value, COALESCE(f.price, 0)::bigint AS price
+c.value AS item_unit_value, COALESCE(f.price, 0)::bigint AS price,
+SUM(g.amount) AS stock
 FROM inventory.items a
 JOIN inventory.item_variants b ON a.id = b.item_id
 JOIN inventory.item_units c ON b.item_id = c.item_id AND c.value = 1
@@ -918,8 +919,10 @@ JOIN inventory.pricelists e ON a.company_id = e.company_id
 AND e.is_default = true
 LEFT JOIN inventory.pricelist_items f ON b.id = f.variant_id
 AND c.id = f.item_unit_id AND e.id = f.pricelist_id
+JOIN inventory.stock_movements g ON b.id = g.variant_id
+AND g.warehouse_id = $2
 WHERE a.company_id = $1
-AND a.name LIKE $2
+AND a.name LIKE $3
 AND CASE WHEN b.is_default THEN
 NOT EXISTS (
     SELECT
@@ -931,6 +934,8 @@ NOT EXISTS (
         AND a1.is_default is false
 )
 ELSE TRUE END
+GROUP BY a.id, b.id, c.id, d.id, f.price
+HAVING SUM(g.amount) > 0
 ORDER BY a.name, b.name, c.value;
 
 -- name: GetVariantWarehouseRacksByBranch :many
