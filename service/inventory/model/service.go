@@ -900,8 +900,9 @@ type POSItem struct {
 }
 
 type GetPOSItemsRequest struct {
-	CompanyId string `json:"company_id" validate:"required"`
-	Keyword   string `json:"keyword"`
+	CompanyId   string `json:"company_id" validate:"required"`
+	WarehouseId string `json:"warehouse_id" validate:"required"`
+	Keyword     string `json:"keyword"`
 }
 
 type GetPOSItemsResponse struct {
