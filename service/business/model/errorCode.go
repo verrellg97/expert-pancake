@@ -1,12 +1,16 @@
 package model
 
 const (
-	CreateNewCompanyError       = 400001
-	CreateNewCompanyBranchError = 400002
-	GetUserCompaniesError       = 400003
-	GetUserCompanyBranchesError = 400004
-	UpdateCompanyError          = 400005
-	UpdateCompanyBranchError    = 400006
-	DeleteCompanyError          = 400007
-	DeleteCompanyBranchError    = 400008
+	CreateNewCompanyError = 400100
+	UpdateCompanyError    = 400101
+	DeleteCompanyError    = 400102
+	GetUserCompaniesError = 400104
+
+	CompanyUniqueNameError        = 400105
+	CompanyUniqueNameErrorMessage = "Name is already taken."
+
+	CreateNewCompanyBranchError = 400200
+	UpdateCompanyBranchError    = 400201
+	DeleteCompanyBranchError    = 400202
+	GetUserCompanyBranchesError = 400204
 )

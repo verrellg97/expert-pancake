@@ -62,3 +62,7 @@ WHERE user_id = $1 AND company_id = $2 AND is_deleted = false;
 SELECT id, user_id, company_id, name, address, phone_number, is_central 
 FROM business.company_branches
 WHERE user_id = $1 AND company_id = $2 AND is_deleted = false AND name LIKE $3;
+
+-- name: GetCompanyByName :one
+SELECT id FROM business.companies
+WHERE name = $1;

@@ -22,6 +22,14 @@ func (a businessService) RegisterCompany(w http.ResponseWriter, r *http.Request)
 		return errors.NewClientError().WithDataMap(errMapRequest)
 	}
 
+	_, err := a.dbTrx.GetCompanyByName(context.Background(), req.Name)
+	if err == nil {
+		var errRes = errors.NewClientError()
+		errRes.Code = model.CompanyUniqueNameError
+		errRes.Message = model.CompanyUniqueNameErrorMessage
+		return errRes
+	}
+
 	arg := db.InsertCompanyParams{
 		ID:                uuid.NewV4().String(),
 		UserID:            req.AccountId,

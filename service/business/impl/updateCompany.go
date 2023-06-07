@@ -21,6 +21,14 @@ func (a businessService) UpdateCompany(w http.ResponseWriter, r *http.Request) e
 		return errors.NewClientError().WithDataMap(errMapRequest)
 	}
 
+	resultId, err := a.dbTrx.GetCompanyByName(context.Background(), req.Name)
+	if err == nil && resultId != req.CompanyId {
+		var errRes = errors.NewClientError()
+		errRes.Code = model.CompanyUniqueNameError
+		errRes.Message = model.CompanyUniqueNameErrorMessage
+		return errRes
+	}
+
 	result, err := a.dbTrx.UpdateCompany(context.Background(), db.UpdateCompanyParams{
 		ID:                req.CompanyId,
 		Name:              req.Name,
