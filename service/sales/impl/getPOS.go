@@ -53,15 +53,6 @@ func (a salesService) GetPOS(w http.ResponseWriter, r *http.Request) error {
 			return errors.NewServerError(model.GetPOSError, err.Error())
 		}
 
-		argCOA := client.GetCompanyChartOfAccountsRequest{
-			CompanyId: d.CompanyID,
-			Id:        d.ChartOfAccountID,
-		}
-		coa, err := client.GetCompanyChartOfAccounts(argCOA)
-		if err != nil {
-			return errors.NewServerError(model.GetPOSError, err.Error())
-		}
-
 		var pos = model.POS{
 			Id:                   d.ID,
 			CompanyId:            d.CompanyID,
@@ -77,8 +68,6 @@ func (a salesService) GetPOS(w http.ResponseWriter, r *http.Request) error {
 			CurrencyCode:         d.CurrencyCode,
 			POSPaymentMethodId:   d.PosPaymentMethodID,
 			POSPaymentMethodName: d.PosPaymentMethodName,
-			ChartOfAccountId:     d.ChartOfAccountID,
-			ChartOfAccountName:   coa.Result[0].AccountName,
 			TotalItems:           strconv.FormatInt(d.TotalItems, 10),
 			Total:                strconv.FormatInt(d.Total, 10),
 		}
