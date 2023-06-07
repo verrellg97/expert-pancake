@@ -32,7 +32,7 @@ func (a salesService) UpsertPOS(w http.ResponseWriter, r *http.Request) error {
 		SecondaryCompanyId: req.SecondaryCompanyId,
 		KonekinId:          req.KonekinId,
 		CurrencyCode:       req.CurrencyCode,
-		ChartOfAccountId:   req.ChartOfAccountId,
+		POSPaymentMethodId: req.POSPaymentMethodId,
 		TotalItems:         req.TotalItems,
 		Total:              req.Total,
 		POSItems:           req.POSItems,

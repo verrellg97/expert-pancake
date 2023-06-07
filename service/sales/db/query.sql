@@ -1,7 +1,7 @@
 -- name: UpsertPOS :one
 INSERT INTO sales.point_of_sales(
   id, company_id, branch_id, warehouse_id, form_number, transaction_date,
-  contact_book_id, secondary_company_id, konekin_id, currency_code, chart_of_account_id, total_items, total, updated_at
+  contact_book_id, secondary_company_id, konekin_id, currency_code, pos_payment_method_id, total_items, total, updated_at
 ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14) ON CONFLICT (id) DO
 UPDATE
 SET company_id = EXCLUDED.company_id,
@@ -13,7 +13,7 @@ SET company_id = EXCLUDED.company_id,
     secondary_company_id = EXCLUDED.secondary_company_id,
     konekin_id = EXCLUDED.konekin_id,
     currency_code = EXCLUDED.currency_code,
-    chart_of_account_id = EXCLUDED.chart_of_account_id,
+    pos_payment_method_id = EXCLUDED.pos_payment_method_id,
     total_items = EXCLUDED.total_items,
     total = EXCLUDED.total,
     updated_at = NOW()
@@ -33,11 +33,26 @@ DELETE FROM sales.point_of_sale_items WHERE point_of_sale_id = $1;
 UPDATE sales.point_of_sales SET is_deleted = TRUE WHERE id = $1;
 
 -- name: GetPOS :many
-SELECT a.* FROM sales.point_of_sales a 
-WHERE company_id LIKE $1
-    AND branch_id LIKE $2
-    AND transaction_date BETWEEN @start_date::date AND @end_date::date 
-    AND is_deleted = FALSE;
+SELECT 
+  a.id as id,
+  a.company_id as company_id, a.branch_id as branch_id, a.warehouse_id as warehouse_id,
+  a.form_number as form_number,
+  a.transaction_date as transaction_date,
+  a.contact_book_id as contact_book_id,
+  a.secondary_company_id as secondary_company_id,
+  a.konekin_id as konekin_id,
+  a.currency_code as currency_code,
+  a.pos_payment_method_id as pos_payment_method_id,
+  b.name as pos_payment_method_name,
+  b.chart_of_account_id as chart_of_account_id,
+  a.total_items as total_items,
+  a.total as total
+FROM sales.point_of_sales a 
+JOIN sales.pos_payment_methods b ON b.id = a.pos_payment_method_id
+WHERE a.company_id LIKE $1
+    AND a.branch_id LIKE $2
+    AND a.transaction_date BETWEEN @start_date::date AND @end_date::date 
+    AND a.is_deleted = FALSE;
 
 -- name: GetPOSItemsByPOSId :many
 SELECT a.* FROM sales.point_of_sale_items a WHERE a.point_of_sale_id = $1 ORDER BY a.id;

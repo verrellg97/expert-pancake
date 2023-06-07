@@ -14,7 +14,7 @@ type Querier interface {
 	DeletePOSCustomerSetting(ctx context.Context, branchID string) error
 	DeletePOSItemsPOS(ctx context.Context, pointOfSaleID string) error
 	DeletePOSPaymentMethod(ctx context.Context, id string) error
-	GetPOS(ctx context.Context, arg GetPOSParams) ([]SalesPointOfSale, error)
+	GetPOS(ctx context.Context, arg GetPOSParams) ([]GetPOSRow, error)
 	GetPOSCOASetting(ctx context.Context, branchID string) ([]SalesPosChartOfAccountSetting, error)
 	GetPOSCustomerSetting(ctx context.Context, branchID string) ([]SalesPosCustomerSetting, error)
 	GetPOSItemsByPOSId(ctx context.Context, pointOfSaleID string) ([]SalesPointOfSaleItem, error)
