@@ -14,8 +14,9 @@ RETURNING *;
 SELECT id, branch_id, code, name, address, type
 FROM warehouse.warehouses
 WHERE CASE WHEN @is_filter_id::bool THEN id = $1
+ELSE CASE WHEN @is_filter_multi_branch::bool THEN branch_id = ANY(@branch_ids::text [])
 ELSE branch_id = $2 AND name LIKE $3
-AND is_deleted = false END;
+AND is_deleted = false END END;
 
 -- name: UpsertWarehouseRack :one
 INSERT INTO warehouse.warehouse_racks(id, warehouse_id, name)

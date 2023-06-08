@@ -22,17 +22,25 @@ func (a warehouseService) GetWarehouses(w http.ResponseWriter, r *http.Request) 
 	}
 
 	var isFilterId = false
+	var isFilterMultiBranch = false
+
 	var id = ""
 	if req.Id != nil && *req.Id != "" {
 		id = *req.Id
 		isFilterId = true
 	}
 
+	if len(req.BranchIds) > 0 {
+		isFilterMultiBranch = true
+	}
+
 	result, err := a.dbTrx.GetWarehouses(context.Background(), db.GetWarehousesParams{
-		IsFilterID: isFilterId,
-		ID:         id,
-		BranchID:   req.BranchId,
-		Name:       util.WildCardString(req.Keyword),
+		IsFilterID:          isFilterId,
+		IsFilterMultiBranch: isFilterMultiBranch,
+		ID:                  id,
+		BranchIds:           req.BranchIds,
+		BranchID:            req.BranchId,
+		Name:                util.WildCardString(req.Keyword),
 	})
 	if err != nil {
 		return errors.NewServerError(model.GetWarehousesError, err.Error())
