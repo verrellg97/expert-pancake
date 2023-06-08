@@ -88,3 +88,9 @@ UPDATE
 SET is_auto_approve_order = EXCLUDED.is_auto_approve_order,
     updated_at = NOW()
 RETURNING *;
+
+-- name: GetCheckPurchaseOrders :one
+SELECT 
+    COUNT(id)::bigint AS total_count
+FROM purchasing.purchase_orders
+WHERE company_id = $1;

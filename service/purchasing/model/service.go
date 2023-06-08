@@ -10,6 +10,8 @@ type PurchasingService interface {
 	GetPurchaseOrderItems(w http.ResponseWriter, r *http.Request) error
 	UpdatePurchaseSetting(w http.ResponseWriter, r *http.Request) error
 	GetPurchaseSetting(w http.ResponseWriter, r *http.Request) error
+
+	GetCheckPurchaseOrders(w http.ResponseWriter, r *http.Request) error
 }
 
 type PurchaseOrder struct {
@@ -142,4 +144,12 @@ type GetPurchaseSettingRequest struct {
 
 type GetPurchaseSettingResponse struct {
 	PurchaseSetting PurchaseSetting `json:"purchase_setting"`
+}
+
+type GetCheckPurchaseOrdersRequest struct {
+	CompanyId string `json:"company_id" validate:"required"`
+}
+
+type GetCheckPurchaseOrdersResponse struct {
+	Status bool `json:"status" validate:"required"`
 }

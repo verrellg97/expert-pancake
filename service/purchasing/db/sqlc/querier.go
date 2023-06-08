@@ -10,6 +10,7 @@ import (
 
 type Querier interface {
 	DeletePurchaseOrderItems(ctx context.Context, purchaseOrderID string) error
+	GetCheckPurchaseOrders(ctx context.Context, companyID string) (int64, error)
 	GetPurchaseOrderItems(ctx context.Context, purchaseOrderID string) ([]PurchasingPurchaseOrderItem, error)
 	GetPurchaseOrders(ctx context.Context, arg GetPurchaseOrdersParams) ([]PurchasingPurchaseOrder, error)
 	GetPurchaseSetting(ctx context.Context, companyID string) (PurchasingPurchaseSetting, error)

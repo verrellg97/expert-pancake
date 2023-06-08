@@ -20,6 +20,20 @@ func (q *Queries) DeletePurchaseOrderItems(ctx context.Context, purchaseOrderID 
 	return err
 }
 
+const getCheckPurchaseOrders = `-- name: GetCheckPurchaseOrders :one
+SELECT 
+    COUNT(id)::bigint AS total_count
+FROM purchasing.purchase_orders
+WHERE company_id = $1
+`
+
+func (q *Queries) GetCheckPurchaseOrders(ctx context.Context, companyID string) (int64, error) {
+	row := q.db.QueryRowContext(ctx, getCheckPurchaseOrders, companyID)
+	var total_count int64
+	err := row.Scan(&total_count)
+	return total_count, err
+}
+
 const getPurchaseOrderItems = `-- name: GetPurchaseOrderItems :many
 SELECT 
     id, sales_order_item_id, purchase_order_id, primary_item_variant_id, secondary_item_variant_id, primary_item_unit_id, secondary_item_unit_id, primary_item_unit_value, secondary_item_unit_value, amount, price, is_deleted, created_at, updated_at
