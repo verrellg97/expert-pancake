@@ -114,6 +114,19 @@ func (q *Queries) GetBrands(ctx context.Context, arg GetBrandsParams) ([]GetBran
 	return items, nil
 }
 
+const getCheckStockHistory = `-- name: GetCheckStockHistory :one
+SELECT COUNT(a.id)::bigint AS total_count
+FROM inventory.update_stocks a
+WHERE warehouse_id = ANY($1::text [])
+`
+
+func (q *Queries) GetCheckStockHistory(ctx context.Context, warehouseIds []string) (int64, error) {
+	row := q.db.QueryRowContext(ctx, getCheckStockHistory, pq.Array(warehouseIds))
+	var total_count int64
+	err := row.Scan(&total_count)
+	return total_count, err
+}
+
 const getGroupById = `-- name: GetGroupById :one
 SELECT id,
     company_id,

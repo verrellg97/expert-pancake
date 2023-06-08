@@ -1,9 +1,10 @@
 package client
 
 type GetWarehousesRequest struct {
-	Id       string `json:"id"`
-	BranchId string `json:"branch_id" validate:"required"`
-	Keyword  string `json:"keyword"`
+	Id        string   `json:"id"`
+	BranchIds []string `json:"branch_ids"`
+	BranchId  string   `json:"branch_id" validate:"required"`
+	Keyword   string   `json:"keyword"`
 }
 
 type GetWarehouseRacksRequest struct {

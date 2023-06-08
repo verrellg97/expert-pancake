@@ -15,6 +15,7 @@ type Querier interface {
 	DeleteItemUnit(ctx context.Context, id string) error
 	GetBrandById(ctx context.Context, id string) (GetBrandByIdRow, error)
 	GetBrands(ctx context.Context, arg GetBrandsParams) ([]GetBrandsRow, error)
+	GetCheckStockHistory(ctx context.Context, warehouseIds []string) (int64, error)
 	GetGroupById(ctx context.Context, id string) (GetGroupByIdRow, error)
 	GetGroups(ctx context.Context, arg GetGroupsParams) ([]GetGroupsRow, error)
 	GetInternalStockTransferItems(ctx context.Context, internalStockTransferID string) ([]GetInternalStockTransferItemsRow, error)
