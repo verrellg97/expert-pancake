@@ -45,6 +45,82 @@ func (q *Queries) DeleteCompanyBranchesByCompanyId(ctx context.Context, companyI
 	return err
 }
 
+const getCompanyBranchesByCompany = `-- name: GetCompanyBranchesByCompany :many
+SELECT id, user_id, company_id, name, address, phone_number, is_central 
+FROM business.company_branches
+WHERE company_id = $1
+`
+
+type GetCompanyBranchesByCompanyRow struct {
+	ID          string `db:"id"`
+	UserID      string `db:"user_id"`
+	CompanyID   string `db:"company_id"`
+	Name        string `db:"name"`
+	Address     string `db:"address"`
+	PhoneNumber string `db:"phone_number"`
+	IsCentral   bool   `db:"is_central"`
+}
+
+func (q *Queries) GetCompanyBranchesByCompany(ctx context.Context, companyID string) ([]GetCompanyBranchesByCompanyRow, error) {
+	rows, err := q.db.QueryContext(ctx, getCompanyBranchesByCompany, companyID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetCompanyBranchesByCompanyRow
+	for rows.Next() {
+		var i GetCompanyBranchesByCompanyRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.UserID,
+			&i.CompanyID,
+			&i.Name,
+			&i.Address,
+			&i.PhoneNumber,
+			&i.IsCentral,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getCompanyById = `-- name: GetCompanyById :one
+SELECT id, user_id, name, initial_name, type, responsible_person
+FROM business.companies
+WHERE id = $1
+`
+
+type GetCompanyByIdRow struct {
+	ID                string `db:"id"`
+	UserID            string `db:"user_id"`
+	Name              string `db:"name"`
+	InitialName       string `db:"initial_name"`
+	Type              string `db:"type"`
+	ResponsiblePerson string `db:"responsible_person"`
+}
+
+func (q *Queries) GetCompanyById(ctx context.Context, id string) (GetCompanyByIdRow, error) {
+	row := q.db.QueryRowContext(ctx, getCompanyById, id)
+	var i GetCompanyByIdRow
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.Name,
+		&i.InitialName,
+		&i.Type,
+		&i.ResponsiblePerson,
+	)
+	return i, err
+}
+
 const getCompanyByName = `-- name: GetCompanyByName :one
 SELECT id FROM business.companies
 WHERE name = $1

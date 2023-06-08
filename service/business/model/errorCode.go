@@ -9,6 +9,9 @@ const (
 	CompanyUniqueNameError        = 400105
 	CompanyUniqueNameErrorMessage = "Name is already taken."
 
+	CompanyUpdateTypeError        = 400106
+	CompanyUpdateTypeErrorMessage = "Type can't be changed."
+
 	CreateNewCompanyBranchError = 400200
 	UpdateCompanyBranchError    = 400201
 	DeleteCompanyBranchError    = 400202
