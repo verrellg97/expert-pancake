@@ -11,3 +11,9 @@ type UpsertUnitCategoryResponse struct {
 		UnitCategory
 	} `json:"result"`
 }
+
+type GetCheckStockHistoryResponse struct {
+	Result struct {
+		Status bool `json:"status" validate:"required"`
+	} `json:"result"`
+}

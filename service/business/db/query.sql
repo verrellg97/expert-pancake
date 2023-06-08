@@ -66,3 +66,13 @@ WHERE user_id = $1 AND company_id = $2 AND is_deleted = false AND name LIKE $3;
 -- name: GetCompanyByName :one
 SELECT id FROM business.companies
 WHERE name = $1;
+
+-- name: GetCompanyById :one
+SELECT id, user_id, name, initial_name, type, responsible_person
+FROM business.companies
+WHERE id = $1;
+
+-- name: GetCompanyBranchesByCompany :many
+SELECT id, user_id, company_id, name, address, phone_number, is_central 
+FROM business.company_branches
+WHERE company_id = $1;

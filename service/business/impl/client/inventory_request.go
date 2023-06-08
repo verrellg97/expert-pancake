@@ -20,3 +20,7 @@ type UpsertPricelistRequest struct {
 	EndDate     string `json:"end_date"`
 	IsDefault   bool   `json:"is_default"`
 }
+
+type GetCheckStockHistoryRequest struct {
+	BranchIds []string `json:"branch_ids" validate:"required"`
+}
