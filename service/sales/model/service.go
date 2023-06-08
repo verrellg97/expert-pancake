@@ -22,6 +22,8 @@ type SalesService interface {
 	UpsertPOSPaymentMethod(w http.ResponseWriter, r *http.Request) error
 	DeletePOSPaymentMethod(w http.ResponseWriter, r *http.Request) error
 	GetPOSPaymentMethod(w http.ResponseWriter, r *http.Request) error
+
+	GetCheckPOS(w http.ResponseWriter, r *http.Request) error
 }
 
 type POS struct {
@@ -231,4 +233,12 @@ type GetPOSPaymentMethodRequest struct {
 
 type GetPOSPaymentMethodResponse struct {
 	POSPaymentMethods []POSPaymentMethod `json:"pos_payment_methods"`
+}
+
+type GetCheckPOSRequest struct {
+	CompanyId string `json:"company_id" validate:"required"`
+}
+
+type GetCheckPOSResponse struct {
+	Status bool `json:"status" validate:"required"`
 }

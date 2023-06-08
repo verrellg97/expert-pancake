@@ -123,3 +123,9 @@ UPDATE sales.pos_payment_methods SET is_deleted = TRUE WHERE id = $1;
 SELECT  id, company_id, chart_of_account_id, name
 FROM sales.pos_payment_methods 
 WHERE is_deleted = FALSE AND company_id = $1 AND name LIKE $2;
+
+-- name: GetCheckPOS :one
+SELECT 
+    COUNT(id)::bigint AS total_count
+FROM sales.point_of_sales
+WHERE company_id = $1;

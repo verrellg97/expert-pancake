@@ -56,6 +56,20 @@ func (q *Queries) DeletePOSPaymentMethod(ctx context.Context, id string) error {
 	return err
 }
 
+const getCheckPOS = `-- name: GetCheckPOS :one
+SELECT 
+    COUNT(id)::bigint AS total_count
+FROM sales.point_of_sales
+WHERE company_id = $1
+`
+
+func (q *Queries) GetCheckPOS(ctx context.Context, companyID string) (int64, error) {
+	row := q.db.QueryRowContext(ctx, getCheckPOS, companyID)
+	var total_count int64
+	err := row.Scan(&total_count)
+	return total_count, err
+}
+
 const getPOS = `-- name: GetPOS :many
 SELECT 
   a.id as id,

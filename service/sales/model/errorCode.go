@@ -15,7 +15,9 @@ const (
 	UpdatePOSCustomerSettingError = 800401
 	GetPOSCustomerSettingError    = 800402
 
-	UpsertPOSPaymentMethodError   = 800501
-	DeletePOSPaymentMethodError   = 800502
-	GetPOSPaymentMethodError      = 800503
+	UpsertPOSPaymentMethodError = 800501
+	DeletePOSPaymentMethodError = 800502
+	GetPOSPaymentMethodError    = 800503
+
+	GetCheckPOSError = 800601
 )
