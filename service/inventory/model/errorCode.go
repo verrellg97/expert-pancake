@@ -72,4 +72,6 @@ const (
 
 	GetPOSItemsError                      = 700050
 	GetVariantWarehouseRacksByBranchError = 700051
+
+	GetCheckStockHistoryError = 700052
 )

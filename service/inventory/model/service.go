@@ -76,6 +76,8 @@ type InventoryService interface {
 
 	GetPOSItems(w http.ResponseWriter, r *http.Request) error
 	GetVariantWarehouseRacksByBranch(w http.ResponseWriter, r *http.Request) error
+
+	GetCheckStockHistory(w http.ResponseWriter, r *http.Request) error
 }
 
 type Brand struct {
@@ -923,4 +925,12 @@ type GetVariantWarehouseRacksByBranchRequest struct {
 
 type GetVariantWarehouseRacksByBranchResponse struct {
 	WarehouseAndRacks []WarehouseAndRack `json:"warehouse_racks" validate:"required"`
+}
+
+type GetCheckStockHistoryRequest struct {
+	BranchIds []string `json:"branch_ids" validate:"required"`
+}
+
+type GetCheckStockHistoryResponse struct {
+	Status bool `json:"status" validate:"required"`
 }

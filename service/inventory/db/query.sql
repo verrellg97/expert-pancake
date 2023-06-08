@@ -943,3 +943,8 @@ SELECT DISTINCT a.warehouse_id, a.warehouse_rack_id
 FROM inventory.stock_movements a
 WHERE a.variant_id = $1
 AND a.warehouse_id = ANY(@warehouse_ids::text []);
+
+-- name: GetCheckStockHistory :one
+SELECT COUNT(a.id)::bigint AS total_count
+FROM inventory.update_stocks a
+WHERE warehouse_id = ANY(@warehouse_ids::text []);
