@@ -59,6 +59,7 @@ func (a salesService) GetSalesOrders(w http.ResponseWriter, r *http.Request) err
 			SecondaryCompanyId: d.SecondaryCompanyID,
 			CustomerName:       customerName,
 			KonekinId:          d.KonekinID,
+			SecondaryBranchId:  d.PurchaseOrderBranchID,
 			CurrencyCode:       d.CurrencyCode,
 			TotalItems:         strconv.FormatInt(d.TotalItems, 10),
 			Total:              strconv.FormatInt(d.Total, 10),
