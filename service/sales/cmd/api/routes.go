@@ -30,6 +30,8 @@ const (
 	GetPOSPaymentMethodPath    = "/sales/pos/payments"
 
 	GetCheckPOSPath = "/sales/pos/check"
+
+	UpsertSalesOrderPath = "/sales/order/upsert"
 )
 
 func (c *component) Routes(salesService model.SalesService) http.Handler {
@@ -66,6 +68,8 @@ func (c *component) Routes(salesService model.SalesService) http.Handler {
 	mux.Method("POST", GetPOSPaymentMethodPath, httpHandler.New(salesService.GetPOSPaymentMethod))
 
 	mux.Method("POST", GetCheckPOSPath, httpHandler.New(salesService.GetCheckPOS))
+
+	mux.Method("POST", UpsertSalesOrderPath, httpHandler.New(salesService.UpsertSalesOrder))
 
 	return mux
 }

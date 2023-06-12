@@ -120,7 +120,7 @@ SET name = EXCLUDED.name,
 UPDATE sales.pos_payment_methods SET is_deleted = TRUE WHERE id = $1;
 
 -- name: GetPOSPaymentMethod :many
-SELECT  id, company_id, chart_of_account_id, name
+SELECT id, company_id, chart_of_account_id, name
 FROM sales.pos_payment_methods 
 WHERE is_deleted = FALSE AND company_id = $1 AND name LIKE $2;
 
@@ -129,3 +129,24 @@ SELECT
     COUNT(id)::bigint AS total_count
 FROM sales.point_of_sales
 WHERE company_id = $1;
+
+-- name: UpsertSalesOrder :one
+INSERT INTO sales.sales_orders(
+    id, purchase_order_id, purchase_order_branch_id, company_id, branch_id,
+    form_number, transaction_date,
+    contact_book_id, secondary_company_id, konekin_id, currency_code
+)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) ON CONFLICT (id) DO
+UPDATE
+SET purchase_order_id = EXCLUDED.purchase_order_id,
+    purchase_order_branch_id = EXCLUDED.purchase_order_branch_id,
+    company_id = EXCLUDED.company_id,
+    branch_id = EXCLUDED.branch_id,
+    form_number = EXCLUDED.form_number,
+    transaction_date = EXCLUDED.transaction_date,
+    contact_book_id = EXCLUDED.contact_book_id,
+    secondary_company_id = EXCLUDED.secondary_company_id,
+    konekin_id = EXCLUDED.konekin_id,
+    currency_code = EXCLUDED.currency_code,
+    updated_at = NOW()
+RETURNING *;

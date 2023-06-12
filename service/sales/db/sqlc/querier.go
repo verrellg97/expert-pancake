@@ -27,6 +27,7 @@ type Querier interface {
 	UpsertPOS(ctx context.Context, arg UpsertPOSParams) (SalesPointOfSale, error)
 	UpsertPOSPaymentMethod(ctx context.Context, arg UpsertPOSPaymentMethodParams) error
 	UpsertPOSUserSetting(ctx context.Context, arg UpsertPOSUserSettingParams) (SalesPosUserSetting, error)
+	UpsertSalesOrder(ctx context.Context, arg UpsertSalesOrderParams) (SalesSalesOrder, error)
 }
 
 var _ Querier = (*Queries)(nil)

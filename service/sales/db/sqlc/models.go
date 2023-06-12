@@ -77,3 +77,41 @@ type SalesPosUserSetting struct {
 	CreatedAt       sql.NullTime `db:"created_at"`
 	UpdatedAt       sql.NullTime `db:"updated_at"`
 }
+
+type SalesSalesOrder struct {
+	ID                    string       `db:"id"`
+	PurchaseOrderID       string       `db:"purchase_order_id"`
+	PurchaseOrderBranchID string       `db:"purchase_order_branch_id"`
+	CompanyID             string       `db:"company_id"`
+	BranchID              string       `db:"branch_id"`
+	FormNumber            string       `db:"form_number"`
+	TransactionDate       time.Time    `db:"transaction_date"`
+	ContactBookID         string       `db:"contact_book_id"`
+	SecondaryCompanyID    string       `db:"secondary_company_id"`
+	KonekinID             string       `db:"konekin_id"`
+	CurrencyCode          string       `db:"currency_code"`
+	TotalItems            int64        `db:"total_items"`
+	Total                 int64        `db:"total"`
+	IsDeleted             bool         `db:"is_deleted"`
+	Status                string       `db:"status"`
+	CreatedAt             sql.NullTime `db:"created_at"`
+	UpdatedAt             sql.NullTime `db:"updated_at"`
+}
+
+type SalesSalesOrderItem struct {
+	ID                     string       `db:"id"`
+	PurchaseOrderItemID    string       `db:"purchase_order_item_id"`
+	SalesOrderID           string       `db:"sales_order_id"`
+	PrimaryItemVariantID   string       `db:"primary_item_variant_id"`
+	SecondaryItemVariantID string       `db:"secondary_item_variant_id"`
+	PrimaryItemUnitID      string       `db:"primary_item_unit_id"`
+	SecondaryItemUnitID    string       `db:"secondary_item_unit_id"`
+	PrimaryItemUnitValue   int64        `db:"primary_item_unit_value"`
+	SecondaryItemUnitValue int64        `db:"secondary_item_unit_value"`
+	Amount                 int64        `db:"amount"`
+	AmountSent             int64        `db:"amount_sent"`
+	Price                  int64        `db:"price"`
+	IsDeleted              bool         `db:"is_deleted"`
+	CreatedAt              sql.NullTime `db:"created_at"`
+	UpdatedAt              sql.NullTime `db:"updated_at"`
+}
