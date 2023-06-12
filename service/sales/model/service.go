@@ -26,6 +26,7 @@ type SalesService interface {
 	GetCheckPOS(w http.ResponseWriter, r *http.Request) error
 
 	UpsertSalesOrder(w http.ResponseWriter, r *http.Request) error
+	UpdateSalesOrderItems(w http.ResponseWriter, r *http.Request) error
 }
 
 type POS struct {
@@ -277,4 +278,43 @@ type UpsertSalesOrderRequest struct {
 
 type UpsertSalesOrderResponse struct {
 	SalesOrder
+}
+
+type SalesOrderItem struct {
+	DetailId               string `json:"detail_id" validate:"required"`
+	PurchaseOrderItemId    string `json:"purchase_order_item_id" validate:"required"`
+	SalesOrderId           string `json:"sales_order_id" validate:"required"`
+	PrimaryItemVariantId   string `json:"primary_item_variant_id" validate:"required"`
+	ItemCode               string `json:"item_code" validate:"required"`
+	ItemName               string `json:"item_name" validate:"required"`
+	ItemVariantName        string `json:"item_variant_name" validate:"required"`
+	SecondaryItemVariantId string `json:"secondary_item_variant_id" validate:"required"`
+	PrimaryItemUnitId      string `json:"primary_item_unit_id" validate:"required"`
+	ItemUnitName           string `json:"item_unit_name" validate:"required"`
+	SecondaryItemUnitId    string `json:"secondary_item_unit_id" validate:"required"`
+	PrimaryItemUnitValue   string `json:"primary_item_unit_value" validate:"required"`
+	SecondaryItemUnitValue string `json:"secondary_item_unit_value" validate:"required"`
+	Amount                 string `json:"amount" validate:"required"`
+	Price                  string `json:"price" validate:"required"`
+}
+
+type SalesOrderItemsRequest struct {
+	PurchaseOrderItemId    string `json:"purchase_order_item_id"`
+	PrimaryItemVariantId   string `json:"primary_item_variant_id" validate:"required"`
+	SecondaryItemVariantId string `json:"secondary_item_variant_id" validate:"required"`
+	PrimaryItemUnitId      string `json:"primary_item_unit_id" validate:"required"`
+	SecondaryItemUnitId    string `json:"secondary_item_unit_id" validate:"required"`
+	PrimaryItemUnitValue   string `json:"primary_item_unit_value" validate:"required"`
+	SecondaryItemUnitValue string `json:"secondary_item_unit_value" validate:"required"`
+	Amount                 string `json:"amount" validate:"required"`
+	Price                  string `json:"price" validate:"required"`
+}
+
+type UpdateSalesOrderItemsRequest struct {
+	SalesOrderId    string                   `json:"sales_order_id" validate:"required"`
+	SalesOrderItems []SalesOrderItemsRequest `json:"sales_order_items" validate:"required"`
+}
+
+type UpdateSalesOrderItemsResponse struct {
+	SalesOrderItems []SalesOrderItem `json:"sales_order_items"`
 }

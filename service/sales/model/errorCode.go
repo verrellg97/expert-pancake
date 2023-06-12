@@ -21,5 +21,6 @@ const (
 
 	GetCheckPOSError = 800601
 
-	UpsertSalesOrderError = 800701
+	UpsertSalesOrderError      = 800701
+	UpdateSalesOrderItemsError = 800702
 )
