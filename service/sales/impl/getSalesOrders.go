@@ -8,6 +8,7 @@ import (
 	"github.com/calvinkmts/expert-pancake/engine/errors"
 	"github.com/calvinkmts/expert-pancake/engine/httpHandler"
 	db "github.com/expert-pancake/service/sales/db/sqlc"
+	"github.com/expert-pancake/service/sales/impl/client"
 	"github.com/expert-pancake/service/sales/model"
 	"github.com/expert-pancake/service/sales/util"
 )
@@ -35,18 +36,18 @@ func (a salesService) GetSalesOrders(w http.ResponseWriter, r *http.Request) err
 	var salesOrders = make([]model.SalesOrder, 0)
 
 	for _, d := range result {
-		// argContactBook := client.GetContactBooksRequest{
-		// 	Id:        d.ContactBookID,
-		// 	CompanyId: d.CompanyID,
-		// }
-		// contactBook, err := client.GetContactBooks(argContactBook)
-		// if err != nil {
-		// 	return errors.NewServerError(model.GetSalesOrdersError, err.Error())
-		// }
+		argContactBook := client.GetContactBooksRequest{
+			Id:        d.ContactBookID,
+			CompanyId: d.CompanyID,
+		}
+		contactBook, err := client.GetContactBooks(argContactBook)
+		if err != nil {
+			return errors.NewServerError(model.GetSalesOrdersError, err.Error())
+		}
 		customerName := ""
-		// if len(contactBook.Result) > 0 {
-		// 	customerName = contactBook.Result[0].Name
-		// }
+		if len(contactBook.Result) > 0 {
+			customerName = contactBook.Result[0].Name
+		}
 
 		var salesOrder = model.SalesOrder{
 			TransactionId:      d.ID,

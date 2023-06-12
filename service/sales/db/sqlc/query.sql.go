@@ -354,6 +354,52 @@ func (q *Queries) GetPOSUserSetting(ctx context.Context, arg GetPOSUserSettingPa
 	return i, err
 }
 
+const getSalesOrderItems = `-- name: GetSalesOrderItems :many
+SELECT 
+    id, purchase_order_item_id, sales_order_id, primary_item_variant_id, secondary_item_variant_id, primary_item_unit_id, secondary_item_unit_id, primary_item_unit_value, secondary_item_unit_value, amount, amount_sent, price, is_deleted, created_at, updated_at
+FROM sales.sales_order_items
+WHERE sales_order_id = $1 AND is_deleted = FALSE
+`
+
+func (q *Queries) GetSalesOrderItems(ctx context.Context, salesOrderID string) ([]SalesSalesOrderItem, error) {
+	rows, err := q.db.QueryContext(ctx, getSalesOrderItems, salesOrderID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []SalesSalesOrderItem
+	for rows.Next() {
+		var i SalesSalesOrderItem
+		if err := rows.Scan(
+			&i.ID,
+			&i.PurchaseOrderItemID,
+			&i.SalesOrderID,
+			&i.PrimaryItemVariantID,
+			&i.SecondaryItemVariantID,
+			&i.PrimaryItemUnitID,
+			&i.SecondaryItemUnitID,
+			&i.PrimaryItemUnitValue,
+			&i.SecondaryItemUnitValue,
+			&i.Amount,
+			&i.AmountSent,
+			&i.Price,
+			&i.IsDeleted,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getSalesOrders = `-- name: GetSalesOrders :many
 SELECT 
     id, purchase_order_id, purchase_order_branch_id, company_id, branch_id, form_number, transaction_date, contact_book_id, secondary_company_id, konekin_id, currency_code, total_items, total, is_deleted, status, created_at, updated_at
