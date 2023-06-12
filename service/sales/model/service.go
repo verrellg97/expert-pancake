@@ -29,6 +29,8 @@ type SalesService interface {
 	UpdateSalesOrderItems(w http.ResponseWriter, r *http.Request) error
 	GetSalesOrders(w http.ResponseWriter, r *http.Request) error
 	GetSalesOrderItems(w http.ResponseWriter, r *http.Request) error
+
+	UpdateSalesOrderStatus(w http.ResponseWriter, r *http.Request) error
 }
 
 type POS struct {
@@ -338,4 +340,13 @@ type GetSalesOrderItemsRequest struct {
 
 type GetSalesOrderItemsResponse struct {
 	SalesOrderItems []SalesOrderItem `json:"sales_order_items"`
+}
+
+type UpdateSalesOrderStatusRequest struct {
+	SalesOrderId string `json:"sales_order_id" validate:"required"`
+	Status       string `json:"status" validate:"required"`
+}
+
+type UpdateSalesOrderStatusResponse struct {
+	Message string `json:"message" validate:"required"`
 }
