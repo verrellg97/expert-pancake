@@ -150,3 +150,41 @@ SET purchase_order_id = EXCLUDED.purchase_order_id,
     currency_code = EXCLUDED.currency_code,
     updated_at = NOW()
 RETURNING *;
+
+-- name: UpdateSalesOrderAddItem :exec
+UPDATE sales.sales_orders
+SET total_items=sub.total_items,
+    total=sub.total,
+    updated_at = NOW()
+FROM (SELECT sales_order_id, COUNT(id) AS total_items, SUM(amount*price) AS total
+      FROM sales.sales_order_items
+      WHERE sales_order_id = @sales_order_id
+      GROUP BY sales_order_id) AS sub
+WHERE sales.sales_orders.id = sub.sales_order_id;
+
+-- name: UpsertSalesOrderItem :one
+INSERT INTO sales.sales_order_items(
+        id, purchase_order_item_id, sales_order_id,
+        primary_item_variant_id, secondary_item_variant_id,
+        primary_item_unit_id, secondary_item_unit_id,
+        primary_item_unit_value, secondary_item_unit_value,
+        amount, price
+    )
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) ON CONFLICT (id) DO
+UPDATE
+SET purchase_order_item_id = EXCLUDED.purchase_order_item_id,
+    sales_order_id = EXCLUDED.sales_order_id,
+    primary_item_variant_id = EXCLUDED.primary_item_variant_id,
+    secondary_item_variant_id = EXCLUDED.secondary_item_variant_id,
+    primary_item_unit_id = EXCLUDED.primary_item_unit_id,
+    secondary_item_unit_id = EXCLUDED.secondary_item_unit_id,
+    primary_item_unit_value = EXCLUDED.primary_item_unit_value,
+    secondary_item_unit_value = EXCLUDED.secondary_item_unit_value,
+    amount = EXCLUDED.amount,
+    price = EXCLUDED.price,
+    updated_at = NOW()
+RETURNING *;
+
+-- name: DeleteSalesOrderItems :exec
+DELETE FROM sales.sales_order_items
+WHERE sales_order_id = $1;

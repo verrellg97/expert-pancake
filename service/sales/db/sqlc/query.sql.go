@@ -56,6 +56,16 @@ func (q *Queries) DeletePOSPaymentMethod(ctx context.Context, id string) error {
 	return err
 }
 
+const deleteSalesOrderItems = `-- name: DeleteSalesOrderItems :exec
+DELETE FROM sales.sales_order_items
+WHERE sales_order_id = $1
+`
+
+func (q *Queries) DeleteSalesOrderItems(ctx context.Context, salesOrderID string) error {
+	_, err := q.db.ExecContext(ctx, deleteSalesOrderItems, salesOrderID)
+	return err
+}
+
 const getCheckPOS = `-- name: GetCheckPOS :one
 SELECT 
     COUNT(id)::bigint AS total_count
@@ -452,6 +462,23 @@ func (q *Queries) InsertPOSItem(ctx context.Context, arg InsertPOSItemParams) (S
 	return i, err
 }
 
+const updateSalesOrderAddItem = `-- name: UpdateSalesOrderAddItem :exec
+UPDATE sales.sales_orders
+SET total_items=sub.total_items,
+    total=sub.total,
+    updated_at = NOW()
+FROM (SELECT sales_order_id, COUNT(id) AS total_items, SUM(amount*price) AS total
+      FROM sales.sales_order_items
+      WHERE sales_order_id = $1
+      GROUP BY sales_order_id) AS sub
+WHERE sales.sales_orders.id = sub.sales_order_id
+`
+
+func (q *Queries) UpdateSalesOrderAddItem(ctx context.Context, salesOrderID string) error {
+	_, err := q.db.ExecContext(ctx, updateSalesOrderAddItem, salesOrderID)
+	return err
+}
+
 const upsertPOS = `-- name: UpsertPOS :one
 INSERT INTO sales.point_of_sales(
   id, company_id, branch_id, warehouse_id, form_number, transaction_date,
@@ -662,6 +689,79 @@ func (q *Queries) UpsertSalesOrder(ctx context.Context, arg UpsertSalesOrderPara
 		&i.Total,
 		&i.IsDeleted,
 		&i.Status,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const upsertSalesOrderItem = `-- name: UpsertSalesOrderItem :one
+INSERT INTO sales.sales_order_items(
+        id, purchase_order_item_id, sales_order_id,
+        primary_item_variant_id, secondary_item_variant_id,
+        primary_item_unit_id, secondary_item_unit_id,
+        primary_item_unit_value, secondary_item_unit_value,
+        amount, price
+    )
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) ON CONFLICT (id) DO
+UPDATE
+SET purchase_order_item_id = EXCLUDED.purchase_order_item_id,
+    sales_order_id = EXCLUDED.sales_order_id,
+    primary_item_variant_id = EXCLUDED.primary_item_variant_id,
+    secondary_item_variant_id = EXCLUDED.secondary_item_variant_id,
+    primary_item_unit_id = EXCLUDED.primary_item_unit_id,
+    secondary_item_unit_id = EXCLUDED.secondary_item_unit_id,
+    primary_item_unit_value = EXCLUDED.primary_item_unit_value,
+    secondary_item_unit_value = EXCLUDED.secondary_item_unit_value,
+    amount = EXCLUDED.amount,
+    price = EXCLUDED.price,
+    updated_at = NOW()
+RETURNING id, purchase_order_item_id, sales_order_id, primary_item_variant_id, secondary_item_variant_id, primary_item_unit_id, secondary_item_unit_id, primary_item_unit_value, secondary_item_unit_value, amount, amount_sent, price, is_deleted, created_at, updated_at
+`
+
+type UpsertSalesOrderItemParams struct {
+	ID                     string `db:"id"`
+	PurchaseOrderItemID    string `db:"purchase_order_item_id"`
+	SalesOrderID           string `db:"sales_order_id"`
+	PrimaryItemVariantID   string `db:"primary_item_variant_id"`
+	SecondaryItemVariantID string `db:"secondary_item_variant_id"`
+	PrimaryItemUnitID      string `db:"primary_item_unit_id"`
+	SecondaryItemUnitID    string `db:"secondary_item_unit_id"`
+	PrimaryItemUnitValue   int64  `db:"primary_item_unit_value"`
+	SecondaryItemUnitValue int64  `db:"secondary_item_unit_value"`
+	Amount                 int64  `db:"amount"`
+	Price                  int64  `db:"price"`
+}
+
+func (q *Queries) UpsertSalesOrderItem(ctx context.Context, arg UpsertSalesOrderItemParams) (SalesSalesOrderItem, error) {
+	row := q.db.QueryRowContext(ctx, upsertSalesOrderItem,
+		arg.ID,
+		arg.PurchaseOrderItemID,
+		arg.SalesOrderID,
+		arg.PrimaryItemVariantID,
+		arg.SecondaryItemVariantID,
+		arg.PrimaryItemUnitID,
+		arg.SecondaryItemUnitID,
+		arg.PrimaryItemUnitValue,
+		arg.SecondaryItemUnitValue,
+		arg.Amount,
+		arg.Price,
+	)
+	var i SalesSalesOrderItem
+	err := row.Scan(
+		&i.ID,
+		&i.PurchaseOrderItemID,
+		&i.SalesOrderID,
+		&i.PrimaryItemVariantID,
+		&i.SecondaryItemVariantID,
+		&i.PrimaryItemUnitID,
+		&i.SecondaryItemUnitID,
+		&i.PrimaryItemUnitValue,
+		&i.SecondaryItemUnitValue,
+		&i.Amount,
+		&i.AmountSent,
+		&i.Price,
+		&i.IsDeleted,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
