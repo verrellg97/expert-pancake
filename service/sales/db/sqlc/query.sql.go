@@ -354,6 +354,38 @@ func (q *Queries) GetPOSUserSetting(ctx context.Context, arg GetPOSUserSettingPa
 	return i, err
 }
 
+const getSalesOrder = `-- name: GetSalesOrder :one
+SELECT 
+    id, purchase_order_id, purchase_order_branch_id, company_id, branch_id, form_number, transaction_date, contact_book_id, secondary_company_id, konekin_id, currency_code, total_items, total, is_deleted, status, created_at, updated_at
+FROM sales.sales_orders
+WHERE id = $1
+`
+
+func (q *Queries) GetSalesOrder(ctx context.Context, id string) (SalesSalesOrder, error) {
+	row := q.db.QueryRowContext(ctx, getSalesOrder, id)
+	var i SalesSalesOrder
+	err := row.Scan(
+		&i.ID,
+		&i.PurchaseOrderID,
+		&i.PurchaseOrderBranchID,
+		&i.CompanyID,
+		&i.BranchID,
+		&i.FormNumber,
+		&i.TransactionDate,
+		&i.ContactBookID,
+		&i.SecondaryCompanyID,
+		&i.KonekinID,
+		&i.CurrencyCode,
+		&i.TotalItems,
+		&i.Total,
+		&i.IsDeleted,
+		&i.Status,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
 const getSalesOrderItems = `-- name: GetSalesOrderItems :many
 SELECT 
     id, purchase_order_item_id, sales_order_id, primary_item_variant_id, secondary_item_variant_id, primary_item_unit_id, secondary_item_unit_id, primary_item_unit_value, secondary_item_unit_value, amount, amount_sent, price, is_deleted, created_at, updated_at
@@ -585,6 +617,22 @@ WHERE sales.sales_orders.id = sub.sales_order_id
 
 func (q *Queries) UpdateSalesOrderAddItem(ctx context.Context, salesOrderID string) error {
 	_, err := q.db.ExecContext(ctx, updateSalesOrderAddItem, salesOrderID)
+	return err
+}
+
+const updateSalesOrderStatus = `-- name: UpdateSalesOrderStatus :exec
+UPDATE sales.sales_orders
+SET status = $2
+WHERE id = $1
+`
+
+type UpdateSalesOrderStatusParams struct {
+	ID     string `db:"id"`
+	Status string `db:"status"`
+}
+
+func (q *Queries) UpdateSalesOrderStatus(ctx context.Context, arg UpdateSalesOrderStatusParams) error {
+	_, err := q.db.ExecContext(ctx, updateSalesOrderStatus, arg.ID, arg.Status)
 	return err
 }
 

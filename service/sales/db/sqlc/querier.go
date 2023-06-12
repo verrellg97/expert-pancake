@@ -22,12 +22,14 @@ type Querier interface {
 	GetPOSItemsByPOSId(ctx context.Context, pointOfSaleID string) ([]SalesPointOfSaleItem, error)
 	GetPOSPaymentMethod(ctx context.Context, arg GetPOSPaymentMethodParams) ([]GetPOSPaymentMethodRow, error)
 	GetPOSUserSetting(ctx context.Context, arg GetPOSUserSettingParams) (SalesPosUserSetting, error)
+	GetSalesOrder(ctx context.Context, id string) (SalesSalesOrder, error)
 	GetSalesOrderItems(ctx context.Context, salesOrderID string) ([]SalesSalesOrderItem, error)
 	GetSalesOrders(ctx context.Context, arg GetSalesOrdersParams) ([]SalesSalesOrder, error)
 	InsertPOSCOASetting(ctx context.Context, arg InsertPOSCOASettingParams) (SalesPosChartOfAccountSetting, error)
 	InsertPOSCustomerSetting(ctx context.Context, arg InsertPOSCustomerSettingParams) (SalesPosCustomerSetting, error)
 	InsertPOSItem(ctx context.Context, arg InsertPOSItemParams) (SalesPointOfSaleItem, error)
 	UpdateSalesOrderAddItem(ctx context.Context, salesOrderID string) error
+	UpdateSalesOrderStatus(ctx context.Context, arg UpdateSalesOrderStatusParams) error
 	UpsertPOS(ctx context.Context, arg UpsertPOSParams) (SalesPointOfSale, error)
 	UpsertPOSPaymentMethod(ctx context.Context, arg UpsertPOSPaymentMethodParams) error
 	UpsertPOSUserSetting(ctx context.Context, arg UpsertPOSUserSettingParams) (SalesPosUserSetting, error)

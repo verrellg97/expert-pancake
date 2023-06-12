@@ -203,3 +203,14 @@ SELECT
     *
 FROM sales.sales_order_items
 WHERE sales_order_id = $1 AND is_deleted = FALSE;
+
+-- name: GetSalesOrder :one
+SELECT 
+    *
+FROM sales.sales_orders
+WHERE id = $1;
+
+-- name: UpdateSalesOrderStatus :exec
+UPDATE sales.sales_orders
+SET status = $2
+WHERE id = $1;
