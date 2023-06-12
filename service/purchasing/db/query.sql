@@ -94,3 +94,24 @@ SELECT
     COUNT(id)::bigint AS total_count
 FROM purchasing.purchase_orders
 WHERE company_id = $1;
+
+-- name: GetPurchaseOrder :one
+SELECT 
+    *
+FROM purchasing.purchase_orders
+WHERE id = $1;
+
+-- name: UpdatePurchaseOrderStatus :exec
+UPDATE purchasing.purchase_orders
+SET status = $2
+WHERE id = $1;
+
+-- name: UpdateAcceptedPurchaseOrder :exec
+UPDATE purchasing.purchase_orders
+SET sales_order_id = $2
+WHERE id = $1;
+
+-- name: UpdateAcceptedPurchaseOrderItem :exec
+UPDATE purchasing.purchase_order_items
+SET sales_order_item_id = $2
+WHERE id = $1;

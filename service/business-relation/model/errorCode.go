@@ -22,4 +22,5 @@ const (
 	GetContactInvitationsError   = 600019
 	GetRequestInvitationsError   = 600020
 	GetReceiveInvitationsError   = 600021
+	GetKonekinContactBookError   = 600022
 )

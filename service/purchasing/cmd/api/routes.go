@@ -20,6 +20,8 @@ const (
 	GetPurchaseSettingPath       = "/purchasing/setting"
 
 	GetCheckPurchaseOrdersPath = "/purchasing/orders/check"
+
+	UpdatePurchaseOrderStatusPath = "/purchasing/order/status"
 )
 
 func (c *component) Routes(purchasingService model.PurchasingService) http.Handler {
@@ -47,6 +49,8 @@ func (c *component) Routes(purchasingService model.PurchasingService) http.Handl
 	mux.Method("POST", GetPurchaseSettingPath, httpHandler.New(purchasingService.GetPurchaseSetting))
 
 	mux.Method("POST", GetCheckPurchaseOrdersPath, httpHandler.New(purchasingService.GetCheckPurchaseOrders))
+
+	mux.Method("POST", UpdatePurchaseOrderStatusPath, httpHandler.New(purchasingService.UpdatePurchaseOrderStatus))
 
 	return mux
 }

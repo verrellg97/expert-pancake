@@ -45,6 +45,54 @@ func (q *Queries) DeleteCompanyBranchesByCompanyId(ctx context.Context, companyI
 	return err
 }
 
+const getCompanyBranches = `-- name: GetCompanyBranches :many
+SELECT id, user_id, company_id, name, address, phone_number, is_central 
+FROM business.company_branches
+WHERE company_id = $1
+ORDER BY is_central DESC
+`
+
+type GetCompanyBranchesRow struct {
+	ID          string `db:"id"`
+	UserID      string `db:"user_id"`
+	CompanyID   string `db:"company_id"`
+	Name        string `db:"name"`
+	Address     string `db:"address"`
+	PhoneNumber string `db:"phone_number"`
+	IsCentral   bool   `db:"is_central"`
+}
+
+func (q *Queries) GetCompanyBranches(ctx context.Context, companyID string) ([]GetCompanyBranchesRow, error) {
+	rows, err := q.db.QueryContext(ctx, getCompanyBranches, companyID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetCompanyBranchesRow
+	for rows.Next() {
+		var i GetCompanyBranchesRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.UserID,
+			&i.CompanyID,
+			&i.Name,
+			&i.Address,
+			&i.PhoneNumber,
+			&i.IsCentral,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getCompanyBranchesByCompany = `-- name: GetCompanyBranchesByCompany :many
 SELECT id, user_id, company_id, name, address, phone_number, is_central 
 FROM business.company_branches

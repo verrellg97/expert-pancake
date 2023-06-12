@@ -380,3 +380,11 @@ SET
     is_supplier = TRUE,
     updated_at = NOW()
 WHERE id = ANY(@contact_book_ids::text[]);
+
+-- name: GetKonekinContactBook :one
+SELECT * 
+FROM business_relation.contact_books
+WHERE primary_company_id = $1
+AND secondary_company_id = $2
+AND is_default = false
+AND konekin_id <> '';

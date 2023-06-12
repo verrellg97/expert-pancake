@@ -32,6 +32,7 @@ const (
 	GetContactInvitationsPath   = "/business-relation/invite-contacts"
 	GetRequestInvitationsPath   = "/business-relation/invitation/request"
 	GetReceiveInvitationsPath   = "/business-relation/invitation/receive"
+	GetKonekinContactBookPath   = "/business-relation/konekin/contact-book"
 )
 
 func (c *component) Routes(businessRelationService model.BusinessRelationService) http.Handler {
@@ -71,6 +72,7 @@ func (c *component) Routes(businessRelationService model.BusinessRelationService
 	mux.Method("POST", GetContactInvitationsPath, httpHandler.New(businessRelationService.GetContactInvitations))
 	mux.Method("POST", GetRequestInvitationsPath, httpHandler.New(businessRelationService.GetRequestInvitations))
 	mux.Method("POST", GetReceiveInvitationsPath, httpHandler.New(businessRelationService.GetReceiveInvitations))
+	mux.Method("POST", GetKonekinContactBookPath, httpHandler.New(businessRelationService.GetKonekinContactBook))
 
 	return mux
 }

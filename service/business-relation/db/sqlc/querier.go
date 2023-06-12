@@ -23,6 +23,7 @@ type Querier interface {
 	GetCountKonekinId(ctx context.Context, konekinID string) (int64, error)
 	GetCustomer(ctx context.Context, id string) (GetCustomerRow, error)
 	GetCustomers(ctx context.Context, primaryCompanyID string) ([]GetCustomersRow, error)
+	GetKonekinContactBook(ctx context.Context, arg GetKonekinContactBookParams) (BusinessRelationContactBook, error)
 	GetMyContactBook(ctx context.Context, primaryCompanyID string) (GetMyContactBookRow, error)
 	GetReceiveInvitations(ctx context.Context, secondaryCompanyID string) ([]GetReceiveInvitationsRow, error)
 	GetRequestInvitations(ctx context.Context, primaryCompanyID string) ([]GetRequestInvitationsRow, error)

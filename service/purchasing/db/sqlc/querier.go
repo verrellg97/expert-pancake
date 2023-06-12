@@ -11,10 +11,14 @@ import (
 type Querier interface {
 	DeletePurchaseOrderItems(ctx context.Context, purchaseOrderID string) error
 	GetCheckPurchaseOrders(ctx context.Context, companyID string) (int64, error)
+	GetPurchaseOrder(ctx context.Context, id string) (PurchasingPurchaseOrder, error)
 	GetPurchaseOrderItems(ctx context.Context, purchaseOrderID string) ([]PurchasingPurchaseOrderItem, error)
 	GetPurchaseOrders(ctx context.Context, arg GetPurchaseOrdersParams) ([]PurchasingPurchaseOrder, error)
 	GetPurchaseSetting(ctx context.Context, companyID string) (PurchasingPurchaseSetting, error)
+	UpdateAcceptedPurchaseOrder(ctx context.Context, arg UpdateAcceptedPurchaseOrderParams) error
+	UpdateAcceptedPurchaseOrderItem(ctx context.Context, arg UpdateAcceptedPurchaseOrderItemParams) error
 	UpdatePurchaseOrderAddItem(ctx context.Context, purchaseOrderID string) error
+	UpdatePurchaseOrderStatus(ctx context.Context, arg UpdatePurchaseOrderStatusParams) error
 	UpsertPurchaseOrder(ctx context.Context, arg UpsertPurchaseOrderParams) (PurchasingPurchaseOrder, error)
 	UpsertPurchaseOrderItem(ctx context.Context, arg UpsertPurchaseOrderItemParams) (PurchasingPurchaseOrderItem, error)
 	UpsertPurchaseSetting(ctx context.Context, arg UpsertPurchaseSettingParams) (PurchasingPurchaseSetting, error)

@@ -662,6 +662,47 @@ func (q *Queries) GetCustomers(ctx context.Context, primaryCompanyID string) ([]
 	return items, nil
 }
 
+const getKonekinContactBook = `-- name: GetKonekinContactBook :one
+SELECT id, konekin_id, primary_company_id, secondary_company_id, contact_group_id, name, email, phone, mobile, web, is_all_branches, is_customer, is_supplier, is_tax, tax_id, is_default, is_deleted, created_at, updated_at 
+FROM business_relation.contact_books
+WHERE primary_company_id = $1
+AND secondary_company_id = $2
+AND is_default = false
+AND konekin_id <> ''
+`
+
+type GetKonekinContactBookParams struct {
+	PrimaryCompanyID   string `db:"primary_company_id"`
+	SecondaryCompanyID string `db:"secondary_company_id"`
+}
+
+func (q *Queries) GetKonekinContactBook(ctx context.Context, arg GetKonekinContactBookParams) (BusinessRelationContactBook, error) {
+	row := q.db.QueryRowContext(ctx, getKonekinContactBook, arg.PrimaryCompanyID, arg.SecondaryCompanyID)
+	var i BusinessRelationContactBook
+	err := row.Scan(
+		&i.ID,
+		&i.KonekinID,
+		&i.PrimaryCompanyID,
+		&i.SecondaryCompanyID,
+		&i.ContactGroupID,
+		&i.Name,
+		&i.Email,
+		&i.Phone,
+		&i.Mobile,
+		&i.Web,
+		&i.IsAllBranches,
+		&i.IsCustomer,
+		&i.IsSupplier,
+		&i.IsTax,
+		&i.TaxID,
+		&i.IsDefault,
+		&i.IsDeleted,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
 const getMyContactBook = `-- name: GetMyContactBook :one
 SELECT a.id, a.konekin_id, a.primary_company_id,
 a.name, a.email, a.phone, a.mobile, a.web
