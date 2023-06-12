@@ -197,3 +197,9 @@ WHERE company_id = $1
     AND branch_id = $2
     AND transaction_date BETWEEN @start_date::date AND @end_date::date 
     AND is_deleted = FALSE;
+
+-- name: GetSalesOrderItems :many
+SELECT 
+    *
+FROM sales.sales_order_items
+WHERE sales_order_id = $1 AND is_deleted = FALSE;

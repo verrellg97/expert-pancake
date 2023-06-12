@@ -28,6 +28,7 @@ type SalesService interface {
 	UpsertSalesOrder(w http.ResponseWriter, r *http.Request) error
 	UpdateSalesOrderItems(w http.ResponseWriter, r *http.Request) error
 	GetSalesOrders(w http.ResponseWriter, r *http.Request) error
+	GetSalesOrderItems(w http.ResponseWriter, r *http.Request) error
 }
 
 type POS struct {
@@ -329,4 +330,12 @@ type GetSalesOrdersRequest struct {
 
 type GetSalesOrdersResponse struct {
 	SalesOrders []SalesOrder `json:"sales_orders"`
+}
+
+type GetSalesOrderItemsRequest struct {
+	SalesOrderId string `json:"sales_order_id" validate:"required"`
+}
+
+type GetSalesOrderItemsResponse struct {
+	SalesOrderItems []SalesOrderItem `json:"sales_order_items"`
 }

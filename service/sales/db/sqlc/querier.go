@@ -22,6 +22,7 @@ type Querier interface {
 	GetPOSItemsByPOSId(ctx context.Context, pointOfSaleID string) ([]SalesPointOfSaleItem, error)
 	GetPOSPaymentMethod(ctx context.Context, arg GetPOSPaymentMethodParams) ([]GetPOSPaymentMethodRow, error)
 	GetPOSUserSetting(ctx context.Context, arg GetPOSUserSettingParams) (SalesPosUserSetting, error)
+	GetSalesOrderItems(ctx context.Context, salesOrderID string) ([]SalesSalesOrderItem, error)
 	GetSalesOrders(ctx context.Context, arg GetSalesOrdersParams) ([]SalesSalesOrder, error)
 	InsertPOSCOASetting(ctx context.Context, arg InsertPOSCOASettingParams) (SalesPosChartOfAccountSetting, error)
 	InsertPOSCustomerSetting(ctx context.Context, arg InsertPOSCustomerSettingParams) (SalesPosCustomerSetting, error)
