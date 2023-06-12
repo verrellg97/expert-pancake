@@ -272,7 +272,7 @@ func (q *Queries) GetPOSItemsByPOSId(ctx context.Context, pointOfSaleID string) 
 }
 
 const getPOSPaymentMethod = `-- name: GetPOSPaymentMethod :many
-SELECT  id, company_id, chart_of_account_id, name
+SELECT id, company_id, chart_of_account_id, name
 FROM sales.pos_payment_methods 
 WHERE is_deleted = FALSE AND company_id = $1 AND name LIKE $2
 `
@@ -589,6 +589,79 @@ func (q *Queries) UpsertPOSUserSetting(ctx context.Context, arg UpsertPOSUserSet
 		&i.BranchID,
 		&i.WarehouseID,
 		&i.WarehouseRackID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const upsertSalesOrder = `-- name: UpsertSalesOrder :one
+INSERT INTO sales.sales_orders(
+    id, purchase_order_id, purchase_order_branch_id, company_id, branch_id,
+    form_number, transaction_date,
+    contact_book_id, secondary_company_id, konekin_id, currency_code
+)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) ON CONFLICT (id) DO
+UPDATE
+SET purchase_order_id = EXCLUDED.purchase_order_id,
+    purchase_order_branch_id = EXCLUDED.purchase_order_branch_id,
+    company_id = EXCLUDED.company_id,
+    branch_id = EXCLUDED.branch_id,
+    form_number = EXCLUDED.form_number,
+    transaction_date = EXCLUDED.transaction_date,
+    contact_book_id = EXCLUDED.contact_book_id,
+    secondary_company_id = EXCLUDED.secondary_company_id,
+    konekin_id = EXCLUDED.konekin_id,
+    currency_code = EXCLUDED.currency_code,
+    updated_at = NOW()
+RETURNING id, purchase_order_id, purchase_order_branch_id, company_id, branch_id, form_number, transaction_date, contact_book_id, secondary_company_id, konekin_id, currency_code, total_items, total, is_deleted, status, created_at, updated_at
+`
+
+type UpsertSalesOrderParams struct {
+	ID                    string    `db:"id"`
+	PurchaseOrderID       string    `db:"purchase_order_id"`
+	PurchaseOrderBranchID string    `db:"purchase_order_branch_id"`
+	CompanyID             string    `db:"company_id"`
+	BranchID              string    `db:"branch_id"`
+	FormNumber            string    `db:"form_number"`
+	TransactionDate       time.Time `db:"transaction_date"`
+	ContactBookID         string    `db:"contact_book_id"`
+	SecondaryCompanyID    string    `db:"secondary_company_id"`
+	KonekinID             string    `db:"konekin_id"`
+	CurrencyCode          string    `db:"currency_code"`
+}
+
+func (q *Queries) UpsertSalesOrder(ctx context.Context, arg UpsertSalesOrderParams) (SalesSalesOrder, error) {
+	row := q.db.QueryRowContext(ctx, upsertSalesOrder,
+		arg.ID,
+		arg.PurchaseOrderID,
+		arg.PurchaseOrderBranchID,
+		arg.CompanyID,
+		arg.BranchID,
+		arg.FormNumber,
+		arg.TransactionDate,
+		arg.ContactBookID,
+		arg.SecondaryCompanyID,
+		arg.KonekinID,
+		arg.CurrencyCode,
+	)
+	var i SalesSalesOrder
+	err := row.Scan(
+		&i.ID,
+		&i.PurchaseOrderID,
+		&i.PurchaseOrderBranchID,
+		&i.CompanyID,
+		&i.BranchID,
+		&i.FormNumber,
+		&i.TransactionDate,
+		&i.ContactBookID,
+		&i.SecondaryCompanyID,
+		&i.KonekinID,
+		&i.CurrencyCode,
+		&i.TotalItems,
+		&i.Total,
+		&i.IsDeleted,
+		&i.Status,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)

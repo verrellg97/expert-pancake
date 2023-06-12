@@ -24,6 +24,8 @@ type SalesService interface {
 	GetPOSPaymentMethod(w http.ResponseWriter, r *http.Request) error
 
 	GetCheckPOS(w http.ResponseWriter, r *http.Request) error
+
+	UpsertSalesOrder(w http.ResponseWriter, r *http.Request) error
 }
 
 type POS struct {
@@ -241,4 +243,38 @@ type GetCheckPOSRequest struct {
 
 type GetCheckPOSResponse struct {
 	Status bool `json:"status" validate:"required"`
+}
+
+type SalesOrder struct {
+	TransactionId      string `json:"transaction_id" validate:"required"`
+	CompanyId          string `json:"company_id" validate:"required"`
+	BranchId           string `json:"branch_id" validate:"required"`
+	FormNumber         string `json:"form_number" validate:"required"`
+	TransactionDate    string `json:"transaction_date" validate:"required"`
+	ContactBookId      string `json:"contact_book_id" validate:"required"`
+	SecondaryCompanyId string `json:"secondary_company_id" validate:"required"`
+	KonekinId          string `json:"konekin_id" validate:"required"`
+	CustomerName       string `json:"customer_name" validate:"required"`
+	SecondaryBranchId  string `json:"secondary_branch_id" validate:"required"`
+	CurrencyCode       string `json:"currency_code" validate:"required"`
+	TotalItems         string `json:"total_items" validate:"required"`
+	Total              string `json:"total" validate:"required"`
+	Status             string `json:"status" validate:"required"`
+}
+
+type UpsertSalesOrderRequest struct {
+	Id                    string `json:"id"`
+	PurchaseOrderId       string `json:"purchase_order_id"`
+	PurchaseOrderBranchId string `json:"purchase_order_branch_id"`
+	CompanyId             string `json:"company_id" validate:"required"`
+	BranchId              string `json:"branch_id" validate:"required"`
+	TransactionDate       string `json:"transaction_date" validate:"required"`
+	ContactBookId         string `json:"contact_book_id" validate:"required"`
+	SecondaryCompanyId    string `json:"secondary_company_id"`
+	KonekinId             string `json:"konekin_id"`
+	CurrencyCode          string `json:"currency_code" validate:"required"`
+}
+
+type UpsertSalesOrderResponse struct {
+	SalesOrder
 }

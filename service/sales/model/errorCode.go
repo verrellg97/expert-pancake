@@ -20,4 +20,6 @@ const (
 	GetPOSPaymentMethodError    = 800503
 
 	GetCheckPOSError = 800601
+
+	UpsertSalesOrderError = 800701
 )
