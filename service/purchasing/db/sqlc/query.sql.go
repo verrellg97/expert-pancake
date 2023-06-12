@@ -34,6 +34,39 @@ func (q *Queries) GetCheckPurchaseOrders(ctx context.Context, companyID string) 
 	return total_count, err
 }
 
+const getPurchaseOrder = `-- name: GetPurchaseOrder :one
+SELECT 
+    id, sales_order_id, company_id, branch_id, form_number, transaction_date, contact_book_id, secondary_company_id, konekin_id, currency_code, shipping_date, receiving_warehouse_id, total_items, total, is_deleted, status, created_at, updated_at
+FROM purchasing.purchase_orders
+WHERE id = $1
+`
+
+func (q *Queries) GetPurchaseOrder(ctx context.Context, id string) (PurchasingPurchaseOrder, error) {
+	row := q.db.QueryRowContext(ctx, getPurchaseOrder, id)
+	var i PurchasingPurchaseOrder
+	err := row.Scan(
+		&i.ID,
+		&i.SalesOrderID,
+		&i.CompanyID,
+		&i.BranchID,
+		&i.FormNumber,
+		&i.TransactionDate,
+		&i.ContactBookID,
+		&i.SecondaryCompanyID,
+		&i.KonekinID,
+		&i.CurrencyCode,
+		&i.ShippingDate,
+		&i.ReceivingWarehouseID,
+		&i.TotalItems,
+		&i.Total,
+		&i.IsDeleted,
+		&i.Status,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
 const getPurchaseOrderItems = `-- name: GetPurchaseOrderItems :many
 SELECT 
     id, sales_order_item_id, purchase_order_id, primary_item_variant_id, secondary_item_variant_id, primary_item_unit_id, secondary_item_unit_id, primary_item_unit_value, secondary_item_unit_value, amount, price, is_deleted, created_at, updated_at
@@ -162,6 +195,38 @@ func (q *Queries) GetPurchaseSetting(ctx context.Context, companyID string) (Pur
 	return i, err
 }
 
+const updateAcceptedPurchaseOrder = `-- name: UpdateAcceptedPurchaseOrder :exec
+UPDATE purchasing.purchase_orders
+SET sales_order_id = $2
+WHERE id = $1
+`
+
+type UpdateAcceptedPurchaseOrderParams struct {
+	ID           string `db:"id"`
+	SalesOrderID string `db:"sales_order_id"`
+}
+
+func (q *Queries) UpdateAcceptedPurchaseOrder(ctx context.Context, arg UpdateAcceptedPurchaseOrderParams) error {
+	_, err := q.db.ExecContext(ctx, updateAcceptedPurchaseOrder, arg.ID, arg.SalesOrderID)
+	return err
+}
+
+const updateAcceptedPurchaseOrderItem = `-- name: UpdateAcceptedPurchaseOrderItem :exec
+UPDATE purchasing.purchase_order_items
+SET sales_order_item_id = $2
+WHERE id = $1
+`
+
+type UpdateAcceptedPurchaseOrderItemParams struct {
+	ID               string `db:"id"`
+	SalesOrderItemID string `db:"sales_order_item_id"`
+}
+
+func (q *Queries) UpdateAcceptedPurchaseOrderItem(ctx context.Context, arg UpdateAcceptedPurchaseOrderItemParams) error {
+	_, err := q.db.ExecContext(ctx, updateAcceptedPurchaseOrderItem, arg.ID, arg.SalesOrderItemID)
+	return err
+}
+
 const updatePurchaseOrderAddItem = `-- name: UpdatePurchaseOrderAddItem :exec
 UPDATE purchasing.purchase_orders
 SET total_items=sub.total_items,
@@ -176,6 +241,22 @@ WHERE purchasing.purchase_orders.id = sub.purchase_order_id
 
 func (q *Queries) UpdatePurchaseOrderAddItem(ctx context.Context, purchaseOrderID string) error {
 	_, err := q.db.ExecContext(ctx, updatePurchaseOrderAddItem, purchaseOrderID)
+	return err
+}
+
+const updatePurchaseOrderStatus = `-- name: UpdatePurchaseOrderStatus :exec
+UPDATE purchasing.purchase_orders
+SET status = $2
+WHERE id = $1
+`
+
+type UpdatePurchaseOrderStatusParams struct {
+	ID     string `db:"id"`
+	Status string `db:"status"`
+}
+
+func (q *Queries) UpdatePurchaseOrderStatus(ctx context.Context, arg UpdatePurchaseOrderStatusParams) error {
+	_, err := q.db.ExecContext(ctx, updatePurchaseOrderStatus, arg.ID, arg.Status)
 	return err
 }
 

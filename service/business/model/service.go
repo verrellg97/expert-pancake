@@ -15,6 +15,7 @@ type BusinessService interface {
 	UpdateCompanyBranch(w http.ResponseWriter, r *http.Request) error
 	DeleteCompanyBranch(w http.ResponseWriter, r *http.Request) error
 	GetUserCompanyBranches(w http.ResponseWriter, r *http.Request) error
+	GetCompanyBranches(w http.ResponseWriter, r *http.Request) error
 }
 
 type Company struct {
@@ -104,4 +105,8 @@ type DeleteCompanyBranchRequest struct {
 
 type DeleteDataResponse struct {
 	Message string `json:"message"`
+}
+
+type CompanyBranchesRequest struct {
+	CompanyId string `json:"company_id" validate:"required"`
 }

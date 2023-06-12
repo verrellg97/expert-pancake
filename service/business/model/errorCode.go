@@ -16,4 +16,5 @@ const (
 	UpdateCompanyBranchError    = 400201
 	DeleteCompanyBranchError    = 400202
 	GetUserCompanyBranchesError = 400204
+	GetCompanyBranchesError     = 400205
 )

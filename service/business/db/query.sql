@@ -76,3 +76,9 @@ WHERE id = $1;
 SELECT id, user_id, company_id, name, address, phone_number, is_central 
 FROM business.company_branches
 WHERE company_id = $1;
+
+-- name: GetCompanyBranches :many
+SELECT id, user_id, company_id, name, address, phone_number, is_central 
+FROM business.company_branches
+WHERE company_id = $1
+ORDER BY is_central DESC;

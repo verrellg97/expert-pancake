@@ -10,4 +10,6 @@ const (
 	GetPurchaseSettingError       = 800107
 
 	GetCheckPurchaseOrdersError = 800108
+
+	UpdatePurchaseOrderStatusError = 800201
 )

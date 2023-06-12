@@ -30,6 +30,8 @@ type BusinessRelationService interface {
 	GetContactInvitations(w http.ResponseWriter, r *http.Request) error
 	GetRequestInvitations(w http.ResponseWriter, r *http.Request) error
 	GetReceiveInvitations(w http.ResponseWriter, r *http.Request) error
+
+	GetKonekinContactBook(w http.ResponseWriter, r *http.Request) error
 }
 
 type ContactGroupWithMember struct {
@@ -330,4 +332,20 @@ type AddSupplierRequest struct {
 
 type AddSupplierResponse struct {
 	Message string `json:"message"`
+}
+
+type KonekinContactBook struct {
+	ContactBookId    string `json:"contact_book_id" validate:"required"`
+	KonekinId        string `json:"konekin_id" validate:"required"`
+	PrimaryCompanyId string `json:"primary_company_id" validate:"required"`
+	Name             string `json:"name" validate:"required"`
+	Email            string `json:"email" validate:"required"`
+	Phone            string `json:"phone" validate:"required"`
+	Mobile           string `json:"mobile" validate:"required"`
+	Web              string `json:"web" validate:"required"`
+}
+
+type GetKonekinContactBookRequest struct {
+	PrimaryCompanyId   string `json:"primary_company_id" validate:"required"`
+	SecondaryCompanyId string `json:"secondary_company_id" validate:"required"`
 }
