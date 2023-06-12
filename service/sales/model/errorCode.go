@@ -23,4 +23,5 @@ const (
 
 	UpsertSalesOrderError      = 800701
 	UpdateSalesOrderItemsError = 800702
+	GetSalesOrdersError        = 800703
 )

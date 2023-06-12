@@ -354,6 +354,69 @@ func (q *Queries) GetPOSUserSetting(ctx context.Context, arg GetPOSUserSettingPa
 	return i, err
 }
 
+const getSalesOrders = `-- name: GetSalesOrders :many
+SELECT 
+    id, purchase_order_id, purchase_order_branch_id, company_id, branch_id, form_number, transaction_date, contact_book_id, secondary_company_id, konekin_id, currency_code, total_items, total, is_deleted, status, created_at, updated_at
+FROM sales.sales_orders
+WHERE company_id = $1
+    AND branch_id = $2
+    AND transaction_date BETWEEN $3::date AND $4::date 
+    AND is_deleted = FALSE
+`
+
+type GetSalesOrdersParams struct {
+	CompanyID string    `db:"company_id"`
+	BranchID  string    `db:"branch_id"`
+	StartDate time.Time `db:"start_date"`
+	EndDate   time.Time `db:"end_date"`
+}
+
+func (q *Queries) GetSalesOrders(ctx context.Context, arg GetSalesOrdersParams) ([]SalesSalesOrder, error) {
+	rows, err := q.db.QueryContext(ctx, getSalesOrders,
+		arg.CompanyID,
+		arg.BranchID,
+		arg.StartDate,
+		arg.EndDate,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []SalesSalesOrder
+	for rows.Next() {
+		var i SalesSalesOrder
+		if err := rows.Scan(
+			&i.ID,
+			&i.PurchaseOrderID,
+			&i.PurchaseOrderBranchID,
+			&i.CompanyID,
+			&i.BranchID,
+			&i.FormNumber,
+			&i.TransactionDate,
+			&i.ContactBookID,
+			&i.SecondaryCompanyID,
+			&i.KonekinID,
+			&i.CurrencyCode,
+			&i.TotalItems,
+			&i.Total,
+			&i.IsDeleted,
+			&i.Status,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const insertPOSCOASetting = `-- name: InsertPOSCOASetting :one
 INSERT INTO sales.pos_chart_of_account_settings(
   branch_id, chart_of_account_id
