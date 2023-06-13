@@ -30,6 +30,7 @@ type Querier interface {
 	InsertPOSItem(ctx context.Context, arg InsertPOSItemParams) (SalesPointOfSaleItem, error)
 	UpdateSalesOrderAddItem(ctx context.Context, salesOrderID string) error
 	UpdateSalesOrderStatus(ctx context.Context, arg UpdateSalesOrderStatusParams) error
+	UpsertDeliveryOrder(ctx context.Context, arg UpsertDeliveryOrderParams) (SalesDeliveryOrder, error)
 	UpsertPOS(ctx context.Context, arg UpsertPOSParams) (SalesPointOfSale, error)
 	UpsertPOSPaymentMethod(ctx context.Context, arg UpsertPOSPaymentMethodParams) error
 	UpsertPOSUserSetting(ctx context.Context, arg UpsertPOSUserSettingParams) (SalesPosUserSetting, error)

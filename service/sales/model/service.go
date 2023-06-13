@@ -29,8 +29,9 @@ type SalesService interface {
 	UpdateSalesOrderItems(w http.ResponseWriter, r *http.Request) error
 	GetSalesOrders(w http.ResponseWriter, r *http.Request) error
 	GetSalesOrderItems(w http.ResponseWriter, r *http.Request) error
-
 	UpdateSalesOrderStatus(w http.ResponseWriter, r *http.Request) error
+
+	UpsertDeliveryOrder(w http.ResponseWriter, r *http.Request) error
 }
 
 type POS struct {
@@ -349,4 +350,35 @@ type UpdateSalesOrderStatusRequest struct {
 
 type UpdateSalesOrderStatusResponse struct {
 	Message string `json:"message" validate:"required"`
+}
+
+type DeliveryOrder struct {
+	TransactionId       string `json:"transaction_id" validate:"required"`
+	CompanyId           string `json:"company_id" validate:"required"`
+	BranchId            string `json:"branch_id" validate:"required"`
+	FormNumber          string `json:"form_number" validate:"required"`
+	TransactionDate     string `json:"transaction_date" validate:"required"`
+	ContactBookId       string `json:"contact_book_id" validate:"required"`
+	SecondaryCompanyId  string `json:"secondary_company_id" validate:"required"`
+	KonekinId           string `json:"konekin_id" validate:"required"`
+	CustomerName        string `json:"customer_name" validate:"required"`
+	SecondaryBranchId   string `json:"secondary_branch_id" validate:"required"`
+	SecondaryBranchName string `json:"secondary_branch_name" validate:"required"`
+	TotalItems          string `json:"total_items" validate:"required"`
+	Status              string `json:"status" validate:"required"`
+}
+
+type UpsertDeliveryOrderRequest struct {
+	Id                 string `json:"id"`
+	CompanyId          string `json:"company_id" validate:"required"`
+	BranchId           string `json:"branch_id" validate:"required"`
+	TransactionDate    string `json:"transaction_date" validate:"required"`
+	ContactBookId      string `json:"contact_book_id" validate:"required"`
+	SecondaryCompanyId string `json:"secondary_company_id"`
+	KonekinId          string `json:"konekin_id"`
+	SecondaryBranchId  string `json:"secondary_branch_id" validate:"required"`
+}
+
+type UpsertDeliveryOrderResponse struct {
+	DeliveryOrder
 }

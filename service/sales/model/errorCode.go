@@ -21,10 +21,11 @@ const (
 
 	GetCheckPOSError = 800601
 
-	UpsertSalesOrderError      = 800701
-	UpdateSalesOrderItemsError = 800702
-	GetSalesOrdersError        = 800703
-	GetSalesOrderItemsError    = 800704
+	UpsertSalesOrderError       = 800701
+	UpdateSalesOrderItemsError  = 800702
+	GetSalesOrdersError         = 800703
+	GetSalesOrderItemsError     = 800704
+	UpdateSalesOrderStatusError = 800705
 
-	UpdateSalesOrderStatusError = 800801
+	UpsertDeliveryOrderError = 800801
 )

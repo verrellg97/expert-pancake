@@ -636,6 +636,72 @@ func (q *Queries) UpdateSalesOrderStatus(ctx context.Context, arg UpdateSalesOrd
 	return err
 }
 
+const upsertDeliveryOrder = `-- name: UpsertDeliveryOrder :one
+INSERT INTO sales.delivery_orders(
+    id, company_id, branch_id,
+    form_number, transaction_date,
+    contact_book_id, secondary_company_id, konekin_id,
+    secondary_branch_id
+)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) ON CONFLICT (id) DO
+UPDATE
+SET company_id = EXCLUDED.company_id,
+    branch_id = EXCLUDED.branch_id,
+    form_number = EXCLUDED.form_number,
+    transaction_date = EXCLUDED.transaction_date,
+    contact_book_id = EXCLUDED.contact_book_id,
+    secondary_company_id = EXCLUDED.secondary_company_id,
+    konekin_id = EXCLUDED.konekin_id,
+    secondary_branch_id = EXCLUDED.secondary_branch_id,
+    updated_at = NOW()
+RETURNING id, receipt_order_id, company_id, branch_id, form_number, transaction_date, contact_book_id, secondary_company_id, konekin_id, secondary_branch_id, total_items, is_deleted, status, created_at, updated_at
+`
+
+type UpsertDeliveryOrderParams struct {
+	ID                 string    `db:"id"`
+	CompanyID          string    `db:"company_id"`
+	BranchID           string    `db:"branch_id"`
+	FormNumber         string    `db:"form_number"`
+	TransactionDate    time.Time `db:"transaction_date"`
+	ContactBookID      string    `db:"contact_book_id"`
+	SecondaryCompanyID string    `db:"secondary_company_id"`
+	KonekinID          string    `db:"konekin_id"`
+	SecondaryBranchID  string    `db:"secondary_branch_id"`
+}
+
+func (q *Queries) UpsertDeliveryOrder(ctx context.Context, arg UpsertDeliveryOrderParams) (SalesDeliveryOrder, error) {
+	row := q.db.QueryRowContext(ctx, upsertDeliveryOrder,
+		arg.ID,
+		arg.CompanyID,
+		arg.BranchID,
+		arg.FormNumber,
+		arg.TransactionDate,
+		arg.ContactBookID,
+		arg.SecondaryCompanyID,
+		arg.KonekinID,
+		arg.SecondaryBranchID,
+	)
+	var i SalesDeliveryOrder
+	err := row.Scan(
+		&i.ID,
+		&i.ReceiptOrderID,
+		&i.CompanyID,
+		&i.BranchID,
+		&i.FormNumber,
+		&i.TransactionDate,
+		&i.ContactBookID,
+		&i.SecondaryCompanyID,
+		&i.KonekinID,
+		&i.SecondaryBranchID,
+		&i.TotalItems,
+		&i.IsDeleted,
+		&i.Status,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
 const upsertPOS = `-- name: UpsertPOS :one
 INSERT INTO sales.point_of_sales(
   id, company_id, branch_id, warehouse_id, form_number, transaction_date,

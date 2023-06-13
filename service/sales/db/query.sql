@@ -214,3 +214,23 @@ WHERE id = $1;
 UPDATE sales.sales_orders
 SET status = $2
 WHERE id = $1;
+
+-- name: UpsertDeliveryOrder :one
+INSERT INTO sales.delivery_orders(
+    id, company_id, branch_id,
+    form_number, transaction_date,
+    contact_book_id, secondary_company_id, konekin_id,
+    secondary_branch_id
+)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) ON CONFLICT (id) DO
+UPDATE
+SET company_id = EXCLUDED.company_id,
+    branch_id = EXCLUDED.branch_id,
+    form_number = EXCLUDED.form_number,
+    transaction_date = EXCLUDED.transaction_date,
+    contact_book_id = EXCLUDED.contact_book_id,
+    secondary_company_id = EXCLUDED.secondary_company_id,
+    konekin_id = EXCLUDED.konekin_id,
+    secondary_branch_id = EXCLUDED.secondary_branch_id,
+    updated_at = NOW()
+RETURNING *;
