@@ -16,6 +16,7 @@ type SalesTrx interface {
 	UpsertSalesOrderTrx(ctx context.Context, arg UpsertSalesOrderTrxParams) (UpsertSalesOrderTrxResult, error)
 	UpdateSalesOrderItemsTrx(ctx context.Context, arg UpdateSalesOrderItemsTrxParams) (UpdateSalesOrderItemsTrxResult, error)
 	UpsertDeliveryOrderTrx(ctx context.Context, arg UpsertDeliveryOrderTrxParams) (UpsertDeliveryOrderTrxResult, error)
+	UpdateDeliveryOrderItemsTrx(ctx context.Context, arg UpdateDeliveryOrderItemsTrxParams) (UpdateDeliveryOrderItemsTrxResult, error)
 }
 
 // Trx provides all functions to execute SQL queries and transactions

@@ -30,4 +30,5 @@ const (
 	UpsertDeliveryOrderError        = 800801
 	GetDeliveryOrdersError          = 800802
 	GetSalesOrderDeliveryItemsError = 800803
+	UpdateDeliveryOrderItemsError   = 800804
 )

@@ -11,6 +11,16 @@ import (
 	"time"
 )
 
+const deleteDeliveryOrderItems = `-- name: DeleteDeliveryOrderItems :exec
+DELETE FROM sales.delivery_order_items
+WHERE delivery_order_id = $1
+`
+
+func (q *Queries) DeleteDeliveryOrderItems(ctx context.Context, deliveryOrderID string) error {
+	_, err := q.db.ExecContext(ctx, deleteDeliveryOrderItems, deliveryOrderID)
+	return err
+}
+
 const deletePOS = `-- name: DeletePOS :exec
 UPDATE sales.point_of_sales SET is_deleted = TRUE WHERE id = $1
 `
@@ -736,6 +746,41 @@ func (q *Queries) UpdateSalesOrderAddItem(ctx context.Context, salesOrderID stri
 	return err
 }
 
+const updateSalesOrderItemAmountSent = `-- name: UpdateSalesOrderItemAmountSent :one
+UPDATE sales.sales_order_items
+SET amount_sent = amount_sent+$2
+WHERE id = $1
+RETURNING id, purchase_order_item_id, sales_order_id, primary_item_variant_id, secondary_item_variant_id, primary_item_unit_id, secondary_item_unit_id, primary_item_unit_value, secondary_item_unit_value, amount, amount_sent, price, is_deleted, created_at, updated_at
+`
+
+type UpdateSalesOrderItemAmountSentParams struct {
+	ID         string `db:"id"`
+	AmountSent int64  `db:"amount_sent"`
+}
+
+func (q *Queries) UpdateSalesOrderItemAmountSent(ctx context.Context, arg UpdateSalesOrderItemAmountSentParams) (SalesSalesOrderItem, error) {
+	row := q.db.QueryRowContext(ctx, updateSalesOrderItemAmountSent, arg.ID, arg.AmountSent)
+	var i SalesSalesOrderItem
+	err := row.Scan(
+		&i.ID,
+		&i.PurchaseOrderItemID,
+		&i.SalesOrderID,
+		&i.PrimaryItemVariantID,
+		&i.SecondaryItemVariantID,
+		&i.PrimaryItemUnitID,
+		&i.SecondaryItemUnitID,
+		&i.PrimaryItemUnitValue,
+		&i.SecondaryItemUnitValue,
+		&i.Amount,
+		&i.AmountSent,
+		&i.Price,
+		&i.IsDeleted,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
 const updateSalesOrderStatus = `-- name: UpdateSalesOrderStatus :exec
 UPDATE sales.sales_orders
 SET status = $2
@@ -812,6 +857,94 @@ func (q *Queries) UpsertDeliveryOrder(ctx context.Context, arg UpsertDeliveryOrd
 		&i.TotalItems,
 		&i.IsDeleted,
 		&i.Status,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const upsertDeliveryOrderItem = `-- name: UpsertDeliveryOrderItem :one
+INSERT INTO sales.delivery_order_items(
+        id, purchase_order_item_id, sales_order_item_id, delivery_order_id,
+        primary_item_variant_id, warehouse_rack_id, batch, expired_date, item_barcode_id,
+        secondary_item_variant_id, primary_item_unit_id, secondary_item_unit_id,
+        primary_item_unit_value, secondary_item_unit_value, amount
+    )
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15) ON CONFLICT (id) DO
+UPDATE
+SET purchase_order_item_id = EXCLUDED.purchase_order_item_id,
+    sales_order_item_id = EXCLUDED.sales_order_item_id,
+    delivery_order_id = EXCLUDED.delivery_order_id,
+    primary_item_variant_id = EXCLUDED.primary_item_variant_id,
+    warehouse_rack_id = EXCLUDED.warehouse_rack_id,
+    batch = EXCLUDED.batch,
+    expired_date = EXCLUDED.expired_date,
+    item_barcode_id = EXCLUDED.item_barcode_id,
+    secondary_item_variant_id = EXCLUDED.secondary_item_variant_id,
+    primary_item_unit_id = EXCLUDED.primary_item_unit_id,
+    secondary_item_unit_id = EXCLUDED.secondary_item_unit_id,
+    primary_item_unit_value = EXCLUDED.primary_item_unit_value,
+    secondary_item_unit_value = EXCLUDED.secondary_item_unit_value,
+    amount = EXCLUDED.amount,
+    updated_at = NOW()
+RETURNING id, purchase_order_item_id, sales_order_item_id, receipt_order_item_id, delivery_order_id, primary_item_variant_id, warehouse_rack_id, batch, expired_date, item_barcode_id, secondary_item_variant_id, primary_item_unit_id, secondary_item_unit_id, primary_item_unit_value, secondary_item_unit_value, amount, is_deleted, created_at, updated_at
+`
+
+type UpsertDeliveryOrderItemParams struct {
+	ID                     string         `db:"id"`
+	PurchaseOrderItemID    string         `db:"purchase_order_item_id"`
+	SalesOrderItemID       string         `db:"sales_order_item_id"`
+	DeliveryOrderID        string         `db:"delivery_order_id"`
+	PrimaryItemVariantID   string         `db:"primary_item_variant_id"`
+	WarehouseRackID        string         `db:"warehouse_rack_id"`
+	Batch                  sql.NullString `db:"batch"`
+	ExpiredDate            sql.NullTime   `db:"expired_date"`
+	ItemBarcodeID          string         `db:"item_barcode_id"`
+	SecondaryItemVariantID string         `db:"secondary_item_variant_id"`
+	PrimaryItemUnitID      string         `db:"primary_item_unit_id"`
+	SecondaryItemUnitID    string         `db:"secondary_item_unit_id"`
+	PrimaryItemUnitValue   int64          `db:"primary_item_unit_value"`
+	SecondaryItemUnitValue int64          `db:"secondary_item_unit_value"`
+	Amount                 int64          `db:"amount"`
+}
+
+func (q *Queries) UpsertDeliveryOrderItem(ctx context.Context, arg UpsertDeliveryOrderItemParams) (SalesDeliveryOrderItem, error) {
+	row := q.db.QueryRowContext(ctx, upsertDeliveryOrderItem,
+		arg.ID,
+		arg.PurchaseOrderItemID,
+		arg.SalesOrderItemID,
+		arg.DeliveryOrderID,
+		arg.PrimaryItemVariantID,
+		arg.WarehouseRackID,
+		arg.Batch,
+		arg.ExpiredDate,
+		arg.ItemBarcodeID,
+		arg.SecondaryItemVariantID,
+		arg.PrimaryItemUnitID,
+		arg.SecondaryItemUnitID,
+		arg.PrimaryItemUnitValue,
+		arg.SecondaryItemUnitValue,
+		arg.Amount,
+	)
+	var i SalesDeliveryOrderItem
+	err := row.Scan(
+		&i.ID,
+		&i.PurchaseOrderItemID,
+		&i.SalesOrderItemID,
+		&i.ReceiptOrderItemID,
+		&i.DeliveryOrderID,
+		&i.PrimaryItemVariantID,
+		&i.WarehouseRackID,
+		&i.Batch,
+		&i.ExpiredDate,
+		&i.ItemBarcodeID,
+		&i.SecondaryItemVariantID,
+		&i.PrimaryItemUnitID,
+		&i.SecondaryItemUnitID,
+		&i.PrimaryItemUnitValue,
+		&i.SecondaryItemUnitValue,
+		&i.Amount,
+		&i.IsDeleted,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)

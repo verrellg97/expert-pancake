@@ -253,3 +253,39 @@ AND b.is_deleted = FALSE AND b.amount > b.amount_sent
 WHERE a.secondary_company_id = $1
 AND a.purchase_order_branch_id = $2
 AND a.is_deleted = FALSE;
+
+-- name: UpsertDeliveryOrderItem :one
+INSERT INTO sales.delivery_order_items(
+        id, purchase_order_item_id, sales_order_item_id, delivery_order_id,
+        primary_item_variant_id, warehouse_rack_id, batch, expired_date, item_barcode_id,
+        secondary_item_variant_id, primary_item_unit_id, secondary_item_unit_id,
+        primary_item_unit_value, secondary_item_unit_value, amount
+    )
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15) ON CONFLICT (id) DO
+UPDATE
+SET purchase_order_item_id = EXCLUDED.purchase_order_item_id,
+    sales_order_item_id = EXCLUDED.sales_order_item_id,
+    delivery_order_id = EXCLUDED.delivery_order_id,
+    primary_item_variant_id = EXCLUDED.primary_item_variant_id,
+    warehouse_rack_id = EXCLUDED.warehouse_rack_id,
+    batch = EXCLUDED.batch,
+    expired_date = EXCLUDED.expired_date,
+    item_barcode_id = EXCLUDED.item_barcode_id,
+    secondary_item_variant_id = EXCLUDED.secondary_item_variant_id,
+    primary_item_unit_id = EXCLUDED.primary_item_unit_id,
+    secondary_item_unit_id = EXCLUDED.secondary_item_unit_id,
+    primary_item_unit_value = EXCLUDED.primary_item_unit_value,
+    secondary_item_unit_value = EXCLUDED.secondary_item_unit_value,
+    amount = EXCLUDED.amount,
+    updated_at = NOW()
+RETURNING *;
+
+-- name: DeleteDeliveryOrderItems :exec
+DELETE FROM sales.delivery_order_items
+WHERE delivery_order_id = $1;
+
+-- name: UpdateSalesOrderItemAmountSent :one
+UPDATE sales.sales_order_items
+SET amount_sent = amount_sent+$2
+WHERE id = $1
+RETURNING *;
