@@ -234,3 +234,12 @@ SET company_id = EXCLUDED.company_id,
     secondary_branch_id = EXCLUDED.secondary_branch_id,
     updated_at = NOW()
 RETURNING *;
+
+-- name: GetDeliveryOrders :many
+SELECT 
+    *
+FROM sales.delivery_orders
+WHERE company_id = $1
+    AND branch_id = $2
+    AND transaction_date BETWEEN @start_date::date AND @end_date::date 
+    AND is_deleted = FALSE;

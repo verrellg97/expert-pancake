@@ -38,6 +38,7 @@ const (
 	UpdateSalesOrderStatusPath = "/sales/order/status"
 
 	UpsertDeliveryOrderPath = "/sales/delivery/order/upsert"
+	GetDeliveryOrdersPath   = "/sales/delivery/orders"
 )
 
 func (c *component) Routes(salesService model.SalesService) http.Handler {
@@ -82,6 +83,7 @@ func (c *component) Routes(salesService model.SalesService) http.Handler {
 	mux.Method("POST", UpdateSalesOrderStatusPath, httpHandler.New(salesService.UpdateSalesOrderStatus))
 
 	mux.Method("POST", UpsertDeliveryOrderPath, httpHandler.New(salesService.UpsertDeliveryOrder))
+	mux.Method("POST", GetDeliveryOrdersPath, httpHandler.New(salesService.GetDeliveryOrders))
 
 	return mux
 }

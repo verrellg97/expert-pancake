@@ -80,6 +80,67 @@ func (q *Queries) GetCheckPOS(ctx context.Context, companyID string) (int64, err
 	return total_count, err
 }
 
+const getDeliveryOrders = `-- name: GetDeliveryOrders :many
+SELECT 
+    id, receipt_order_id, company_id, branch_id, form_number, transaction_date, contact_book_id, secondary_company_id, konekin_id, secondary_branch_id, total_items, is_deleted, status, created_at, updated_at
+FROM sales.delivery_orders
+WHERE company_id = $1
+    AND branch_id = $2
+    AND transaction_date BETWEEN $3::date AND $4::date 
+    AND is_deleted = FALSE
+`
+
+type GetDeliveryOrdersParams struct {
+	CompanyID string    `db:"company_id"`
+	BranchID  string    `db:"branch_id"`
+	StartDate time.Time `db:"start_date"`
+	EndDate   time.Time `db:"end_date"`
+}
+
+func (q *Queries) GetDeliveryOrders(ctx context.Context, arg GetDeliveryOrdersParams) ([]SalesDeliveryOrder, error) {
+	rows, err := q.db.QueryContext(ctx, getDeliveryOrders,
+		arg.CompanyID,
+		arg.BranchID,
+		arg.StartDate,
+		arg.EndDate,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []SalesDeliveryOrder
+	for rows.Next() {
+		var i SalesDeliveryOrder
+		if err := rows.Scan(
+			&i.ID,
+			&i.ReceiptOrderID,
+			&i.CompanyID,
+			&i.BranchID,
+			&i.FormNumber,
+			&i.TransactionDate,
+			&i.ContactBookID,
+			&i.SecondaryCompanyID,
+			&i.KonekinID,
+			&i.SecondaryBranchID,
+			&i.TotalItems,
+			&i.IsDeleted,
+			&i.Status,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getPOS = `-- name: GetPOS :many
 SELECT 
   a.id as id,
