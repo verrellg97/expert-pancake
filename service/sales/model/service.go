@@ -33,6 +33,7 @@ type SalesService interface {
 
 	UpsertDeliveryOrder(w http.ResponseWriter, r *http.Request) error
 	GetDeliveryOrders(w http.ResponseWriter, r *http.Request) error
+	GetSalesOrderDeliveryItems(w http.ResponseWriter, r *http.Request) error
 }
 
 type POS struct {
@@ -393,4 +394,13 @@ type GetDeliveryOrdersRequest struct {
 
 type GetDeliveryOrdersResponse struct {
 	DeliveryOrders []DeliveryOrder `json:"delivery_orders"`
+}
+
+type GetSalesOrderDeliveryItemsRequest struct {
+	SecondaryCompanyId string `json:"secondary_company_id" validate:"required"`
+	SecondaryBranchId  string `json:"secondary_branch_id" validate:"required"`
+}
+
+type GetSalesOrderDeliveryItemsResponse struct {
+	SalesOrderItems []SalesOrderItem `json:"sales_order_items"`
 }

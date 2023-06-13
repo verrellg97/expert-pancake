@@ -447,6 +447,61 @@ func (q *Queries) GetSalesOrder(ctx context.Context, id string) (SalesSalesOrder
 	return i, err
 }
 
+const getSalesOrderDeliveryItems = `-- name: GetSalesOrderDeliveryItems :many
+SELECT 
+    b.id, b.purchase_order_item_id, b.sales_order_id, b.primary_item_variant_id, b.secondary_item_variant_id, b.primary_item_unit_id, b.secondary_item_unit_id, b.primary_item_unit_value, b.secondary_item_unit_value, b.amount, b.amount_sent, b.price, b.is_deleted, b.created_at, b.updated_at
+FROM sales.sales_orders a
+JOIN sales.sales_order_items b ON b.sales_order_id = a.id
+AND b.is_deleted = FALSE AND b.amount > b.amount_sent
+WHERE a.secondary_company_id = $1
+AND a.purchase_order_branch_id = $2
+AND a.is_deleted = FALSE
+`
+
+type GetSalesOrderDeliveryItemsParams struct {
+	SecondaryCompanyID    string `db:"secondary_company_id"`
+	PurchaseOrderBranchID string `db:"purchase_order_branch_id"`
+}
+
+func (q *Queries) GetSalesOrderDeliveryItems(ctx context.Context, arg GetSalesOrderDeliveryItemsParams) ([]SalesSalesOrderItem, error) {
+	rows, err := q.db.QueryContext(ctx, getSalesOrderDeliveryItems, arg.SecondaryCompanyID, arg.PurchaseOrderBranchID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []SalesSalesOrderItem
+	for rows.Next() {
+		var i SalesSalesOrderItem
+		if err := rows.Scan(
+			&i.ID,
+			&i.PurchaseOrderItemID,
+			&i.SalesOrderID,
+			&i.PrimaryItemVariantID,
+			&i.SecondaryItemVariantID,
+			&i.PrimaryItemUnitID,
+			&i.SecondaryItemUnitID,
+			&i.PrimaryItemUnitValue,
+			&i.SecondaryItemUnitValue,
+			&i.Amount,
+			&i.AmountSent,
+			&i.Price,
+			&i.IsDeleted,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getSalesOrderItems = `-- name: GetSalesOrderItems :many
 SELECT 
     id, purchase_order_item_id, sales_order_id, primary_item_variant_id, secondary_item_variant_id, primary_item_unit_id, secondary_item_unit_id, primary_item_unit_value, secondary_item_unit_value, amount, amount_sent, price, is_deleted, created_at, updated_at

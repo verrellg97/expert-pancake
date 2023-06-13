@@ -243,3 +243,13 @@ WHERE company_id = $1
     AND branch_id = $2
     AND transaction_date BETWEEN @start_date::date AND @end_date::date 
     AND is_deleted = FALSE;
+
+-- name: GetSalesOrderDeliveryItems :many
+SELECT 
+    b.*
+FROM sales.sales_orders a
+JOIN sales.sales_order_items b ON b.sales_order_id = a.id
+AND b.is_deleted = FALSE AND b.amount > b.amount_sent
+WHERE a.secondary_company_id = $1
+AND a.purchase_order_branch_id = $2
+AND a.is_deleted = FALSE;
