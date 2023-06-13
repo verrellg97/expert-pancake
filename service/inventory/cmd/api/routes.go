@@ -84,6 +84,9 @@ const (
 	GetVariantWarehouseRacksByBranchPath = "/inventory/item/variant/branch/racks"
 
 	GetCheckStockHistoryPath = "/inventory/check-stock-history"
+	
+	InsertStockMovementPath = "/inventory/stock-movement/insert"
+	DeleteStockMovementPath = "/inventory/stock-movement/delete"
 )
 
 func (c *component) Routes(inventoryService model.InventoryService) http.Handler {
@@ -175,6 +178,9 @@ func (c *component) Routes(inventoryService model.InventoryService) http.Handler
 	mux.Method("POST", GetVariantWarehouseRacksByBranchPath, httpHandler.New(inventoryService.GetVariantWarehouseRacksByBranch))
 
 	mux.Method("POST", GetCheckStockHistoryPath, httpHandler.New(inventoryService.GetCheckStockHistory))
+
+	mux.Method("POST", InsertStockMovementPath, httpHandler.New(inventoryService.InsertStockMovement))
+	mux.Method("POST", DeleteStockMovementPath, httpHandler.New(inventoryService.DeleteStockMovement))
 
 	return mux
 }

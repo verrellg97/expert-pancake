@@ -78,6 +78,9 @@ type InventoryService interface {
 	GetVariantWarehouseRacksByBranch(w http.ResponseWriter, r *http.Request) error
 
 	GetCheckStockHistory(w http.ResponseWriter, r *http.Request) error
+
+	InsertStockMovement(w http.ResponseWriter, r *http.Request) error
+	DeleteStockMovement(w http.ResponseWriter, r *http.Request) error
 }
 
 type Brand struct {
@@ -933,4 +936,29 @@ type GetCheckStockHistoryRequest struct {
 
 type GetCheckStockHistoryResponse struct {
 	Status bool `json:"status" validate:"required"`
+}
+
+type InsertStockMovementRequest struct {
+	TransactionId         string `json:"transaction_id" validate:"required"`
+	TransactionDate       string `json:"transaction_date" validate:"required"`
+	TransactionReference  string `json:"transaction_reference" validate:"required"`
+	DetailTransactionId   string `json:"detail_transaction_id" validate:"required"`
+	WarehouseId           string `json:"warehouse_id" validate:"required"`
+	WarehouseRackId       string `json:"warehouse_rack_id" validate:"required"`
+	VariantId             string `json:"variant_id" validate:"required"`
+	ItemBarcodeId         string `json:"item_barcode_id" validate:"required"`
+	Amount                string `json:"amount" validate:"required"`
+}
+
+type InsertStockMovementResponse struct {
+	Message string `json:"message" validate:"required"`
+}
+
+type DeleteStockMovementRequest struct {
+	TransactionId string `json:"transaction_id" validate:"required"`
+	TransactionReference string `json:"transaction_reference" validate:"required"`
+}
+
+type DeleteStockMovementResponse struct {
+	Message string `json:"message" validate:"required"`
 }
