@@ -9,6 +9,7 @@ import (
 )
 
 type Querier interface {
+	DeleteDeliveryOrderItems(ctx context.Context, deliveryOrderID string) error
 	DeletePOS(ctx context.Context, id string) error
 	DeletePOSCOASetting(ctx context.Context, branchID string) error
 	DeletePOSCustomerSetting(ctx context.Context, branchID string) error
@@ -31,8 +32,10 @@ type Querier interface {
 	InsertPOSCustomerSetting(ctx context.Context, arg InsertPOSCustomerSettingParams) (SalesPosCustomerSetting, error)
 	InsertPOSItem(ctx context.Context, arg InsertPOSItemParams) (SalesPointOfSaleItem, error)
 	UpdateSalesOrderAddItem(ctx context.Context, salesOrderID string) error
+	UpdateSalesOrderItemAmountSent(ctx context.Context, arg UpdateSalesOrderItemAmountSentParams) (SalesSalesOrderItem, error)
 	UpdateSalesOrderStatus(ctx context.Context, arg UpdateSalesOrderStatusParams) error
 	UpsertDeliveryOrder(ctx context.Context, arg UpsertDeliveryOrderParams) (SalesDeliveryOrder, error)
+	UpsertDeliveryOrderItem(ctx context.Context, arg UpsertDeliveryOrderItemParams) (SalesDeliveryOrderItem, error)
 	UpsertPOS(ctx context.Context, arg UpsertPOSParams) (SalesPointOfSale, error)
 	UpsertPOSPaymentMethod(ctx context.Context, arg UpsertPOSPaymentMethodParams) error
 	UpsertPOSUserSetting(ctx context.Context, arg UpsertPOSUserSettingParams) (SalesPosUserSetting, error)
