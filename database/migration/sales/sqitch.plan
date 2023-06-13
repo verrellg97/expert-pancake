@@ -6,3 +6,4 @@
 20230606_add_table_pos_payment_methods 2023-06-06T10:35:24Z Verrell <verrell@Verrells-MacBook-Air.local> # Add table pos_payment_methods
 20230607_alter_table_pos 2023-06-07T16:30:35Z Verrell <verrell@Verrells-MacBook-Air.local> # Alter table pos
 20230612_add_table_sales_orders 2023-06-12T22:07:00Z Verrell <verrell@Verrells-MacBook-Air.local> # Add table sales_orders
+20230613_add_table_delivery_orders 2023-06-13T10:53:35Z Verrell <verrell@Verrells-MacBook-Air.local> # Add table delivery_orders
