@@ -28,4 +28,5 @@ const (
 	UpdateSalesOrderStatusError = 800705
 
 	UpsertDeliveryOrderError = 800801
+	GetDeliveryOrdersError   = 800802
 )
