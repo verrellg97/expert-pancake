@@ -405,6 +405,10 @@ INSERT INTO inventory.stock_movements(
     )
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10);
 
+-- name: DeleteStockMovement :exec
+DELETE FROM inventory.stock_movements
+WHERE transaction_id = $1 AND transaction_reference = $2;
+
 -- name: InsertUpdateStock :exec
 INSERT INTO inventory.update_stocks(id,
 form_number, transaction_date, warehouse_id, warehouse_rack_id,

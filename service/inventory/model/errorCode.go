@@ -74,4 +74,7 @@ const (
 	GetVariantWarehouseRacksByBranchError = 700051
 
 	GetCheckStockHistoryError = 700052
+
+	InsertStokMovementError = 700053
+	DeleteStokMovement      = 700054
 )
