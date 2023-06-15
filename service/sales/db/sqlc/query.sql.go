@@ -563,15 +563,15 @@ const getSalesOrders = `-- name: GetSalesOrders :many
 SELECT 
     id, purchase_order_id, purchase_order_branch_id, company_id, branch_id, form_number, transaction_date, contact_book_id, secondary_company_id, konekin_id, currency_code, total_items, total, is_deleted, status, is_all_branches, created_at, updated_at
 FROM sales.sales_orders
-WHERE company_id = $1::string
-AND branch_id = $2::string
+WHERE company_id = $1::text
+AND branch_id = $2::text
 AND transaction_date BETWEEN $3::date AND $4::date 
 AND is_deleted = FALSE
 UNION ALL
 SELECT 
     id, purchase_order_id, purchase_order_branch_id, company_id, branch_id, form_number, transaction_date, contact_book_id, secondary_company_id, konekin_id, currency_code, total_items, total, is_deleted, status, is_all_branches, created_at, updated_at
 FROM sales.sales_orders
-WHERE company_id = $1::string
+WHERE company_id = $1::text
 AND branch_id = '' AND is_all_branches = TRUE
 AND transaction_date BETWEEN $3::date AND $4::date 
 AND is_deleted = FALSE
@@ -580,8 +580,8 @@ SELECT
     a.id, a.purchase_order_id, a.purchase_order_branch_id, a.company_id, a.branch_id, a.form_number, a.transaction_date, a.contact_book_id, a.secondary_company_id, a.konekin_id, a.currency_code, a.total_items, a.total, a.is_deleted, a.status, a.is_all_branches, a.created_at, a.updated_at
 FROM sales.sales_orders a
 JOIN sales.sales_order_branches b ON a.id = b.sales_order_id
-AND b.company_branch_id = $2::string
-WHERE a.company_id = $1::string
+AND b.company_branch_id = $2::text
+WHERE a.company_id = $1::text
 AND a.branch_id = '' AND a.is_all_branches = FALSE
 AND a.transaction_date BETWEEN $3::date AND $4::date 
 AND a.is_deleted = FALSE
