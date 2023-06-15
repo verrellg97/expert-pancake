@@ -195,15 +195,15 @@ WHERE sales_order_id = $1;
 SELECT 
     *
 FROM sales.sales_orders
-WHERE company_id = @company_id::string
-AND branch_id = @branch_id::string
+WHERE company_id = @company_id::text
+AND branch_id = @branch_id::text
 AND transaction_date BETWEEN @start_date::date AND @end_date::date 
 AND is_deleted = FALSE
 UNION ALL
 SELECT 
     *
 FROM sales.sales_orders
-WHERE company_id = @company_id::string
+WHERE company_id = @company_id::text
 AND branch_id = '' AND is_all_branches = TRUE
 AND transaction_date BETWEEN @start_date::date AND @end_date::date 
 AND is_deleted = FALSE
@@ -212,8 +212,8 @@ SELECT
     a.*
 FROM sales.sales_orders a
 JOIN sales.sales_order_branches b ON a.id = b.sales_order_id
-AND b.company_branch_id = @branch_id::string
-WHERE a.company_id = @company_id::string
+AND b.company_branch_id = @branch_id::text
+WHERE a.company_id = @company_id::text
 AND a.branch_id = '' AND a.is_all_branches = FALSE
 AND a.transaction_date BETWEEN @start_date::date AND @end_date::date 
 AND a.is_deleted = FALSE;

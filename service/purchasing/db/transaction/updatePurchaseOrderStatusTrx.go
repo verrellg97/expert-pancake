@@ -65,6 +65,10 @@ func (trx *Trx) UpdatePurchaseOrderStatusTrx(ctx context.Context, arg UpdatePurc
 							}
 
 							supplierBranchId = branches.Result[0].BranchId
+
+							if konekin.Result.IsAllBranches && len(branches.Result) > 1 {
+								supplierBranchId = ""
+							}
 						} else if !konekin.Result.IsAllBranches && len(konekin.Result.Branches) == 1 {
 							supplierBranchId = konekin.Result.Branches[0]
 						}

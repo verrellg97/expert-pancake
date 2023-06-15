@@ -276,7 +276,7 @@ type UpsertSalesOrderRequest struct {
 	PurchaseOrderId       string   `json:"purchase_order_id"`
 	PurchaseOrderBranchId string   `json:"purchase_order_branch_id"`
 	CompanyId             string   `json:"company_id" validate:"required"`
-	BranchId              string   `json:"branch_id" validate:"required"`
+	BranchId              string   `json:"branch_id"`
 	TransactionDate       string   `json:"transaction_date" validate:"required"`
 	ContactBookId         string   `json:"contact_book_id" validate:"required"`
 	SecondaryCompanyId    string   `json:"secondary_company_id"`
