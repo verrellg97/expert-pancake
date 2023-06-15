@@ -818,17 +818,18 @@ func (q *Queries) UpdateSalesOrderItemAmountSent(ctx context.Context, arg Update
 
 const updateSalesOrderStatus = `-- name: UpdateSalesOrderStatus :exec
 UPDATE sales.sales_orders
-SET status = $2
+SET status = $2, branch_id = $3
 WHERE id = $1
 `
 
 type UpdateSalesOrderStatusParams struct {
-	ID     string `db:"id"`
-	Status string `db:"status"`
+	ID       string `db:"id"`
+	Status   string `db:"status"`
+	BranchID string `db:"branch_id"`
 }
 
 func (q *Queries) UpdateSalesOrderStatus(ctx context.Context, arg UpdateSalesOrderStatusParams) error {
-	_, err := q.db.ExecContext(ctx, updateSalesOrderStatus, arg.ID, arg.Status)
+	_, err := q.db.ExecContext(ctx, updateSalesOrderStatus, arg.ID, arg.Status, arg.BranchID)
 	return err
 }
 

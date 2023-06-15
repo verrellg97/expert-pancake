@@ -27,10 +27,11 @@ func (a salesService) UpdateSalesOrderStatus(w http.ResponseWriter, r *http.Requ
 
 	var message = "OK"
 	if !result.IsDeleted {
-		if result.Status != req.Status {
+		if result.Status != req.Status && result.Status == "created" {
 			arg := db.UpdateSalesOrderStatusParams{
-				ID:     req.SalesOrderId,
-				Status: req.Status,
+				ID:       req.SalesOrderId,
+				BranchID: req.BranchId,
+				Status:   req.Status,
 			}
 
 			err := a.dbTrx.UpdateSalesOrderStatus(context.Background(), arg)
