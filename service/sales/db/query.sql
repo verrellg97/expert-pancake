@@ -232,7 +232,7 @@ WHERE id = $1;
 
 -- name: UpdateSalesOrderStatus :exec
 UPDATE sales.sales_orders
-SET status = $2
+SET status = $2, branch_id = $3
 WHERE id = $1;
 
 -- name: UpsertDeliveryOrder :one

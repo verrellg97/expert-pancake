@@ -350,6 +350,7 @@ type GetSalesOrderItemsResponse struct {
 
 type UpdateSalesOrderStatusRequest struct {
 	SalesOrderId string `json:"sales_order_id" validate:"required"`
+	BranchId     string `json:"branch_id" validate:"required"`
 	Status       string `json:"status" validate:"required"`
 }
 
