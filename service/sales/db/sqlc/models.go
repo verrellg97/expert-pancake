@@ -134,8 +134,16 @@ type SalesSalesOrder struct {
 	Total                 int64        `db:"total"`
 	IsDeleted             bool         `db:"is_deleted"`
 	Status                string       `db:"status"`
+	IsAllBranches         bool         `db:"is_all_branches"`
 	CreatedAt             sql.NullTime `db:"created_at"`
 	UpdatedAt             sql.NullTime `db:"updated_at"`
+}
+
+type SalesSalesOrderBranch struct {
+	SalesOrderID    string       `db:"sales_order_id"`
+	CompanyBranchID string       `db:"company_branch_id"`
+	CreatedAt       sql.NullTime `db:"created_at"`
+	UpdatedAt       sql.NullTime `db:"updated_at"`
 }
 
 type SalesSalesOrderItem struct {

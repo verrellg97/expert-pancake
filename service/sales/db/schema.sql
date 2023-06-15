@@ -91,9 +91,17 @@ CREATE TABLE "sales"."sales_orders" (
   "total" bigint NOT NULL DEFAULT 0,
   "is_deleted" bool NOT NULL DEFAULT false,
   "status" text NOT NULL DEFAULT 'created',
+  "is_all_branches" bool NOT NULL DEFAULT false,
   "created_at" timestamptz DEFAULT (now()),
   "updated_at" timestamptz DEFAULT (now()),
   PRIMARY KEY ("id")
+);
+
+CREATE TABLE "sales"."sales_order_branches" (
+  "sales_order_id" text NOT NULL,
+  "company_branch_id" text NOT NULL,
+  "created_at" timestamptz DEFAULT (now()),
+  "updated_at" timestamptz DEFAULT (now())
 );
 
 CREATE TABLE "sales"."sales_order_items" (
