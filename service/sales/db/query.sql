@@ -134,9 +134,10 @@ WHERE company_id = $1;
 INSERT INTO sales.sales_orders(
     id, purchase_order_id, purchase_order_branch_id, company_id, branch_id,
     form_number, transaction_date,
-    contact_book_id, secondary_company_id, konekin_id, currency_code
+    contact_book_id, secondary_company_id, konekin_id, currency_code,
+    is_all_branches
 )
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) ON CONFLICT (id) DO
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) ON CONFLICT (id) DO
 UPDATE
 SET purchase_order_id = EXCLUDED.purchase_order_id,
     purchase_order_branch_id = EXCLUDED.purchase_order_branch_id,
@@ -148,6 +149,7 @@ SET purchase_order_id = EXCLUDED.purchase_order_id,
     secondary_company_id = EXCLUDED.secondary_company_id,
     konekin_id = EXCLUDED.konekin_id,
     currency_code = EXCLUDED.currency_code,
+    is_all_branches = EXCLUDED.is_all_branches,
     updated_at = NOW()
 RETURNING *;
 
@@ -193,10 +195,28 @@ WHERE sales_order_id = $1;
 SELECT 
     *
 FROM sales.sales_orders
-WHERE company_id = $1
-    AND branch_id = $2
-    AND transaction_date BETWEEN @start_date::date AND @end_date::date 
-    AND is_deleted = FALSE;
+WHERE company_id = @company_id::string
+AND branch_id = @branch_id::string
+AND transaction_date BETWEEN @start_date::date AND @end_date::date 
+AND is_deleted = FALSE
+UNION ALL
+SELECT 
+    *
+FROM sales.sales_orders
+WHERE company_id = @company_id::string
+AND branch_id = '' AND is_all_branches = TRUE
+AND transaction_date BETWEEN @start_date::date AND @end_date::date 
+AND is_deleted = FALSE
+UNION ALL
+SELECT 
+    a.*
+FROM sales.sales_orders a
+JOIN sales.sales_order_branches b ON a.id = b.sales_order_id
+AND b.company_branch_id = @branch_id::string
+WHERE a.company_id = @company_id::string
+AND a.branch_id = '' AND a.is_all_branches = FALSE
+AND a.transaction_date BETWEEN @start_date::date AND @end_date::date 
+AND a.is_deleted = FALSE;
 
 -- name: GetSalesOrderItems :many
 SELECT 
@@ -289,3 +309,7 @@ UPDATE sales.sales_order_items
 SET amount_sent = amount_sent+$2
 WHERE id = $1
 RETURNING *;
+
+-- name: InsertSalesOrderBranch :exec
+INSERT INTO sales.sales_order_branches(sales_order_id, company_branch_id)
+VALUES ($1, $2);

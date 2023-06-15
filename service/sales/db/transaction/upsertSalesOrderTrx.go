@@ -23,6 +23,8 @@ type UpsertSalesOrderTrxParams struct {
 	SecondaryCompanyId    string
 	KonekinId             string
 	CurrencyCode          string
+	IsAllBranches         bool
+	Branches              []string
 }
 
 type UpsertSalesOrderTrxResult struct {
@@ -67,10 +69,23 @@ func (trx *Trx) UpsertSalesOrderTrx(ctx context.Context, arg UpsertSalesOrderTrx
 			SecondaryCompanyID:    arg.SecondaryCompanyId,
 			KonekinID:             arg.KonekinId,
 			CurrencyCode:          arg.CurrencyCode,
+			IsAllBranches:         arg.IsAllBranches,
 		})
 
 		if err != nil {
 			return err
+		}
+
+		if !arg.IsAllBranches && arg.BranchId == "" {
+			for _, d := range arg.Branches {
+				err = q.InsertSalesOrderBranch(ctx, db.InsertSalesOrderBranchParams{
+					SalesOrderID:    id,
+					CompanyBranchID: d,
+				})
+				if err != nil {
+					return err
+				}
+			}
 		}
 
 		result.TransactionId = headerRes.ID

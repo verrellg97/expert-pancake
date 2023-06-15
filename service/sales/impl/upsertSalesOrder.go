@@ -42,6 +42,8 @@ func (a salesService) UpsertSalesOrder(w http.ResponseWriter, r *http.Request) e
 		SecondaryCompanyId:    req.SecondaryCompanyId,
 		KonekinId:             req.KonekinId,
 		CurrencyCode:          req.CurrencyCode,
+		IsAllBranches:         req.IsAllBranches,
+		Branches:              req.Branches,
 	}
 
 	result, err := a.dbTrx.UpsertSalesOrderTrx(context.Background(), arg)

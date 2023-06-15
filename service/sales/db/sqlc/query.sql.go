@@ -427,7 +427,7 @@ func (q *Queries) GetPOSUserSetting(ctx context.Context, arg GetPOSUserSettingPa
 
 const getSalesOrder = `-- name: GetSalesOrder :one
 SELECT 
-    id, purchase_order_id, purchase_order_branch_id, company_id, branch_id, form_number, transaction_date, contact_book_id, secondary_company_id, konekin_id, currency_code, total_items, total, is_deleted, status, created_at, updated_at
+    id, purchase_order_id, purchase_order_branch_id, company_id, branch_id, form_number, transaction_date, contact_book_id, secondary_company_id, konekin_id, currency_code, total_items, total, is_deleted, status, is_all_branches, created_at, updated_at
 FROM sales.sales_orders
 WHERE id = $1
 `
@@ -451,6 +451,7 @@ func (q *Queries) GetSalesOrder(ctx context.Context, id string) (SalesSalesOrder
 		&i.Total,
 		&i.IsDeleted,
 		&i.Status,
+		&i.IsAllBranches,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
@@ -560,12 +561,30 @@ func (q *Queries) GetSalesOrderItems(ctx context.Context, salesOrderID string) (
 
 const getSalesOrders = `-- name: GetSalesOrders :many
 SELECT 
-    id, purchase_order_id, purchase_order_branch_id, company_id, branch_id, form_number, transaction_date, contact_book_id, secondary_company_id, konekin_id, currency_code, total_items, total, is_deleted, status, created_at, updated_at
+    id, purchase_order_id, purchase_order_branch_id, company_id, branch_id, form_number, transaction_date, contact_book_id, secondary_company_id, konekin_id, currency_code, total_items, total, is_deleted, status, is_all_branches, created_at, updated_at
 FROM sales.sales_orders
-WHERE company_id = $1
-    AND branch_id = $2
-    AND transaction_date BETWEEN $3::date AND $4::date 
-    AND is_deleted = FALSE
+WHERE company_id = $1::string
+AND branch_id = $2::string
+AND transaction_date BETWEEN $3::date AND $4::date 
+AND is_deleted = FALSE
+UNION ALL
+SELECT 
+    id, purchase_order_id, purchase_order_branch_id, company_id, branch_id, form_number, transaction_date, contact_book_id, secondary_company_id, konekin_id, currency_code, total_items, total, is_deleted, status, is_all_branches, created_at, updated_at
+FROM sales.sales_orders
+WHERE company_id = $1::string
+AND branch_id = '' AND is_all_branches = TRUE
+AND transaction_date BETWEEN $3::date AND $4::date 
+AND is_deleted = FALSE
+UNION ALL
+SELECT 
+    a.id, a.purchase_order_id, a.purchase_order_branch_id, a.company_id, a.branch_id, a.form_number, a.transaction_date, a.contact_book_id, a.secondary_company_id, a.konekin_id, a.currency_code, a.total_items, a.total, a.is_deleted, a.status, a.is_all_branches, a.created_at, a.updated_at
+FROM sales.sales_orders a
+JOIN sales.sales_order_branches b ON a.id = b.sales_order_id
+AND b.company_branch_id = $2::string
+WHERE a.company_id = $1::string
+AND a.branch_id = '' AND a.is_all_branches = FALSE
+AND a.transaction_date BETWEEN $3::date AND $4::date 
+AND a.is_deleted = FALSE
 `
 
 type GetSalesOrdersParams struct {
@@ -605,6 +624,7 @@ func (q *Queries) GetSalesOrders(ctx context.Context, arg GetSalesOrdersParams) 
 			&i.Total,
 			&i.IsDeleted,
 			&i.Status,
+			&i.IsAllBranches,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 		); err != nil {
@@ -727,6 +747,21 @@ func (q *Queries) InsertPOSItem(ctx context.Context, arg InsertPOSItemParams) (S
 		&i.UpdatedAt,
 	)
 	return i, err
+}
+
+const insertSalesOrderBranch = `-- name: InsertSalesOrderBranch :exec
+INSERT INTO sales.sales_order_branches(sales_order_id, company_branch_id)
+VALUES ($1, $2)
+`
+
+type InsertSalesOrderBranchParams struct {
+	SalesOrderID    string `db:"sales_order_id"`
+	CompanyBranchID string `db:"company_branch_id"`
+}
+
+func (q *Queries) InsertSalesOrderBranch(ctx context.Context, arg InsertSalesOrderBranchParams) error {
+	_, err := q.db.ExecContext(ctx, insertSalesOrderBranch, arg.SalesOrderID, arg.CompanyBranchID)
+	return err
 }
 
 const updateSalesOrderAddItem = `-- name: UpdateSalesOrderAddItem :exec
@@ -1098,9 +1133,10 @@ const upsertSalesOrder = `-- name: UpsertSalesOrder :one
 INSERT INTO sales.sales_orders(
     id, purchase_order_id, purchase_order_branch_id, company_id, branch_id,
     form_number, transaction_date,
-    contact_book_id, secondary_company_id, konekin_id, currency_code
+    contact_book_id, secondary_company_id, konekin_id, currency_code,
+    is_all_branches
 )
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) ON CONFLICT (id) DO
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) ON CONFLICT (id) DO
 UPDATE
 SET purchase_order_id = EXCLUDED.purchase_order_id,
     purchase_order_branch_id = EXCLUDED.purchase_order_branch_id,
@@ -1112,8 +1148,9 @@ SET purchase_order_id = EXCLUDED.purchase_order_id,
     secondary_company_id = EXCLUDED.secondary_company_id,
     konekin_id = EXCLUDED.konekin_id,
     currency_code = EXCLUDED.currency_code,
+    is_all_branches = EXCLUDED.is_all_branches,
     updated_at = NOW()
-RETURNING id, purchase_order_id, purchase_order_branch_id, company_id, branch_id, form_number, transaction_date, contact_book_id, secondary_company_id, konekin_id, currency_code, total_items, total, is_deleted, status, created_at, updated_at
+RETURNING id, purchase_order_id, purchase_order_branch_id, company_id, branch_id, form_number, transaction_date, contact_book_id, secondary_company_id, konekin_id, currency_code, total_items, total, is_deleted, status, is_all_branches, created_at, updated_at
 `
 
 type UpsertSalesOrderParams struct {
@@ -1128,6 +1165,7 @@ type UpsertSalesOrderParams struct {
 	SecondaryCompanyID    string    `db:"secondary_company_id"`
 	KonekinID             string    `db:"konekin_id"`
 	CurrencyCode          string    `db:"currency_code"`
+	IsAllBranches         bool      `db:"is_all_branches"`
 }
 
 func (q *Queries) UpsertSalesOrder(ctx context.Context, arg UpsertSalesOrderParams) (SalesSalesOrder, error) {
@@ -1143,6 +1181,7 @@ func (q *Queries) UpsertSalesOrder(ctx context.Context, arg UpsertSalesOrderPara
 		arg.SecondaryCompanyID,
 		arg.KonekinID,
 		arg.CurrencyCode,
+		arg.IsAllBranches,
 	)
 	var i SalesSalesOrder
 	err := row.Scan(
@@ -1161,6 +1200,7 @@ func (q *Queries) UpsertSalesOrder(ctx context.Context, arg UpsertSalesOrderPara
 		&i.Total,
 		&i.IsDeleted,
 		&i.Status,
+		&i.IsAllBranches,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
