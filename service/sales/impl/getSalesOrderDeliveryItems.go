@@ -23,6 +23,7 @@ func (a salesService) GetSalesOrderDeliveryItems(w http.ResponseWriter, r *http.
 	}
 
 	result, err := a.dbTrx.GetSalesOrderDeliveryItems(context.Background(), db.GetSalesOrderDeliveryItemsParams{
+		BranchID:              req.BranchId,
 		SecondaryCompanyID:    req.SecondaryCompanyId,
 		PurchaseOrderBranchID: req.SecondaryBranchId,
 	})

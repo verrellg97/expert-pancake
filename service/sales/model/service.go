@@ -401,6 +401,7 @@ type GetDeliveryOrdersResponse struct {
 }
 
 type GetSalesOrderDeliveryItemsRequest struct {
+	BranchId           string `json:"branch_id" validate:"required"`
 	SecondaryCompanyId string `json:"secondary_company_id" validate:"required"`
 	SecondaryBranchId  string `json:"secondary_branch_id" validate:"required"`
 }
