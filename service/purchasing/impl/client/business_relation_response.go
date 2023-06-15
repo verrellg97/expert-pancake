@@ -42,14 +42,18 @@ type GetContactBooksResponse struct {
 }
 
 type KonekinContactBook struct {
-	ContactBookId    string `json:"contact_book_id" validate:"required"`
-	KonekinId        string `json:"konekin_id" validate:"required"`
-	PrimaryCompanyId string `json:"primary_company_id" validate:"required"`
-	Name             string `json:"name" validate:"required"`
-	Email            string `json:"email" validate:"required"`
-	Phone            string `json:"phone" validate:"required"`
-	Mobile           string `json:"mobile" validate:"required"`
-	Web              string `json:"web" validate:"required"`
+	ContactBookId    string   `json:"contact_book_id" validate:"required"`
+	KonekinId        string   `json:"konekin_id" validate:"required"`
+	PrimaryCompanyId string   `json:"primary_company_id" validate:"required"`
+	Name             string   `json:"name" validate:"required"`
+	Email            string   `json:"email" validate:"required"`
+	Phone            string   `json:"phone" validate:"required"`
+	Mobile           string   `json:"mobile" validate:"required"`
+	Web              string   `json:"web" validate:"required"`
+	IsAllBranches    bool     `json:"is_all_branches" validate:"required"`
+	Branches         []string `json:"branches" validate:"required"`
+	IsCustomer       bool     `json:"is_customer" validate:"required"`
+	IsSupplier       bool     `json:"is_supplier" validate:"required"`
 }
 
 type GetKonekinContactBookResponse struct {
