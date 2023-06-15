@@ -464,18 +464,19 @@ SELECT
 FROM sales.sales_orders a
 JOIN sales.sales_order_items b ON b.sales_order_id = a.id
 AND b.is_deleted = FALSE AND b.amount > b.amount_sent
-WHERE a.secondary_company_id = $1
-AND a.purchase_order_branch_id = $2
-AND a.is_deleted = FALSE
+WHERE a.branch_id = $1 AND a.secondary_company_id = $2
+AND a.purchase_order_branch_id = $3
+AND a.is_deleted = FALSE AND a.status = 'accepted'
 `
 
 type GetSalesOrderDeliveryItemsParams struct {
+	BranchID              string `db:"branch_id"`
 	SecondaryCompanyID    string `db:"secondary_company_id"`
 	PurchaseOrderBranchID string `db:"purchase_order_branch_id"`
 }
 
 func (q *Queries) GetSalesOrderDeliveryItems(ctx context.Context, arg GetSalesOrderDeliveryItemsParams) ([]SalesSalesOrderItem, error) {
-	rows, err := q.db.QueryContext(ctx, getSalesOrderDeliveryItems, arg.SecondaryCompanyID, arg.PurchaseOrderBranchID)
+	rows, err := q.db.QueryContext(ctx, getSalesOrderDeliveryItems, arg.BranchID, arg.SecondaryCompanyID, arg.PurchaseOrderBranchID)
 	if err != nil {
 		return nil, err
 	}

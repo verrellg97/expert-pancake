@@ -270,9 +270,9 @@ SELECT
 FROM sales.sales_orders a
 JOIN sales.sales_order_items b ON b.sales_order_id = a.id
 AND b.is_deleted = FALSE AND b.amount > b.amount_sent
-WHERE a.secondary_company_id = $1
-AND a.purchase_order_branch_id = $2
-AND a.is_deleted = FALSE;
+WHERE a.branch_id = $1 AND a.secondary_company_id = $2
+AND a.purchase_order_branch_id = $3
+AND a.is_deleted = FALSE AND a.status = 'accepted';
 
 -- name: UpsertDeliveryOrderItem :one
 INSERT INTO sales.delivery_order_items(
