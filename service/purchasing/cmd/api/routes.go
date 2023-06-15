@@ -22,6 +22,12 @@ const (
 	GetCheckPurchaseOrdersPath = "/purchasing/orders/check"
 
 	UpdatePurchaseOrderStatusPath = "/purchasing/order/status"
+
+	UpsertReceiptOrderPath      = "/purchasing/receipt-order/upsert"
+	GetReceiptOrdersPath        = "/purchasing/receipt-orders"
+	UpdateReceiptOrderItemsPath = "/purchasing/receipt-order/items/update"
+	GetReceiptOrderItemsPath    = "/purchasing/receipt-order/items"
+	DeleteReceiptOrderPath      = "/purchasing/receipt-order/delete"
 )
 
 func (c *component) Routes(purchasingService model.PurchasingService) http.Handler {
@@ -45,12 +51,19 @@ func (c *component) Routes(purchasingService model.PurchasingService) http.Handl
 	mux.Method("POST", UpdatePurchaseOrderItemsPath, httpHandler.New(purchasingService.UpdatePurchaseOrderItems))
 	mux.Method("POST", GetPurchaseOrdersPath, httpHandler.New(purchasingService.GetPurchaseOrders))
 	mux.Method("POST", GetPurcaseOrderItemsPath, httpHandler.New(purchasingService.GetPurchaseOrderItems))
+	
 	mux.Method("POST", UpdatePurchaseSettingPath, httpHandler.New(purchasingService.UpdatePurchaseSetting))
 	mux.Method("POST", GetPurchaseSettingPath, httpHandler.New(purchasingService.GetPurchaseSetting))
 
 	mux.Method("POST", GetCheckPurchaseOrdersPath, httpHandler.New(purchasingService.GetCheckPurchaseOrders))
 
 	mux.Method("POST", UpdatePurchaseOrderStatusPath, httpHandler.New(purchasingService.UpdatePurchaseOrderStatus))
+
+	mux.Method("POST", UpsertReceiptOrderPath, httpHandler.New(purchasingService.UpsertReceiptOrder))
+	mux.Method("POST", GetReceiptOrdersPath, httpHandler.New(purchasingService.GetReceiptOrders))
+	mux.Method("POST", UpdateReceiptOrderItemsPath, httpHandler.New(purchasingService.UpdateReceiptOrderItems))
+	mux.Method("POST", GetReceiptOrderItemsPath, httpHandler.New(purchasingService.GetReceiptOrderItems))
+	mux.Method("POST", DeleteReceiptOrderPath, httpHandler.New(purchasingService.DeleteReceiptOrder))
 
 	return mux
 }
