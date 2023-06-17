@@ -12,4 +12,10 @@ const (
 	GetCheckPurchaseOrdersError = 800108
 
 	UpdatePurchaseOrderStatusError = 800201
+
+	UpsertReceiptOrderError      = 800301
+	GetReceiptOrdersError        = 800302
+	UpdateReceiptOrderItemsError = 800303
+	GetReceiptOrderItemsError    = 800304
+	DeleteReceiptOrderError      = 800305
 )

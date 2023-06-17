@@ -115,3 +115,55 @@ WHERE id = $1;
 UPDATE purchasing.purchase_order_items
 SET sales_order_item_id = $2
 WHERE id = $1;
+
+-- name: UpsertReceiptOrder :exec
+INSERT INTO purchasing.receipt_orders(
+        id, delivery_order_id, company_id, branch_id, form_number, transaction_date,
+        contact_book_id, secondary_company_id, konekin_id, total_items
+    )
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) ON CONFLICT (id) DO
+UPDATE
+SET delivery_order_id = EXCLUDED.delivery_order_id,
+    company_id = EXCLUDED.company_id,
+    branch_id = EXCLUDED.branch_id,
+    form_number = EXCLUDED.form_number,
+    transaction_date = EXCLUDED.transaction_date,
+    contact_book_id = EXCLUDED.contact_book_id,
+    secondary_company_id = EXCLUDED.secondary_company_id,
+    konekin_id = EXCLUDED.konekin_id,
+    total_items = EXCLUDED.total_items,
+    updated_at = NOW();
+
+-- name: GetReceiptOrders :many
+SELECT 
+    *
+FROM purchasing.receipt_orders
+WHERE company_id = $1
+    AND branch_id = $2
+    AND transaction_date BETWEEN @start_date::date AND @end_date::date 
+    AND is_deleted = FALSE;
+
+-- name: DeleteReceiptOrderItems :exec
+DELETE FROM purchasing.receipt_order_items
+WHERE receipt_order_id = $1;
+
+-- name: InsertReceiptOrderItem :exec
+INSERT INTO purchasing.receipt_order_items(
+    id, purchase_order_item_id, sales_order_item_id, delivery_order_item_id,
+    receipt_order_id, primary_item_variant_id, warehouse_rack_id, batch,
+    expired_date, item_barcode_id, secondary_item_variant_id,
+    primary_item_unit_id, secondary_item_unit_id, primary_item_unit_value,
+    secondary_item_unit_value, amount_delivered, amount
+)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17);
+
+-- name: GetReceiptOrderItems :many
+SELECT 
+    *
+FROM purchasing.receipt_order_items
+WHERE receipt_order_id = $1 AND is_deleted = FALSE;
+
+-- name: DeleteReceiptOrder :exec
+UPDATE purchasing.receipt_orders
+SET is_deleted = TRUE
+WHERE id = $1;
