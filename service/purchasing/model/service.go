@@ -212,15 +212,15 @@ type ReceiptOrderItem struct {
 }
 
 type UpsertReceiptOrderRequest struct {
-	Id                 string `json:"id" validate:"required"`
-	DeliveryOrderId    string `json:"delivery_order_id" validate:"required"`
+	Id                 string `json:"id"`
+	DeliveryOrderId    string `json:"delivery_order_id"`
 	CompanyId          string `json:"company_id" validate:"required"`
 	BranchId           string `json:"branch_id" validate:"required"`
 	TransactionDate    string `json:"transaction_date" validate:"required"`
 	ContactBookId      string `json:"contact_book_id" validate:"required"`
-	SecondaryCompanyId string `json:"secondary_company_id" validate:"required"`
-	KonekinId          string `json:"konekin_id" validate:"required"`
-	TotalItems         string `json:"total_items" validate:"required"`
+	SecondaryCompanyId string `json:"secondary_company_id"`
+	KonekinId          string `json:"konekin_id"`
+	TotalItems         string `json:"total_items"`
 }
 
 type UpsertReceiptOrderResponse struct {
@@ -240,18 +240,18 @@ type GetReceiptOrdersResponse struct {
 
 type ReceiptOrderItemsRequest struct {
 	PurchaseOrderItemId    string `json:"purchase_order_item_id" validate:"required"`
-	SalesOrderItemId       string `json:"sales_order_item_id" validate:"required"`
-	DeliveryOrderItemId    string `json:"delivery_order_item_id" validate:"required"`
+	SalesOrderItemId       string `json:"sales_order_item_id"`
+	DeliveryOrderItemId    string `json:"delivery_order_item_id"`
 	PrimaryItemVariantId   string `json:"primary_item_variant_id" validate:"required"`
 	WarehouseRackId        string `json:"warehouse_rack_id" validate:"required"`
 	Batch                  string `json:"batch" validate:"required"`
 	ExpiredDate            string `json:"expired_date" validate:"required"`
 	ItemBarcodeId          string `json:"item_barcode_id" validate:"required"`
-	SecondaryItemVariantId string `json:"secondary_item_variant_id" validate:"required"`
+	SecondaryItemVariantId string `json:"secondary_item_variant_id"`
 	PrimaryItemUnitId      string `json:"primary_item_unit_id" validate:"required"`
-	SecondaryItemUnitId    string `json:"secondary_item_unit_id" validate:"required"`
+	SecondaryItemUnitId    string `json:"secondary_item_unit_id"`
 	PrimaryItemUnitValue   string `json:"primary_item_unit_value" validate:"required"`
-	SecondaryItemUnitValue string `json:"secondary_item_unit_value" validate:"required"`
+	SecondaryItemUnitValue string `json:"secondary_item_unit_value"`
 	AmountDelivered        string `json:"amount_delivered" validate:"required"`
 	Amount                 string `json:"amount" validate:"required"`
 }
