@@ -34,7 +34,6 @@ type UpsertPurchaseInvoiceRequest struct {
 	CurrencyCode         string                             `json:"currency_code" validate:"required"`
 	TotalItems           string                             `json:"total_items" validate:"required"`
 	Total                string                             `json:"total" validate:"required"`
-	Status               string                             `json:"status" validate:"required"`
 	PurchaseInvoiceItems []UpsertPurchaseInvoiceItemRequest `json:"purchase_invoice_items" validate:"required"`
 }
 
