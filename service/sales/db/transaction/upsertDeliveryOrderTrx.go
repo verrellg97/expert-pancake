@@ -8,6 +8,7 @@ import (
 	"time"
 
 	db "github.com/expert-pancake/service/sales/db/sqlc"
+	"github.com/expert-pancake/service/sales/model"
 	"github.com/expert-pancake/service/sales/util"
 	uuid "github.com/satori/go.uuid"
 )
@@ -20,21 +21,12 @@ type UpsertDeliveryOrderTrxParams struct {
 	ContactBookId      string
 	SecondaryCompanyId string
 	KonekinId          string
-	SecondaryBranchId  string
+	SalesOrderId       string
+	Items              []model.DeliveryOrderItemsRequest
 }
 
 type UpsertDeliveryOrderTrxResult struct {
-	TransactionId      string
-	CompanyId          string
-	BranchId           string
-	FormNumber         string
-	TransactionDate    string
-	ContactBookId      string
-	SecondaryCompanyId string
-	KonekinId          string
-	SecondaryBranchId  string
-	TotalItems         string
-	Status             string
+	Message string
 }
 
 func (trx *Trx) UpsertDeliveryOrderTrx(ctx context.Context, arg UpsertDeliveryOrderTrxParams) (UpsertDeliveryOrderTrxResult, error) {
@@ -50,7 +42,7 @@ func (trx *Trx) UpsertDeliveryOrderTrx(ctx context.Context, arg UpsertDeliveryOr
 			id = arg.Id
 		}
 
-		headerRes, err := q.UpsertDeliveryOrder(ctx, db.UpsertDeliveryOrderParams{
+		_, err = q.UpsertDeliveryOrder(ctx, db.UpsertDeliveryOrderParams{
 			ID:                 id,
 			CompanyID:          arg.CompanyId,
 			BranchID:           arg.BranchId,
@@ -59,24 +51,47 @@ func (trx *Trx) UpsertDeliveryOrderTrx(ctx context.Context, arg UpsertDeliveryOr
 			ContactBookID:      arg.ContactBookId,
 			SecondaryCompanyID: arg.SecondaryCompanyId,
 			KonekinID:          arg.KonekinId,
-			SecondaryBranchID:  arg.SecondaryBranchId,
+			SalesOrderID:       arg.SalesOrderId,
+			TotalItems:         int64(len(arg.Items)),
 		})
 
 		if err != nil {
 			return err
 		}
 
-		result.TransactionId = headerRes.ID
-		result.CompanyId = headerRes.CompanyID
-		result.BranchId = headerRes.BranchID
-		result.FormNumber = headerRes.FormNumber
-		result.TransactionDate = headerRes.TransactionDate.Format(util.DateLayoutYMD)
-		result.ContactBookId = headerRes.ContactBookID
-		result.SecondaryCompanyId = headerRes.SecondaryCompanyID
-		result.KonekinId = headerRes.KonekinID
-		result.SecondaryBranchId = headerRes.SecondaryBranchID
-		result.TotalItems = strconv.FormatInt(headerRes.TotalItems, 10)
-		result.Status = headerRes.Status
+		err = q.DeleteDeliveryOrderItems(ctx, id)
+		if err != nil {
+			return err
+		}
+
+		for _, d := range arg.Items {
+			primaryItemUnitValue, _ := strconv.ParseInt(d.PrimaryItemUnitValue, 10, 64)
+			secondaryItemUnitValue, _ := strconv.ParseInt(d.SecondaryItemUnitValue, 10, 64)
+			amount, _ := strconv.ParseInt(d.Amount, 10, 64)
+
+			_, err := q.UpsertDeliveryOrderItem(ctx, db.UpsertDeliveryOrderItemParams{
+				ID:                     uuid.NewV4().String(),
+				PurchaseOrderItemID:    d.PurchaseOrderItemId,
+				SalesOrderItemID:       d.SalesOrderItemId,
+				DeliveryOrderID:        id,
+				PrimaryItemVariantID:   d.PrimaryItemVariantId,
+				WarehouseRackID:        d.WarehouseRackId,
+				Batch:                  util.NewNullableString(d.Batch),
+				ExpiredDate:            util.NewNullableDate(util.StringToDate(d.ExpiredDate)),
+				ItemBarcodeID:          d.ItemBarcodeId,
+				SecondaryItemVariantID: d.SecondaryItemVariantId,
+				PrimaryItemUnitID:      d.PrimaryItemUnitId,
+				SecondaryItemUnitID:    d.SecondaryItemUnitId,
+				PrimaryItemUnitValue:   primaryItemUnitValue,
+				SecondaryItemUnitValue: secondaryItemUnitValue,
+				Amount:                 amount,
+			})
+			if err != nil {
+				return err
+			}
+		}
+
+		result.Message = "OK"
 
 		return err
 	})

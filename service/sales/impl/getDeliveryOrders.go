@@ -49,35 +49,20 @@ func (a salesService) GetDeliveryOrders(w http.ResponseWriter, r *http.Request) 
 			customerName = contactBook.Result[0].Name
 		}
 
-		branchName := ""
-		branches, err := client.GetCompanyBranches(
-			client.GetCompanyBranchesRequest{
-				CompanyId: d.SecondaryCompanyID,
-			})
-		if err != nil {
-			return err
-		}
-		for _, e := range branches.Result {
-			if d.SecondaryBranchID == e.BranchId {
-				branchName = e.Name
-				break
-			}
-		}
-
 		var deliveryOrder = model.DeliveryOrder{
-			TransactionId:       d.ID,
-			CompanyId:           d.CompanyID,
-			BranchId:            d.BranchID,
-			FormNumber:          d.FormNumber,
-			TransactionDate:     d.TransactionDate.Format(util.DateLayoutYMD),
-			ContactBookId:       d.ContactBookID,
-			SecondaryCompanyId:  d.SecondaryCompanyID,
-			CustomerName:        customerName,
-			KonekinId:           d.KonekinID,
-			SecondaryBranchId:   d.SecondaryBranchID,
-			SecondaryBranchName: branchName,
-			TotalItems:          strconv.FormatInt(d.TotalItems, 10),
-			Status:              d.Status,
+			TransactionId:        d.ID,
+			CompanyId:            d.CompanyID,
+			BranchId:             d.BranchID,
+			FormNumber:           d.FormNumber,
+			TransactionDate:      d.TransactionDate.Format(util.DateLayoutYMD),
+			ContactBookId:        d.ContactBookID,
+			SecondaryCompanyId:   d.SecondaryCompanyID,
+			CustomerName:         customerName,
+			KonekinId:            d.KonekinID,
+			SalesOrderId:         d.SalesOrderID,
+			SalesOrderFormNumber: d.SalesOrderFormNumber,
+			TotalItems:           strconv.FormatInt(d.TotalItems, 10),
+			Status:               d.Status,
 		}
 		deliveryOrders = append(deliveryOrders, deliveryOrder)
 	}

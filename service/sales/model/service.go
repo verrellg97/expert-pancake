@@ -360,34 +360,35 @@ type UpdateSalesOrderStatusResponse struct {
 }
 
 type DeliveryOrder struct {
-	TransactionId       string `json:"transaction_id" validate:"required"`
-	CompanyId           string `json:"company_id" validate:"required"`
-	BranchId            string `json:"branch_id" validate:"required"`
-	FormNumber          string `json:"form_number" validate:"required"`
-	TransactionDate     string `json:"transaction_date" validate:"required"`
-	ContactBookId       string `json:"contact_book_id" validate:"required"`
-	SecondaryCompanyId  string `json:"secondary_company_id" validate:"required"`
-	KonekinId           string `json:"konekin_id" validate:"required"`
-	CustomerName        string `json:"customer_name" validate:"required"`
-	SecondaryBranchId   string `json:"secondary_branch_id" validate:"required"`
-	SecondaryBranchName string `json:"secondary_branch_name" validate:"required"`
-	TotalItems          string `json:"total_items" validate:"required"`
-	Status              string `json:"status" validate:"required"`
+	TransactionId        string `json:"transaction_id" validate:"required"`
+	CompanyId            string `json:"company_id" validate:"required"`
+	BranchId             string `json:"branch_id" validate:"required"`
+	FormNumber           string `json:"form_number" validate:"required"`
+	TransactionDate      string `json:"transaction_date" validate:"required"`
+	ContactBookId        string `json:"contact_book_id" validate:"required"`
+	SecondaryCompanyId   string `json:"secondary_company_id" validate:"required"`
+	KonekinId            string `json:"konekin_id" validate:"required"`
+	CustomerName         string `json:"customer_name" validate:"required"`
+	SalesOrderId         string `json:"sales_order_id" validate:"required"`
+	SalesOrderFormNumber string `json:"sales_order_form_number" validate:"required"`
+	TotalItems           string `json:"total_items" validate:"required"`
+	Status               string `json:"status" validate:"required"`
 }
 
 type UpsertDeliveryOrderRequest struct {
-	Id                 string `json:"id"`
-	CompanyId          string `json:"company_id" validate:"required"`
-	BranchId           string `json:"branch_id" validate:"required"`
-	TransactionDate    string `json:"transaction_date" validate:"required"`
-	ContactBookId      string `json:"contact_book_id" validate:"required"`
-	SecondaryCompanyId string `json:"secondary_company_id"`
-	KonekinId          string `json:"konekin_id"`
-	SecondaryBranchId  string `json:"secondary_branch_id" validate:"required"`
+	Id                 string                      `json:"id"`
+	CompanyId          string                      `json:"company_id" validate:"required"`
+	BranchId           string                      `json:"branch_id" validate:"required"`
+	TransactionDate    string                      `json:"transaction_date" validate:"required"`
+	ContactBookId      string                      `json:"contact_book_id" validate:"required"`
+	SecondaryCompanyId string                      `json:"secondary_company_id"`
+	KonekinId          string                      `json:"konekin_id"`
+	SalesOrderId       string                      `json:"sales_order_id" validate:"required"`
+	Items              []DeliveryOrderItemsRequest `json:"items" validate:"required"`
 }
 
 type UpsertDeliveryOrderResponse struct {
-	DeliveryOrder
+	Message string `json:"message"`
 }
 
 type GetDeliveryOrdersRequest struct {
@@ -439,8 +440,8 @@ type DeliveryOrderItemsRequest struct {
 	SalesOrderItemId       string `json:"sales_order_item_id" validate:"required"`
 	PrimaryItemVariantId   string `json:"primary_item_variant_id" validate:"required"`
 	WarehouseRackId        string `json:"warehouse_rack_id" validate:"required"`
-	Batch                  string `json:"batch" validate:"required"`
-	ExpiredDate            string `json:"expired_date" validate:"required"`
+	Batch                  string `json:"batch"`
+	ExpiredDate            string `json:"expired_date"`
 	ItemBarcodeId          string `json:"item_barcode_id" validate:"required"`
 	SecondaryItemVariantId string `json:"secondary_item_variant_id"`
 	PrimaryItemUnitId      string `json:"primary_item_unit_id" validate:"required"`

@@ -92,12 +92,13 @@ func (q *Queries) GetCheckPOS(ctx context.Context, companyID string) (int64, err
 
 const getDeliveryOrders = `-- name: GetDeliveryOrders :many
 SELECT 
-    id, receipt_order_id, company_id, branch_id, form_number, transaction_date, contact_book_id, secondary_company_id, konekin_id, secondary_branch_id, total_items, is_deleted, status, created_at, updated_at
-FROM sales.delivery_orders
-WHERE company_id = $1
-    AND branch_id = $2
-    AND transaction_date BETWEEN $3::date AND $4::date 
-    AND is_deleted = FALSE
+    a.id, a.sales_order_id, a.receipt_order_id, a.company_id, a.branch_id, a.form_number, a.transaction_date, a.contact_book_id, a.secondary_company_id, a.konekin_id, a.total_items, a.is_deleted, a.status, a.created_at, a.updated_at, b.form_number AS sales_order_form_number
+FROM sales.delivery_orders a
+JOIN sales.sales_orders b ON a.sales_order_id = b.id
+WHERE a.company_id = $1
+    AND a.branch_id = $2
+    AND a.transaction_date BETWEEN $3::date AND $4::date 
+    AND a.is_deleted = FALSE
 `
 
 type GetDeliveryOrdersParams struct {
@@ -107,7 +108,26 @@ type GetDeliveryOrdersParams struct {
 	EndDate   time.Time `db:"end_date"`
 }
 
-func (q *Queries) GetDeliveryOrders(ctx context.Context, arg GetDeliveryOrdersParams) ([]SalesDeliveryOrder, error) {
+type GetDeliveryOrdersRow struct {
+	ID                   string       `db:"id"`
+	SalesOrderID         string       `db:"sales_order_id"`
+	ReceiptOrderID       string       `db:"receipt_order_id"`
+	CompanyID            string       `db:"company_id"`
+	BranchID             string       `db:"branch_id"`
+	FormNumber           string       `db:"form_number"`
+	TransactionDate      time.Time    `db:"transaction_date"`
+	ContactBookID        string       `db:"contact_book_id"`
+	SecondaryCompanyID   string       `db:"secondary_company_id"`
+	KonekinID            string       `db:"konekin_id"`
+	TotalItems           int64        `db:"total_items"`
+	IsDeleted            bool         `db:"is_deleted"`
+	Status               string       `db:"status"`
+	CreatedAt            sql.NullTime `db:"created_at"`
+	UpdatedAt            sql.NullTime `db:"updated_at"`
+	SalesOrderFormNumber string       `db:"sales_order_form_number"`
+}
+
+func (q *Queries) GetDeliveryOrders(ctx context.Context, arg GetDeliveryOrdersParams) ([]GetDeliveryOrdersRow, error) {
 	rows, err := q.db.QueryContext(ctx, getDeliveryOrders,
 		arg.CompanyID,
 		arg.BranchID,
@@ -118,11 +138,12 @@ func (q *Queries) GetDeliveryOrders(ctx context.Context, arg GetDeliveryOrdersPa
 		return nil, err
 	}
 	defer rows.Close()
-	var items []SalesDeliveryOrder
+	var items []GetDeliveryOrdersRow
 	for rows.Next() {
-		var i SalesDeliveryOrder
+		var i GetDeliveryOrdersRow
 		if err := rows.Scan(
 			&i.ID,
+			&i.SalesOrderID,
 			&i.ReceiptOrderID,
 			&i.CompanyID,
 			&i.BranchID,
@@ -131,12 +152,12 @@ func (q *Queries) GetDeliveryOrders(ctx context.Context, arg GetDeliveryOrdersPa
 			&i.ContactBookID,
 			&i.SecondaryCompanyID,
 			&i.KonekinID,
-			&i.SecondaryBranchID,
 			&i.TotalItems,
 			&i.IsDeleted,
 			&i.Status,
 			&i.CreatedAt,
 			&i.UpdatedAt,
+			&i.SalesOrderFormNumber,
 		); err != nil {
 			return nil, err
 		}
@@ -769,6 +790,22 @@ func (q *Queries) InsertSalesOrderBranch(ctx context.Context, arg InsertSalesOrd
 	return err
 }
 
+const updateDeliveryOrderTotalItems = `-- name: UpdateDeliveryOrderTotalItems :exec
+UPDATE sales.delivery_orders
+SET total_items = $2
+WHERE id = $1
+`
+
+type UpdateDeliveryOrderTotalItemsParams struct {
+	ID         string `db:"id"`
+	TotalItems int64  `db:"total_items"`
+}
+
+func (q *Queries) UpdateDeliveryOrderTotalItems(ctx context.Context, arg UpdateDeliveryOrderTotalItemsParams) error {
+	_, err := q.db.ExecContext(ctx, updateDeliveryOrderTotalItems, arg.ID, arg.TotalItems)
+	return err
+}
+
 const updateSalesOrderAddItem = `-- name: UpdateSalesOrderAddItem :exec
 UPDATE sales.sales_orders
 SET total_items=sub.total_items,
@@ -841,27 +878,29 @@ func (q *Queries) UpdateSalesOrderStatus(ctx context.Context, arg UpdateSalesOrd
 
 const upsertDeliveryOrder = `-- name: UpsertDeliveryOrder :one
 INSERT INTO sales.delivery_orders(
-    id, company_id, branch_id,
+    id, sales_order_id, company_id, branch_id,
     form_number, transaction_date,
     contact_book_id, secondary_company_id, konekin_id,
-    secondary_branch_id
+    total_items
 )
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) ON CONFLICT (id) DO
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) ON CONFLICT (id) DO
 UPDATE
-SET company_id = EXCLUDED.company_id,
+SET sales_order_id = EXCLUDED.sales_order_id,
+    company_id = EXCLUDED.company_id,
     branch_id = EXCLUDED.branch_id,
     form_number = EXCLUDED.form_number,
     transaction_date = EXCLUDED.transaction_date,
     contact_book_id = EXCLUDED.contact_book_id,
     secondary_company_id = EXCLUDED.secondary_company_id,
     konekin_id = EXCLUDED.konekin_id,
-    secondary_branch_id = EXCLUDED.secondary_branch_id,
+    total_items = EXCLUDED.total_items,
     updated_at = NOW()
-RETURNING id, receipt_order_id, company_id, branch_id, form_number, transaction_date, contact_book_id, secondary_company_id, konekin_id, secondary_branch_id, total_items, is_deleted, status, created_at, updated_at
+RETURNING id, sales_order_id, receipt_order_id, company_id, branch_id, form_number, transaction_date, contact_book_id, secondary_company_id, konekin_id, total_items, is_deleted, status, created_at, updated_at
 `
 
 type UpsertDeliveryOrderParams struct {
 	ID                 string    `db:"id"`
+	SalesOrderID       string    `db:"sales_order_id"`
 	CompanyID          string    `db:"company_id"`
 	BranchID           string    `db:"branch_id"`
 	FormNumber         string    `db:"form_number"`
@@ -869,12 +908,13 @@ type UpsertDeliveryOrderParams struct {
 	ContactBookID      string    `db:"contact_book_id"`
 	SecondaryCompanyID string    `db:"secondary_company_id"`
 	KonekinID          string    `db:"konekin_id"`
-	SecondaryBranchID  string    `db:"secondary_branch_id"`
+	TotalItems         int64     `db:"total_items"`
 }
 
 func (q *Queries) UpsertDeliveryOrder(ctx context.Context, arg UpsertDeliveryOrderParams) (SalesDeliveryOrder, error) {
 	row := q.db.QueryRowContext(ctx, upsertDeliveryOrder,
 		arg.ID,
+		arg.SalesOrderID,
 		arg.CompanyID,
 		arg.BranchID,
 		arg.FormNumber,
@@ -882,11 +922,12 @@ func (q *Queries) UpsertDeliveryOrder(ctx context.Context, arg UpsertDeliveryOrd
 		arg.ContactBookID,
 		arg.SecondaryCompanyID,
 		arg.KonekinID,
-		arg.SecondaryBranchID,
+		arg.TotalItems,
 	)
 	var i SalesDeliveryOrder
 	err := row.Scan(
 		&i.ID,
+		&i.SalesOrderID,
 		&i.ReceiptOrderID,
 		&i.CompanyID,
 		&i.BranchID,
@@ -895,7 +936,6 @@ func (q *Queries) UpsertDeliveryOrder(ctx context.Context, arg UpsertDeliveryOrd
 		&i.ContactBookID,
 		&i.SecondaryCompanyID,
 		&i.KonekinID,
-		&i.SecondaryBranchID,
 		&i.TotalItems,
 		&i.IsDeleted,
 		&i.Status,
