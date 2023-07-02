@@ -2,6 +2,8 @@ package db
 
 import (
 	"context"
+	"fmt"
+	"math/rand"
 	"strconv"
 
 	db "github.com/expert-pancake/service/purchasing/db/sqlc"
@@ -10,19 +12,53 @@ import (
 	uuid "github.com/satori/go.uuid"
 )
 
-type UpdateReceiptOrderItemsTrxParams struct {
-	ReceiptOrderId    string
-	ReceiptOrderItems []model.ReceiptOrderItemsRequest
+type UpsertReceiptOrderTrxParams struct {
+	Id                 string
+	DeliveryOrderId    string
+	WarehouseId        string
+	CompanyId          string
+	BranchId           string
+	TransactionDate    string
+	ContactBookId      string
+	SecondaryCompanyId string
+	KonekinId          string
+	TotalItems         string
+	ReceiptOrderItems  []model.UpsertReceiptOrderItemsRequest
 }
 
-func (trx *Trx) UpdateReceiptOrderItemsTrx(ctx context.Context, arg UpdateReceiptOrderItemsTrxParams) (error) {
+func (trx *Trx) UpsertReceiptOrderTrx(ctx context.Context, arg UpsertReceiptOrderTrxParams) (error) {
+
 	err := trx.execTx(ctx, func(q *db.Queries) error {
 		var err error
 
-		err = q.DeleteReceiptOrderItems(ctx, arg.ReceiptOrderId)
+		var id = ""
+		if arg.Id == "" {
+			id = uuid.NewV4().String()
+		} else {
+			id = arg.Id
+		}
+
+		totalItmes, _ := strconv.ParseInt(arg.TotalItems, 10, 64)
+
+		headerRes, err := q.UpsertReceiptOrder(ctx, db.UpsertReceiptOrderParams{
+			ID:                 id,
+			DeliveryOrderID:    arg.DeliveryOrderId,
+			WarehouseID:        arg.WarehouseId,
+			FormNumber:         "RCO-" + fmt.Sprintf("%08d", rand.Intn(100000000)),
+			CompanyID:          arg.CompanyId,
+			BranchID:           arg.BranchId,
+			TransactionDate:    util.StringToDate(arg.TransactionDate),
+			ContactBookID:      arg.ContactBookId,
+			SecondaryCompanyID: arg.SecondaryCompanyId,
+			KonekinID:          arg.KonekinId,
+			TotalItems:         totalItmes,
+		})
+
 		if err != nil {
 			return err
 		}
+
+		q.DeleteReceiptOrderItems(ctx, headerRes.ID)
 
 		for _, d := range arg.ReceiptOrderItems {
 			primaryItemUnitValue, _ := strconv.ParseInt(d.PrimaryItemUnitValue, 10, 64)
@@ -31,10 +67,9 @@ func (trx *Trx) UpdateReceiptOrderItemsTrx(ctx context.Context, arg UpdateReceip
 
 			err := q.InsertReceiptOrderItem(ctx, db.InsertReceiptOrderItemParams{
 				ID:                     uuid.NewV4().String(),
-				ReceiptOrderID:         arg.ReceiptOrderId,
 				PurchaseOrderItemID:    d.PurchaseOrderItemId,
 				SalesOrderItemID:       d.SalesOrderItemId,
-				DeliveryOrderItemID:    d.DeliveryOrderItemId,
+				DeliveryOrderItemID:       d.DeliveryOrderItemId,
 				PrimaryItemVariantID:   d.PrimaryItemVariantId,
 				WarehouseRackID:        d.WarehouseRackId,
 				Batch:                  util.NewNullableString(d.Batch),

@@ -59,6 +59,7 @@ type PurchasingReceiptOrder struct {
 	DeliveryOrderID    string       `db:"delivery_order_id"`
 	CompanyID          string       `db:"company_id"`
 	BranchID           string       `db:"branch_id"`
+	WarehouseID        string       `db:"warehouse_id"`
 	FormNumber         string       `db:"form_number"`
 	TransactionDate    time.Time    `db:"transaction_date"`
 	ContactBookID      string       `db:"contact_book_id"`
@@ -87,7 +88,6 @@ type PurchasingReceiptOrderItem struct {
 	SecondaryItemUnitID    string         `db:"secondary_item_unit_id"`
 	PrimaryItemUnitValue   int64          `db:"primary_item_unit_value"`
 	SecondaryItemUnitValue int64          `db:"secondary_item_unit_value"`
-	AmountDelivered        int64          `db:"amount_delivered"`
 	Amount                 int64          `db:"amount"`
 	IsDeleted              bool           `db:"is_deleted"`
 	CreatedAt              sql.NullTime   `db:"created_at"`

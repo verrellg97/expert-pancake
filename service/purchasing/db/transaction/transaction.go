@@ -15,6 +15,7 @@ type PurchasingTrx interface {
 	UpdatePurchaseOrderItemsTrx(ctx context.Context, arg UpdatePurchaseOrderItemsTrxParams) (UpdatePurchaseOrderItemsTrxResult, error)
 	UpdatePurchaseOrderStatusTrx(ctx context.Context, arg UpdatePurchaseOrderStatusTrxParams) (UpdatePurchaseOrderStatusTrxResult, error)
 	UpdateReceiptOrderItemsTrx(ctx context.Context, arg UpdateReceiptOrderItemsTrxParams) (error)
+	UpsertReceiptOrderTrx(ctx context.Context, arg UpsertReceiptOrderTrxParams) (error)
 }
 
 // Trx provides all functions to execute SQL queries and transactions
