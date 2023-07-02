@@ -75,17 +75,18 @@ func (trx *Trx) UpdatePurchaseOrderStatusTrx(ctx context.Context, arg UpdatePurc
 
 						salesOrder, err := client.UpsertSalesOrder(
 							client.UpsertSalesOrderRequest{
-								PurchaseOrderId:       purchaseOrder.ID,
-								PurchaseOrderBranchId: purchaseOrder.BranchID,
-								CompanyId:             purchaseOrder.SecondaryCompanyID,
-								BranchId:              supplierBranchId,
-								TransactionDate:       purchaseOrder.TransactionDate.Format(util.DateLayoutYMD),
-								ContactBookId:         konekin.Result.ContactBookId,
-								SecondaryCompanyId:    purchaseOrder.CompanyID,
-								KonekinId:             konekin.Result.KonekinId,
-								CurrencyCode:          purchaseOrder.CurrencyCode,
-								IsAllBranches:         konekin.Result.IsAllBranches,
-								Branches:              konekin.Result.Branches,
+								PurchaseOrderId:                   purchaseOrder.ID,
+								PurchaseOrderBranchId:             purchaseOrder.BranchID,
+								PurchaseOrderReceivingWarehouseId: purchaseOrder.ReceivingWarehouseID,
+								CompanyId:                         purchaseOrder.SecondaryCompanyID,
+								BranchId:                          supplierBranchId,
+								TransactionDate:                   purchaseOrder.TransactionDate.Format(util.DateLayoutYMD),
+								ContactBookId:                     konekin.Result.ContactBookId,
+								SecondaryCompanyId:                purchaseOrder.CompanyID,
+								KonekinId:                         konekin.Result.KonekinId,
+								CurrencyCode:                      purchaseOrder.CurrencyCode,
+								IsAllBranches:                     konekin.Result.IsAllBranches,
+								Branches:                          konekin.Result.Branches,
 							})
 						if err != nil {
 							return err
