@@ -28,6 +28,11 @@ const (
 	UpdateReceiptOrderItemsPath = "/purchasing/receipt-order/items/update"
 	GetReceiptOrderItemsPath    = "/purchasing/receipt-order/items"
 	DeleteReceiptOrderPath      = "/purchasing/receipt-order/delete"
+
+	UpsertPurchaseInvoicePath = "/purchasing/invoice/upsert"
+	GetPurchaseInvoicesPath    = "/purchasing/invoices"
+	GetPurchaseInvoiceItemsPath   = "/purchasing/invoice/items"
+
 )
 
 func (c *component) Routes(purchasingService model.PurchasingService) http.Handler {
@@ -64,6 +69,11 @@ func (c *component) Routes(purchasingService model.PurchasingService) http.Handl
 	mux.Method("POST", UpdateReceiptOrderItemsPath, httpHandler.New(purchasingService.UpdateReceiptOrderItems))
 	mux.Method("POST", GetReceiptOrderItemsPath, httpHandler.New(purchasingService.GetReceiptOrderItems))
 	mux.Method("POST", DeleteReceiptOrderPath, httpHandler.New(purchasingService.DeleteReceiptOrder))
+
+	mux.Method("POST", UpsertPurchaseInvoicePath, httpHandler.New(purchasingService.UpsertPurchaseInvoice))
+	mux.Method("POST", GetPurchaseInvoicesPath, httpHandler.New(purchasingService.GetPurchaseInvoices))
+	mux.Method("POST", GetPurchaseInvoiceItemsPath, httpHandler.New(purchasingService.GetPurchaseInvoiceItems))
+	
 
 	return mux
 }

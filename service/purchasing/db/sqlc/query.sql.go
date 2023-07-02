@@ -11,6 +11,16 @@ import (
 	"time"
 )
 
+const deletePurchaseInvoiceItems = `-- name: DeletePurchaseInvoiceItems :exec
+DELETE FROM purchasing.purchase_invoice_items
+WHERE purchase_invoice_id = $1
+`
+
+func (q *Queries) DeletePurchaseInvoiceItems(ctx context.Context, purchaseInvoiceID string) error {
+	_, err := q.db.ExecContext(ctx, deletePurchaseInvoiceItems, purchaseInvoiceID)
+	return err
+}
+
 const deletePurchaseOrderItems = `-- name: DeletePurchaseOrderItems :exec
 DELETE FROM purchasing.purchase_order_items
 WHERE purchase_order_id = $1
@@ -54,6 +64,180 @@ func (q *Queries) GetCheckPurchaseOrders(ctx context.Context, companyID string) 
 	var total_count int64
 	err := row.Scan(&total_count)
 	return total_count, err
+}
+
+const getPurchaseInvoiceItems = `-- name: GetPurchaseInvoiceItems :many
+SELECT 
+    a.id, a.purchase_order_item_id, a.sales_order_item_id, a.sales_invoice_item_id, a.receipt_order_item_id, a.purchase_invoice_id, a.primary_item_variant_id, a.secondary_item_variant_id, a.primary_item_unit_id, a.secondary_item_unit_id, a.primary_item_unit_value, a.secondary_item_unit_value, a.amount, a.price, a.is_deleted, a.created_at, a.updated_at,
+    b.warehouse_rack_id AS warehouse_rack_id,
+    b.item_barcode_id AS item_barcode_id,
+    b.batch AS batch,
+    b.expired_date AS expired_date
+FROM purchasing.purchase_invoice_items a
+JOIN purchasing.receipt_order_items b ON b.id = a.receipt_order_item_id
+WHERE a.purchase_invoice_id = $1
+`
+
+type GetPurchaseInvoiceItemsRow struct {
+	ID                     string         `db:"id"`
+	PurchaseOrderItemID    string         `db:"purchase_order_item_id"`
+	SalesOrderItemID       string         `db:"sales_order_item_id"`
+	SalesInvoiceItemID     string         `db:"sales_invoice_item_id"`
+	ReceiptOrderItemID     string         `db:"receipt_order_item_id"`
+	PurchaseInvoiceID      string         `db:"purchase_invoice_id"`
+	PrimaryItemVariantID   string         `db:"primary_item_variant_id"`
+	SecondaryItemVariantID string         `db:"secondary_item_variant_id"`
+	PrimaryItemUnitID      string         `db:"primary_item_unit_id"`
+	SecondaryItemUnitID    string         `db:"secondary_item_unit_id"`
+	PrimaryItemUnitValue   int64          `db:"primary_item_unit_value"`
+	SecondaryItemUnitValue int64          `db:"secondary_item_unit_value"`
+	Amount                 int64          `db:"amount"`
+	Price                  int64          `db:"price"`
+	IsDeleted              bool           `db:"is_deleted"`
+	CreatedAt              sql.NullTime   `db:"created_at"`
+	UpdatedAt              sql.NullTime   `db:"updated_at"`
+	WarehouseRackID        string         `db:"warehouse_rack_id"`
+	ItemBarcodeID          string         `db:"item_barcode_id"`
+	Batch                  sql.NullString `db:"batch"`
+	ExpiredDate            sql.NullTime   `db:"expired_date"`
+}
+
+func (q *Queries) GetPurchaseInvoiceItems(ctx context.Context, purchaseInvoiceID string) ([]GetPurchaseInvoiceItemsRow, error) {
+	rows, err := q.db.QueryContext(ctx, getPurchaseInvoiceItems, purchaseInvoiceID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetPurchaseInvoiceItemsRow
+	for rows.Next() {
+		var i GetPurchaseInvoiceItemsRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.PurchaseOrderItemID,
+			&i.SalesOrderItemID,
+			&i.SalesInvoiceItemID,
+			&i.ReceiptOrderItemID,
+			&i.PurchaseInvoiceID,
+			&i.PrimaryItemVariantID,
+			&i.SecondaryItemVariantID,
+			&i.PrimaryItemUnitID,
+			&i.SecondaryItemUnitID,
+			&i.PrimaryItemUnitValue,
+			&i.SecondaryItemUnitValue,
+			&i.Amount,
+			&i.Price,
+			&i.IsDeleted,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.WarehouseRackID,
+			&i.ItemBarcodeID,
+			&i.Batch,
+			&i.ExpiredDate,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPurchaseInvoices = `-- name: GetPurchaseInvoices :many
+SELECT 
+    a.id, a.sales_invoice_id, a.receipt_order_id, a.company_id, a.branch_id, a.form_number, a.transaction_date, a.contact_book_id, a.secondary_company_id, a.konekin_id, a.currency_code, a.total_items, a.total, a.is_deleted, a.status, a.created_at, a.updated_at,
+    b.form_number AS receipt_order_form_number,
+    b.transaction_date AS receipt_order_transaction_date,
+    b.warehouse_id AS warehouse_id
+FROM purchasing.purchase_invoices a
+JOIN purchasing.receipt_orders b ON b.id = a.receipt_order_id
+WHERE a.company_id = $1
+    AND a.branch_id = $2
+    AND a.transaction_date BETWEEN $3::date AND $4::date 
+    AND a.is_deleted = FALSE
+`
+
+type GetPurchaseInvoicesParams struct {
+	CompanyID string    `db:"company_id"`
+	BranchID  string    `db:"branch_id"`
+	StartDate time.Time `db:"start_date"`
+	EndDate   time.Time `db:"end_date"`
+}
+
+type GetPurchaseInvoicesRow struct {
+	ID                          string       `db:"id"`
+	SalesInvoiceID              string       `db:"sales_invoice_id"`
+	ReceiptOrderID              string       `db:"receipt_order_id"`
+	CompanyID                   string       `db:"company_id"`
+	BranchID                    string       `db:"branch_id"`
+	FormNumber                  string       `db:"form_number"`
+	TransactionDate             time.Time    `db:"transaction_date"`
+	ContactBookID               string       `db:"contact_book_id"`
+	SecondaryCompanyID          string       `db:"secondary_company_id"`
+	KonekinID                   string       `db:"konekin_id"`
+	CurrencyCode                string       `db:"currency_code"`
+	TotalItems                  int64        `db:"total_items"`
+	Total                       int64        `db:"total"`
+	IsDeleted                   bool         `db:"is_deleted"`
+	Status                      string       `db:"status"`
+	CreatedAt                   sql.NullTime `db:"created_at"`
+	UpdatedAt                   sql.NullTime `db:"updated_at"`
+	ReceiptOrderFormNumber      string       `db:"receipt_order_form_number"`
+	ReceiptOrderTransactionDate time.Time    `db:"receipt_order_transaction_date"`
+	WarehouseID                 string       `db:"warehouse_id"`
+}
+
+func (q *Queries) GetPurchaseInvoices(ctx context.Context, arg GetPurchaseInvoicesParams) ([]GetPurchaseInvoicesRow, error) {
+	rows, err := q.db.QueryContext(ctx, getPurchaseInvoices,
+		arg.CompanyID,
+		arg.BranchID,
+		arg.StartDate,
+		arg.EndDate,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetPurchaseInvoicesRow
+	for rows.Next() {
+		var i GetPurchaseInvoicesRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.SalesInvoiceID,
+			&i.ReceiptOrderID,
+			&i.CompanyID,
+			&i.BranchID,
+			&i.FormNumber,
+			&i.TransactionDate,
+			&i.ContactBookID,
+			&i.SecondaryCompanyID,
+			&i.KonekinID,
+			&i.CurrencyCode,
+			&i.TotalItems,
+			&i.Total,
+			&i.IsDeleted,
+			&i.Status,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.ReceiptOrderFormNumber,
+			&i.ReceiptOrderTransactionDate,
+			&i.WarehouseID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const getPurchaseOrder = `-- name: GetPurchaseOrder :one
@@ -328,6 +512,53 @@ func (q *Queries) GetReceiptOrders(ctx context.Context, arg GetReceiptOrdersPara
 	return items, nil
 }
 
+const insertPurchaseInvoiceItem = `-- name: InsertPurchaseInvoiceItem :exec
+INSERT INTO purchasing.purchase_invoice_items(
+    id, purchase_order_item_id, sales_order_item_id, sales_invoice_item_id,
+    receipt_order_item_id, purchase_invoice_id, primary_item_variant_id,
+    secondary_item_variant_id, primary_item_unit_id, secondary_item_unit_id,
+    primary_item_unit_value, secondary_item_unit_value, amount, price
+)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
+`
+
+type InsertPurchaseInvoiceItemParams struct {
+	ID                     string `db:"id"`
+	PurchaseOrderItemID    string `db:"purchase_order_item_id"`
+	SalesOrderItemID       string `db:"sales_order_item_id"`
+	SalesInvoiceItemID     string `db:"sales_invoice_item_id"`
+	ReceiptOrderItemID     string `db:"receipt_order_item_id"`
+	PurchaseInvoiceID      string `db:"purchase_invoice_id"`
+	PrimaryItemVariantID   string `db:"primary_item_variant_id"`
+	SecondaryItemVariantID string `db:"secondary_item_variant_id"`
+	PrimaryItemUnitID      string `db:"primary_item_unit_id"`
+	SecondaryItemUnitID    string `db:"secondary_item_unit_id"`
+	PrimaryItemUnitValue   int64  `db:"primary_item_unit_value"`
+	SecondaryItemUnitValue int64  `db:"secondary_item_unit_value"`
+	Amount                 int64  `db:"amount"`
+	Price                  int64  `db:"price"`
+}
+
+func (q *Queries) InsertPurchaseInvoiceItem(ctx context.Context, arg InsertPurchaseInvoiceItemParams) error {
+	_, err := q.db.ExecContext(ctx, insertPurchaseInvoiceItem,
+		arg.ID,
+		arg.PurchaseOrderItemID,
+		arg.SalesOrderItemID,
+		arg.SalesInvoiceItemID,
+		arg.ReceiptOrderItemID,
+		arg.PurchaseInvoiceID,
+		arg.PrimaryItemVariantID,
+		arg.SecondaryItemVariantID,
+		arg.PrimaryItemUnitID,
+		arg.SecondaryItemUnitID,
+		arg.PrimaryItemUnitValue,
+		arg.SecondaryItemUnitValue,
+		arg.Amount,
+		arg.Price,
+	)
+	return err
+}
+
 const insertReceiptOrderItem = `-- name: InsertReceiptOrderItem :exec
 INSERT INTO purchasing.receipt_order_items(
     id, purchase_order_item_id, sales_order_item_id, delivery_order_item_id,
@@ -443,6 +674,87 @@ type UpdatePurchaseOrderStatusParams struct {
 func (q *Queries) UpdatePurchaseOrderStatus(ctx context.Context, arg UpdatePurchaseOrderStatusParams) error {
 	_, err := q.db.ExecContext(ctx, updatePurchaseOrderStatus, arg.ID, arg.Status)
 	return err
+}
+
+const upsertPurchaseInvoice = `-- name: UpsertPurchaseInvoice :one
+INSERT INTO purchasing.purchase_invoices(
+        id, sales_invoice_id, receipt_order_id, company_id, branch_id, form_number, transaction_date,
+        contact_book_id, secondary_company_id, konekin_id, currency_code, total_items, total, status
+    ) 
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14) ON CONFLICT (id) DO
+UPDATE
+SET 
+    sales_invoice_id = EXCLUDED.sales_invoice_id,
+    receipt_order_id = EXCLUDED.receipt_order_id,
+    company_id = EXCLUDED.company_id,
+    branch_id = EXCLUDED.branch_id,
+    form_number = EXCLUDED.form_number,
+    transaction_date = EXCLUDED.transaction_date,
+    contact_book_id = EXCLUDED.contact_book_id,
+    secondary_company_id = EXCLUDED.secondary_company_id,
+    konekin_id = EXCLUDED.konekin_id,
+    currency_code = EXCLUDED.currency_code,
+    total_items = EXCLUDED.total_items,
+    total = EXCLUDED.total,
+    status = EXCLUDED.status
+RETURNING id, sales_invoice_id, receipt_order_id, company_id, branch_id, form_number, transaction_date, contact_book_id, secondary_company_id, konekin_id, currency_code, total_items, total, is_deleted, status, created_at, updated_at
+`
+
+type UpsertPurchaseInvoiceParams struct {
+	ID                 string    `db:"id"`
+	SalesInvoiceID     string    `db:"sales_invoice_id"`
+	ReceiptOrderID     string    `db:"receipt_order_id"`
+	CompanyID          string    `db:"company_id"`
+	BranchID           string    `db:"branch_id"`
+	FormNumber         string    `db:"form_number"`
+	TransactionDate    time.Time `db:"transaction_date"`
+	ContactBookID      string    `db:"contact_book_id"`
+	SecondaryCompanyID string    `db:"secondary_company_id"`
+	KonekinID          string    `db:"konekin_id"`
+	CurrencyCode       string    `db:"currency_code"`
+	TotalItems         int64     `db:"total_items"`
+	Total              int64     `db:"total"`
+	Status             string    `db:"status"`
+}
+
+func (q *Queries) UpsertPurchaseInvoice(ctx context.Context, arg UpsertPurchaseInvoiceParams) (PurchasingPurchaseInvoice, error) {
+	row := q.db.QueryRowContext(ctx, upsertPurchaseInvoice,
+		arg.ID,
+		arg.SalesInvoiceID,
+		arg.ReceiptOrderID,
+		arg.CompanyID,
+		arg.BranchID,
+		arg.FormNumber,
+		arg.TransactionDate,
+		arg.ContactBookID,
+		arg.SecondaryCompanyID,
+		arg.KonekinID,
+		arg.CurrencyCode,
+		arg.TotalItems,
+		arg.Total,
+		arg.Status,
+	)
+	var i PurchasingPurchaseInvoice
+	err := row.Scan(
+		&i.ID,
+		&i.SalesInvoiceID,
+		&i.ReceiptOrderID,
+		&i.CompanyID,
+		&i.BranchID,
+		&i.FormNumber,
+		&i.TransactionDate,
+		&i.ContactBookID,
+		&i.SecondaryCompanyID,
+		&i.KonekinID,
+		&i.CurrencyCode,
+		&i.TotalItems,
+		&i.Total,
+		&i.IsDeleted,
+		&i.Status,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
 }
 
 const upsertPurchaseOrder = `-- name: UpsertPurchaseOrder :one
