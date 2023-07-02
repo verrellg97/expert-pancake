@@ -25,7 +25,6 @@ type UpsertPurchaseInvoiceTrxParams struct {
 	CurrencyCode         string
 	TotalItems           string
 	Total                string
-	Status               string
 	PurchaseInvoiceItems []model.UpsertPurchaseInvoiceItemRequest
 }
 
@@ -58,7 +57,6 @@ func (trx *Trx) UpsertPurchaseInvoiceTrx(ctx context.Context, arg UpsertPurchase
 			CurrencyCode:       arg.CurrencyCode,
 			TotalItems:         totalItmes,
 			Total:              total,
-			Status:             arg.Status,
 		})
 
 		if err != nil {

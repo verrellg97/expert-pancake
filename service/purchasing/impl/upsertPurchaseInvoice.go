@@ -33,7 +33,6 @@ func (a purchasingService) UpsertPurchaseInvoice(w http.ResponseWriter, r *http.
 			CurrencyCode: req.CurrencyCode,
 			TotalItems: req.TotalItems,
 			Total: req.Total,
-			Status: req.Status,
 			PurchaseInvoiceItems: req.PurchaseInvoiceItems,
 	}
 	
