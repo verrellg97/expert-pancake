@@ -84,6 +84,14 @@ func (trx *Trx) UpdateDeliveryOrderItemsTrx(ctx context.Context, arg UpdateDeliv
 			result.DeliveryOrderItems = append(result.DeliveryOrderItems, deliveryOrderItem)
 		}
 
+		err = q.UpdateDeliveryOrderTotalItems(ctx, db.UpdateDeliveryOrderTotalItemsParams{
+			ID:         arg.DeliveryOrderId,
+			TotalItems: int64(len(arg.DeliveryOrderItems)),
+		})
+		if err != nil {
+			return err
+		}
+
 		return err
 	})
 

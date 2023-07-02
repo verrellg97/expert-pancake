@@ -127,6 +127,7 @@ CREATE TABLE "sales"."sales_order_items" (
 
 CREATE TABLE "sales"."delivery_orders" (
   "id" text NOT NULL,
+  "sales_order_id" text NOT NULL DEFAULT '',
   "receipt_order_id" text NOT NULL DEFAULT '',
   "company_id" text NOT NULL,
   "branch_id" text NOT NULL,
@@ -135,7 +136,6 @@ CREATE TABLE "sales"."delivery_orders" (
   "contact_book_id" text NOT NULL,
   "secondary_company_id" text NOT NULL DEFAULT '',
   "konekin_id" text NOT NULL DEFAULT '',
-  "secondary_branch_id" text NOT NULL DEFAULT '',
   "total_items" bigint NOT NULL DEFAULT 0,
   "is_deleted" bool NOT NULL DEFAULT false,
   "status" text NOT NULL DEFAULT 'created',

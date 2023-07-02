@@ -11,6 +11,7 @@ import (
 
 type SalesDeliveryOrder struct {
 	ID                 string       `db:"id"`
+	SalesOrderID       string       `db:"sales_order_id"`
 	ReceiptOrderID     string       `db:"receipt_order_id"`
 	CompanyID          string       `db:"company_id"`
 	BranchID           string       `db:"branch_id"`
@@ -19,7 +20,6 @@ type SalesDeliveryOrder struct {
 	ContactBookID      string       `db:"contact_book_id"`
 	SecondaryCompanyID string       `db:"secondary_company_id"`
 	KonekinID          string       `db:"konekin_id"`
-	SecondaryBranchID  string       `db:"secondary_branch_id"`
 	TotalItems         int64        `db:"total_items"`
 	IsDeleted          bool         `db:"is_deleted"`
 	Status             string       `db:"status"`

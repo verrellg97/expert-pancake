@@ -17,7 +17,7 @@ type Querier interface {
 	DeletePOSPaymentMethod(ctx context.Context, id string) error
 	DeleteSalesOrderItems(ctx context.Context, salesOrderID string) error
 	GetCheckPOS(ctx context.Context, companyID string) (int64, error)
-	GetDeliveryOrders(ctx context.Context, arg GetDeliveryOrdersParams) ([]SalesDeliveryOrder, error)
+	GetDeliveryOrders(ctx context.Context, arg GetDeliveryOrdersParams) ([]GetDeliveryOrdersRow, error)
 	GetPOS(ctx context.Context, arg GetPOSParams) ([]GetPOSRow, error)
 	GetPOSCOASetting(ctx context.Context, branchID string) ([]SalesPosChartOfAccountSetting, error)
 	GetPOSCustomerSetting(ctx context.Context, branchID string) ([]SalesPosCustomerSetting, error)
@@ -32,6 +32,7 @@ type Querier interface {
 	InsertPOSCustomerSetting(ctx context.Context, arg InsertPOSCustomerSettingParams) (SalesPosCustomerSetting, error)
 	InsertPOSItem(ctx context.Context, arg InsertPOSItemParams) (SalesPointOfSaleItem, error)
 	InsertSalesOrderBranch(ctx context.Context, arg InsertSalesOrderBranchParams) error
+	UpdateDeliveryOrderTotalItems(ctx context.Context, arg UpdateDeliveryOrderTotalItemsParams) error
 	UpdateSalesOrderAddItem(ctx context.Context, salesOrderID string) error
 	UpdateSalesOrderItemAmountSent(ctx context.Context, arg UpdateSalesOrderItemAmountSentParams) (SalesSalesOrderItem, error)
 	UpdateSalesOrderStatus(ctx context.Context, arg UpdateSalesOrderStatusParams) error

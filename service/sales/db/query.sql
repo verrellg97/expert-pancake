@@ -238,32 +238,34 @@ WHERE id = $1;
 
 -- name: UpsertDeliveryOrder :one
 INSERT INTO sales.delivery_orders(
-    id, company_id, branch_id,
+    id, sales_order_id, company_id, branch_id,
     form_number, transaction_date,
     contact_book_id, secondary_company_id, konekin_id,
-    secondary_branch_id
+    total_items
 )
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) ON CONFLICT (id) DO
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) ON CONFLICT (id) DO
 UPDATE
-SET company_id = EXCLUDED.company_id,
+SET sales_order_id = EXCLUDED.sales_order_id,
+    company_id = EXCLUDED.company_id,
     branch_id = EXCLUDED.branch_id,
     form_number = EXCLUDED.form_number,
     transaction_date = EXCLUDED.transaction_date,
     contact_book_id = EXCLUDED.contact_book_id,
     secondary_company_id = EXCLUDED.secondary_company_id,
     konekin_id = EXCLUDED.konekin_id,
-    secondary_branch_id = EXCLUDED.secondary_branch_id,
+    total_items = EXCLUDED.total_items,
     updated_at = NOW()
 RETURNING *;
 
 -- name: GetDeliveryOrders :many
 SELECT 
-    *
-FROM sales.delivery_orders
-WHERE company_id = $1
-    AND branch_id = $2
-    AND transaction_date BETWEEN @start_date::date AND @end_date::date 
-    AND is_deleted = FALSE;
+    a.*, b.form_number AS sales_order_form_number
+FROM sales.delivery_orders a
+JOIN sales.sales_orders b ON a.sales_order_id = b.id
+WHERE a.company_id = $1
+    AND a.branch_id = $2
+    AND a.transaction_date BETWEEN @start_date::date AND @end_date::date 
+    AND a.is_deleted = FALSE;
 
 -- name: GetSalesOrderDeliveryItems :many
 SELECT 
@@ -304,6 +306,11 @@ RETURNING *;
 -- name: DeleteDeliveryOrderItems :exec
 DELETE FROM sales.delivery_order_items
 WHERE delivery_order_id = $1;
+
+-- name: UpdateDeliveryOrderTotalItems :exec
+UPDATE sales.delivery_orders
+SET total_items = $2
+WHERE id = $1;
 
 -- name: UpdateSalesOrderItemAmountSent :one
 UPDATE sales.sales_order_items
