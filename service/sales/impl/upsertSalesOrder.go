@@ -32,18 +32,19 @@ func (a salesService) UpsertSalesOrder(w http.ResponseWriter, r *http.Request) e
 	}
 
 	arg := db.UpsertSalesOrderTrxParams{
-		Id:                    id,
-		PurchaseOrderId:       req.PurchaseOrderId,
-		PurchaseOrderBranchId: req.PurchaseOrderBranchId,
-		CompanyId:             req.CompanyId,
-		BranchId:              req.BranchId,
-		TransactionDate:       util.StringToDate(req.TransactionDate),
-		ContactBookId:         req.ContactBookId,
-		SecondaryCompanyId:    req.SecondaryCompanyId,
-		KonekinId:             req.KonekinId,
-		CurrencyCode:          req.CurrencyCode,
-		IsAllBranches:         req.IsAllBranches,
-		Branches:              req.Branches,
+		Id:                                id,
+		PurchaseOrderId:                   req.PurchaseOrderId,
+		PurchaseOrderBranchId:             req.PurchaseOrderBranchId,
+		PurchaseOrderReceivingWarehouseId: req.PurchaseOrderReceivingWarehouseId,
+		CompanyId:                         req.CompanyId,
+		BranchId:                          req.BranchId,
+		TransactionDate:                   util.StringToDate(req.TransactionDate),
+		ContactBookId:                     req.ContactBookId,
+		SecondaryCompanyId:                req.SecondaryCompanyId,
+		KonekinId:                         req.KonekinId,
+		CurrencyCode:                      req.CurrencyCode,
+		IsAllBranches:                     req.IsAllBranches,
+		Branches:                          req.Branches,
 	}
 
 	result, err := a.dbTrx.UpsertSalesOrderTrx(context.Background(), arg)

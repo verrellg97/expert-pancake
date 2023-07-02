@@ -132,15 +132,16 @@ WHERE company_id = $1;
 
 -- name: UpsertSalesOrder :one
 INSERT INTO sales.sales_orders(
-    id, purchase_order_id, purchase_order_branch_id, company_id, branch_id,
-    form_number, transaction_date,
+    id, purchase_order_id, purchase_order_branch_id, purchase_order_receiving_warehouse_id,
+    company_id, branch_id, form_number, transaction_date,
     contact_book_id, secondary_company_id, konekin_id, currency_code,
     is_all_branches
 )
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) ON CONFLICT (id) DO
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) ON CONFLICT (id) DO
 UPDATE
 SET purchase_order_id = EXCLUDED.purchase_order_id,
     purchase_order_branch_id = EXCLUDED.purchase_order_branch_id,
+    purchase_order_receiving_warehouse_id = EXCLUDED.purchase_order_receiving_warehouse_id,
     company_id = EXCLUDED.company_id,
     branch_id = EXCLUDED.branch_id,
     form_number = EXCLUDED.form_number,

@@ -13,35 +13,37 @@ import (
 )
 
 type UpsertSalesOrderTrxParams struct {
-	Id                    string
-	PurchaseOrderId       string
-	PurchaseOrderBranchId string
-	CompanyId             string
-	BranchId              string
-	TransactionDate       time.Time
-	ContactBookId         string
-	SecondaryCompanyId    string
-	KonekinId             string
-	CurrencyCode          string
-	IsAllBranches         bool
-	Branches              []string
+	Id                                string
+	PurchaseOrderId                   string
+	PurchaseOrderBranchId             string
+	PurchaseOrderReceivingWarehouseId string
+	CompanyId                         string
+	BranchId                          string
+	TransactionDate                   time.Time
+	ContactBookId                     string
+	SecondaryCompanyId                string
+	KonekinId                         string
+	CurrencyCode                      string
+	IsAllBranches                     bool
+	Branches                          []string
 }
 
 type UpsertSalesOrderTrxResult struct {
-	TransactionId         string
-	PurchaseOrderId       string
-	PurchaseOrderBranchId string
-	CompanyId             string
-	BranchId              string
-	FormNumber            string
-	TransactionDate       string
-	ContactBookId         string
-	SecondaryCompanyId    string
-	KonekinId             string
-	CurrencyCode          string
-	TotalItems            string
-	Total                 string
-	Status                string
+	TransactionId                     string
+	PurchaseOrderId                   string
+	PurchaseOrderBranchId             string
+	PurchaseOrderReceivingWarehouseId string
+	CompanyId                         string
+	BranchId                          string
+	FormNumber                        string
+	TransactionDate                   string
+	ContactBookId                     string
+	SecondaryCompanyId                string
+	KonekinId                         string
+	CurrencyCode                      string
+	TotalItems                        string
+	Total                             string
+	Status                            string
 }
 
 func (trx *Trx) UpsertSalesOrderTrx(ctx context.Context, arg UpsertSalesOrderTrxParams) (UpsertSalesOrderTrxResult, error) {
@@ -91,6 +93,7 @@ func (trx *Trx) UpsertSalesOrderTrx(ctx context.Context, arg UpsertSalesOrderTrx
 		result.TransactionId = headerRes.ID
 		result.PurchaseOrderId = headerRes.PurchaseOrderID
 		result.PurchaseOrderBranchId = headerRes.PurchaseOrderBranchID
+		result.PurchaseOrderReceivingWarehouseId = headerRes.PurchaseOrderReceivingWarehouseID
 		result.CompanyId = headerRes.CompanyID
 		result.BranchId = headerRes.BranchID
 		result.FormNumber = headerRes.FormNumber
