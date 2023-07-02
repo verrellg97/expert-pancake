@@ -20,6 +20,10 @@ type PurchasingService interface {
 	UpdateReceiptOrderItems(w http.ResponseWriter, r *http.Request) error
 	GetReceiptOrderItems(w http.ResponseWriter, r *http.Request) error
 	DeleteReceiptOrder(w http.ResponseWriter, r *http.Request) error
+
+	UpsertPurchaseInvoice(w http.ResponseWriter, r *http.Request) error
+	GetPurchaseInvoices(w http.ResponseWriter, r *http.Request) error
+	GetPurchaseInvoiceItems(w http.ResponseWriter, r *http.Request) error
 }
 
 type PurchaseOrder struct {

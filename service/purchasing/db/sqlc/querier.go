@@ -9,21 +9,26 @@ import (
 )
 
 type Querier interface {
+	DeletePurchaseInvoiceItems(ctx context.Context, purchaseInvoiceID string) error
 	DeletePurchaseOrderItems(ctx context.Context, purchaseOrderID string) error
 	DeleteReceiptOrder(ctx context.Context, id string) error
 	DeleteReceiptOrderItems(ctx context.Context, receiptOrderID string) error
 	GetCheckPurchaseOrders(ctx context.Context, companyID string) (int64, error)
+	GetPurchaseInvoiceItems(ctx context.Context, purchaseInvoiceID string) ([]GetPurchaseInvoiceItemsRow, error)
+	GetPurchaseInvoices(ctx context.Context, arg GetPurchaseInvoicesParams) ([]GetPurchaseInvoicesRow, error)
 	GetPurchaseOrder(ctx context.Context, id string) (PurchasingPurchaseOrder, error)
 	GetPurchaseOrderItems(ctx context.Context, purchaseOrderID string) ([]PurchasingPurchaseOrderItem, error)
 	GetPurchaseOrders(ctx context.Context, arg GetPurchaseOrdersParams) ([]PurchasingPurchaseOrder, error)
 	GetPurchaseSetting(ctx context.Context, companyID string) (PurchasingPurchaseSetting, error)
 	GetReceiptOrderItems(ctx context.Context, receiptOrderID string) ([]PurchasingReceiptOrderItem, error)
 	GetReceiptOrders(ctx context.Context, arg GetReceiptOrdersParams) ([]PurchasingReceiptOrder, error)
+	InsertPurchaseInvoiceItem(ctx context.Context, arg InsertPurchaseInvoiceItemParams) error
 	InsertReceiptOrderItem(ctx context.Context, arg InsertReceiptOrderItemParams) error
 	UpdateAcceptedPurchaseOrder(ctx context.Context, arg UpdateAcceptedPurchaseOrderParams) error
 	UpdateAcceptedPurchaseOrderItem(ctx context.Context, arg UpdateAcceptedPurchaseOrderItemParams) error
 	UpdatePurchaseOrderAddItem(ctx context.Context, purchaseOrderID string) error
 	UpdatePurchaseOrderStatus(ctx context.Context, arg UpdatePurchaseOrderStatusParams) error
+	UpsertPurchaseInvoice(ctx context.Context, arg UpsertPurchaseInvoiceParams) (PurchasingPurchaseInvoice, error)
 	UpsertPurchaseOrder(ctx context.Context, arg UpsertPurchaseOrderParams) (PurchasingPurchaseOrder, error)
 	UpsertPurchaseOrderItem(ctx context.Context, arg UpsertPurchaseOrderItemParams) (PurchasingPurchaseOrderItem, error)
 	UpsertPurchaseSetting(ctx context.Context, arg UpsertPurchaseSettingParams) (PurchasingPurchaseSetting, error)
