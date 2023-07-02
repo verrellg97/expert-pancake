@@ -119,24 +119,25 @@ type SalesPosUserSetting struct {
 }
 
 type SalesSalesOrder struct {
-	ID                    string       `db:"id"`
-	PurchaseOrderID       string       `db:"purchase_order_id"`
-	PurchaseOrderBranchID string       `db:"purchase_order_branch_id"`
-	CompanyID             string       `db:"company_id"`
-	BranchID              string       `db:"branch_id"`
-	FormNumber            string       `db:"form_number"`
-	TransactionDate       time.Time    `db:"transaction_date"`
-	ContactBookID         string       `db:"contact_book_id"`
-	SecondaryCompanyID    string       `db:"secondary_company_id"`
-	KonekinID             string       `db:"konekin_id"`
-	CurrencyCode          string       `db:"currency_code"`
-	TotalItems            int64        `db:"total_items"`
-	Total                 int64        `db:"total"`
-	IsDeleted             bool         `db:"is_deleted"`
-	Status                string       `db:"status"`
-	IsAllBranches         bool         `db:"is_all_branches"`
-	CreatedAt             sql.NullTime `db:"created_at"`
-	UpdatedAt             sql.NullTime `db:"updated_at"`
+	ID                                string       `db:"id"`
+	PurchaseOrderID                   string       `db:"purchase_order_id"`
+	PurchaseOrderBranchID             string       `db:"purchase_order_branch_id"`
+	PurchaseOrderReceivingWarehouseID string       `db:"purchase_order_receiving_warehouse_id"`
+	CompanyID                         string       `db:"company_id"`
+	BranchID                          string       `db:"branch_id"`
+	FormNumber                        string       `db:"form_number"`
+	TransactionDate                   time.Time    `db:"transaction_date"`
+	ContactBookID                     string       `db:"contact_book_id"`
+	SecondaryCompanyID                string       `db:"secondary_company_id"`
+	KonekinID                         string       `db:"konekin_id"`
+	CurrencyCode                      string       `db:"currency_code"`
+	TotalItems                        int64        `db:"total_items"`
+	Total                             int64        `db:"total"`
+	IsDeleted                         bool         `db:"is_deleted"`
+	Status                            string       `db:"status"`
+	IsAllBranches                     bool         `db:"is_all_branches"`
+	CreatedAt                         sql.NullTime `db:"created_at"`
+	UpdatedAt                         sql.NullTime `db:"updated_at"`
 }
 
 type SalesSalesOrderBranch struct {
@@ -158,6 +159,7 @@ type SalesSalesOrderItem struct {
 	SecondaryItemUnitValue int64        `db:"secondary_item_unit_value"`
 	Amount                 int64        `db:"amount"`
 	AmountSent             int64        `db:"amount_sent"`
+	AmountInvoiced         int64        `db:"amount_invoiced"`
 	Price                  int64        `db:"price"`
 	IsDeleted              bool         `db:"is_deleted"`
 	CreatedAt              sql.NullTime `db:"created_at"`

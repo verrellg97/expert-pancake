@@ -427,7 +427,7 @@ func (q *Queries) GetPOSUserSetting(ctx context.Context, arg GetPOSUserSettingPa
 
 const getSalesOrder = `-- name: GetSalesOrder :one
 SELECT 
-    id, purchase_order_id, purchase_order_branch_id, company_id, branch_id, form_number, transaction_date, contact_book_id, secondary_company_id, konekin_id, currency_code, total_items, total, is_deleted, status, is_all_branches, created_at, updated_at
+    id, purchase_order_id, purchase_order_branch_id, purchase_order_receiving_warehouse_id, company_id, branch_id, form_number, transaction_date, contact_book_id, secondary_company_id, konekin_id, currency_code, total_items, total, is_deleted, status, is_all_branches, created_at, updated_at
 FROM sales.sales_orders
 WHERE id = $1
 `
@@ -439,6 +439,7 @@ func (q *Queries) GetSalesOrder(ctx context.Context, id string) (SalesSalesOrder
 		&i.ID,
 		&i.PurchaseOrderID,
 		&i.PurchaseOrderBranchID,
+		&i.PurchaseOrderReceivingWarehouseID,
 		&i.CompanyID,
 		&i.BranchID,
 		&i.FormNumber,
@@ -460,7 +461,7 @@ func (q *Queries) GetSalesOrder(ctx context.Context, id string) (SalesSalesOrder
 
 const getSalesOrderDeliveryItems = `-- name: GetSalesOrderDeliveryItems :many
 SELECT 
-    b.id, b.purchase_order_item_id, b.sales_order_id, b.primary_item_variant_id, b.secondary_item_variant_id, b.primary_item_unit_id, b.secondary_item_unit_id, b.primary_item_unit_value, b.secondary_item_unit_value, b.amount, b.amount_sent, b.price, b.is_deleted, b.created_at, b.updated_at
+    b.id, b.purchase_order_item_id, b.sales_order_id, b.primary_item_variant_id, b.secondary_item_variant_id, b.primary_item_unit_id, b.secondary_item_unit_id, b.primary_item_unit_value, b.secondary_item_unit_value, b.amount, b.amount_sent, b.amount_invoiced, b.price, b.is_deleted, b.created_at, b.updated_at
 FROM sales.sales_orders a
 JOIN sales.sales_order_items b ON b.sales_order_id = a.id
 AND b.is_deleted = FALSE AND b.amount > b.amount_sent
@@ -496,6 +497,7 @@ func (q *Queries) GetSalesOrderDeliveryItems(ctx context.Context, arg GetSalesOr
 			&i.SecondaryItemUnitValue,
 			&i.Amount,
 			&i.AmountSent,
+			&i.AmountInvoiced,
 			&i.Price,
 			&i.IsDeleted,
 			&i.CreatedAt,
@@ -516,7 +518,7 @@ func (q *Queries) GetSalesOrderDeliveryItems(ctx context.Context, arg GetSalesOr
 
 const getSalesOrderItems = `-- name: GetSalesOrderItems :many
 SELECT 
-    id, purchase_order_item_id, sales_order_id, primary_item_variant_id, secondary_item_variant_id, primary_item_unit_id, secondary_item_unit_id, primary_item_unit_value, secondary_item_unit_value, amount, amount_sent, price, is_deleted, created_at, updated_at
+    id, purchase_order_item_id, sales_order_id, primary_item_variant_id, secondary_item_variant_id, primary_item_unit_id, secondary_item_unit_id, primary_item_unit_value, secondary_item_unit_value, amount, amount_sent, amount_invoiced, price, is_deleted, created_at, updated_at
 FROM sales.sales_order_items
 WHERE sales_order_id = $1 AND is_deleted = FALSE
 `
@@ -542,6 +544,7 @@ func (q *Queries) GetSalesOrderItems(ctx context.Context, salesOrderID string) (
 			&i.SecondaryItemUnitValue,
 			&i.Amount,
 			&i.AmountSent,
+			&i.AmountInvoiced,
 			&i.Price,
 			&i.IsDeleted,
 			&i.CreatedAt,
@@ -562,7 +565,7 @@ func (q *Queries) GetSalesOrderItems(ctx context.Context, salesOrderID string) (
 
 const getSalesOrders = `-- name: GetSalesOrders :many
 SELECT 
-    id, purchase_order_id, purchase_order_branch_id, company_id, branch_id, form_number, transaction_date, contact_book_id, secondary_company_id, konekin_id, currency_code, total_items, total, is_deleted, status, is_all_branches, created_at, updated_at
+    id, purchase_order_id, purchase_order_branch_id, purchase_order_receiving_warehouse_id, company_id, branch_id, form_number, transaction_date, contact_book_id, secondary_company_id, konekin_id, currency_code, total_items, total, is_deleted, status, is_all_branches, created_at, updated_at
 FROM sales.sales_orders
 WHERE company_id = $1::text
 AND branch_id = $2::text
@@ -570,7 +573,7 @@ AND transaction_date BETWEEN $3::date AND $4::date
 AND is_deleted = FALSE
 UNION ALL
 SELECT 
-    id, purchase_order_id, purchase_order_branch_id, company_id, branch_id, form_number, transaction_date, contact_book_id, secondary_company_id, konekin_id, currency_code, total_items, total, is_deleted, status, is_all_branches, created_at, updated_at
+    id, purchase_order_id, purchase_order_branch_id, purchase_order_receiving_warehouse_id, company_id, branch_id, form_number, transaction_date, contact_book_id, secondary_company_id, konekin_id, currency_code, total_items, total, is_deleted, status, is_all_branches, created_at, updated_at
 FROM sales.sales_orders
 WHERE company_id = $1::text
 AND branch_id = '' AND is_all_branches = TRUE
@@ -578,7 +581,7 @@ AND transaction_date BETWEEN $3::date AND $4::date
 AND is_deleted = FALSE
 UNION ALL
 SELECT 
-    a.id, a.purchase_order_id, a.purchase_order_branch_id, a.company_id, a.branch_id, a.form_number, a.transaction_date, a.contact_book_id, a.secondary_company_id, a.konekin_id, a.currency_code, a.total_items, a.total, a.is_deleted, a.status, a.is_all_branches, a.created_at, a.updated_at
+    a.id, a.purchase_order_id, a.purchase_order_branch_id, a.purchase_order_receiving_warehouse_id, a.company_id, a.branch_id, a.form_number, a.transaction_date, a.contact_book_id, a.secondary_company_id, a.konekin_id, a.currency_code, a.total_items, a.total, a.is_deleted, a.status, a.is_all_branches, a.created_at, a.updated_at
 FROM sales.sales_orders a
 JOIN sales.sales_order_branches b ON a.id = b.sales_order_id
 AND b.company_branch_id = $2::text
@@ -613,6 +616,7 @@ func (q *Queries) GetSalesOrders(ctx context.Context, arg GetSalesOrdersParams) 
 			&i.ID,
 			&i.PurchaseOrderID,
 			&i.PurchaseOrderBranchID,
+			&i.PurchaseOrderReceivingWarehouseID,
 			&i.CompanyID,
 			&i.BranchID,
 			&i.FormNumber,
@@ -786,7 +790,7 @@ const updateSalesOrderItemAmountSent = `-- name: UpdateSalesOrderItemAmountSent 
 UPDATE sales.sales_order_items
 SET amount_sent = amount_sent+$2
 WHERE id = $1
-RETURNING id, purchase_order_item_id, sales_order_id, primary_item_variant_id, secondary_item_variant_id, primary_item_unit_id, secondary_item_unit_id, primary_item_unit_value, secondary_item_unit_value, amount, amount_sent, price, is_deleted, created_at, updated_at
+RETURNING id, purchase_order_item_id, sales_order_id, primary_item_variant_id, secondary_item_variant_id, primary_item_unit_id, secondary_item_unit_id, primary_item_unit_value, secondary_item_unit_value, amount, amount_sent, amount_invoiced, price, is_deleted, created_at, updated_at
 `
 
 type UpdateSalesOrderItemAmountSentParams struct {
@@ -809,6 +813,7 @@ func (q *Queries) UpdateSalesOrderItemAmountSent(ctx context.Context, arg Update
 		&i.SecondaryItemUnitValue,
 		&i.Amount,
 		&i.AmountSent,
+		&i.AmountInvoiced,
 		&i.Price,
 		&i.IsDeleted,
 		&i.CreatedAt,
@@ -1133,15 +1138,16 @@ func (q *Queries) UpsertPOSUserSetting(ctx context.Context, arg UpsertPOSUserSet
 
 const upsertSalesOrder = `-- name: UpsertSalesOrder :one
 INSERT INTO sales.sales_orders(
-    id, purchase_order_id, purchase_order_branch_id, company_id, branch_id,
-    form_number, transaction_date,
+    id, purchase_order_id, purchase_order_branch_id, purchase_order_receiving_warehouse_id,
+    company_id, branch_id, form_number, transaction_date,
     contact_book_id, secondary_company_id, konekin_id, currency_code,
     is_all_branches
 )
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) ON CONFLICT (id) DO
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) ON CONFLICT (id) DO
 UPDATE
 SET purchase_order_id = EXCLUDED.purchase_order_id,
     purchase_order_branch_id = EXCLUDED.purchase_order_branch_id,
+    purchase_order_receiving_warehouse_id = EXCLUDED.purchase_order_receiving_warehouse_id,
     company_id = EXCLUDED.company_id,
     branch_id = EXCLUDED.branch_id,
     form_number = EXCLUDED.form_number,
@@ -1152,22 +1158,23 @@ SET purchase_order_id = EXCLUDED.purchase_order_id,
     currency_code = EXCLUDED.currency_code,
     is_all_branches = EXCLUDED.is_all_branches,
     updated_at = NOW()
-RETURNING id, purchase_order_id, purchase_order_branch_id, company_id, branch_id, form_number, transaction_date, contact_book_id, secondary_company_id, konekin_id, currency_code, total_items, total, is_deleted, status, is_all_branches, created_at, updated_at
+RETURNING id, purchase_order_id, purchase_order_branch_id, purchase_order_receiving_warehouse_id, company_id, branch_id, form_number, transaction_date, contact_book_id, secondary_company_id, konekin_id, currency_code, total_items, total, is_deleted, status, is_all_branches, created_at, updated_at
 `
 
 type UpsertSalesOrderParams struct {
-	ID                    string    `db:"id"`
-	PurchaseOrderID       string    `db:"purchase_order_id"`
-	PurchaseOrderBranchID string    `db:"purchase_order_branch_id"`
-	CompanyID             string    `db:"company_id"`
-	BranchID              string    `db:"branch_id"`
-	FormNumber            string    `db:"form_number"`
-	TransactionDate       time.Time `db:"transaction_date"`
-	ContactBookID         string    `db:"contact_book_id"`
-	SecondaryCompanyID    string    `db:"secondary_company_id"`
-	KonekinID             string    `db:"konekin_id"`
-	CurrencyCode          string    `db:"currency_code"`
-	IsAllBranches         bool      `db:"is_all_branches"`
+	ID                                string    `db:"id"`
+	PurchaseOrderID                   string    `db:"purchase_order_id"`
+	PurchaseOrderBranchID             string    `db:"purchase_order_branch_id"`
+	PurchaseOrderReceivingWarehouseID string    `db:"purchase_order_receiving_warehouse_id"`
+	CompanyID                         string    `db:"company_id"`
+	BranchID                          string    `db:"branch_id"`
+	FormNumber                        string    `db:"form_number"`
+	TransactionDate                   time.Time `db:"transaction_date"`
+	ContactBookID                     string    `db:"contact_book_id"`
+	SecondaryCompanyID                string    `db:"secondary_company_id"`
+	KonekinID                         string    `db:"konekin_id"`
+	CurrencyCode                      string    `db:"currency_code"`
+	IsAllBranches                     bool      `db:"is_all_branches"`
 }
 
 func (q *Queries) UpsertSalesOrder(ctx context.Context, arg UpsertSalesOrderParams) (SalesSalesOrder, error) {
@@ -1175,6 +1182,7 @@ func (q *Queries) UpsertSalesOrder(ctx context.Context, arg UpsertSalesOrderPara
 		arg.ID,
 		arg.PurchaseOrderID,
 		arg.PurchaseOrderBranchID,
+		arg.PurchaseOrderReceivingWarehouseID,
 		arg.CompanyID,
 		arg.BranchID,
 		arg.FormNumber,
@@ -1190,6 +1198,7 @@ func (q *Queries) UpsertSalesOrder(ctx context.Context, arg UpsertSalesOrderPara
 		&i.ID,
 		&i.PurchaseOrderID,
 		&i.PurchaseOrderBranchID,
+		&i.PurchaseOrderReceivingWarehouseID,
 		&i.CompanyID,
 		&i.BranchID,
 		&i.FormNumber,
@@ -1230,7 +1239,7 @@ SET purchase_order_item_id = EXCLUDED.purchase_order_item_id,
     amount = EXCLUDED.amount,
     price = EXCLUDED.price,
     updated_at = NOW()
-RETURNING id, purchase_order_item_id, sales_order_id, primary_item_variant_id, secondary_item_variant_id, primary_item_unit_id, secondary_item_unit_id, primary_item_unit_value, secondary_item_unit_value, amount, amount_sent, price, is_deleted, created_at, updated_at
+RETURNING id, purchase_order_item_id, sales_order_id, primary_item_variant_id, secondary_item_variant_id, primary_item_unit_id, secondary_item_unit_id, primary_item_unit_value, secondary_item_unit_value, amount, amount_sent, amount_invoiced, price, is_deleted, created_at, updated_at
 `
 
 type UpsertSalesOrderItemParams struct {
@@ -1274,6 +1283,7 @@ func (q *Queries) UpsertSalesOrderItem(ctx context.Context, arg UpsertSalesOrder
 		&i.SecondaryItemUnitValue,
 		&i.Amount,
 		&i.AmountSent,
+		&i.AmountInvoiced,
 		&i.Price,
 		&i.IsDeleted,
 		&i.CreatedAt,
