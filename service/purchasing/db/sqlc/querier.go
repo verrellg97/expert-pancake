@@ -27,7 +27,7 @@ type Querier interface {
 	UpsertPurchaseOrder(ctx context.Context, arg UpsertPurchaseOrderParams) (PurchasingPurchaseOrder, error)
 	UpsertPurchaseOrderItem(ctx context.Context, arg UpsertPurchaseOrderItemParams) (PurchasingPurchaseOrderItem, error)
 	UpsertPurchaseSetting(ctx context.Context, arg UpsertPurchaseSettingParams) (PurchasingPurchaseSetting, error)
-	UpsertReceiptOrder(ctx context.Context, arg UpsertReceiptOrderParams) error
+	UpsertReceiptOrder(ctx context.Context, arg UpsertReceiptOrderParams) (PurchasingReceiptOrder, error)
 }
 
 var _ Querier = (*Queries)(nil)

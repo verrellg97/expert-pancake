@@ -174,6 +174,8 @@ type UpdatePurchaseOrderStatusResponse struct {
 type ReceiptOrder struct {
 	Id                 string `json:"id" validate:"required"`
 	DeliveryOrderId    string `json:"delivery_order_id" validate:"required"`
+	WarehouseId        string `json:"warehouse_id" validate:"required"`
+	WarehouseName      string `json:"warehouse_name" validate:"required"`
 	CompanyId          string `json:"company_id" validate:"required"`
 	BranchId           string `json:"branch_id" validate:"required"`
 	FormNumber         string `json:"form_number" validate:"required"`
@@ -207,20 +209,37 @@ type ReceiptOrderItem struct {
 	SecondaryItemUnitId    string  `json:"secondary_item_unit_id" validate:"required"`
 	PrimaryItemUnitValue   string  `json:"primary_item_unit_value" validate:"required"`
 	SecondaryItemUnitValue string  `json:"secondary_item_unit_value" validate:"required"`
-	AmountDelivered        string  `json:"amount_delivered" validate:"required"`
 	Amount                 string  `json:"amount" validate:"required"`
 }
 
+type UpsertReceiptOrderItemsRequest struct {
+	PurchaseOrderItemId    string  `json:"purchase_order_item_id" validate:"required"`
+	SalesOrderItemId       string  `json:"sales_order_item_id" validate:"required"`
+	DeliveryOrderItemId    string  `json:"delivery_order_item_id" validate:"required"`
+	PrimaryItemVariantId   string  `json:"primary_item_variant_id" validate:"required"`
+	WarehouseRackId        string  `json:"warehouse_rack_id" validate:"required"`
+	Batch                  string `json:"batch" validate:"required"`
+	ExpiredDate            string `json:"expired_date" validate:"required"`
+	ItemBarcodeId          string  `json:"item_barcode_id" validate:"required"`
+	SecondaryItemVariantId string  `json:"secondary_item_variant_id" validate:"required"`
+	PrimaryItemUnitId      string  `json:"primary_item_unit_id" validate:"required"`
+	SecondaryItemUnitId    string  `json:"secondary_item_unit_id" validate:"required"`
+	PrimaryItemUnitValue   string  `json:"primary_item_unit_value" validate:"required"`
+	SecondaryItemUnitValue string  `json:"secondary_item_unit_value" validate:"required"`
+	Amount                 string  `json:"amount" validate:"required"`
+}
 type UpsertReceiptOrderRequest struct {
-	Id                 string `json:"id"`
-	DeliveryOrderId    string `json:"delivery_order_id"`
-	CompanyId          string `json:"company_id" validate:"required"`
-	BranchId           string `json:"branch_id" validate:"required"`
-	TransactionDate    string `json:"transaction_date" validate:"required"`
-	ContactBookId      string `json:"contact_book_id" validate:"required"`
-	SecondaryCompanyId string `json:"secondary_company_id"`
-	KonekinId          string `json:"konekin_id"`
-	TotalItems         string `json:"total_items"`
+	Id                             string                           `json:"id"`
+	DeliveryOrderId                string                           `json:"delivery_order_id"`
+	WarehouseId                    string                           `json:"warehouse_id" validate:"required"`
+	CompanyId                      string                           `json:"company_id" validate:"required"`
+	BranchId                       string                           `json:"branch_id" validate:"required"`
+	TransactionDate                string                           `json:"transaction_date" validate:"required"`
+	ContactBookId                  string                           `json:"contact_book_id" validate:"required"`
+	SecondaryCompanyId             string                           `json:"secondary_company_id"`
+	KonekinId                      string                           `json:"konekin_id"`
+	TotalItems                     string                           `json:"total_items"`
+	UpsertReceiptOrderItemsRequest []UpsertReceiptOrderItemsRequest `json:"receipt_order_items" validate:"required"`
 }
 
 type UpsertReceiptOrderResponse struct {
@@ -252,7 +271,6 @@ type ReceiptOrderItemsRequest struct {
 	SecondaryItemUnitId    string `json:"secondary_item_unit_id"`
 	PrimaryItemUnitValue   string `json:"primary_item_unit_value" validate:"required"`
 	SecondaryItemUnitValue string `json:"secondary_item_unit_value"`
-	AmountDelivered        string `json:"amount_delivered" validate:"required"`
 	Amount                 string `json:"amount" validate:"required"`
 }
 

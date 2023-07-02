@@ -219,7 +219,7 @@ func (q *Queries) GetPurchaseSetting(ctx context.Context, companyID string) (Pur
 
 const getReceiptOrderItems = `-- name: GetReceiptOrderItems :many
 SELECT 
-    id, purchase_order_item_id, sales_order_item_id, delivery_order_item_id, receipt_order_id, primary_item_variant_id, warehouse_rack_id, batch, expired_date, item_barcode_id, secondary_item_variant_id, primary_item_unit_id, secondary_item_unit_id, primary_item_unit_value, secondary_item_unit_value, amount_delivered, amount, is_deleted, created_at, updated_at
+    id, purchase_order_item_id, sales_order_item_id, delivery_order_item_id, receipt_order_id, primary_item_variant_id, warehouse_rack_id, batch, expired_date, item_barcode_id, secondary_item_variant_id, primary_item_unit_id, secondary_item_unit_id, primary_item_unit_value, secondary_item_unit_value, amount, is_deleted, created_at, updated_at
 FROM purchasing.receipt_order_items
 WHERE receipt_order_id = $1 AND is_deleted = FALSE
 `
@@ -249,7 +249,6 @@ func (q *Queries) GetReceiptOrderItems(ctx context.Context, receiptOrderID strin
 			&i.SecondaryItemUnitID,
 			&i.PrimaryItemUnitValue,
 			&i.SecondaryItemUnitValue,
-			&i.AmountDelivered,
 			&i.Amount,
 			&i.IsDeleted,
 			&i.CreatedAt,
@@ -270,7 +269,7 @@ func (q *Queries) GetReceiptOrderItems(ctx context.Context, receiptOrderID strin
 
 const getReceiptOrders = `-- name: GetReceiptOrders :many
 SELECT 
-    id, delivery_order_id, company_id, branch_id, form_number, transaction_date, contact_book_id, secondary_company_id, konekin_id, total_items, is_deleted, status, created_at, updated_at
+    id, delivery_order_id, company_id, branch_id, warehouse_id, form_number, transaction_date, contact_book_id, secondary_company_id, konekin_id, total_items, is_deleted, status, created_at, updated_at
 FROM purchasing.receipt_orders
 WHERE company_id = $1
     AND branch_id = $2
@@ -304,6 +303,7 @@ func (q *Queries) GetReceiptOrders(ctx context.Context, arg GetReceiptOrdersPara
 			&i.DeliveryOrderID,
 			&i.CompanyID,
 			&i.BranchID,
+			&i.WarehouseID,
 			&i.FormNumber,
 			&i.TransactionDate,
 			&i.ContactBookID,
@@ -334,9 +334,9 @@ INSERT INTO purchasing.receipt_order_items(
     receipt_order_id, primary_item_variant_id, warehouse_rack_id, batch,
     expired_date, item_barcode_id, secondary_item_variant_id,
     primary_item_unit_id, secondary_item_unit_id, primary_item_unit_value,
-    secondary_item_unit_value, amount_delivered, amount
+    secondary_item_unit_value, amount
 )
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)
 `
 
 type InsertReceiptOrderItemParams struct {
@@ -355,7 +355,6 @@ type InsertReceiptOrderItemParams struct {
 	SecondaryItemUnitID    string         `db:"secondary_item_unit_id"`
 	PrimaryItemUnitValue   int64          `db:"primary_item_unit_value"`
 	SecondaryItemUnitValue int64          `db:"secondary_item_unit_value"`
-	AmountDelivered        int64          `db:"amount_delivered"`
 	Amount                 int64          `db:"amount"`
 }
 
@@ -376,7 +375,6 @@ func (q *Queries) InsertReceiptOrderItem(ctx context.Context, arg InsertReceiptO
 		arg.SecondaryItemUnitID,
 		arg.PrimaryItemUnitValue,
 		arg.SecondaryItemUnitValue,
-		arg.AmountDelivered,
 		arg.Amount,
 	)
 	return err
@@ -624,14 +622,15 @@ func (q *Queries) UpsertPurchaseSetting(ctx context.Context, arg UpsertPurchaseS
 	return i, err
 }
 
-const upsertReceiptOrder = `-- name: UpsertReceiptOrder :exec
+const upsertReceiptOrder = `-- name: UpsertReceiptOrder :one
 INSERT INTO purchasing.receipt_orders(
-        id, delivery_order_id, company_id, branch_id, form_number, transaction_date,
+        id, delivery_order_id, warehouse_id, company_id, branch_id, form_number, transaction_date,
         contact_book_id, secondary_company_id, konekin_id, total_items
     )
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) ON CONFLICT (id) DO
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) ON CONFLICT (id) DO
 UPDATE
 SET delivery_order_id = EXCLUDED.delivery_order_id,
+    warehouse_id = EXCLUDED.warehouse_id,
     company_id = EXCLUDED.company_id,
     branch_id = EXCLUDED.branch_id,
     form_number = EXCLUDED.form_number,
@@ -641,11 +640,13 @@ SET delivery_order_id = EXCLUDED.delivery_order_id,
     konekin_id = EXCLUDED.konekin_id,
     total_items = EXCLUDED.total_items,
     updated_at = NOW()
+RETURNING id, delivery_order_id, company_id, branch_id, warehouse_id, form_number, transaction_date, contact_book_id, secondary_company_id, konekin_id, total_items, is_deleted, status, created_at, updated_at
 `
 
 type UpsertReceiptOrderParams struct {
 	ID                 string    `db:"id"`
 	DeliveryOrderID    string    `db:"delivery_order_id"`
+	WarehouseID        string    `db:"warehouse_id"`
 	CompanyID          string    `db:"company_id"`
 	BranchID           string    `db:"branch_id"`
 	FormNumber         string    `db:"form_number"`
@@ -656,10 +657,11 @@ type UpsertReceiptOrderParams struct {
 	TotalItems         int64     `db:"total_items"`
 }
 
-func (q *Queries) UpsertReceiptOrder(ctx context.Context, arg UpsertReceiptOrderParams) error {
-	_, err := q.db.ExecContext(ctx, upsertReceiptOrder,
+func (q *Queries) UpsertReceiptOrder(ctx context.Context, arg UpsertReceiptOrderParams) (PurchasingReceiptOrder, error) {
+	row := q.db.QueryRowContext(ctx, upsertReceiptOrder,
 		arg.ID,
 		arg.DeliveryOrderID,
+		arg.WarehouseID,
 		arg.CompanyID,
 		arg.BranchID,
 		arg.FormNumber,
@@ -669,5 +671,23 @@ func (q *Queries) UpsertReceiptOrder(ctx context.Context, arg UpsertReceiptOrder
 		arg.KonekinID,
 		arg.TotalItems,
 	)
-	return err
+	var i PurchasingReceiptOrder
+	err := row.Scan(
+		&i.ID,
+		&i.DeliveryOrderID,
+		&i.CompanyID,
+		&i.BranchID,
+		&i.WarehouseID,
+		&i.FormNumber,
+		&i.TransactionDate,
+		&i.ContactBookID,
+		&i.SecondaryCompanyID,
+		&i.KonekinID,
+		&i.TotalItems,
+		&i.IsDeleted,
+		&i.Status,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
 }

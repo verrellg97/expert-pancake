@@ -85,7 +85,6 @@ func (a purchasingService) GetReceiptOrderItems(w http.ResponseWriter, r *http.R
 			SecondaryItemUnitId:      d.SecondaryItemUnitID,
 			PrimaryItemUnitValue:     strconv.FormatInt(d.PrimaryItemUnitValue, 10),
 			SecondaryItemUnitValue:   strconv.FormatInt(d.SecondaryItemUnitValue, 10),
-			AmountDelivered:          strconv.FormatInt(d.AmountDelivered, 10),
 			Amount:                   strconv.FormatInt(d.Amount, 10),
 		}
 		receiptOrderitems = append(receiptOrderitems, receiptOrderItem)

@@ -45,9 +45,20 @@ func (a purchasingService) GetReceiptOrders(w http.ResponseWriter, r *http.Reque
 			return errors.NewServerError(model.GetReceiptOrdersError, err.Error())
 		}
 
+		argGetWarehouse := client.GetWarehousesRequest{
+			Id:       d.WarehouseID,
+			BranchId: "1",
+		}
+		warehouse, err := client.GetWarehouses(argGetWarehouse)
+		if err != nil {
+			return errors.NewServerError(model.GetReceiptOrdersError, err.Error())
+		}
+
 		var receiptOrder = model.ReceiptOrder{
 			Id:                 d.ID,
 			DeliveryOrderId:    d.DeliveryOrderID,
+			WarehouseId:        d.WarehouseID,
+			WarehouseName:      warehouse.Result.Warehouses[0].Name,
 			CompanyId:          d.CompanyID,
 			BranchId:           d.BranchID,
 			FormNumber:         d.FormNumber,

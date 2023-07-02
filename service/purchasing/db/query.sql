@@ -116,14 +116,15 @@ UPDATE purchasing.purchase_order_items
 SET sales_order_item_id = $2
 WHERE id = $1;
 
--- name: UpsertReceiptOrder :exec
+-- name: UpsertReceiptOrder :one
 INSERT INTO purchasing.receipt_orders(
-        id, delivery_order_id, company_id, branch_id, form_number, transaction_date,
+        id, delivery_order_id, warehouse_id, company_id, branch_id, form_number, transaction_date,
         contact_book_id, secondary_company_id, konekin_id, total_items
     )
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) ON CONFLICT (id) DO
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) ON CONFLICT (id) DO
 UPDATE
 SET delivery_order_id = EXCLUDED.delivery_order_id,
+    warehouse_id = EXCLUDED.warehouse_id,
     company_id = EXCLUDED.company_id,
     branch_id = EXCLUDED.branch_id,
     form_number = EXCLUDED.form_number,
@@ -132,7 +133,8 @@ SET delivery_order_id = EXCLUDED.delivery_order_id,
     secondary_company_id = EXCLUDED.secondary_company_id,
     konekin_id = EXCLUDED.konekin_id,
     total_items = EXCLUDED.total_items,
-    updated_at = NOW();
+    updated_at = NOW()
+RETURNING *;
 
 -- name: GetReceiptOrders :many
 SELECT 
@@ -153,9 +155,9 @@ INSERT INTO purchasing.receipt_order_items(
     receipt_order_id, primary_item_variant_id, warehouse_rack_id, batch,
     expired_date, item_barcode_id, secondary_item_variant_id,
     primary_item_unit_id, secondary_item_unit_id, primary_item_unit_value,
-    secondary_item_unit_value, amount_delivered, amount
+    secondary_item_unit_value, amount
 )
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17);
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16);
 
 -- name: GetReceiptOrderItems :many
 SELECT 
