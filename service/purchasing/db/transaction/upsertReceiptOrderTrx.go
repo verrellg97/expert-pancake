@@ -26,7 +26,7 @@ type UpsertReceiptOrderTrxParams struct {
 	ReceiptOrderItems  []model.UpsertReceiptOrderItemsRequest
 }
 
-func (trx *Trx) UpsertReceiptOrderTrx(ctx context.Context, arg UpsertReceiptOrderTrxParams) (error) {
+func (trx *Trx) UpsertReceiptOrderTrx(ctx context.Context, arg UpsertReceiptOrderTrxParams) error {
 
 	err := trx.execTx(ctx, func(q *db.Queries) error {
 		var err error
@@ -69,7 +69,8 @@ func (trx *Trx) UpsertReceiptOrderTrx(ctx context.Context, arg UpsertReceiptOrde
 				ID:                     uuid.NewV4().String(),
 				PurchaseOrderItemID:    d.PurchaseOrderItemId,
 				SalesOrderItemID:       d.SalesOrderItemId,
-				DeliveryOrderItemID:       d.DeliveryOrderItemId,
+				DeliveryOrderItemID:    d.DeliveryOrderItemId,
+				ReceiptOrderID:         headerRes.ID,
 				PrimaryItemVariantID:   d.PrimaryItemVariantId,
 				WarehouseRackID:        d.WarehouseRackId,
 				Batch:                  util.NewNullableString(d.Batch),
