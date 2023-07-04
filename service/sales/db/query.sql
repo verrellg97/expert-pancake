@@ -378,3 +378,9 @@ WHERE a.company_id = $1
     AND a.branch_id = $2
     AND a.transaction_date BETWEEN @start_date::date AND @end_date::date 
     AND a.is_deleted = FALSE;
+
+-- name: GetSalesInvoiceItems :many
+SELECT 
+    a.*
+FROM sales.sales_invoice_items a
+WHERE a.sales_invoice_id = $1;
