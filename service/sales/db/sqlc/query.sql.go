@@ -456,6 +456,93 @@ func (q *Queries) GetPOSUserSetting(ctx context.Context, arg GetPOSUserSettingPa
 	return i, err
 }
 
+const getSalesInvoices = `-- name: GetSalesInvoices :many
+SELECT 
+    a.id, a.sales_order_id, a.purchase_invoice_id, a.company_id, a.branch_id, a.form_number, a.transaction_date, a.contact_book_id, a.secondary_company_id, a.konekin_id, a.currency_code, a.total_items, a.total, a.is_deleted, a.status, a.created_at, a.updated_at,
+    b.form_number AS sales_order_form_number
+FROM sales.sales_invoices a
+JOIN sales.sales_orders b ON b.id = a.sales_order_id
+WHERE a.company_id = $1
+    AND a.branch_id = $2
+    AND a.transaction_date BETWEEN $3::date AND $4::date 
+    AND a.is_deleted = FALSE
+`
+
+type GetSalesInvoicesParams struct {
+	CompanyID string    `db:"company_id"`
+	BranchID  string    `db:"branch_id"`
+	StartDate time.Time `db:"start_date"`
+	EndDate   time.Time `db:"end_date"`
+}
+
+type GetSalesInvoicesRow struct {
+	ID                   string       `db:"id"`
+	SalesOrderID         string       `db:"sales_order_id"`
+	PurchaseInvoiceID    string       `db:"purchase_invoice_id"`
+	CompanyID            string       `db:"company_id"`
+	BranchID             string       `db:"branch_id"`
+	FormNumber           string       `db:"form_number"`
+	TransactionDate      time.Time    `db:"transaction_date"`
+	ContactBookID        string       `db:"contact_book_id"`
+	SecondaryCompanyID   string       `db:"secondary_company_id"`
+	KonekinID            string       `db:"konekin_id"`
+	CurrencyCode         string       `db:"currency_code"`
+	TotalItems           int64        `db:"total_items"`
+	Total                int64        `db:"total"`
+	IsDeleted            bool         `db:"is_deleted"`
+	Status               string       `db:"status"`
+	CreatedAt            sql.NullTime `db:"created_at"`
+	UpdatedAt            sql.NullTime `db:"updated_at"`
+	SalesOrderFormNumber string       `db:"sales_order_form_number"`
+}
+
+func (q *Queries) GetSalesInvoices(ctx context.Context, arg GetSalesInvoicesParams) ([]GetSalesInvoicesRow, error) {
+	rows, err := q.db.QueryContext(ctx, getSalesInvoices,
+		arg.CompanyID,
+		arg.BranchID,
+		arg.StartDate,
+		arg.EndDate,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetSalesInvoicesRow
+	for rows.Next() {
+		var i GetSalesInvoicesRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.SalesOrderID,
+			&i.PurchaseInvoiceID,
+			&i.CompanyID,
+			&i.BranchID,
+			&i.FormNumber,
+			&i.TransactionDate,
+			&i.ContactBookID,
+			&i.SecondaryCompanyID,
+			&i.KonekinID,
+			&i.CurrencyCode,
+			&i.TotalItems,
+			&i.Total,
+			&i.IsDeleted,
+			&i.Status,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.SalesOrderFormNumber,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getSalesOrder = `-- name: GetSalesOrder :one
 SELECT 
     id, purchase_order_id, purchase_order_branch_id, purchase_order_receiving_warehouse_id, company_id, branch_id, form_number, transaction_date, contact_book_id, secondary_company_id, konekin_id, currency_code, total_items, total, is_deleted, status, is_all_branches, created_at, updated_at
