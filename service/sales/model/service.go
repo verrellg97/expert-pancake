@@ -38,6 +38,7 @@ type SalesService interface {
 
 	UpsertSalesInvoice(w http.ResponseWriter, r *http.Request) error
 	GetSalesInvoices(w http.ResponseWriter, r *http.Request) error
+	GetSalesInvoiceItems(w http.ResponseWriter, r *http.Request) error
 }
 
 type POS struct {
@@ -520,4 +521,30 @@ type SalesInvoice struct {
 
 type GetSalesInvoicesResponse struct {
 	SalesInvoices []SalesInvoice `json:"sales_invoices"`
+}
+
+type SalesInvoiceItem struct {
+	Id                     string `json:"id" validate:"required"`
+	PurchaseOrderItemId    string `json:"purchase_order_item_id" validate:"required"`
+	SalesOrderItemId       string `json:"sales_order_item_id" validate:"required"`
+	PrimaryItemVariantId   string `json:"primary_item_variant_id" validate:"required"`
+	ItemCode               string `json:"item_code" validate:"required"`
+	ItemName               string `json:"item_name" validate:"required"`
+	ItemVariantName        string `json:"item_variant_name" validate:"required"`
+	SecondaryItemVariantId string `json:"secondary_item_variant_id" validate:"required"`
+	PrimaryItemUnitId      string `json:"primary_item_unit_id" validate:"required"`
+	ItemUnitName           string `json:"item_unit_name" validate:"required"`
+	SecondaryItemUnitId    string `json:"secondary_item_unit_id" validate:"required"`
+	PrimaryItemUnitValue   string `json:"primary_item_unit_value" validate:"required"`
+	SecondaryItemUnitValue string `json:"secondary_item_unit_value" validate:"required"`
+	Amount                 string `json:"amount" validate:"required"`
+	Price                  string `json:"price" validate:"required"`
+}
+
+type GetSalesInvoiceItemsRequest struct {
+	SalesInvoiceId string `json:"sales_invoice_id" validate:"required"`
+}
+
+type GetSalesInvoiceItemsResponse struct {
+	SalesInvoiceItems []SalesInvoiceItem `json:"sales_invoice_items"`
 }

@@ -456,6 +456,53 @@ func (q *Queries) GetPOSUserSetting(ctx context.Context, arg GetPOSUserSettingPa
 	return i, err
 }
 
+const getSalesInvoiceItems = `-- name: GetSalesInvoiceItems :many
+SELECT 
+    a.id, a.purchase_order_item_id, a.sales_order_item_id, a.purchase_invoice_item_id, a.sales_invoice_id, a.primary_item_variant_id, a.secondary_item_variant_id, a.primary_item_unit_id, a.secondary_item_unit_id, a.primary_item_unit_value, a.secondary_item_unit_value, a.amount, a.price, a.is_deleted, a.created_at, a.updated_at
+FROM sales.sales_invoice_items a
+WHERE a.sales_invoice_id = $1
+`
+
+func (q *Queries) GetSalesInvoiceItems(ctx context.Context, salesInvoiceID string) ([]SalesSalesInvoiceItem, error) {
+	rows, err := q.db.QueryContext(ctx, getSalesInvoiceItems, salesInvoiceID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []SalesSalesInvoiceItem
+	for rows.Next() {
+		var i SalesSalesInvoiceItem
+		if err := rows.Scan(
+			&i.ID,
+			&i.PurchaseOrderItemID,
+			&i.SalesOrderItemID,
+			&i.PurchaseInvoiceItemID,
+			&i.SalesInvoiceID,
+			&i.PrimaryItemVariantID,
+			&i.SecondaryItemVariantID,
+			&i.PrimaryItemUnitID,
+			&i.SecondaryItemUnitID,
+			&i.PrimaryItemUnitValue,
+			&i.SecondaryItemUnitValue,
+			&i.Amount,
+			&i.Price,
+			&i.IsDeleted,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getSalesInvoices = `-- name: GetSalesInvoices :many
 SELECT 
     a.id, a.sales_order_id, a.purchase_invoice_id, a.company_id, a.branch_id, a.form_number, a.transaction_date, a.contact_book_id, a.secondary_company_id, a.konekin_id, a.currency_code, a.total_items, a.total, a.is_deleted, a.status, a.created_at, a.updated_at,

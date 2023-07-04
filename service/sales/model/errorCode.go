@@ -32,6 +32,7 @@ const (
 	GetSalesOrderDeliveryItemsError = 800803
 	UpdateDeliveryOrderItemsError   = 800804
 
-	UpsertSalesInvoiceError = 800901
-	GetSalesInvoicesError   = 800902
+	UpsertSalesInvoiceError   = 800901
+	GetSalesInvoicesError     = 800902
+	GetSalesInvoiceItemsError = 800903
 )
