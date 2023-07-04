@@ -37,6 +37,7 @@ type SalesService interface {
 	UpdateDeliveryOrderItems(w http.ResponseWriter, r *http.Request) error
 
 	UpsertSalesInvoice(w http.ResponseWriter, r *http.Request) error
+	GetSalesInvoices(w http.ResponseWriter, r *http.Request) error
 }
 
 type POS struct {
@@ -476,8 +477,8 @@ type UpsertSalesInvoiceItemRequest struct {
 }
 
 type UpsertSalesInvoiceRequest struct {
-	Id                 string                          `json:"id" validate:"required"`
-	SalesOrderId       string                          `json:"receipt_order_id"`
+	Id                 string                          `json:"id"`
+	SalesOrderId       string                          `json:"sales_order_id" validate:"required"`
 	CompanyId          string                          `json:"company_id" validate:"required"`
 	BranchId           string                          `json:"branch_id" validate:"required"`
 	TransactionDate    string                          `json:"transaction_date" validate:"required"`
@@ -490,4 +491,33 @@ type UpsertSalesInvoiceRequest struct {
 
 type UpsertSalesInvoiceResponse struct {
 	Message string `json:"message"`
+}
+
+type GetSalesInvoicesRequest struct {
+	CompanyId string `json:"company_id" validate:"required"`
+	BranchId  string `json:"branch_id" validate:"required"`
+	StartDate string `json:"start_date" validate:"required"`
+	EndDate   string `json:"end_date" validate:"required"`
+}
+
+type SalesInvoice struct {
+	Id                   string `json:"id" validate:"required"`
+	FormNumber           string `json:"form_number" validate:"required"`
+	SalesOrderId         string `json:"sales_order_id" validate:"required"`
+	SalesOrderFormNumber string `json:"sales_order_form_number" validate:"required"`
+	CompanyId            string `json:"company_id" validate:"required"`
+	BranchId             string `json:"branch_id" validate:"required"`
+	TransactionDate      string `json:"transaction_date" validate:"required"`
+	ContactBookId        string `json:"contact_book_id" validate:"required"`
+	SecondaryCompanyId   string `json:"secondary_company_id" validate:"required"`
+	KonekinId            string `json:"konekin_id" validate:"required"`
+	CustomerName         string `json:"customer_name" validate:"required"`
+	CurrencyCode         string `json:"currency_code" validate:"required"`
+	TotalItems           string `json:"total_items" validate:"required"`
+	Total                string `json:"total" validate:"required"`
+	Status               string `json:"status" validate:"required"`
+}
+
+type GetSalesInvoicesResponse struct {
+	SalesInvoices []SalesInvoice `json:"sales_invoices"`
 }

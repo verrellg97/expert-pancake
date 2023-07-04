@@ -367,3 +367,14 @@ INSERT INTO sales.sales_invoice_items(
     primary_item_unit_value, secondary_item_unit_value, amount, price
 )
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12);
+
+-- name: GetSalesInvoices :many
+SELECT 
+    a.*,
+    b.form_number AS sales_order_form_number
+FROM sales.sales_invoices a
+JOIN sales.sales_orders b ON b.id = a.sales_order_id
+WHERE a.company_id = $1
+    AND a.branch_id = $2
+    AND a.transaction_date BETWEEN @start_date::date AND @end_date::date 
+    AND a.is_deleted = FALSE;
