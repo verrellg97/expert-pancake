@@ -321,3 +321,49 @@ RETURNING *;
 -- name: InsertSalesOrderBranch :exec
 INSERT INTO sales.sales_order_branches(sales_order_id, company_branch_id)
 VALUES ($1, $2);
+
+-- name: UpsertSalesInvoice :one
+INSERT INTO sales.sales_invoices(
+    id, sales_order_id, company_id, branch_id,
+    form_number, transaction_date,
+    contact_book_id, secondary_company_id, konekin_id,
+    currency_code
+)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) ON CONFLICT (id) DO
+UPDATE
+SET 
+    sales_order_id = EXCLUDED.sales_order_id,
+    company_id = EXCLUDED.company_id,
+    branch_id = EXCLUDED.branch_id,
+    form_number = EXCLUDED.form_number,
+    transaction_date = EXCLUDED.transaction_date,
+    contact_book_id = EXCLUDED.contact_book_id,
+    secondary_company_id = EXCLUDED.secondary_company_id,
+    konekin_id = EXCLUDED.konekin_id,
+    currency_code = EXCLUDED.currency_code,
+    status = EXCLUDED.status
+RETURNING *;
+
+-- name: UpdateSalesInvoiceAddItem :exec
+UPDATE sales.sales_invoices
+SET total_items=sub.total_items,
+    total=sub.total,
+    updated_at = NOW()
+FROM (SELECT sales_invoice_id, COUNT(id) AS total_items, SUM(amount*price) AS total
+      FROM sales.sales_invoice_items
+      WHERE sales_invoice_id = @sales_invoice_id
+      GROUP BY sales_invoice_id) AS sub
+WHERE sales.sales_invoices.id = sub.sales_invoice_id;
+
+-- name: DeleteSalesInvoiceItems :exec
+DELETE FROM sales.sales_invoice_items
+WHERE sales_invoice_id = $1;
+
+-- name: InsertSalesInvoiceItem :exec
+INSERT INTO sales.sales_invoice_items(
+    id, purchase_order_item_id, sales_order_item_id,
+    sales_invoice_id, primary_item_variant_id, secondary_item_variant_id,
+    primary_item_unit_id, secondary_item_unit_id,
+    primary_item_unit_value, secondary_item_unit_value, amount, price
+)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12);

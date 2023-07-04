@@ -35,6 +35,8 @@ type SalesService interface {
 	GetDeliveryOrders(w http.ResponseWriter, r *http.Request) error
 	GetSalesOrderDeliveryItems(w http.ResponseWriter, r *http.Request) error
 	UpdateDeliveryOrderItems(w http.ResponseWriter, r *http.Request) error
+
+	UpsertSalesInvoice(w http.ResponseWriter, r *http.Request) error
 }
 
 type POS struct {
@@ -458,4 +460,34 @@ type UpdateDeliveryOrderItemsRequest struct {
 
 type UpdateDeliveryOrderItemsResponse struct {
 	DeliveryOrderItems []DeliveryOrderItem `json:"delivery_order_items"`
+}
+
+type UpsertSalesInvoiceItemRequest struct {
+	PurchaseOrderItemId    string `json:"purchase_order_item_id"`
+	SalesOrderItemId       string `json:"sales_order_item_id"`
+	PrimaryItemVariantId   string `json:"primary_item_variant_id" validate:"required"`
+	SecondaryItemVariantId string `json:"secondary_item_variant_id"`
+	PrimaryItemUnitId      string `json:"primary_item_unit_id" validate:"required"`
+	SecondaryItemUnitId    string `json:"secondary_item_unit_id"`
+	PrimaryItemUnitValue   string `json:"primary_item_unit_value" validate:"required"`
+	SecondaryItemUnitValue string `json:"secondary_item_unit_value"`
+	Amount                 string `json:"amount" validate:"required"`
+	Price                  string `json:"price" validate:"required"`
+}
+
+type UpsertSalesInvoiceRequest struct {
+	Id                 string                          `json:"id" validate:"required"`
+	SalesOrderId       string                          `json:"receipt_order_id"`
+	CompanyId          string                          `json:"company_id" validate:"required"`
+	BranchId           string                          `json:"branch_id" validate:"required"`
+	TransactionDate    string                          `json:"transaction_date" validate:"required"`
+	ContactBookId      string                          `json:"contact_book_id" validate:"required"`
+	SecondaryCompanyId string                          `json:"secondary_company_id"`
+	KonekinId          string                          `json:"konekin_id"`
+	CurrencyCode       string                          `json:"currency_code" validate:"required"`
+	SalesInvoiceItems  []UpsertSalesInvoiceItemRequest `json:"sales_invoice_items" validate:"required"`
+}
+
+type UpsertSalesInvoiceResponse struct {
+	Message string `json:"message"`
 }
