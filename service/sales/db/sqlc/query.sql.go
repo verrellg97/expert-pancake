@@ -66,6 +66,16 @@ func (q *Queries) DeletePOSPaymentMethod(ctx context.Context, id string) error {
 	return err
 }
 
+const deleteSalesInvoiceItems = `-- name: DeleteSalesInvoiceItems :exec
+DELETE FROM sales.sales_invoice_items
+WHERE sales_invoice_id = $1
+`
+
+func (q *Queries) DeleteSalesInvoiceItems(ctx context.Context, salesInvoiceID string) error {
+	_, err := q.db.ExecContext(ctx, deleteSalesInvoiceItems, salesInvoiceID)
+	return err
+}
+
 const deleteSalesOrderItems = `-- name: DeleteSalesOrderItems :exec
 DELETE FROM sales.sales_order_items
 WHERE sales_order_id = $1
@@ -775,6 +785,49 @@ func (q *Queries) InsertPOSItem(ctx context.Context, arg InsertPOSItemParams) (S
 	return i, err
 }
 
+const insertSalesInvoiceItem = `-- name: InsertSalesInvoiceItem :exec
+INSERT INTO sales.sales_invoice_items(
+    id, purchase_order_item_id, sales_order_item_id,
+    sales_invoice_id, primary_item_variant_id, secondary_item_variant_id,
+    primary_item_unit_id, secondary_item_unit_id,
+    primary_item_unit_value, secondary_item_unit_value, amount, price
+)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+`
+
+type InsertSalesInvoiceItemParams struct {
+	ID                     string `db:"id"`
+	PurchaseOrderItemID    string `db:"purchase_order_item_id"`
+	SalesOrderItemID       string `db:"sales_order_item_id"`
+	SalesInvoiceID         string `db:"sales_invoice_id"`
+	PrimaryItemVariantID   string `db:"primary_item_variant_id"`
+	SecondaryItemVariantID string `db:"secondary_item_variant_id"`
+	PrimaryItemUnitID      string `db:"primary_item_unit_id"`
+	SecondaryItemUnitID    string `db:"secondary_item_unit_id"`
+	PrimaryItemUnitValue   int64  `db:"primary_item_unit_value"`
+	SecondaryItemUnitValue int64  `db:"secondary_item_unit_value"`
+	Amount                 int64  `db:"amount"`
+	Price                  int64  `db:"price"`
+}
+
+func (q *Queries) InsertSalesInvoiceItem(ctx context.Context, arg InsertSalesInvoiceItemParams) error {
+	_, err := q.db.ExecContext(ctx, insertSalesInvoiceItem,
+		arg.ID,
+		arg.PurchaseOrderItemID,
+		arg.SalesOrderItemID,
+		arg.SalesInvoiceID,
+		arg.PrimaryItemVariantID,
+		arg.SecondaryItemVariantID,
+		arg.PrimaryItemUnitID,
+		arg.SecondaryItemUnitID,
+		arg.PrimaryItemUnitValue,
+		arg.SecondaryItemUnitValue,
+		arg.Amount,
+		arg.Price,
+	)
+	return err
+}
+
 const insertSalesOrderBranch = `-- name: InsertSalesOrderBranch :exec
 INSERT INTO sales.sales_order_branches(sales_order_id, company_branch_id)
 VALUES ($1, $2)
@@ -803,6 +856,23 @@ type UpdateDeliveryOrderTotalItemsParams struct {
 
 func (q *Queries) UpdateDeliveryOrderTotalItems(ctx context.Context, arg UpdateDeliveryOrderTotalItemsParams) error {
 	_, err := q.db.ExecContext(ctx, updateDeliveryOrderTotalItems, arg.ID, arg.TotalItems)
+	return err
+}
+
+const updateSalesInvoiceAddItem = `-- name: UpdateSalesInvoiceAddItem :exec
+UPDATE sales.sales_invoices
+SET total_items=sub.total_items,
+    total=sub.total,
+    updated_at = NOW()
+FROM (SELECT sales_invoice_id, COUNT(id) AS total_items, SUM(amount*price) AS total
+      FROM sales.sales_invoice_items
+      WHERE sales_invoice_id = $1
+      GROUP BY sales_invoice_id) AS sub
+WHERE sales.sales_invoices.id = sub.sales_invoice_id
+`
+
+func (q *Queries) UpdateSalesInvoiceAddItem(ctx context.Context, salesInvoiceID string) error {
+	_, err := q.db.ExecContext(ctx, updateSalesInvoiceAddItem, salesInvoiceID)
 	return err
 }
 
@@ -1170,6 +1240,78 @@ func (q *Queries) UpsertPOSUserSetting(ctx context.Context, arg UpsertPOSUserSet
 		&i.BranchID,
 		&i.WarehouseID,
 		&i.WarehouseRackID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const upsertSalesInvoice = `-- name: UpsertSalesInvoice :one
+INSERT INTO sales.sales_invoices(
+    id, sales_order_id, company_id, branch_id,
+    form_number, transaction_date,
+    contact_book_id, secondary_company_id, konekin_id,
+    currency_code
+)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) ON CONFLICT (id) DO
+UPDATE
+SET 
+    sales_order_id = EXCLUDED.sales_order_id,
+    company_id = EXCLUDED.company_id,
+    branch_id = EXCLUDED.branch_id,
+    form_number = EXCLUDED.form_number,
+    transaction_date = EXCLUDED.transaction_date,
+    contact_book_id = EXCLUDED.contact_book_id,
+    secondary_company_id = EXCLUDED.secondary_company_id,
+    konekin_id = EXCLUDED.konekin_id,
+    currency_code = EXCLUDED.currency_code,
+    status = EXCLUDED.status
+RETURNING id, sales_order_id, purchase_invoice_id, company_id, branch_id, form_number, transaction_date, contact_book_id, secondary_company_id, konekin_id, currency_code, total_items, total, is_deleted, status, created_at, updated_at
+`
+
+type UpsertSalesInvoiceParams struct {
+	ID                 string    `db:"id"`
+	SalesOrderID       string    `db:"sales_order_id"`
+	CompanyID          string    `db:"company_id"`
+	BranchID           string    `db:"branch_id"`
+	FormNumber         string    `db:"form_number"`
+	TransactionDate    time.Time `db:"transaction_date"`
+	ContactBookID      string    `db:"contact_book_id"`
+	SecondaryCompanyID string    `db:"secondary_company_id"`
+	KonekinID          string    `db:"konekin_id"`
+	CurrencyCode       string    `db:"currency_code"`
+}
+
+func (q *Queries) UpsertSalesInvoice(ctx context.Context, arg UpsertSalesInvoiceParams) (SalesSalesInvoice, error) {
+	row := q.db.QueryRowContext(ctx, upsertSalesInvoice,
+		arg.ID,
+		arg.SalesOrderID,
+		arg.CompanyID,
+		arg.BranchID,
+		arg.FormNumber,
+		arg.TransactionDate,
+		arg.ContactBookID,
+		arg.SecondaryCompanyID,
+		arg.KonekinID,
+		arg.CurrencyCode,
+	)
+	var i SalesSalesInvoice
+	err := row.Scan(
+		&i.ID,
+		&i.SalesOrderID,
+		&i.PurchaseInvoiceID,
+		&i.CompanyID,
+		&i.BranchID,
+		&i.FormNumber,
+		&i.TransactionDate,
+		&i.ContactBookID,
+		&i.SecondaryCompanyID,
+		&i.KonekinID,
+		&i.CurrencyCode,
+		&i.TotalItems,
+		&i.Total,
+		&i.IsDeleted,
+		&i.Status,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)

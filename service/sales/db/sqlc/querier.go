@@ -15,6 +15,7 @@ type Querier interface {
 	DeletePOSCustomerSetting(ctx context.Context, branchID string) error
 	DeletePOSItemsPOS(ctx context.Context, pointOfSaleID string) error
 	DeletePOSPaymentMethod(ctx context.Context, id string) error
+	DeleteSalesInvoiceItems(ctx context.Context, salesInvoiceID string) error
 	DeleteSalesOrderItems(ctx context.Context, salesOrderID string) error
 	GetCheckPOS(ctx context.Context, companyID string) (int64, error)
 	GetDeliveryOrders(ctx context.Context, arg GetDeliveryOrdersParams) ([]GetDeliveryOrdersRow, error)
@@ -31,8 +32,10 @@ type Querier interface {
 	InsertPOSCOASetting(ctx context.Context, arg InsertPOSCOASettingParams) (SalesPosChartOfAccountSetting, error)
 	InsertPOSCustomerSetting(ctx context.Context, arg InsertPOSCustomerSettingParams) (SalesPosCustomerSetting, error)
 	InsertPOSItem(ctx context.Context, arg InsertPOSItemParams) (SalesPointOfSaleItem, error)
+	InsertSalesInvoiceItem(ctx context.Context, arg InsertSalesInvoiceItemParams) error
 	InsertSalesOrderBranch(ctx context.Context, arg InsertSalesOrderBranchParams) error
 	UpdateDeliveryOrderTotalItems(ctx context.Context, arg UpdateDeliveryOrderTotalItemsParams) error
+	UpdateSalesInvoiceAddItem(ctx context.Context, salesInvoiceID string) error
 	UpdateSalesOrderAddItem(ctx context.Context, salesOrderID string) error
 	UpdateSalesOrderItemAmountSent(ctx context.Context, arg UpdateSalesOrderItemAmountSentParams) (SalesSalesOrderItem, error)
 	UpdateSalesOrderStatus(ctx context.Context, arg UpdateSalesOrderStatusParams) error
@@ -41,6 +44,7 @@ type Querier interface {
 	UpsertPOS(ctx context.Context, arg UpsertPOSParams) (SalesPointOfSale, error)
 	UpsertPOSPaymentMethod(ctx context.Context, arg UpsertPOSPaymentMethodParams) error
 	UpsertPOSUserSetting(ctx context.Context, arg UpsertPOSUserSettingParams) (SalesPosUserSetting, error)
+	UpsertSalesInvoice(ctx context.Context, arg UpsertSalesInvoiceParams) (SalesSalesInvoice, error)
 	UpsertSalesOrder(ctx context.Context, arg UpsertSalesOrderParams) (SalesSalesOrder, error)
 	UpsertSalesOrderItem(ctx context.Context, arg UpsertSalesOrderItemParams) (SalesSalesOrderItem, error)
 }
