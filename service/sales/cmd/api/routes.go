@@ -41,7 +41,7 @@ const (
 	GetDeliveryOrdersPath          = "/sales/delivery/orders"
 	GetSalesOrderDeliveryItemsPath = "/sales/order/delivery-items"
 	UpdateDeliveryOrderItemsPath   = "/sales/delivery/order/items/update"
-	GetDeliveryOrderItemsPath      = "/sales/delivery/items"
+	GetDeliveryOrderItemsPath      = "/sales/delivery/order/items"
 
 	UpsertSalesInvoicePath   = "/sales/invoice/upsert"
 	GetSalesInvoicesPath     = "/sales/invoices"
