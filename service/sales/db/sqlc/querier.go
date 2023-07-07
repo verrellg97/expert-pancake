@@ -18,6 +18,7 @@ type Querier interface {
 	DeleteSalesInvoiceItems(ctx context.Context, salesInvoiceID string) error
 	DeleteSalesOrderItems(ctx context.Context, salesOrderID string) error
 	GetCheckPOS(ctx context.Context, companyID string) (int64, error)
+	GetDeliveryOrderItems(ctx context.Context, deliveryOrderID string) ([]SalesDeliveryOrderItem, error)
 	GetDeliveryOrders(ctx context.Context, arg GetDeliveryOrdersParams) ([]GetDeliveryOrdersRow, error)
 	GetPOS(ctx context.Context, arg GetPOSParams) ([]GetPOSRow, error)
 	GetPOSCOASetting(ctx context.Context, branchID string) ([]SalesPosChartOfAccountSetting, error)

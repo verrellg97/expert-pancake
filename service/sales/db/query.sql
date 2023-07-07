@@ -303,6 +303,12 @@ SET purchase_order_item_id = EXCLUDED.purchase_order_item_id,
     updated_at = NOW()
 RETURNING *;
 
+-- name: GetDeliveryOrderItems :many
+SELECT 
+    *
+FROM sales.delivery_order_items
+WHERE delivery_order_id = $1 AND is_deleted = FALSE;
+
 -- name: DeleteDeliveryOrderItems :exec
 DELETE FROM sales.delivery_order_items
 WHERE delivery_order_id = $1;
