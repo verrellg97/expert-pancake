@@ -35,6 +35,7 @@ type SalesService interface {
 	GetDeliveryOrders(w http.ResponseWriter, r *http.Request) error
 	GetSalesOrderDeliveryItems(w http.ResponseWriter, r *http.Request) error
 	UpdateDeliveryOrderItems(w http.ResponseWriter, r *http.Request) error
+	GetDeliveryOrderItems(w http.ResponseWriter, r *http.Request) error
 
 	UpsertSalesInvoice(w http.ResponseWriter, r *http.Request) error
 	GetSalesInvoices(w http.ResponseWriter, r *http.Request) error
@@ -461,6 +462,14 @@ type UpdateDeliveryOrderItemsRequest struct {
 }
 
 type UpdateDeliveryOrderItemsResponse struct {
+	DeliveryOrderItems []DeliveryOrderItem `json:"delivery_order_items"`
+}
+
+type GetDeliveryOrderItemsRequest struct {
+	DeliveryOrderId string `json:"delivery_order_id" validate:"required"`
+}
+
+type GetDeliveryOrderItemsResponse struct {
 	DeliveryOrderItems []DeliveryOrderItem `json:"delivery_order_items"`
 }
 

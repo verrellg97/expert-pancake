@@ -100,6 +100,56 @@ func (q *Queries) GetCheckPOS(ctx context.Context, companyID string) (int64, err
 	return total_count, err
 }
 
+const getDeliveryOrderItems = `-- name: GetDeliveryOrderItems :many
+SELECT 
+    id, purchase_order_item_id, sales_order_item_id, receipt_order_item_id, delivery_order_id, primary_item_variant_id, warehouse_rack_id, batch, expired_date, item_barcode_id, secondary_item_variant_id, primary_item_unit_id, secondary_item_unit_id, primary_item_unit_value, secondary_item_unit_value, amount, is_deleted, created_at, updated_at
+FROM sales.delivery_order_items
+WHERE delivery_order_id = $1 AND is_deleted = FALSE
+`
+
+func (q *Queries) GetDeliveryOrderItems(ctx context.Context, deliveryOrderID string) ([]SalesDeliveryOrderItem, error) {
+	rows, err := q.db.QueryContext(ctx, getDeliveryOrderItems, deliveryOrderID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []SalesDeliveryOrderItem
+	for rows.Next() {
+		var i SalesDeliveryOrderItem
+		if err := rows.Scan(
+			&i.ID,
+			&i.PurchaseOrderItemID,
+			&i.SalesOrderItemID,
+			&i.ReceiptOrderItemID,
+			&i.DeliveryOrderID,
+			&i.PrimaryItemVariantID,
+			&i.WarehouseRackID,
+			&i.Batch,
+			&i.ExpiredDate,
+			&i.ItemBarcodeID,
+			&i.SecondaryItemVariantID,
+			&i.PrimaryItemUnitID,
+			&i.SecondaryItemUnitID,
+			&i.PrimaryItemUnitValue,
+			&i.SecondaryItemUnitValue,
+			&i.Amount,
+			&i.IsDeleted,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getDeliveryOrders = `-- name: GetDeliveryOrders :many
 SELECT 
     a.id, a.sales_order_id, a.receipt_order_id, a.company_id, a.branch_id, a.form_number, a.transaction_date, a.contact_book_id, a.secondary_company_id, a.konekin_id, a.total_items, a.is_deleted, a.status, a.created_at, a.updated_at, b.form_number AS sales_order_form_number
