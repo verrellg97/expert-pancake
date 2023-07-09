@@ -30,6 +30,7 @@ func (a salesService) GetDeliveryOrderItems(w http.ResponseWriter, r *http.Reque
 	var deliveryOrderItems = make([]model.DeliveryOrderItem, 0)
 
 	for _, d := range result {
+		warehouseRackName := ""
 		argWarehouseRack := client.GetWarehouseRacksRequest{
 			Id:          d.WarehouseRackID,
 			WarehouseId: "1",
@@ -39,7 +40,9 @@ func (a salesService) GetDeliveryOrderItems(w http.ResponseWriter, r *http.Reque
 			return errors.NewServerError(model.GetDeliveryOrderItemsError, err.Error())
 		}
 
-		warehouseRackName := warehouseRack.Result.WarehouseRacks[0].Name
+		if len(warehouseRack.Result.WarehouseRacks) > 0 {
+			warehouseRackName = warehouseRack.Result.WarehouseRacks[0].Name
+		}
 
 		argItemVariant := client.GetItemVariantsRequest{
 			Id: d.PrimaryItemVariantID,
@@ -64,13 +67,12 @@ func (a salesService) GetDeliveryOrderItems(w http.ResponseWriter, r *http.Reque
 
 		itemUnitName := itemUnit.Result.ItemUnits[0].UnitName
 
-		var batch, expired_date *string
+		var batch, expired_date string
 		if d.Batch.Valid {
-			batch = &d.Batch.String
+			batch = d.Batch.String
 		}
 		if d.ExpiredDate.Valid {
-			expired_date = new(string)
-			*expired_date = d.ExpiredDate.Time.Format(util.DateLayoutYMD)
+			expired_date = d.ExpiredDate.Time.Format(util.DateLayoutYMD)
 		}
 
 		var deliveryOrderItem = model.DeliveryOrderItem{
@@ -84,8 +86,8 @@ func (a salesService) GetDeliveryOrderItems(w http.ResponseWriter, r *http.Reque
 			ItemVariantName:        itemVariantName,
 			WarehouseRackId:        d.WarehouseRackID,
 			WarehouseRackName:      warehouseRackName,
-			Batch:                  *batch,
-			ExpiredDate:            *expired_date,
+			Batch:                  batch,
+			ExpiredDate:            expired_date,
 			ItemBarcodeId:          d.ItemBarcodeID,
 			SecondaryItemVariantId: d.SecondaryItemVariantID,
 			PrimaryItemUnitId:      d.PrimaryItemUnitID,
