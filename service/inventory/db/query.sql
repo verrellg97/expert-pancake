@@ -976,3 +976,23 @@ WHERE rp.created_at <= NOW()
 GROUP BY bb.id, c.id, e.id, rp.amount, a.minimum_stock
 HAVING amount < minimum_stock
 ORDER BY C.NAME, bb.NAME;
+
+-- name: GetOutgoingStock :many
+SELECT 
+	rp.transaction_code as transaction_code,
+	c.id as item_id,
+	C.code AS item_code,
+	C.NAME AS item_name,
+	bb.id as variant_id,
+	bb.NAME AS variant_name,
+    e.id as unit_id,
+	e.name as unit_name,
+	-(rp.amount) AS amount
+FROM
+	inventory.stock_movements rp
+	JOIN inventory.item_variants bb ON bb.ID = rp.variant_id
+	JOIN inventory.items C ON bb.item_id = C.ID
+    JOIN inventory.item_units d ON d.item_id = c.id
+	JOIN inventory.units e ON e.id = d.unit_id AND d.value = 1
+WHERE rp.created_at <= NOW() AND rp.amount < 0
+ORDER BY rp.created_at DESC;

@@ -1328,6 +1328,72 @@ func (q *Queries) GetMappingItems(ctx context.Context, arg GetMappingItemsParams
 	return items, nil
 }
 
+const getOutgoingStock = `-- name: GetOutgoingStock :many
+SELECT 
+	rp.transaction_code as transaction_code,
+	c.id as item_id,
+	C.code AS item_code,
+	C.NAME AS item_name,
+	bb.id as variant_id,
+	bb.NAME AS variant_name,
+    e.id as unit_id,
+	e.name as unit_name,
+	-(rp.amount) AS amount
+FROM
+	inventory.stock_movements rp
+	JOIN inventory.item_variants bb ON bb.ID = rp.variant_id
+	JOIN inventory.items C ON bb.item_id = C.ID
+    JOIN inventory.item_units d ON d.item_id = c.id
+	JOIN inventory.units e ON e.id = d.unit_id AND d.value = 1
+WHERE rp.created_at <= NOW() AND rp.amount < 0
+ORDER BY rp.created_at DESC
+`
+
+type GetOutgoingStockRow struct {
+	TransactionCode string `db:"transaction_code"`
+	ItemID          string `db:"item_id"`
+	ItemCode        string `db:"item_code"`
+	ItemName        string `db:"item_name"`
+	VariantID       string `db:"variant_id"`
+	VariantName     string `db:"variant_name"`
+	UnitID          string `db:"unit_id"`
+	UnitName        string `db:"unit_name"`
+	Amount          int32  `db:"amount"`
+}
+
+func (q *Queries) GetOutgoingStock(ctx context.Context) ([]GetOutgoingStockRow, error) {
+	rows, err := q.db.QueryContext(ctx, getOutgoingStock)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetOutgoingStockRow
+	for rows.Next() {
+		var i GetOutgoingStockRow
+		if err := rows.Scan(
+			&i.TransactionCode,
+			&i.ItemID,
+			&i.ItemCode,
+			&i.ItemName,
+			&i.VariantID,
+			&i.VariantName,
+			&i.UnitID,
+			&i.UnitName,
+			&i.Amount,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getPOSItems = `-- name: GetPOSItems :many
 SELECT a.id AS item_id, a.name AS item_name,
 b.id AS variant_id, b.name AS variant_name,
