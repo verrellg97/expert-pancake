@@ -207,6 +207,72 @@ func (q *Queries) GetGroups(ctx context.Context, arg GetGroupsParams) ([]GetGrou
 	return items, nil
 }
 
+const getIncomingStock = `-- name: GetIncomingStock :many
+SELECT 
+	'rp.transaction_code' as transaction_code,
+	c.id as item_id,
+	C.code AS item_code,
+	C.NAME AS item_name,
+	bb.id as variant_id,
+	bb.NAME AS variant_name,
+    e.id as unit_id,
+	e.name as unit_name,
+	(rp.amount) AS amount
+FROM
+	inventory.stock_movements rp
+	JOIN inventory.item_variants bb ON bb.ID = rp.variant_id
+	JOIN inventory.items C ON bb.item_id = C.ID
+    JOIN inventory.item_units d ON d.item_id = c.id
+	JOIN inventory.units e ON e.id = d.unit_id AND d.value = 1
+WHERE rp.created_at <= NOW() AND rp.amount > 0
+ORDER BY rp.created_at DESC
+`
+
+type GetIncomingStockRow struct {
+	TransactionCode string `db:"transaction_code"`
+	ItemID          string `db:"item_id"`
+	ItemCode        string `db:"item_code"`
+	ItemName        string `db:"item_name"`
+	VariantID       string `db:"variant_id"`
+	VariantName     string `db:"variant_name"`
+	UnitID          string `db:"unit_id"`
+	UnitName        string `db:"unit_name"`
+	Amount          int64  `db:"amount"`
+}
+
+func (q *Queries) GetIncomingStock(ctx context.Context) ([]GetIncomingStockRow, error) {
+	rows, err := q.db.QueryContext(ctx, getIncomingStock)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetIncomingStockRow
+	for rows.Next() {
+		var i GetIncomingStockRow
+		if err := rows.Scan(
+			&i.TransactionCode,
+			&i.ItemID,
+			&i.ItemCode,
+			&i.ItemName,
+			&i.VariantID,
+			&i.VariantName,
+			&i.UnitID,
+			&i.UnitName,
+			&i.Amount,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getInternalStockTransferItems = `-- name: GetInternalStockTransferItems :many
 SELECT a.id,
     a.warehouse_rack_id,
