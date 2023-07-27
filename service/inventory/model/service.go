@@ -84,6 +84,7 @@ type InventoryService interface {
 
 	GetUnderMinimumOrder(w http.ResponseWriter, r *http.Request) error
 	GetOutgoingStock(w http.ResponseWriter, r *http.Request) error
+	GetIncomingStock(w http.ResponseWriter, r *http.Request) error
 }
 
 type Brand struct {
@@ -999,4 +1000,20 @@ type GetOutgoingStockResponseStruct struct {
 
 type GetOutgoingStockResponse struct {
 	OutgoingStock []GetOutgoingStockResponseStruct `json:"outgoing_stocks" validate:"required"`
+}
+
+type GetIncomingStockResponseStruct struct {
+	TransactionCode string `json:"transaction_code" validate:"required"`
+	ItemId          string `json:"item_id" validate:"required"`
+	ItemCode        string `json:"item_code" validate:"required"`
+	ItemName        string `json:"item_name" validate:"required"`
+	VariantId       string `json:"variant_id" validate:"required"`
+	VariantName     string `json:"variant_name" validate:"required"`
+	UnitId          string `json:"unit_id" validate:"required"`
+	UnitName        string `json:"unit_name" validate:"required"`
+	Amount          string `json:"amount" validate:"required"`
+}
+
+type GetIncomingStockResponse struct {
+	IncomingStock []GetIncomingStockResponseStruct `json:"incoming_stocks" validate:"required"`
 }
