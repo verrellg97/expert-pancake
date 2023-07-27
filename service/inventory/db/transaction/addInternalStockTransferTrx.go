@@ -17,6 +17,7 @@ import (
 type AddInternalStockTransferTrxParams struct {
 	SourceWarehouseId      string
 	DestinationWarehouseId string
+	TransactionCode        string
 	TransactionDate        time.Time
 	Items                  []model.InternalStockTransferItemRequest
 }
@@ -99,6 +100,7 @@ func (trx *Trx) AddInternalStockTransferTrx(ctx context.Context, arg AddInternal
 				ID:                   uuid.NewV4().String(),
 				TransactionID:        id,
 				TransactionDate:      arg.TransactionDate,
+				TransactionCode:      arg.TransactionCode,
 				TransactionReference: "INTERNAL TRANSFER",
 				DetailTransactionID:  detailId,
 				WarehouseID:          arg.SourceWarehouseId,
