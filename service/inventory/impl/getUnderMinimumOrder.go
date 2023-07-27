@@ -34,7 +34,7 @@ func (a inventoryService) GetUnderMinimumOrder(w http.ResponseWriter, r *http.Re
 	}
 
 	res := model.GetUnderMinimumOrderResponse{
-		responseData,
+		UnderMinimumOrder: responseData,
 	}
 	httpHandler.WriteResponse(w, res)
 

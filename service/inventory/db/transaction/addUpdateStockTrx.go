@@ -15,7 +15,6 @@ import (
 
 type AddUpdateStockTrxParams struct {
 	TransactionDate time.Time
-	TransactionCode string
 	WarehouseId     string
 	WarehouseRackId string
 	VariantId       string
@@ -78,13 +77,14 @@ func (trx *Trx) AddUpdateStockTrx(ctx context.Context, arg AddUpdateStockTrxPara
 		}
 
 		id := uuid.NewV4().String()
+		formNumber := "UPS-" + fmt.Sprintf("%08d", rand.Intn(100000000))
 
 		item_unit_value, _ := strconv.ParseInt(arg.ItemUnitValue, 10, 64)
 		beginning_stock, _ := strconv.ParseInt(arg.BeginningStock, 10, 64)
 		ending_stock, _ := strconv.ParseInt(arg.EndingStock, 10, 64)
 		err = q.InsertUpdateStock(ctx, db.InsertUpdateStockParams{
 			ID:              id,
-			FormNumber:      "UPS-" + fmt.Sprintf("%08d", rand.Intn(100000000)),
+			FormNumber:      formNumber,
 			TransactionDate: arg.TransactionDate,
 			WarehouseID:     arg.WarehouseId,
 			WarehouseRackID: arg.WarehouseRackId,
@@ -105,7 +105,7 @@ func (trx *Trx) AddUpdateStockTrx(ctx context.Context, arg AddUpdateStockTrxPara
 			ID:                   uuid.NewV4().String(),
 			TransactionID:        id,
 			TransactionDate:      arg.TransactionDate,
-			TransactionCode:      arg.TransactionCode,
+			TransactionCode:      formNumber,
 			TransactionReference: "UPDATE STOCK",
 			WarehouseID:          arg.WarehouseId,
 			WarehouseRackID:      arg.WarehouseRackId,

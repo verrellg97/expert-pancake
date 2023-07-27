@@ -17,7 +17,6 @@ import (
 type AddInternalStockTransferTrxParams struct {
 	SourceWarehouseId      string
 	DestinationWarehouseId string
-	TransactionCode        string
 	TransactionDate        time.Time
 	Items                  []model.InternalStockTransferItemRequest
 }
@@ -37,12 +36,13 @@ func (trx *Trx) AddInternalStockTransferTrx(ctx context.Context, arg AddInternal
 		var err error
 
 		id := uuid.NewV4().String()
+		formNumber := "IST-" + fmt.Sprintf("%08d", rand.Intn(100000000))
 
 		headerRes, err := q.InsertInternalStockTransfer(ctx, db.InsertInternalStockTransferParams{
 			ID:                     id,
 			SourceWarehouseID:      arg.SourceWarehouseId,
 			DestinationWarehouseID: arg.DestinationWarehouseId,
-			FormNumber:             "IST-" + fmt.Sprintf("%08d", rand.Intn(100000000)),
+			FormNumber:             formNumber,
 			TransactionDate:        arg.TransactionDate,
 		})
 		if err != nil {
@@ -100,7 +100,7 @@ func (trx *Trx) AddInternalStockTransferTrx(ctx context.Context, arg AddInternal
 				ID:                   uuid.NewV4().String(),
 				TransactionID:        id,
 				TransactionDate:      arg.TransactionDate,
-				TransactionCode:      arg.TransactionCode,
+				TransactionCode:      formNumber,
 				TransactionReference: "INTERNAL TRANSFER",
 				DetailTransactionID:  detailId,
 				WarehouseID:          arg.SourceWarehouseId,
