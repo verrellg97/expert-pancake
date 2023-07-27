@@ -79,4 +79,5 @@ const (
 	DeleteStokMovement      = 700054
 
 	GetUnderMinimumOrderError = 700055
+	GetOutgoingStockError    = 700056
 )

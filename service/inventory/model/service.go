@@ -83,6 +83,7 @@ type InventoryService interface {
 	DeleteStockMovement(w http.ResponseWriter, r *http.Request) error
 
 	GetUnderMinimumOrder(w http.ResponseWriter, r *http.Request) error
+	GetOutgoingStock(w http.ResponseWriter, r *http.Request) error
 }
 
 type Brand struct {
@@ -974,10 +975,28 @@ type GetUnderMinimumOrderResponseStruct struct {
 	ItemName     string `json:"item_name" validate:"required"`
 	VariantId    string `json:"variant_id" validate:"required"`
 	VariantName  string `json:"variant_name" validate:"required"`
+	UnitId       string `json:"unit_id" validate:"required"`
+	UnitName     string `json:"unit_name" validate:"required"`
 	MinimumStock string `json:"minimum_stock" validate:"required"`
 	Amount       string `json:"amount" validate:"required"`
 }
 
 type GetUnderMinimumOrderResponse struct {
 	UnderMinimumOrder []GetUnderMinimumOrderResponseStruct `json:"under_minimum_orders" validate:"required"`
+}
+
+type GetOutgoingStockResponseStruct struct {
+	TransactionCode string `json:"transaction_code" validate:"required"`
+	ItemId          string `json:"item_id" validate:"required"`
+	ItemCode        string `json:"item_code" validate:"required"`
+	ItemName        string `json:"item_name" validate:"required"`
+	VariantId       string `json:"variant_id" validate:"required"`
+	VariantName     string `json:"variant_name" validate:"required"`
+	UnitId          string `json:"unit_id" validate:"required"`
+	UnitName        string `json:"unit_name" validate:"required"`
+	Amount          string `json:"amount" validate:"required"`
+}
+
+type GetOutgoingStockResponse struct {
+	OutgoingStock []GetOutgoingStockResponseStruct `json:"outgoing_stocks" validate:"required"`
 }

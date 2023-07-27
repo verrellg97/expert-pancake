@@ -10,16 +10,16 @@ import (
 	"github.com/expert-pancake/service/inventory/model"
 )
 
-func (a inventoryService) GetUnderMinimumOrder(w http.ResponseWriter, r *http.Request) error {
-	result, err := a.dbTrx.GetUnderMinimumOrder(context.Background())
+func (a inventoryService) GetOutgoingStock(w http.ResponseWriter, r *http.Request) error {
+	result, err := a.dbTrx.GetOutgoingStock(context.Background())
 	if err != nil {
-		return errors.NewServerError(model.GetUnderMinimumOrderError, err.Error())
+		return errors.NewServerError(model.GetOutgoingStockError, err.Error())
 	}
 
-	var responseData = make([]model.GetUnderMinimumOrderResponseStruct, 0)
+	var responseData = make([]model.GetOutgoingStockResponseStruct, 0)
 
 	for _, d := range result {
-		var data = model.GetUnderMinimumOrderResponseStruct{
+		var data = model.GetOutgoingStockResponseStruct{
 			ItemId:       d.ItemID,
 			ItemCode:     d.ItemCode,
 			ItemName:     d.ItemName,
@@ -27,13 +27,12 @@ func (a inventoryService) GetUnderMinimumOrder(w http.ResponseWriter, r *http.Re
 			VariantName:  d.VariantName,
 			UnitId:       d.UnitID,
 			UnitName:     d.UnitName,
-			MinimumStock: strconv.FormatInt(d.MinimumStock, 10),
-			Amount:       strconv.FormatInt(d.Amount, 10),
+			Amount:       strconv.FormatInt(int64(d.Amount), 10),
 		}
 		responseData = append(responseData, data)
 	}
 
-	res := model.GetUnderMinimumOrderResponse{
+	res := model.GetOutgoingStockResponse{
 		responseData,
 	}
 	httpHandler.WriteResponse(w, res)
