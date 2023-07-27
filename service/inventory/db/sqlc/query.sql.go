@@ -1976,6 +1976,67 @@ func (q *Queries) GetTransferHistory(ctx context.Context, arg GetTransferHistory
 	return items, nil
 }
 
+const getUnderMinimumOrder = `-- name: GetUnderMinimumOrder :many
+SELECT 
+	c.id as item_id,
+	C.code AS item_code,
+	C.NAME AS item_name,
+	bb.id as variant_id,
+	bb.NAME AS variant_name,
+	COALESCE(A.minimum_stock, 0)  minimum_stock,
+	SUM(rp.amount) amount
+FROM
+	inventory.stock_movements rp
+	JOIN inventory.item_variants bb ON bb.ID = rp.variant_id
+	JOIN inventory.items C ON bb.item_id = C.ID
+	LEFT JOIN inventory.item_reorders A ON A.variant_id = bb.ID 
+WHERE rp.created_at <= NOW()
+GROUP BY bb.id, c.id, rp.amount, a.minimum_stock
+ORDER BY C.NAME, bb.NAME
+`
+
+type GetUnderMinimumOrderRow struct {
+	ItemID       string `db:"item_id"`
+	ItemCode     string `db:"item_code"`
+	ItemName     string `db:"item_name"`
+	VariantID    string `db:"variant_id"`
+	VariantName  string `db:"variant_name"`
+	MinimumStock int64  `db:"minimum_stock"`
+	Amount       int64  `db:"amount"`
+}
+
+// HAVING amount < minimum_stock
+func (q *Queries) GetUnderMinimumOrder(ctx context.Context) ([]GetUnderMinimumOrderRow, error) {
+	rows, err := q.db.QueryContext(ctx, getUnderMinimumOrder)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetUnderMinimumOrderRow
+	for rows.Next() {
+		var i GetUnderMinimumOrderRow
+		if err := rows.Scan(
+			&i.ItemID,
+			&i.ItemCode,
+			&i.ItemName,
+			&i.VariantID,
+			&i.VariantName,
+			&i.MinimumStock,
+			&i.Amount,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getUnit = `-- name: GetUnit :one
 SELECT id,
     company_id,

@@ -952,3 +952,22 @@ AND a.warehouse_id = ANY(@warehouse_ids::text []);
 SELECT COUNT(a.id)::bigint AS total_count
 FROM inventory.update_stocks a
 WHERE warehouse_id = ANY(@warehouse_ids::text []);
+
+-- name: GetUnderMinimumOrder :many
+SELECT 
+	c.id as item_id,
+	C.code AS item_code,
+	C.NAME AS item_name,
+	bb.id as variant_id,
+	bb.NAME AS variant_name,
+	COALESCE(A.minimum_stock, 0)  minimum_stock,
+	SUM(rp.amount) amount
+FROM
+	inventory.stock_movements rp
+	JOIN inventory.item_variants bb ON bb.ID = rp.variant_id
+	JOIN inventory.items C ON bb.item_id = C.ID
+	JOIN inventory.item_reorders A ON A.variant_id = bb.ID 
+WHERE rp.created_at <= NOW()
+GROUP BY bb.id, c.id, rp.amount, a.minimum_stock
+HAVING amount < minimum_stock
+ORDER BY C.NAME, bb.NAME;
