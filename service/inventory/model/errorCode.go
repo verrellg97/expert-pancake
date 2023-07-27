@@ -77,4 +77,6 @@ const (
 
 	InsertStokMovementError = 700053
 	DeleteStokMovement      = 700054
+
+	GetUnderMinimumOrderError = 700055
 )

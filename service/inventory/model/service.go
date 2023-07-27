@@ -81,6 +81,8 @@ type InventoryService interface {
 
 	InsertStockMovement(w http.ResponseWriter, r *http.Request) error
 	DeleteStockMovement(w http.ResponseWriter, r *http.Request) error
+
+	GetUnderMinimumOrder(w http.ResponseWriter, r *http.Request) error
 }
 
 type Brand struct {
@@ -393,6 +395,7 @@ type AddInternalStockTransferRequest struct {
 	SourceWarehouseId      string                             `json:"source_warehouse_id" validate:"required"`
 	DestinationWarehouseId string                             `json:"destination_warehouse_id" validate:"required"`
 	TransactionDate        string                             `json:"transaction_date" validate:"required"`
+	TransactionCode        string                             `json:"transaction_code" validate:"required"`
 	Items                  []InternalStockTransferItemRequest `json:"items" validate:"required"`
 }
 
@@ -433,6 +436,7 @@ type UpdateStock struct {
 
 type AddUpdateStockRequest struct {
 	TransactionDate string `json:"transaction_date" validate:"required"`
+	TransactionCode string `json:"transaction_code" validate:"required"`
 	WarehouseId     string `json:"warehouse_id" validate:"required"`
 	WarehouseRackId string `json:"warehouse_rack_id" validate:"required"`
 	VariantId       string `json:"variant_id" validate:"required"`
@@ -939,15 +943,16 @@ type GetCheckStockHistoryResponse struct {
 }
 
 type InsertStockMovementRequest struct {
-	TransactionId         string `json:"transaction_id" validate:"required"`
-	TransactionDate       string `json:"transaction_date" validate:"required"`
-	TransactionReference  string `json:"transaction_reference" validate:"required"`
-	DetailTransactionId   string `json:"detail_transaction_id" validate:"required"`
-	WarehouseId           string `json:"warehouse_id" validate:"required"`
-	WarehouseRackId       string `json:"warehouse_rack_id" validate:"required"`
-	VariantId             string `json:"variant_id" validate:"required"`
-	ItemBarcodeId         string `json:"item_barcode_id" validate:"required"`
-	Amount                string `json:"amount" validate:"required"`
+	TransactionId        string `json:"transaction_id" validate:"required"`
+	TransactionCode      string `json:"transaction_code" validate:"required"`
+	TransactionDate      string `json:"transaction_date" validate:"required"`
+	TransactionReference string `json:"transaction_reference" validate:"required"`
+	DetailTransactionId  string `json:"detail_transaction_id" validate:"required"`
+	WarehouseId          string `json:"warehouse_id" validate:"required"`
+	WarehouseRackId      string `json:"warehouse_rack_id" validate:"required"`
+	VariantId            string `json:"variant_id" validate:"required"`
+	ItemBarcodeId        string `json:"item_barcode_id" validate:"required"`
+	Amount               string `json:"amount" validate:"required"`
 }
 
 type InsertStockMovementResponse struct {
@@ -955,10 +960,24 @@ type InsertStockMovementResponse struct {
 }
 
 type DeleteStockMovementRequest struct {
-	TransactionId string `json:"transaction_id" validate:"required"`
+	TransactionId        string `json:"transaction_id" validate:"required"`
 	TransactionReference string `json:"transaction_reference" validate:"required"`
 }
 
 type DeleteStockMovementResponse struct {
 	Message string `json:"message" validate:"required"`
+}
+
+type GetUnderMinimumOrderResponseStruct struct {
+	ItemId       string `json:"item_id" validate:"required"`
+	ItemCode     string `json:"item_code" validate:"required"`
+	ItemName     string `json:"item_name" validate:"required"`
+	VariantId    string `json:"variant_id" validate:"required"`
+	VariantName  string `json:"variant_name" validate:"required"`
+	MinimumStock string `json:"minimum_stock" validate:"required"`
+	Amount       string `json:"amount" validate:"required"`
+}
+
+type GetUnderMinimumOrderResponse struct {
+	UnderMinimumOrder []GetUnderMinimumOrderResponseStruct `json:"under_minimum_orders" validate:"required"`
 }

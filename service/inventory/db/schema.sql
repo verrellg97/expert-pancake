@@ -140,6 +140,7 @@ CREATE TABLE "inventory"."item_barcodes" (
 CREATE TABLE "inventory"."stock_movements" (
   "id" text NOT NULL,
   "transaction_id" text NOT NULL,
+  "transaction_code" text NOT NULL,
   "transaction_date" date NOT NULL DEFAULT CURRENT_DATE,
   "transaction_reference" text NOT NULL,
   "detail_transaction_id" text NOT NULL DEFAULT '',

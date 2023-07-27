@@ -1976,6 +1976,67 @@ func (q *Queries) GetTransferHistory(ctx context.Context, arg GetTransferHistory
 	return items, nil
 }
 
+const getUnderMinimumOrder = `-- name: GetUnderMinimumOrder :many
+SELECT 
+	c.id as item_id,
+	C.code AS item_code,
+	C.NAME AS item_name,
+	bb.id as variant_id,
+	bb.NAME AS variant_name,
+	COALESCE(A.minimum_stock, 0)  minimum_stock,
+	SUM(rp.amount) amount
+FROM
+	inventory.stock_movements rp
+	JOIN inventory.item_variants bb ON bb.ID = rp.variant_id
+	JOIN inventory.items C ON bb.item_id = C.ID
+	JOIN inventory.item_reorders A ON A.variant_id = bb.ID 
+WHERE rp.created_at <= NOW()
+GROUP BY bb.id, c.id, rp.amount, a.minimum_stock
+HAVING amount < minimum_stock
+ORDER BY C.NAME, bb.NAME
+`
+
+type GetUnderMinimumOrderRow struct {
+	ItemID       string `db:"item_id"`
+	ItemCode     string `db:"item_code"`
+	ItemName     string `db:"item_name"`
+	VariantID    string `db:"variant_id"`
+	VariantName  string `db:"variant_name"`
+	MinimumStock int64  `db:"minimum_stock"`
+	Amount       int64  `db:"amount"`
+}
+
+func (q *Queries) GetUnderMinimumOrder(ctx context.Context) ([]GetUnderMinimumOrderRow, error) {
+	rows, err := q.db.QueryContext(ctx, getUnderMinimumOrder)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetUnderMinimumOrderRow
+	for rows.Next() {
+		var i GetUnderMinimumOrderRow
+		if err := rows.Scan(
+			&i.ItemID,
+			&i.ItemCode,
+			&i.ItemName,
+			&i.VariantID,
+			&i.VariantName,
+			&i.MinimumStock,
+			&i.Amount,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getUnit = `-- name: GetUnit :one
 SELECT id,
     company_id,
@@ -2745,6 +2806,7 @@ const insertStockMovement = `-- name: InsertStockMovement :exec
 INSERT INTO inventory.stock_movements(
         id,
         transaction_id,
+        transaction_code,
         transaction_date,
         transaction_reference,
         detail_transaction_id,
@@ -2754,12 +2816,13 @@ INSERT INTO inventory.stock_movements(
         item_barcode_id,
         amount
     )
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
 `
 
 type InsertStockMovementParams struct {
 	ID                   string    `db:"id"`
 	TransactionID        string    `db:"transaction_id"`
+	TransactionCode      string    `db:"transaction_code"`
 	TransactionDate      time.Time `db:"transaction_date"`
 	TransactionReference string    `db:"transaction_reference"`
 	DetailTransactionID  string    `db:"detail_transaction_id"`
@@ -2774,6 +2837,7 @@ func (q *Queries) InsertStockMovement(ctx context.Context, arg InsertStockMoveme
 	_, err := q.db.ExecContext(ctx, insertStockMovement,
 		arg.ID,
 		arg.TransactionID,
+		arg.TransactionCode,
 		arg.TransactionDate,
 		arg.TransactionReference,
 		arg.DetailTransactionID,
