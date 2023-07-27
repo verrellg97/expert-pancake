@@ -18,3 +18,4 @@
 20230322_alter_table_pricelists 2023-03-21T21:50:25Z Verrell <verrell@Verrells-MacBook-Air.local> # Alter table pricelists
 20230323_alter_table_pricelists_and_pricelist_items 2023-03-23T09:01:49Z Verrell <verrell@Verrells-MacBook-Air.local> # Alter table pricelists and pricelist_items
 20230728_alter_table_stock_movements 2023-07-27T21:19:50Z Verrell <verrell@Verrells-MacBook-Air.local> # Add table stock_movements
+20230728_alter_table_item_variants 2023-07-27T21:32:31Z Verrell <verrell@Verrells-MacBook-Air.local> # Add table item_variants
