@@ -25,6 +25,8 @@ func (a inventoryService) GetUnderMinimumOrder(w http.ResponseWriter, r *http.Re
 			ItemName:     d.ItemName,
 			VariantId:    d.VariantID,
 			VariantName:  d.VariantName,
+			UnitId:       d.UnitID,
+			UnitName:     d.UnitName,
 			MinimumStock: strconv.FormatInt(d.MinimumStock, 10),
 			Amount:       strconv.FormatInt(d.Amount, 10),
 		}

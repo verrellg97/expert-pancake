@@ -1983,15 +1983,19 @@ SELECT
 	C.NAME AS item_name,
 	bb.id as variant_id,
 	bb.NAME AS variant_name,
+    e.id as unit_id,
+	e.name as unit_name,
 	COALESCE(A.minimum_stock, 0)  minimum_stock,
 	SUM(rp.amount) amount
 FROM
 	inventory.stock_movements rp
 	JOIN inventory.item_variants bb ON bb.ID = rp.variant_id
 	JOIN inventory.items C ON bb.item_id = C.ID
+    JOIN inventory.item_units d ON d.item_id = c.id
+	JOIN inventory.units e ON e.id = d.unit_id AND units.value = 1
 	JOIN inventory.item_reorders A ON A.variant_id = bb.ID 
 WHERE rp.created_at <= NOW()
-GROUP BY bb.id, c.id, rp.amount, a.minimum_stock
+GROUP BY bb.id, c.id, e.id, rp.amount, a.minimum_stock
 HAVING amount < minimum_stock
 ORDER BY C.NAME, bb.NAME
 `
@@ -2002,6 +2006,8 @@ type GetUnderMinimumOrderRow struct {
 	ItemName     string `db:"item_name"`
 	VariantID    string `db:"variant_id"`
 	VariantName  string `db:"variant_name"`
+	UnitID       string `db:"unit_id"`
+	UnitName     string `db:"unit_name"`
 	MinimumStock int64  `db:"minimum_stock"`
 	Amount       int64  `db:"amount"`
 }
@@ -2021,6 +2027,8 @@ func (q *Queries) GetUnderMinimumOrder(ctx context.Context) ([]GetUnderMinimumOr
 			&i.ItemName,
 			&i.VariantID,
 			&i.VariantName,
+			&i.UnitID,
+			&i.UnitName,
 			&i.MinimumStock,
 			&i.Amount,
 		); err != nil {

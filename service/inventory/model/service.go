@@ -974,6 +974,8 @@ type GetUnderMinimumOrderResponseStruct struct {
 	ItemName     string `json:"item_name" validate:"required"`
 	VariantId    string `json:"variant_id" validate:"required"`
 	VariantName  string `json:"variant_name" validate:"required"`
+	UnitId       string `json:"unit_id" validate:"required"`
+	UnitName     string `json:"unit_name" validate:"required"`
 	MinimumStock string `json:"minimum_stock" validate:"required"`
 	Amount       string `json:"amount" validate:"required"`
 }
