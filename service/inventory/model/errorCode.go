@@ -21,6 +21,7 @@ const (
 
 	UpsertItemVariantError = 700015
 	GetItemVariantsError   = 700016
+	DeleteItemVariantError = 700217
 
 	UpsertItemUnitError = 700017
 	GetItemUnitsError   = 700018

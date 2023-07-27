@@ -49,6 +49,18 @@ func (q *Queries) DeleteItemUnit(ctx context.Context, id string) error {
 	return err
 }
 
+const deleteItemVariant = `-- name: DeleteItemVariant :exec
+UPDATE inventory.item_variants
+SET is_deleted = TRUE,
+    updated_at = NOW()
+WHERE id = $1
+`
+
+func (q *Queries) DeleteItemVariant(ctx context.Context, id string) error {
+	_, err := q.db.ExecContext(ctx, deleteItemVariant, id)
+	return err
+}
+
 const deleteStockMovement = `-- name: DeleteStockMovement :exec
 DELETE FROM inventory.stock_movements
 WHERE transaction_id = $1 AND transaction_reference = $2
@@ -209,7 +221,7 @@ func (q *Queries) GetGroups(ctx context.Context, arg GetGroupsParams) ([]GetGrou
 
 const getIncomingStock = `-- name: GetIncomingStock :many
 SELECT 
-	'rp.transaction_code' as transaction_code,
+	rp.transaction_code as transaction_code,
 	c.id as item_id,
 	C.code AS item_code,
 	C.NAME AS item_name,
@@ -991,7 +1003,7 @@ FROM inventory.item_variants a
     JOIN inventory.items b ON a.item_id = b.id
     LEFT JOIN inventory.brands c ON b.brand_id = c.id
     JOIN inventory.groups d ON d.id = ANY(string_to_array(b.group_id, ','))
-WHERE CASE WHEN $4::bool THEN a.id = $1 ELSE a.item_id = $2
+WHERE a.is_deleted = FALSE AND CASE WHEN $4::bool THEN a.id = $1 ELSE a.item_id = $2
     AND a.name LIKE $3 END
 GROUP BY a.id, b.id, c.id
 `
@@ -2904,7 +2916,7 @@ INSERT INTO inventory.item_variants(
         is_default
     )
 VALUES ($1, $2, $3, $4, $5, $6, $7)
-RETURNING id, item_id, image_url, barcode, name, price, is_default, created_at, updated_at
+RETURNING id, item_id, image_url, barcode, name, price, is_default, is_deleted, created_at, updated_at
 `
 
 type InsertItemVariantParams struct {
@@ -2936,6 +2948,7 @@ func (q *Queries) InsertItemVariant(ctx context.Context, arg InsertItemVariantPa
 		&i.Name,
 		&i.Price,
 		&i.IsDefault,
+		&i.IsDeleted,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
@@ -3195,7 +3208,7 @@ SET image_url = $2,
     updated_at = NOW()
 WHERE item_id = $1
     AND is_default = true
-RETURNING id, item_id, image_url, barcode, name, price, is_default, created_at, updated_at
+RETURNING id, item_id, image_url, barcode, name, price, is_default, is_deleted, created_at, updated_at
 `
 
 type UpdateItemVariantDefaultParams struct {
@@ -3221,6 +3234,7 @@ func (q *Queries) UpdateItemVariantDefault(ctx context.Context, arg UpdateItemVa
 		&i.Name,
 		&i.Price,
 		&i.IsDefault,
+		&i.IsDeleted,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)

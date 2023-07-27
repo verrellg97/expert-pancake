@@ -103,6 +103,12 @@ INSERT INTO inventory.item_variants(
 VALUES ($1, $2, $3, $4, $5, $6, $7)
 RETURNING *;
 
+-- name: DeleteItemVariant :exec
+UPDATE inventory.item_variants
+SET is_deleted = TRUE,
+    updated_at = NOW()
+WHERE id = $1;
+
 -- name: GetBrandById :one
 SELECT id,
     company_id,
@@ -265,7 +271,7 @@ FROM inventory.item_variants a
     JOIN inventory.items b ON a.item_id = b.id
     LEFT JOIN inventory.brands c ON b.brand_id = c.id
     JOIN inventory.groups d ON d.id = ANY(string_to_array(b.group_id, ','))
-WHERE CASE WHEN @is_filter_id::bool THEN a.id = $1 ELSE a.item_id = $2
+WHERE a.is_deleted = FALSE AND CASE WHEN @is_filter_id::bool THEN a.id = $1 ELSE a.item_id = $2
     AND a.name LIKE $3 END
 GROUP BY a.id, b.id, c.id;
 

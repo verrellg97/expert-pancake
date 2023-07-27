@@ -34,6 +34,7 @@ const (
 
 	UpsertItemVariantPath = "/inventory/item/variant/upsert"
 	GetItemVariantsPath   = "/inventory/item/variants"
+	DeleteItemVariantPath = "/inventory/item/variant/delete"
 
 	UpsertItemUnitPath = "/inventory/item/unit/upsert"
 	DeleteItemUnitPath = "/inventory/item/unit/delete"
@@ -84,13 +85,13 @@ const (
 	GetVariantWarehouseRacksByBranchPath = "/inventory/item/variant/branch/racks"
 
 	GetCheckStockHistoryPath = "/inventory/check-stock-history"
-	
+
 	InsertStockMovementPath = "/inventory/stock-movement/insert"
 	DeleteStockMovementPath = "/inventory/stock-movement/delete"
 
 	GetUnderMinimumOrderPath = "/inventory/under-minimum-order"
-	GetOutgoingStockPath = "/inventory/outgoing-stock"
-	GetIncomingStockPath = "/inventory/incoming-stock"
+	GetOutgoingStockPath     = "/inventory/outgoing-stock"
+	GetIncomingStockPath     = "/inventory/incoming-stock"
 )
 
 func (c *component) Routes(inventoryService model.InventoryService) http.Handler {
@@ -132,6 +133,7 @@ func (c *component) Routes(inventoryService model.InventoryService) http.Handler
 
 	mux.Method("POST", UpsertItemVariantPath, httpHandler.New(inventoryService.UpsertItemVariant))
 	mux.Method("POST", GetItemVariantsPath, httpHandler.New(inventoryService.GetItemVariants))
+	mux.Method("POST", DeleteItemVariantPath, httpHandler.New(inventoryService.DeleteItemVariant))
 
 	mux.Method("POST", UpsertItemUnitPath, httpHandler.New(inventoryService.UpsertItemUnit))
 	mux.Method("POST", DeleteItemUnitPath, httpHandler.New(inventoryService.DeleteItemUnit))
@@ -189,7 +191,6 @@ func (c *component) Routes(inventoryService model.InventoryService) http.Handler
 	mux.Method("POST", GetUnderMinimumOrderPath, httpHandler.New(inventoryService.GetUnderMinimumOrder))
 	mux.Method("POST", GetOutgoingStockPath, httpHandler.New(inventoryService.GetOutgoingStock))
 	mux.Method("POST", GetIncomingStockPath, httpHandler.New(inventoryService.GetIncomingStock))
-
 
 	return mux
 }
