@@ -120,6 +120,7 @@ type InventoryItemVariant struct {
 	Name      string       `db:"name"`
 	Price     int64        `db:"price"`
 	IsDefault bool         `db:"is_default"`
+	IsDeleted bool         `db:"is_deleted"`
 	CreatedAt sql.NullTime `db:"created_at"`
 	UpdatedAt sql.NullTime `db:"updated_at"`
 }

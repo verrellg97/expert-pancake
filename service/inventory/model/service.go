@@ -28,6 +28,7 @@ type InventoryService interface {
 
 	UpsertItemVariant(w http.ResponseWriter, r *http.Request) error
 	GetItemVariants(w http.ResponseWriter, r *http.Request) error
+	DeleteItemVariant(w http.ResponseWriter, r *http.Request) error
 
 	UpsertItemUnit(w http.ResponseWriter, r *http.Request) error
 	DeleteItemUnit(w http.ResponseWriter, r *http.Request) error
@@ -316,6 +317,14 @@ type GetItemVariantsRequest struct {
 
 type GetItemVariantsResponse struct {
 	ItemVariants []Item `json:"item_variants" validate:"required"`
+}
+
+type DeleteItemVariantRequest struct {
+	Id string `json:"id" validate:"required"`
+}
+
+type DeleteItemVariantResponse struct {
+	Message string `json:"message" validate:"required"`
 }
 
 type ItemUnit struct {

@@ -13,6 +13,7 @@ type Querier interface {
 	DeleteBrand(ctx context.Context, id string) error
 	DeleteGroup(ctx context.Context, id string) error
 	DeleteItemUnit(ctx context.Context, id string) error
+	DeleteItemVariant(ctx context.Context, id string) error
 	DeleteStockMovement(ctx context.Context, arg DeleteStockMovementParams) error
 	GetBrandById(ctx context.Context, id string) (GetBrandByIdRow, error)
 	GetBrands(ctx context.Context, arg GetBrandsParams) ([]GetBrandsRow, error)
