@@ -20,20 +20,20 @@ func (a inventoryService) GetIncomingStock(w http.ResponseWriter, r *http.Reques
 
 	for _, d := range result {
 		var data = model.GetIncomingStockResponseStruct{
-			ItemId:       d.ItemID,
-			ItemCode:     d.ItemCode,
-			ItemName:     d.ItemName,
-			VariantId:    d.VariantID,
-			VariantName:  d.VariantName,
-			UnitId:       d.UnitID,
-			UnitName:     d.UnitName,
-			Amount:       strconv.FormatInt(int64(d.Amount), 10),
+			ItemId:      d.ItemID,
+			ItemCode:    d.ItemCode,
+			ItemName:    d.ItemName,
+			VariantId:   d.VariantID,
+			VariantName: d.VariantName,
+			UnitId:      d.UnitID,
+			UnitName:    d.UnitName,
+			Amount:      strconv.FormatInt(int64(d.Amount), 10),
 		}
 		responseData = append(responseData, data)
 	}
 
 	res := model.GetIncomingStockResponse{
-		responseData,
+		IncomingStock: responseData,
 	}
 	httpHandler.WriteResponse(w, res)
 
