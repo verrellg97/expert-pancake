@@ -26,6 +26,8 @@ func (a accountingService) GetCashTransactions(w http.ResponseWriter, r *http.Re
 		CompanyID: req.CompanyId,
 		BranchID:  req.BranchId,
 		Type:      util.WildCardString(req.Type),
+		StartDate: util.StringToDate(req.StartDate),
+		EndDate:   util.StringToDate(req.EndDate),
 	})
 	if err != nil {
 		return errors.NewServerError(model.GetCashTransactionsError, err.Error())
