@@ -1002,7 +1002,7 @@ FROM
 	JOIN inventory.items C ON bb.item_id = C.ID
     JOIN inventory.item_units d ON d.item_id = c.id
 	JOIN inventory.units e ON e.id = d.unit_id AND d.value = 1
-WHERE rp.created_at <= NOW() AND rp.amount < 0
+WHERE rp.created_at BETWEEN @start_date::date AND @end_date::date AND rp.amount < 0 AND rp.company_id = $1 AND rp.branch_id = $2
 ORDER BY rp.created_at DESC;
 
 -- name: GetIncomingStock :many
@@ -1022,5 +1022,5 @@ FROM
 	JOIN inventory.items C ON bb.item_id = C.ID
     JOIN inventory.item_units d ON d.item_id = c.id
 	JOIN inventory.units e ON e.id = d.unit_id AND d.value = 1
-WHERE rp.created_at <= NOW() AND rp.amount > 0
+WHERE rp.created_at BETWEEN @start_date::date AND @end_date::date AND rp.amount > 0 AND rp.company_id = $1 AND rp.branch_id = $2
 ORDER BY rp.created_at DESC;

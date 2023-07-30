@@ -1003,6 +1003,8 @@ type GetUnderMinimumOrderResponse struct {
 type GetOutgoingStockRequest struct {
 	CompanyId string `json:"company_id" validate:"required"`
 	BranchId  string `json:"branch_id" validate:"required"`
+	StartDate string `json:"start_date" validate:"required"`
+	EndDate   string `json:"end_date" validate:"required"`
 }
 
 type GetOutgoingStockResponseStruct struct {
@@ -1024,6 +1026,8 @@ type GetOutgoingStockResponse struct {
 type GetIncomingStockRequest struct {
 	CompanyId string `json:"company_id" validate:"required"`
 	BranchId  string `json:"branch_id" validate:"required"`
+	StartDate string `json:"start_date" validate:"required"`
+	EndDate   string `json:"end_date" validate:"required"`
 }
 
 type GetIncomingStockResponseStruct struct {
