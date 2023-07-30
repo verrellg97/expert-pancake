@@ -2138,11 +2138,16 @@ FROM
     JOIN inventory.item_units d ON d.item_id = c.id
 	JOIN inventory.units e ON e.id = d.unit_id AND units.value = 1
 	JOIN inventory.item_reorders A ON A.variant_id = bb.ID 
-WHERE rp.created_at <= NOW()
+WHERE rp.created_at <= NOW() AND rp.company_id = $1 AND rp.branch_id = $2
 GROUP BY bb.id, c.id, e.id, rp.amount, a.minimum_stock
 HAVING amount < minimum_stock
 ORDER BY C.NAME, bb.NAME
 `
+
+type GetUnderMinimumOrderParams struct {
+	CompanyID string `db:"company_id"`
+	BranchID  string `db:"branch_id"`
+}
 
 type GetUnderMinimumOrderRow struct {
 	ItemID       string `db:"item_id"`
@@ -2156,8 +2161,8 @@ type GetUnderMinimumOrderRow struct {
 	Amount       int64  `db:"amount"`
 }
 
-func (q *Queries) GetUnderMinimumOrder(ctx context.Context) ([]GetUnderMinimumOrderRow, error) {
-	rows, err := q.db.QueryContext(ctx, getUnderMinimumOrder)
+func (q *Queries) GetUnderMinimumOrder(ctx context.Context, arg GetUnderMinimumOrderParams) ([]GetUnderMinimumOrderRow, error) {
+	rows, err := q.db.QueryContext(ctx, getUnderMinimumOrder, arg.CompanyID, arg.BranchID)
 	if err != nil {
 		return nil, err
 	}

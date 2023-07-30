@@ -48,7 +48,7 @@ type Querier interface {
 	GetStockHistory(ctx context.Context, arg GetStockHistoryParams) ([]GetStockHistoryRow, error)
 	GetSupplierCatalogs(ctx context.Context, arg GetSupplierCatalogsParams) ([]GetSupplierCatalogsRow, error)
 	GetTransferHistory(ctx context.Context, arg GetTransferHistoryParams) ([]GetTransferHistoryRow, error)
-	GetUnderMinimumOrder(ctx context.Context) ([]GetUnderMinimumOrderRow, error)
+	GetUnderMinimumOrder(ctx context.Context, arg GetUnderMinimumOrderParams) ([]GetUnderMinimumOrderRow, error)
 	GetUnit(ctx context.Context, id string) (GetUnitRow, error)
 	GetUnitCategories(ctx context.Context, arg GetUnitCategoriesParams) ([]GetUnitCategoriesRow, error)
 	GetUnits(ctx context.Context, arg GetUnitsParams) ([]GetUnitsRow, error)
