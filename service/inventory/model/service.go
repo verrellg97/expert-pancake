@@ -953,6 +953,8 @@ type GetCheckStockHistoryResponse struct {
 
 type InsertStockMovementRequest struct {
 	TransactionId        string `json:"transaction_id" validate:"required"`
+	CompanyId            string `json:"company_id" validate:"required"`
+	BranchId             string `json:"branch_id" validate:"required"`
 	TransactionCode      string `json:"transaction_code" validate:"required"`
 	TransactionDate      string `json:"transaction_date" validate:"required"`
 	TransactionReference string `json:"transaction_reference" validate:"required"`
@@ -977,6 +979,11 @@ type DeleteStockMovementResponse struct {
 	Message string `json:"message" validate:"required"`
 }
 
+type GetUnderMinimumOrderRequest struct {
+	CompanyId string `json:"company_id" validate:"required"`
+	BranchId  string `json:"branch_id" validate:"required"`
+}
+
 type GetUnderMinimumOrderResponseStruct struct {
 	ItemId       string `json:"item_id" validate:"required"`
 	ItemCode     string `json:"item_code" validate:"required"`
@@ -993,6 +1000,11 @@ type GetUnderMinimumOrderResponse struct {
 	UnderMinimumOrder []GetUnderMinimumOrderResponseStruct `json:"under_minimum_orders" validate:"required"`
 }
 
+type GetOutgoingStockRequest struct {
+	CompanyId string `json:"company_id" validate:"required"`
+	BranchId  string `json:"branch_id" validate:"required"`
+}
+
 type GetOutgoingStockResponseStruct struct {
 	TransactionCode string `json:"transaction_code" validate:"required"`
 	ItemId          string `json:"item_id" validate:"required"`
@@ -1007,6 +1019,11 @@ type GetOutgoingStockResponseStruct struct {
 
 type GetOutgoingStockResponse struct {
 	OutgoingStock []GetOutgoingStockResponseStruct `json:"outgoing_stocks" validate:"required"`
+}
+
+type GetIncomingStockRequest struct {
+	CompanyId string `json:"company_id" validate:"required"`
+	BranchId  string `json:"branch_id" validate:"required"`
 }
 
 type GetIncomingStockResponseStruct struct {

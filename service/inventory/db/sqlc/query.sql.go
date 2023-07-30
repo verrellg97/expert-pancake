@@ -2959,6 +2959,8 @@ const insertStockMovement = `-- name: InsertStockMovement :exec
 INSERT INTO inventory.stock_movements(
         id,
         transaction_id,
+        company_id,
+        branch_id,
         transaction_code,
         transaction_date,
         transaction_reference,
@@ -2969,12 +2971,14 @@ INSERT INTO inventory.stock_movements(
         item_barcode_id,
         amount
     )
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
 `
 
 type InsertStockMovementParams struct {
 	ID                   string    `db:"id"`
 	TransactionID        string    `db:"transaction_id"`
+	CompanyID            string    `db:"company_id"`
+	BranchID             string    `db:"branch_id"`
 	TransactionCode      string    `db:"transaction_code"`
 	TransactionDate      time.Time `db:"transaction_date"`
 	TransactionReference string    `db:"transaction_reference"`
@@ -2990,6 +2994,8 @@ func (q *Queries) InsertStockMovement(ctx context.Context, arg InsertStockMoveme
 	_, err := q.db.ExecContext(ctx, insertStockMovement,
 		arg.ID,
 		arg.TransactionID,
+		arg.CompanyID,
+		arg.BranchID,
 		arg.TransactionCode,
 		arg.TransactionDate,
 		arg.TransactionReference,
