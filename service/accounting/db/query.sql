@@ -209,8 +209,9 @@ FROM accounting.cash_transactions a
 JOIN accounting.company_chart_of_accounts b ON a.main_chart_of_account_id = b.id
 LEFT JOIN accounting.company_chart_of_accounts c ON a.contra_chart_of_account_id = c.id
 WHERE a.company_id = $1
-AND a.branch_id = $2 
-AND a.type LIKE $3;
+AND a.branch_id LIKE $2 
+AND a.type LIKE $3
+AND transaction_date BETWEEN @start_date AND @end_date;
 
 -- name: GetCashTransactionsGroupByDate :many
 SELECT transaction_date, 
@@ -218,7 +219,9 @@ SUM(CASE WHEN type = 'IN' THEN amount ELSE 0 END) AS cash_in,
 SUM(CASE WHEN type = 'OUT' THEN amount ELSE 0 END) AS cash_out
 FROM accounting.cash_transactions 
 WHERE company_id = $1
-AND branch_id = $2
+AND branch_id LIKE $2
+AND type LIKE $3
+AND transaction_date BETWEEN @start_date AND @end_date
 GROUP BY transaction_date;
 
 -- name: GetCompanyChartOfAccountBalance :many

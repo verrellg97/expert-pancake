@@ -25,6 +25,9 @@ func (a accountingService) GetCashTransactionsGroupByDate(w http.ResponseWriter,
 	result, err := a.dbTrx.GetCashTransactionsGroupByDate(context.Background(), db.GetCashTransactionsGroupByDateParams{
 		CompanyID: req.CompanyId,
 		BranchID:  req.BranchId,
+		Type:      util.WildCardString(req.Type),
+		StartDate: util.StringToDate(req.StartDate),
+		EndDate:   util.StringToDate(req.EndDate),
 	})
 	if err != nil {
 		return errors.NewServerError(model.GetCashTransactionsGroupByDateError, err.Error())

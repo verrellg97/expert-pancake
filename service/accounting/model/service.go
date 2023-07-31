@@ -234,11 +234,16 @@ type GetCashTransactionsRequest struct {
 	CompanyId string `json:"company_id" validate:"required"`
 	BranchId  string `json:"branch_id"  validate:"required"`
 	Type      string `json:"type"`
+	StartDate string `json:"start_date"`
+	EndDate   string `json:"end_date"`
 }
 
 type GetCashTransactionsGroupByDateRequest struct {
 	CompanyId string `json:"company_id" validate:"required"`
 	BranchId  string `json:"branch_id"  validate:"required"`
+	Type      string `json:"type"`
+	StartDate string `json:"start_date"`
+	EndDate   string `json:"end_date"`
 }
 
 type GetCashTransactionsGroupByDateResponse struct {
