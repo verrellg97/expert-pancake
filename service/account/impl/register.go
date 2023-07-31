@@ -2,11 +2,12 @@ package impl
 
 import (
 	"context"
+	"net/http"
+
 	"github.com/calvinkmts/expert-pancake/engine/errors"
 	"github.com/calvinkmts/expert-pancake/engine/httpHandler"
 	db "github.com/expert-pancake/service/account/db/transaction"
 	"github.com/expert-pancake/service/account/model"
-	"net/http"
 )
 
 func (a accountService) Register(w http.ResponseWriter, r *http.Request) error {
@@ -21,6 +22,7 @@ func (a accountService) Register(w http.ResponseWriter, r *http.Request) error {
 	}
 
 	arg := db.CreateNewUserTrxParams{
+		ImageUrl:         req.ImageUrl,
 		FullName:         req.FullName,
 		Nickname:         req.Nickname,
 		Email:            req.Email,

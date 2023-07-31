@@ -1,6 +1,6 @@
 -- name: CreateUser :exec
-INSERT INTO account.users (id, fullname, nickname, email, phone_number)
-VALUES ($1, $2, $3, $4, $5);
+INSERT INTO account.users (id, image_url, fullname, nickname, email, phone_number)
+VALUES ($1, $2, $3, $4, $5, $6);
 
 -- name: UpsertUserInfo :exec
 INSERT INTO account.user_infos(user_id, key, value)
@@ -46,10 +46,11 @@ RETURNING *;
 -- name: UpdateUser :one
 UPDATE account.users
 SET
-    fullname = $2,
-    nickname = $3,
-    email = $4,
-    phone_number = $5,
+    image_url = $2,
+    fullname = $3,
+    nickname = $4,
+    email = $5,
+    phone_number = $6,
     updated_at = NOW()
 WHERE
     id = $1
@@ -60,10 +61,11 @@ SELECT * FROM account.user_infos
 WHERE user_id = $1 AND key = $2;
 
 -- name: UpsertUser :one
-INSERT INTO account.users (id, fullname, nickname, email, phone_number)
-VALUES ($1, $2, $3, $4, $5)
+INSERT INTO account.users (id, image_url, fullname, nickname, email, phone_number)
+VALUES ($1, $2, $3, $4, $5, $6)
 ON CONFLICT (id)
 DO UPDATE SET
+    image_url = EXCLUDED.image_url,
     fullname = EXCLUDED.fullname,
     nickname = EXCLUDED.nickname,
     email = EXCLUDED.email,

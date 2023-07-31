@@ -2,11 +2,12 @@ package impl
 
 import (
 	"context"
+	"net/http"
+
 	"github.com/calvinkmts/expert-pancake/engine/errors"
 	"github.com/calvinkmts/expert-pancake/engine/httpHandler"
 	db "github.com/expert-pancake/service/account/db/transaction"
 	"github.com/expert-pancake/service/account/model"
-	"net/http"
 )
 
 func (a accountService) UpdateUser(w http.ResponseWriter, r *http.Request) error {
@@ -26,6 +27,7 @@ func (a accountService) UpdateUser(w http.ResponseWriter, r *http.Request) error
 
 	result, err := a.dbTrx.UpdateUserTrx(context.Background(), db.UpdateUserTrxParams{
 		AccountId:   req.AccountId,
+		ImageUrl:    req.ImageUrl,
 		FullName:    req.FullName,
 		Nickname:    req.Nickname,
 		Email:       req.Email,

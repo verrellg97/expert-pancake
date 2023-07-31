@@ -40,6 +40,7 @@ type Location struct {
 }
 
 type RegisterRequest struct {
+	ImageUrl         string `json:"image_url"`
 	FullName         string `json:"full_name" validate:"required"`
 	Nickname         string `json:"nickname" validate:"required"`
 	Email            string `json:"email"`
@@ -102,6 +103,7 @@ type UpsertUserAddressResponse struct {
 
 type UpdateUserRequest struct {
 	AccountId   string   `json:"account_id" validate:"required"`
+	ImageUrl    string   `json:"image_url"`
 	FullName    string   `json:"full_name" validate:"required"`
 	Nickname    string   `json:"nickname" validate:"required"`
 	Email       string   `json:"email"`
