@@ -4,6 +4,7 @@ create table account.users
 (
     id           text not null
         primary key,
+    image_url     text not null default '',
     fullname     text not null,
     nickname     text not null,
     email        text,

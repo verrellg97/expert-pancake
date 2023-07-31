@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+
 	"github.com/calvinkmts/expert-pancake/engine/sql"
 	db "github.com/expert-pancake/service/account/db/sqlc"
 	"github.com/expert-pancake/service/account/model"
@@ -10,6 +11,7 @@ import (
 )
 
 type CreateNewUserTrxParams struct {
+	ImageUrl         string
 	FullName         string
 	Nickname         string
 	Email            string
@@ -37,6 +39,7 @@ func (trx *Trx) CreateNewUserTrx(ctx context.Context, arg CreateNewUserTrxParams
 
 		userRes, err := q.UpsertUser(ctx, db.UpsertUserParams{
 			ID:          id,
+			ImageUrl:    arg.ImageUrl,
 			Fullname:    arg.FullName,
 			Nickname:    arg.Nickname,
 			Email:       sql.StringToNullableString(arg.Email),
