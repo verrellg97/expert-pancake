@@ -161,6 +161,8 @@ type InventoryPricelistItem struct {
 
 type InventoryStockMovement struct {
 	ID                   string       `db:"id"`
+	CompanyID            string       `db:"company_id"`
+	BranchID             string       `db:"branch_id"`
 	TransactionID        string       `db:"transaction_id"`
 	TransactionCode      string       `db:"transaction_code"`
 	TransactionDate      time.Time    `db:"transaction_date"`

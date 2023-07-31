@@ -400,6 +400,8 @@ WHERE variant_id = $1
 INSERT INTO inventory.stock_movements(
         id,
         transaction_id,
+        company_id,
+        branch_id,
         transaction_code,
         transaction_date,
         transaction_reference,
@@ -410,7 +412,7 @@ INSERT INTO inventory.stock_movements(
         item_barcode_id,
         amount
     )
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11);
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13);
 
 -- name: DeleteStockMovement :exec
 DELETE FROM inventory.stock_movements
@@ -978,7 +980,7 @@ FROM
     JOIN inventory.item_units d ON d.item_id = c.id
 	JOIN inventory.units e ON e.id = d.unit_id AND units.value = 1
 	JOIN inventory.item_reorders A ON A.variant_id = bb.ID 
-WHERE rp.created_at <= NOW()
+WHERE rp.created_at <= NOW() AND rp.company_id = $1 AND rp.branch_id = $2
 GROUP BY bb.id, c.id, e.id, rp.amount, a.minimum_stock
 HAVING amount < minimum_stock
 ORDER BY C.NAME, bb.NAME;
@@ -1000,7 +1002,7 @@ FROM
 	JOIN inventory.items C ON bb.item_id = C.ID
     JOIN inventory.item_units d ON d.item_id = c.id
 	JOIN inventory.units e ON e.id = d.unit_id AND d.value = 1
-WHERE rp.created_at <= NOW() AND rp.amount < 0
+WHERE rp.created_at BETWEEN @start_date::date AND @end_date::date AND rp.amount < 0 AND rp.company_id = $1 AND rp.branch_id = $2
 ORDER BY rp.created_at DESC;
 
 -- name: GetIncomingStock :many
@@ -1020,5 +1022,5 @@ FROM
 	JOIN inventory.items C ON bb.item_id = C.ID
     JOIN inventory.item_units d ON d.item_id = c.id
 	JOIN inventory.units e ON e.id = d.unit_id AND d.value = 1
-WHERE rp.created_at <= NOW() AND rp.amount > 0
+WHERE rp.created_at BETWEEN @start_date::date AND @end_date::date AND rp.amount > 0 AND rp.company_id = $1 AND rp.branch_id = $2
 ORDER BY rp.created_at DESC;

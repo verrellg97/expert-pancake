@@ -27,6 +27,8 @@ func (a inventoryService) InsertStockMovement(w http.ResponseWriter, r *http.Req
 	amount, _ := strconv.ParseInt(req.Amount, 10, 64)
 	arg := db.InsertStockMovementParams{
 		ID:                   uuid.NewV4().String(),
+		CompanyID:            req.CompanyId,
+		BranchID:             req.BranchId,
 		TransactionID:        req.TransactionId,
 		TransactionCode:      req.TransactionCode,
 		TransactionDate:      util.StringToDate(req.TransactionDate),

@@ -236,9 +236,16 @@ FROM
 	JOIN inventory.items C ON bb.item_id = C.ID
     JOIN inventory.item_units d ON d.item_id = c.id
 	JOIN inventory.units e ON e.id = d.unit_id AND d.value = 1
-WHERE rp.created_at <= NOW() AND rp.amount > 0
+WHERE rp.created_at BETWEEN $3::date AND $4::date AND rp.amount > 0 AND rp.company_id = $1 AND rp.branch_id = $2
 ORDER BY rp.created_at DESC
 `
+
+type GetIncomingStockParams struct {
+	CompanyID string    `db:"company_id"`
+	BranchID  string    `db:"branch_id"`
+	StartDate time.Time `db:"start_date"`
+	EndDate   time.Time `db:"end_date"`
+}
 
 type GetIncomingStockRow struct {
 	TransactionCode string `db:"transaction_code"`
@@ -252,8 +259,13 @@ type GetIncomingStockRow struct {
 	Amount          int64  `db:"amount"`
 }
 
-func (q *Queries) GetIncomingStock(ctx context.Context) ([]GetIncomingStockRow, error) {
-	rows, err := q.db.QueryContext(ctx, getIncomingStock)
+func (q *Queries) GetIncomingStock(ctx context.Context, arg GetIncomingStockParams) ([]GetIncomingStockRow, error) {
+	rows, err := q.db.QueryContext(ctx, getIncomingStock,
+		arg.CompanyID,
+		arg.BranchID,
+		arg.StartDate,
+		arg.EndDate,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -1423,9 +1435,16 @@ FROM
 	JOIN inventory.items C ON bb.item_id = C.ID
     JOIN inventory.item_units d ON d.item_id = c.id
 	JOIN inventory.units e ON e.id = d.unit_id AND d.value = 1
-WHERE rp.created_at <= NOW() AND rp.amount < 0
+WHERE rp.created_at BETWEEN $3::date AND $4::date AND rp.amount < 0 AND rp.company_id = $1 AND rp.branch_id = $2
 ORDER BY rp.created_at DESC
 `
+
+type GetOutgoingStockParams struct {
+	CompanyID string    `db:"company_id"`
+	BranchID  string    `db:"branch_id"`
+	StartDate time.Time `db:"start_date"`
+	EndDate   time.Time `db:"end_date"`
+}
 
 type GetOutgoingStockRow struct {
 	TransactionCode string `db:"transaction_code"`
@@ -1439,8 +1458,13 @@ type GetOutgoingStockRow struct {
 	Amount          int32  `db:"amount"`
 }
 
-func (q *Queries) GetOutgoingStock(ctx context.Context) ([]GetOutgoingStockRow, error) {
-	rows, err := q.db.QueryContext(ctx, getOutgoingStock)
+func (q *Queries) GetOutgoingStock(ctx context.Context, arg GetOutgoingStockParams) ([]GetOutgoingStockRow, error) {
+	rows, err := q.db.QueryContext(ctx, getOutgoingStock,
+		arg.CompanyID,
+		arg.BranchID,
+		arg.StartDate,
+		arg.EndDate,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -2138,11 +2162,16 @@ FROM
     JOIN inventory.item_units d ON d.item_id = c.id
 	JOIN inventory.units e ON e.id = d.unit_id AND units.value = 1
 	JOIN inventory.item_reorders A ON A.variant_id = bb.ID 
-WHERE rp.created_at <= NOW()
+WHERE rp.created_at <= NOW() AND rp.company_id = $1 AND rp.branch_id = $2
 GROUP BY bb.id, c.id, e.id, rp.amount, a.minimum_stock
 HAVING amount < minimum_stock
 ORDER BY C.NAME, bb.NAME
 `
+
+type GetUnderMinimumOrderParams struct {
+	CompanyID string `db:"company_id"`
+	BranchID  string `db:"branch_id"`
+}
 
 type GetUnderMinimumOrderRow struct {
 	ItemID       string `db:"item_id"`
@@ -2156,8 +2185,8 @@ type GetUnderMinimumOrderRow struct {
 	Amount       int64  `db:"amount"`
 }
 
-func (q *Queries) GetUnderMinimumOrder(ctx context.Context) ([]GetUnderMinimumOrderRow, error) {
-	rows, err := q.db.QueryContext(ctx, getUnderMinimumOrder)
+func (q *Queries) GetUnderMinimumOrder(ctx context.Context, arg GetUnderMinimumOrderParams) ([]GetUnderMinimumOrderRow, error) {
+	rows, err := q.db.QueryContext(ctx, getUnderMinimumOrder, arg.CompanyID, arg.BranchID)
 	if err != nil {
 		return nil, err
 	}
@@ -2959,6 +2988,8 @@ const insertStockMovement = `-- name: InsertStockMovement :exec
 INSERT INTO inventory.stock_movements(
         id,
         transaction_id,
+        company_id,
+        branch_id,
         transaction_code,
         transaction_date,
         transaction_reference,
@@ -2969,12 +3000,14 @@ INSERT INTO inventory.stock_movements(
         item_barcode_id,
         amount
     )
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
 `
 
 type InsertStockMovementParams struct {
 	ID                   string    `db:"id"`
 	TransactionID        string    `db:"transaction_id"`
+	CompanyID            string    `db:"company_id"`
+	BranchID             string    `db:"branch_id"`
 	TransactionCode      string    `db:"transaction_code"`
 	TransactionDate      time.Time `db:"transaction_date"`
 	TransactionReference string    `db:"transaction_reference"`
@@ -2990,6 +3023,8 @@ func (q *Queries) InsertStockMovement(ctx context.Context, arg InsertStockMoveme
 	_, err := q.db.ExecContext(ctx, insertStockMovement,
 		arg.ID,
 		arg.TransactionID,
+		arg.CompanyID,
+		arg.BranchID,
 		arg.TransactionCode,
 		arg.TransactionDate,
 		arg.TransactionReference,
