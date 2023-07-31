@@ -15,6 +15,8 @@ import (
 
 type AddUpdateStockTrxParams struct {
 	TransactionDate time.Time
+	CompanyId       string
+	BranchId        string
 	WarehouseId     string
 	WarehouseRackId string
 	VariantId       string
@@ -86,6 +88,8 @@ func (trx *Trx) AddUpdateStockTrx(ctx context.Context, arg AddUpdateStockTrxPara
 			ID:              id,
 			FormNumber:      formNumber,
 			TransactionDate: arg.TransactionDate,
+			CompanyID:       arg.CompanyId,
+			BranchID:        arg.BranchId,
 			WarehouseID:     arg.WarehouseId,
 			WarehouseRackID: arg.WarehouseRackId,
 			VariantID:       arg.VariantId,
@@ -107,6 +111,8 @@ func (trx *Trx) AddUpdateStockTrx(ctx context.Context, arg AddUpdateStockTrxPara
 			TransactionDate:      arg.TransactionDate,
 			TransactionCode:      formNumber,
 			TransactionReference: "UPDATE STOCK",
+			CompanyID:            arg.CompanyId,
+			BranchID:             arg.BranchId,
 			WarehouseID:          arg.WarehouseId,
 			WarehouseRackID:      arg.WarehouseRackId,
 			VariantID:            arg.VariantId,
