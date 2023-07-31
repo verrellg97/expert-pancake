@@ -23,6 +23,7 @@ type CreateNewUserTrxParams struct {
 
 type CreateNewUserTrxResult struct {
 	Id          string
+	ImageUrl    string
 	FullName    string
 	Nickname    string
 	Email       string
@@ -78,6 +79,7 @@ func (trx *Trx) CreateNewUserTrx(ctx context.Context, arg CreateNewUserTrxParams
 		}
 
 		result.Id = id
+		result.ImageUrl = userRes.ImageUrl
 		result.FullName = userRes.Fullname
 		result.Nickname = userRes.Nickname
 		result.Email = userRes.Email.String

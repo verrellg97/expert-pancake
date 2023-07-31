@@ -26,6 +26,7 @@ type AccountService interface {
 
 type User struct {
 	AccountId   string `json:"account_id" validate:"required"`
+	ImageUrl    string `json:"image_url"`
 	FullName    string `json:"full_name" validate:"required"`
 	Nickname    string `json:"nickname" validate:"required"`
 	Email       string `json:"email"`
@@ -113,6 +114,7 @@ type UpdateUserRequest struct {
 
 type UpdateUserResponse struct {
 	AccountId   string   `json:"account_id"`
+	ImageUrl    string   `json:"image_url"`
 	FullName    string   `json:"full_name"`
 	Nickname    string   `json:"nickname"`
 	Email       string   `json:"email"`
