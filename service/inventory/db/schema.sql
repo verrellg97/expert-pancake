@@ -100,6 +100,8 @@ CREATE TABLE "inventory"."item_units" (
 
 CREATE TABLE "inventory"."internal_stock_transfers" (
   "id" text NOT NULL,
+  "company_id" text NOT NULL DEFAULT '',
+  "branch_id" text NOT NULL DEFAULT '',
   "source_warehouse_id" text NOT NULL,
   "destination_warehouse_id" text NOT NULL,
   "form_number" text NOT NULL,
@@ -140,8 +142,8 @@ CREATE TABLE "inventory"."item_barcodes" (
 
 CREATE TABLE "inventory"."stock_movements" (
   "id" text NOT NULL,
-  "company_id" text NOT NULL,
-  "branch_id" text NOT NULL,
+  "company_id" text NOT NULL DEFAULT '',
+  "branch_id" text NOT NULL DEFAULT '',
   "transaction_id" text NOT NULL,
   "transaction_code" text NOT NULL,
   "transaction_date" date NOT NULL DEFAULT CURRENT_DATE,
@@ -161,6 +163,8 @@ CREATE TABLE "inventory"."update_stocks" (
   "id" text NOT NULL,
   "form_number" text NOT NULL,
   "transaction_date" date NOT NULL DEFAULT CURRENT_DATE,
+  "company_id" text NOT NULL DEFAULT '',
+  "branch_id" text NOT NULL DEFAULT '',
   "warehouse_id" text NOT NULL,
   "warehouse_rack_id" text NOT NULL,
   "variant_id" text NOT NULL,

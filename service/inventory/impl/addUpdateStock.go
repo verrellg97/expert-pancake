@@ -25,6 +25,8 @@ func (a inventoryService) AddUpdateStock(w http.ResponseWriter, r *http.Request)
 
 	arg := db.AddUpdateStockTrxParams{
 		TransactionDate: util.StringToDate(req.TransactionDate),
+		CompanyId:       req.CompanyId,
+		BranchId:        req.BranchId,
 		WarehouseId:     req.WarehouseId,
 		WarehouseRackId: req.WarehouseRackId,
 		VariantId:       req.VariantId,

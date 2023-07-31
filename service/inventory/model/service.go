@@ -403,6 +403,8 @@ type InternalStockTransferItemRequest struct {
 }
 
 type AddInternalStockTransferRequest struct {
+	CompanyId              string                             `json:"company_id" validate:"required"`
+	BranchId               string                             `json:"branch_id" validate:"required"`
 	SourceWarehouseId      string                             `json:"source_warehouse_id" validate:"required"`
 	DestinationWarehouseId string                             `json:"destination_warehouse_id" validate:"required"`
 	TransactionDate        string                             `json:"transaction_date" validate:"required"`
@@ -446,6 +448,8 @@ type UpdateStock struct {
 
 type AddUpdateStockRequest struct {
 	TransactionDate string `json:"transaction_date" validate:"required"`
+	CompanyId       string `json:"company_id" validate:"required"`
+	BranchId        string `json:"branch_id" validate:"required"`
 	WarehouseId     string `json:"warehouse_id" validate:"required"`
 	WarehouseRackId string `json:"warehouse_rack_id" validate:"required"`
 	VariantId       string `json:"variant_id" validate:"required"`

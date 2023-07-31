@@ -322,12 +322,14 @@ WHERE CASE WHEN @is_filter_id::bool THEN a.id = $1 ELSE a.item_id = $2
 -- name: InsertInternalStockTransfer :one
 INSERT INTO inventory.internal_stock_transfers(
         id,
+        company_id,
+        branch_id,
         source_warehouse_id,
         destination_warehouse_id,
         form_number,
         transaction_date
     )
-VALUES ($1, $2, $3, $4, $5)
+VALUES ($1, $2, $3, $4, $5, $6, $7)
 RETURNING *;
 
 -- name: GetInternalStockTransfers :many
@@ -420,10 +422,10 @@ WHERE transaction_id = $1 AND transaction_reference = $2;
 
 -- name: InsertUpdateStock :exec
 INSERT INTO inventory.update_stocks(id,
-form_number, transaction_date, warehouse_id, warehouse_rack_id,
+form_number, transaction_date, company_id, branch_id, warehouse_id, warehouse_rack_id,
 variant_id, item_unit_id, item_unit_value, beginning_stock, ending_stock,
 batch, expired_date, item_barcode_id)
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13);
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15);
 
 -- name: GetUpdateStock :one
 SELECT a.id, a.form_number, a.transaction_date, a.warehouse_id, a.warehouse_rack_id,
@@ -965,62 +967,64 @@ WHERE warehouse_id = ANY(@warehouse_ids::text []);
 -- name: GetUnderMinimumOrder :many
 SELECT 
 	c.id as item_id,
-	C.code AS item_code,
-	C.NAME AS item_name,
+	c.code AS item_code,
+	c.name AS item_name,
 	bb.id as variant_id,
-	bb.NAME AS variant_name,
+	bb.name AS variant_name,
     e.id as unit_id,
 	e.name as unit_name,
-	COALESCE(A.minimum_stock, 0)  minimum_stock,
+	a.minimum_stock,
 	SUM(rp.amount) amount
 FROM
 	inventory.stock_movements rp
-	JOIN inventory.item_variants bb ON bb.ID = rp.variant_id
-	JOIN inventory.items C ON bb.item_id = C.ID
-    JOIN inventory.item_units d ON d.item_id = c.id
-	JOIN inventory.units e ON e.id = d.unit_id AND units.value = 1
-	JOIN inventory.item_reorders A ON A.variant_id = bb.ID 
-WHERE rp.created_at <= NOW() AND rp.company_id = $1 AND rp.branch_id = $2
-GROUP BY bb.id, c.id, e.id, rp.amount, a.minimum_stock
-HAVING amount < minimum_stock
-ORDER BY C.NAME, bb.NAME;
+	JOIN inventory.item_variants bb ON bb.id = rp.variant_id
+	JOIN inventory.items c ON bb.item_id = c.id
+    JOIN inventory.item_units d ON d.item_id = c.id AND d.value = 1
+	JOIN inventory.units e ON e.id = d.unit_id
+	JOIN inventory.item_reorders a ON a.variant_id = bb.id 
+WHERE rp.company_id = $1 AND rp.branch_id = $2
+GROUP BY bb.id, c.id, e.id, a.minimum_stock
+HAVING SUM(rp.amount) < a.minimum_stock
+ORDER BY c.name, bb.name;
 
 -- name: GetOutgoingStock :many
 SELECT 
 	rp.transaction_code as transaction_code,
 	c.id as item_id,
-	C.code AS item_code,
-	C.NAME AS item_name,
+	c.code AS item_code,
+	c.name AS item_name,
 	bb.id as variant_id,
-	bb.NAME AS variant_name,
+	bb.name AS variant_name,
     e.id as unit_id,
 	e.name as unit_name,
 	-(rp.amount) AS amount
 FROM
 	inventory.stock_movements rp
-	JOIN inventory.item_variants bb ON bb.ID = rp.variant_id
-	JOIN inventory.items C ON bb.item_id = C.ID
+	JOIN inventory.item_variants bb ON bb.id = rp.variant_id
+	JOIN inventory.items c ON bb.item_id = c.id
     JOIN inventory.item_units d ON d.item_id = c.id
 	JOIN inventory.units e ON e.id = d.unit_id AND d.value = 1
-WHERE rp.created_at BETWEEN @start_date::date AND @end_date::date AND rp.amount < 0 AND rp.company_id = $1 AND rp.branch_id = $2
-ORDER BY rp.created_at DESC;
+WHERE rp.transaction_date BETWEEN @start_date::date AND @end_date::date
+AND rp.amount < 0 AND rp.company_id = $1 AND rp.branch_id = $2
+ORDER BY rp.transaction_date DESC;
 
 -- name: GetIncomingStock :many
 SELECT 
 	rp.transaction_code as transaction_code,
 	c.id as item_id,
-	C.code AS item_code,
-	C.NAME AS item_name,
+	c.code AS item_code,
+	c.name AS item_name,
 	bb.id as variant_id,
-	bb.NAME AS variant_name,
+	bb.name AS variant_name,
     e.id as unit_id,
 	e.name as unit_name,
 	(rp.amount) AS amount
 FROM
 	inventory.stock_movements rp
-	JOIN inventory.item_variants bb ON bb.ID = rp.variant_id
-	JOIN inventory.items C ON bb.item_id = C.ID
+	JOIN inventory.item_variants bb ON bb.id = rp.variant_id
+	JOIN inventory.items c ON bb.item_id = c.id
     JOIN inventory.item_units d ON d.item_id = c.id
 	JOIN inventory.units e ON e.id = d.unit_id AND d.value = 1
-WHERE rp.created_at BETWEEN @start_date::date AND @end_date::date AND rp.amount > 0 AND rp.company_id = $1 AND rp.branch_id = $2
-ORDER BY rp.created_at DESC;
+WHERE rp.transaction_date BETWEEN @start_date::date AND @end_date::date
+AND rp.amount > 0 AND rp.company_id = $1 AND rp.branch_id = $2
+ORDER BY rp.transaction_date DESC;
