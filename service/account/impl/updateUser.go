@@ -45,6 +45,7 @@ func (a accountService) UpdateUser(w http.ResponseWriter, r *http.Request) error
 
 	res := model.UpdateUserResponse{
 		AccountId:   result.AccountId,
+		ImageUrl:    result.ImageUrl,
 		FullName:    result.FullName,
 		Nickname:    result.Nickname,
 		Email:       result.Email,

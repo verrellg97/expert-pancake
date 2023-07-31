@@ -20,6 +20,7 @@ type UpdateUserTrxParams struct {
 
 type UpdateUserTrxResult struct {
 	AccountId   string
+	ImageUrl    string
 	FullName    string
 	Nickname    string
 	Email       string
