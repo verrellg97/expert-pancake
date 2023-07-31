@@ -221,8 +221,9 @@ type Item struct {
 type AddItemRequest struct {
 	CompanyId   string   `json:"company_id" validate:"required"`
 	ImageUrl    string   `json:"image_url"`
-	Barcode     string   `json:"barcode"`
+	Code        string   `json:"code"`
 	Name        string   `json:"name" validate:"required"`
+	Barcode     string   `json:"barcode"`
 	BrandId     string   `json:"brand_id"`
 	GroupIds    []string `json:"group_ids" validate:"required"`
 	Tag         []string `json:"tag"`

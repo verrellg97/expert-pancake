@@ -26,8 +26,9 @@ func (a inventoryService) AddItem(w http.ResponseWriter, r *http.Request) error 
 	arg := db.AddItemTrxParams{
 		CompanyId:   req.CompanyId,
 		ImageUrl:    req.ImageUrl,
-		Barcode:     req.Barcode,
+		Code:        req.Code,
 		Name:        req.Name,
+		Barcode:     req.Barcode,
 		BrandId:     req.BrandId,
 		GroupIds:    req.GroupIds,
 		Tag:         util.ArrayToString(req.Tag),

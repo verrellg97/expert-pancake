@@ -14,6 +14,7 @@ import (
 type AddItemTrxParams struct {
 	CompanyId   string
 	ImageUrl    string
+	Code        string
 	Name        string
 	Barcode     string
 	BrandId     string
@@ -49,11 +50,15 @@ func (trx *Trx) AddItemTrx(ctx context.Context, arg AddItemTrxParams) (AddItemTr
 
 		id := uuid.NewV4().String()
 
+		if arg.Code == "" {
+			arg.Code = "BRG-" + fmt.Sprintf("%08d", rand.Intn(100000000))
+		}
+
 		itemRes, err := q.InsertItem(ctx, db.InsertItemParams{
 			ID:          id,
 			CompanyID:   arg.CompanyId,
 			ImageUrl:    arg.ImageUrl,
-			Code:        "BRG-" + fmt.Sprintf("%08d", rand.Intn(100000000)),
+			Code:        arg.Code,
 			Name:        arg.Name,
 			BrandID:     arg.BrandId,
 			GroupID:     util.ArrayToString(arg.GroupIds),
