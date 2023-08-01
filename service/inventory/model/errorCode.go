@@ -82,4 +82,6 @@ const (
 	GetUnderMinimumOrderError = 700055
 	GetOutgoingStockError     = 700056
 	GetIncomingStockError     = 700057
+
+	GetItemHistoryError = 700058
 )

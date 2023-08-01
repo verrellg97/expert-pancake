@@ -234,8 +234,8 @@ FROM
 	inventory.stock_movements rp
 	JOIN inventory.item_variants bb ON bb.id = rp.variant_id
 	JOIN inventory.items c ON bb.item_id = c.id
-    JOIN inventory.item_units d ON d.item_id = c.id
-	JOIN inventory.units e ON e.id = d.unit_id AND d.value = 1
+    JOIN inventory.item_units d ON d.item_id = c.id AND d.value = 1
+	JOIN inventory.units e ON e.id = d.unit_id
 WHERE rp.transaction_date BETWEEN $3::date AND $4::date
 AND rp.amount > 0 AND rp.company_id = $1 AND rp.branch_id = $2
 ORDER BY rp.transaction_date DESC
@@ -473,6 +473,90 @@ func (q *Queries) GetItemGroups(ctx context.Context, groupIds []string) (string,
 	var groups string
 	err := row.Scan(&groups)
 	return groups, err
+}
+
+const getItemHistory = `-- name: GetItemHistory :many
+SELECT a.transaction_code,
+    a.transaction_date,
+    item.id AS item_id,
+    item.code as item_code,
+    item.name as item_name,
+    variant.id as variant_id,
+    variant.name as variant_name,
+    units.id AS unit_id,
+    units.name AS unit_name,
+    a.amount
+FROM inventory.stock_movements a
+    JOIN inventory.item_variants variant ON variant.id = a.variant_id
+    JOIN inventory.items item ON item.id = variant.item_id
+    JOIN inventory.item_units item_units ON item_units.item_id = item.id AND item_units.value = 1
+	JOIN inventory.units units ON units.id = item_units.unit_id
+WHERE a.branch_id = $1
+    AND a.transaction_date BETWEEN $4::date AND $5::date
+    AND item.id = $2
+    AND a.variant_id LIKE $3
+ORDER BY a.transaction_date DESC
+`
+
+type GetItemHistoryParams struct {
+	BranchID  string    `db:"branch_id"`
+	ID        string    `db:"id"`
+	VariantID string    `db:"variant_id"`
+	StartDate time.Time `db:"start_date"`
+	EndDate   time.Time `db:"end_date"`
+}
+
+type GetItemHistoryRow struct {
+	TransactionCode string    `db:"transaction_code"`
+	TransactionDate time.Time `db:"transaction_date"`
+	ItemID          string    `db:"item_id"`
+	ItemCode        string    `db:"item_code"`
+	ItemName        string    `db:"item_name"`
+	VariantID       string    `db:"variant_id"`
+	VariantName     string    `db:"variant_name"`
+	UnitID          string    `db:"unit_id"`
+	UnitName        string    `db:"unit_name"`
+	Amount          int64     `db:"amount"`
+}
+
+func (q *Queries) GetItemHistory(ctx context.Context, arg GetItemHistoryParams) ([]GetItemHistoryRow, error) {
+	rows, err := q.db.QueryContext(ctx, getItemHistory,
+		arg.BranchID,
+		arg.ID,
+		arg.VariantID,
+		arg.StartDate,
+		arg.EndDate,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetItemHistoryRow
+	for rows.Next() {
+		var i GetItemHistoryRow
+		if err := rows.Scan(
+			&i.TransactionCode,
+			&i.TransactionDate,
+			&i.ItemID,
+			&i.ItemCode,
+			&i.ItemName,
+			&i.VariantID,
+			&i.VariantName,
+			&i.UnitID,
+			&i.UnitName,
+			&i.Amount,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const getItemInfo = `-- name: GetItemInfo :one
@@ -1434,8 +1518,8 @@ FROM
 	inventory.stock_movements rp
 	JOIN inventory.item_variants bb ON bb.id = rp.variant_id
 	JOIN inventory.items c ON bb.item_id = c.id
-    JOIN inventory.item_units d ON d.item_id = c.id
-	JOIN inventory.units e ON e.id = d.unit_id AND d.value = 1
+    JOIN inventory.item_units d ON d.item_id = c.id AND d.value = 1
+	JOIN inventory.units e ON e.id = d.unit_id
 WHERE rp.transaction_date BETWEEN $3::date AND $4::date
 AND rp.amount < 0 AND rp.company_id = $1 AND rp.branch_id = $2
 ORDER BY rp.transaction_date DESC

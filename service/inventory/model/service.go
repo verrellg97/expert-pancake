@@ -86,6 +86,8 @@ type InventoryService interface {
 	GetUnderMinimumOrder(w http.ResponseWriter, r *http.Request) error
 	GetOutgoingStock(w http.ResponseWriter, r *http.Request) error
 	GetIncomingStock(w http.ResponseWriter, r *http.Request) error
+
+	GetItemHistory(w http.ResponseWriter, r *http.Request) error
 }
 
 type Brand struct {
@@ -1049,4 +1051,29 @@ type GetIncomingStockResponseStruct struct {
 
 type GetIncomingStockResponse struct {
 	IncomingStock []GetIncomingStockResponseStruct `json:"incoming_stocks" validate:"required"`
+}
+
+type ItemHistory struct {
+	TransactionCode string `json:"transaction_code" validate:"required"`
+	TransactionDate string `json:"transaction_date" validate:"required"`
+	ItemId          string `json:"item_id" validate:"required"`
+	ItemCode        string `json:"item_code" validate:"required"`
+	ItemName        string `json:"item_name" validate:"required"`
+	VariantId       string `json:"variant_id" validate:"required"`
+	VariantName     string `json:"variant_name" validate:"required"`
+	UnitId          string `json:"unit_id" validate:"required"`
+	UnitName        string `json:"unit_name" validate:"required"`
+	Amount          string `json:"amount" validate:"required"`
+}
+
+type GetItemHistoryRequest struct {
+	BranchId  string `json:"branch_id" validate:"required"`
+	ItemId    string `json:"item_id" validate:"required"`
+	VariantId string `json:"variant_id"`
+	StartDate string `json:"start_date"`
+	EndDate   string `json:"end_date"`
+}
+
+type GetItemHistoryResponse struct {
+	ItemHistories []ItemHistory `json:"item_histories" validate:"required"`
 }
