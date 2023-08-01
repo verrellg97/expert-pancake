@@ -17,6 +17,7 @@ type BusinessRelationTrx interface {
 	UpdateContactBookTrx(ctx context.Context, arg UpdateContactBookTrxParams) (UpdateContactBookTrxResult, error)
 	UpdateCustomerTrx(ctx context.Context, arg UpdateCustomerTrxParams) (UpdateCustomerTrxResult, error)
 	UpdateSupplierTrx(ctx context.Context, arg UpdateSupplierTrxParams) (UpdateSupplierTrxResult, error)
+	AddContactInvitationTrx(ctx context.Context, arg AddContactInvitationTrxParams) (AddContactInvitationTrxResult, error)
 	UpdateContactInvitationTrx(ctx context.Context, arg UpdateContactInvitationTrxParams) (UpdateContactInvitationTrxResult, error)
 }
 

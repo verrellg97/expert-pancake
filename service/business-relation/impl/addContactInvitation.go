@@ -6,9 +6,8 @@ import (
 
 	"github.com/calvinkmts/expert-pancake/engine/errors"
 	"github.com/calvinkmts/expert-pancake/engine/httpHandler"
-	db "github.com/expert-pancake/service/business-relation/db/sqlc"
+	db "github.com/expert-pancake/service/business-relation/db/transaction"
 	"github.com/expert-pancake/service/business-relation/model"
-	uuid "github.com/satori/go.uuid"
 )
 
 func (a businessRelationService) AddContactInvitation(w http.ResponseWriter, r *http.Request) error {
@@ -22,20 +21,19 @@ func (a businessRelationService) AddContactInvitation(w http.ResponseWriter, r *
 		return errors.NewClientError().WithDataMap(errMapRequest)
 	}
 
-	arg := db.InsertContactInvitationParams{
-		ID:                   uuid.NewV4().String(),
-		PrimaryContactBookID: req.PrimaryContactBookId,
-		PrimaryCompanyID:     req.PrimaryCompanyId,
-		SecondaryCompanyID:   req.SecondaryCompanyId,
+	arg := db.AddContactInvitationTrxParams{
+		PrimaryContactBookId: req.PrimaryContactBookId,
+		PrimaryCompanyId:     req.PrimaryCompanyId,
+		SecondaryCompanyId:   req.SecondaryCompanyId,
 	}
 
-	_, err := a.dbTrx.InsertContactInvitation(context.Background(), arg)
+	result, err := a.dbTrx.AddContactInvitationTrx(context.Background(), arg)
 	if err != nil {
 		return errors.NewServerError(model.AddNewContactInvitationError, err.Error())
 	}
 
 	res := model.AddContactInvitationResponse{
-		Message: "OK",
+		Message: result.Message,
 	}
 
 	httpHandler.WriteResponse(w, res)
