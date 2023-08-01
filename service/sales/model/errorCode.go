@@ -36,4 +36,6 @@ const (
 	UpsertSalesInvoiceError   = 800901
 	GetSalesInvoicesError     = 800902
 	GetSalesInvoiceItemsError = 800903
+
+	GetSalesSummaryReportError = 801001
 )

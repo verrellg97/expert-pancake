@@ -861,6 +861,98 @@ func (q *Queries) GetSalesOrders(ctx context.Context, arg GetSalesOrdersParams) 
 	return items, nil
 }
 
+const getSalesSummaryReport = `-- name: GetSalesSummaryReport :many
+SELECT 
+    form_number,
+    transaction_date,
+    branch_id,
+    contact_book_id,
+    secondary_company_id,
+    konekin_id,
+    total_items,
+    currency_code,
+    total
+FROM sales.point_of_sales
+WHERE company_id = $1::text
+AND branch_id LIKE $2::text
+AND transaction_date BETWEEN $3::date AND $4::date 
+AND is_deleted = FALSE
+UNION ALL
+SELECT 
+    form_number,
+    transaction_date,
+    branch_id,
+    contact_book_id,
+    secondary_company_id,
+    konekin_id,
+    total_items,
+    currency_code,
+    total
+FROM sales.sales_invoices
+WHERE company_id = $1::text
+AND branch_id LIKE $2::text
+AND transaction_date BETWEEN $3::date AND $4::date 
+AND is_deleted = FALSE
+ORDER BY transaction_date DESC
+`
+
+type GetSalesSummaryReportParams struct {
+	CompanyID string    `db:"company_id"`
+	BranchID  string    `db:"branch_id"`
+	StartDate time.Time `db:"start_date"`
+	EndDate   time.Time `db:"end_date"`
+}
+
+type GetSalesSummaryReportRow struct {
+	FormNumber         string    `db:"form_number"`
+	TransactionDate    time.Time `db:"transaction_date"`
+	BranchID           string    `db:"branch_id"`
+	ContactBookID      string    `db:"contact_book_id"`
+	SecondaryCompanyID string    `db:"secondary_company_id"`
+	KonekinID          string    `db:"konekin_id"`
+	TotalItems         int64     `db:"total_items"`
+	CurrencyCode       string    `db:"currency_code"`
+	Total              int64     `db:"total"`
+}
+
+func (q *Queries) GetSalesSummaryReport(ctx context.Context, arg GetSalesSummaryReportParams) ([]GetSalesSummaryReportRow, error) {
+	rows, err := q.db.QueryContext(ctx, getSalesSummaryReport,
+		arg.CompanyID,
+		arg.BranchID,
+		arg.StartDate,
+		arg.EndDate,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetSalesSummaryReportRow
+	for rows.Next() {
+		var i GetSalesSummaryReportRow
+		if err := rows.Scan(
+			&i.FormNumber,
+			&i.TransactionDate,
+			&i.BranchID,
+			&i.ContactBookID,
+			&i.SecondaryCompanyID,
+			&i.KonekinID,
+			&i.TotalItems,
+			&i.CurrencyCode,
+			&i.Total,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const insertPOSCOASetting = `-- name: InsertPOSCOASetting :one
 INSERT INTO sales.pos_chart_of_account_settings(
   branch_id, chart_of_account_id
