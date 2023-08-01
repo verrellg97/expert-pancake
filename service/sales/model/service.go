@@ -40,6 +40,8 @@ type SalesService interface {
 	UpsertSalesInvoice(w http.ResponseWriter, r *http.Request) error
 	GetSalesInvoices(w http.ResponseWriter, r *http.Request) error
 	GetSalesInvoiceItems(w http.ResponseWriter, r *http.Request) error
+
+	GetSalesSummaryReport(w http.ResponseWriter, r *http.Request) error
 }
 
 type POS struct {
@@ -556,4 +558,29 @@ type GetSalesInvoiceItemsRequest struct {
 
 type GetSalesInvoiceItemsResponse struct {
 	SalesInvoiceItems []SalesInvoiceItem `json:"sales_invoice_items"`
+}
+
+type SalesSummary struct {
+	TransactionCode    string `json:"transaction_code" validate:"required"`
+	TransactionDate    string `json:"transaction_date" validate:"required"`
+	BranchId           string `json:"branch_id" validate:"required"`
+	BranchName         string `json:"branch_name" validate:"required"`
+	ContactBookId      string `json:"contact_book_id" validate:"required"`
+	SecondaryCompanyId string `json:"secondary_company_id" validate:"required"`
+	KonekinId          string `json:"konekin_id" validate:"required"`
+	CustomerName       string `json:"customer_name" validate:"required"`
+	TotalItems         string `json:"total_items" validate:"required"`
+	CurrencyCode       string `json:"curency_code" validate:"required"`
+	Total              string `json:"total" validate:"required"`
+}
+
+type GetSalesSummaryReportRequest struct {
+	CompanyId string `json:"company_id" validate:"required"`
+	BranchId  string `json:"branch_id"`
+	StartDate string `json:"start_date" validate:"required"`
+	EndDate   string `json:"end_date" validate:"required"`
+}
+
+type GetSalesSummaryReportResponse struct {
+	SalesSummaries []SalesSummary `json:"sales_summaries" validate:"required"`
 }

@@ -390,3 +390,37 @@ SELECT
     a.*
 FROM sales.sales_invoice_items a
 WHERE a.sales_invoice_id = $1;
+
+-- name: GetSalesSummaryReport :many
+SELECT 
+    form_number,
+    transaction_date,
+    branch_id,
+    contact_book_id,
+    secondary_company_id,
+    konekin_id,
+    total_items,
+    currency_code,
+    total
+FROM sales.point_of_sales
+WHERE company_id = @company_id::text
+AND branch_id LIKE @branch_id::text
+AND transaction_date BETWEEN @start_date::date AND @end_date::date 
+AND is_deleted = FALSE
+UNION ALL
+SELECT 
+    form_number,
+    transaction_date,
+    branch_id,
+    contact_book_id,
+    secondary_company_id,
+    konekin_id,
+    total_items,
+    currency_code,
+    total
+FROM sales.sales_invoices
+WHERE company_id = @company_id::text
+AND branch_id LIKE @branch_id::text
+AND transaction_date BETWEEN @start_date::date AND @end_date::date 
+AND is_deleted = FALSE
+ORDER BY transaction_date DESC;

@@ -32,6 +32,7 @@ type Querier interface {
 	GetSalesOrderDeliveryItems(ctx context.Context, arg GetSalesOrderDeliveryItemsParams) ([]SalesSalesOrderItem, error)
 	GetSalesOrderItems(ctx context.Context, salesOrderID string) ([]SalesSalesOrderItem, error)
 	GetSalesOrders(ctx context.Context, arg GetSalesOrdersParams) ([]SalesSalesOrder, error)
+	GetSalesSummaryReport(ctx context.Context, arg GetSalesSummaryReportParams) ([]GetSalesSummaryReportRow, error)
 	InsertPOSCOASetting(ctx context.Context, arg InsertPOSCOASettingParams) (SalesPosChartOfAccountSetting, error)
 	InsertPOSCustomerSetting(ctx context.Context, arg InsertPOSCustomerSettingParams) (SalesPosCustomerSetting, error)
 	InsertPOSItem(ctx context.Context, arg InsertPOSItemParams) (SalesPointOfSaleItem, error)
