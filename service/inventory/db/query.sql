@@ -1002,8 +1002,8 @@ FROM
 	inventory.stock_movements rp
 	JOIN inventory.item_variants bb ON bb.id = rp.variant_id
 	JOIN inventory.items c ON bb.item_id = c.id
-    JOIN inventory.item_units d ON d.item_id = c.id
-	JOIN inventory.units e ON e.id = d.unit_id AND d.value = 1
+    JOIN inventory.item_units d ON d.item_id = c.id AND d.value = 1
+	JOIN inventory.units e ON e.id = d.unit_id
 WHERE rp.transaction_date BETWEEN @start_date::date AND @end_date::date
 AND rp.amount < 0 AND rp.company_id = $1 AND rp.branch_id = $2
 ORDER BY rp.transaction_date DESC;
@@ -1023,8 +1023,30 @@ FROM
 	inventory.stock_movements rp
 	JOIN inventory.item_variants bb ON bb.id = rp.variant_id
 	JOIN inventory.items c ON bb.item_id = c.id
-    JOIN inventory.item_units d ON d.item_id = c.id
-	JOIN inventory.units e ON e.id = d.unit_id AND d.value = 1
+    JOIN inventory.item_units d ON d.item_id = c.id AND d.value = 1
+	JOIN inventory.units e ON e.id = d.unit_id
 WHERE rp.transaction_date BETWEEN @start_date::date AND @end_date::date
 AND rp.amount > 0 AND rp.company_id = $1 AND rp.branch_id = $2
 ORDER BY rp.transaction_date DESC;
+
+-- name: GetItemHistory :many
+SELECT a.transaction_code,
+    a.transaction_date,
+    item.id AS item_id,
+    item.code as item_code,
+    item.name as item_name,
+    variant.id as variant_id,
+    variant.name as variant_name,
+    units.id AS unit_id,
+    units.name AS unit_name,
+    a.amount
+FROM inventory.stock_movements a
+    JOIN inventory.item_variants variant ON variant.id = a.variant_id
+    JOIN inventory.items item ON item.id = variant.item_id
+    JOIN inventory.item_units item_units ON item_units.item_id = item.id AND item_units.value = 1
+	JOIN inventory.units units ON units.id = item_units.unit_id
+WHERE a.branch_id = $1
+    AND a.transaction_date BETWEEN @start_date::date AND @end_date::date
+    AND item.id = $2
+    AND a.variant_id LIKE $3
+ORDER BY a.transaction_date DESC;

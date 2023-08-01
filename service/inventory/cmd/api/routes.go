@@ -92,6 +92,8 @@ const (
 	GetUnderMinimumOrderPath = "/inventory/under-minimum-order"
 	GetOutgoingStockPath     = "/inventory/outgoing-stock"
 	GetIncomingStockPath     = "/inventory/incoming-stock"
+
+	GetItemHistoryPath = "/inventory/item-history"
 )
 
 func (c *component) Routes(inventoryService model.InventoryService) http.Handler {
@@ -191,6 +193,8 @@ func (c *component) Routes(inventoryService model.InventoryService) http.Handler
 	mux.Method("POST", GetUnderMinimumOrderPath, httpHandler.New(inventoryService.GetUnderMinimumOrder))
 	mux.Method("POST", GetOutgoingStockPath, httpHandler.New(inventoryService.GetOutgoingStock))
 	mux.Method("POST", GetIncomingStockPath, httpHandler.New(inventoryService.GetIncomingStock))
+
+	mux.Method("POST", GetItemHistoryPath, httpHandler.New(inventoryService.GetItemHistory))
 
 	return mux
 }
