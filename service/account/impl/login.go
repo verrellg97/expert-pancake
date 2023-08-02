@@ -2,11 +2,12 @@ package impl
 
 import (
 	"context"
+	"net/http"
+
 	"github.com/calvinkmts/expert-pancake/engine/errors"
 	"github.com/calvinkmts/expert-pancake/engine/httpHandler"
 	"github.com/expert-pancake/service/account/model"
 	"github.com/expert-pancake/service/account/util"
-	"net/http"
 )
 
 func (a accountService) Login(w http.ResponseWriter, r *http.Request) error {
@@ -63,6 +64,7 @@ func (a accountService) Login(w http.ResponseWriter, r *http.Request) error {
 		User: model.LoginUserResponse{
 			User: model.User{
 				AccountId:   account.ID,
+				ImageUrl:    account.ImageUrl,
 				FullName:    account.Fullname,
 				Nickname:    account.Nickname,
 				Email:       account.Email.String,
