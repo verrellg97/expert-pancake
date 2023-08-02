@@ -40,6 +40,10 @@ func (a inventoryService) UpdateItem(w http.ResponseWriter, r *http.Request) err
 		return errors.NewServerError(model.UpdateItemError, err.Error())
 	}
 
+	var amount_in_stock *string
+	amount_in_stock = new (string)
+	*amount_in_stock = strconv.FormatInt(0, 10)
+
 	res := model.UpdateItemResponse{
 		Item: model.Item{
 			CompanyId:   result.CompanyId,
@@ -57,6 +61,7 @@ func (a inventoryService) UpdateItem(w http.ResponseWriter, r *http.Request) err
 			Description: result.Description,
 			IsDefault:   result.IsDefault,
 			Price:       strconv.FormatInt(result.Price, 10),
+			AmountInStock: amount_in_stock,
 		},
 	}
 

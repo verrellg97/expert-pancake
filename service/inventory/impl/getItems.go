@@ -33,22 +33,27 @@ func (a inventoryService) GetItems(w http.ResponseWriter, r *http.Request) error
 	var items = make([]model.Item, 0)
 
 	for _, d := range result {
+		var amount_in_stock *string
+		amount_in_stock = new (string)
+		*amount_in_stock = strconv.FormatInt(d.AmountInStock, 10)
+		
 		var item = model.Item{
-			CompanyId:   d.CompanyID,
-			ItemId:      d.ID,
-			VariantId:   d.VariantID,
-			ImageUrl:    d.ImageUrl,
-			Code:        d.Code,
-			Barcode:     d.Barcode,
-			Name:        d.Name,
-			VariantName: d.VariantName,
-			BrandId:     d.BrandID,
-			BrandName:   d.BrandName,
-			Groups:      util.StringToArrayOfGroup(d.Groups, d.CompanyID),
-			Tag:         util.StringToArray(d.Tag),
-			Description: d.Description,
-			IsDefault:   d.IsDefault,
-			Price:       strconv.FormatInt(d.Price, 10),
+			CompanyId:     d.CompanyID,
+			ItemId:        d.ID,
+			VariantId:     d.VariantID,
+			ImageUrl:      d.ImageUrl,
+			Code:          d.Code,
+			Barcode:       d.Barcode,
+			Name:          d.Name,
+			VariantName:   d.VariantName,
+			BrandId:       d.BrandID,
+			BrandName:     d.BrandName,
+			Groups:        util.StringToArrayOfGroup(d.Groups, d.CompanyID),
+			Tag:           util.StringToArray(d.Tag),
+			Description:   d.Description,
+			IsDefault:     d.IsDefault,
+			Price:         strconv.FormatInt(d.Price, 10),
+			AmountInStock: amount_in_stock,
 		}
 		items = append(items, item)
 	}

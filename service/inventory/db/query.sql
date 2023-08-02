@@ -164,6 +164,7 @@ SELECT a.id,
     COALESCE(c.name, '') AS brand_name,
     a.group_id,
     string_agg(CONCAT(d.id, '|', d.name), ',')::text AS groups,
+    COALESCE(SUM(rp.amount), 0)::bigint AS amount_in_stock,
     a.tag,
     a.description,
     b.is_default,
@@ -171,6 +172,7 @@ SELECT a.id,
 FROM inventory.items a
     JOIN inventory.item_variants b ON a.id = b.item_id
     LEFT JOIN inventory.brands c ON a.brand_id = c.id
+    LEFT JOIN inventory.stock_movements rp ON rp.variant_id = b.id
     JOIN inventory.groups d ON d.id = ANY(string_to_array(a.group_id, ','))
 WHERE a.company_id = $1
     AND (b.name LIKE @keyword OR a.tag LIKE @keyword)
