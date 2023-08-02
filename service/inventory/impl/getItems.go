@@ -30,14 +30,14 @@ func (a inventoryService) GetItems(w http.ResponseWriter, r *http.Request) error
 		return errors.NewServerError(model.GetItemsError, err.Error())
 	}
 
-	var items = make([]model.Item, 0)
+	var items = make([]model.ItemWithStock, 0)
 
 	for _, d := range result {
 		var amount_in_stock *string
-		amount_in_stock = new (string)
+		amount_in_stock = new(string)
 		*amount_in_stock = strconv.FormatInt(d.AmountInStock, 10)
-		
-		var item = model.Item{
+
+		var item = model.ItemWithStock{
 			CompanyId:     d.CompanyID,
 			ItemId:        d.ID,
 			VariantId:     d.VariantID,
