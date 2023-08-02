@@ -203,6 +203,24 @@ type ItemGroup struct {
 }
 
 type Item struct {
+	CompanyId   string      `json:"company_id" validate:"required"`
+	ItemId      string      `json:"item_id" validate:"required"`
+	VariantId   string      `json:"variant_id" validate:"required"`
+	ImageUrl    string      `json:"image_url" validate:"required"`
+	Code        string      `json:"code" validate:"required"`
+	Barcode     string      `json:"barcode" validate:"required"`
+	Name        string      `json:"name" validate:"required"`
+	VariantName string      `json:"variant_name" validate:"required"`
+	BrandId     string      `json:"brand_id" validate:"required"`
+	BrandName   string      `json:"brand_name" validate:"required"`
+	Groups      []ItemGroup `json:"groups" validate:"required"`
+	Tag         []string    `json:"tag" validate:"required"`
+	Description string      `json:"description" validate:"required"`
+	IsDefault   bool        `json:"is_default" validate:"required"`
+	Price       string      `json:"price" validate:"required"`
+}
+
+type ItemWithStock struct {
 	CompanyId     string      `json:"company_id" validate:"required"`
 	ItemId        string      `json:"item_id" validate:"required"`
 	VariantId     string      `json:"variant_id" validate:"required"`
@@ -218,7 +236,7 @@ type Item struct {
 	Description   string      `json:"description" validate:"required"`
 	IsDefault     bool        `json:"is_default" validate:"required"`
 	Price         string      `json:"price" validate:"required"`
-	AmountInStock *string      `json:"amount_in_stock" validate:"required"`
+	AmountInStock *string     `json:"amount_in_stock" validate:"required"`
 }
 
 type AddItemRequest struct {
@@ -260,7 +278,7 @@ type GetItemsRequest struct {
 }
 
 type GetItemsResponse struct {
-	Items []Item `json:"items" validate:"required"`
+	Items []ItemWithStock `json:"items" validate:"required"`
 }
 
 type ItemInfo struct {
