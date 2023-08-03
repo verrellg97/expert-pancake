@@ -77,6 +77,7 @@ func (a businessService) UpdateCompany(w http.ResponseWriter, r *http.Request) e
 		InitialName:       req.InitialName,
 		Type:              req.Type,
 		ResponsiblePerson: req.ResponsiblePerson,
+		ImageUrl:          req.ImageUrl,
 	})
 	if err != nil {
 		return errors.NewServerError(model.UpdateCompanyError, err.Error())
@@ -98,6 +99,7 @@ func (a businessService) UpdateCompany(w http.ResponseWriter, r *http.Request) e
 			InitialName:       result.InitialName,
 			Type:              result.Type,
 			ResponsiblePerson: result.ResponsiblePerson,
+			ImageUrl:          result.ImageUrl,
 			Branches:          util.CompanyBranchDbToApi(resultBranches),
 		},
 	}

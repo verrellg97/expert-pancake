@@ -5,6 +5,7 @@ CREATE TABLE business.companies (
   "user_id" text NOT NULL,
   "name" text NOT NULL,
   "initial_name" text NOT NULL,
+  "image_url" text NOT NULL,
   "type" text NOT NULL,
   "responsible_person" text NOT NULL,
   "is_deleted" boolean DEFAULT FALSE NOT NULL,

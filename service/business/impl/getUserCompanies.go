@@ -47,6 +47,7 @@ func (a businessService) GetUserCompanies(w http.ResponseWriter, r *http.Request
 			InitialName:       d.InitialName,
 			Type:              d.Type,
 			ResponsiblePerson: d.ResponsiblePerson,
+			ImageUrl:          d.ImageUrl,
 			Branches:          util.CompanyBranchDbToApi(resultBranches),
 		}
 		companies = append(companies, company)
