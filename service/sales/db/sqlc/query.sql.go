@@ -232,6 +232,74 @@ func (q *Queries) GetDeliveryOrders(ctx context.Context, arg GetDeliveryOrdersPa
 	return items, nil
 }
 
+const getMonthlyGrossSales = `-- name: GetMonthlyGrossSales :many
+SELECT all_sales.month_number,
+all_sales.year_number,
+SUM(all_sales.total) AS total
+FROM 
+(SELECT
+EXTRACT(MONTH FROM transaction_date)::bigint AS month_number,
+EXTRACT(YEAR FROM transaction_date)::bigint AS year_number,
+total
+FROM sales.point_of_sales
+WHERE company_id = $1::text
+AND branch_id LIKE $2::text
+AND transaction_date BETWEEN $3::date AND $4::date
+UNION ALL
+SELECT
+EXTRACT(MONTH FROM transaction_date)::bigint AS month_number,
+EXTRACT(YEAR FROM transaction_date)::bigint AS year_number,
+total
+FROM sales.sales_invoices
+WHERE company_id = $1::text
+AND branch_id LIKE $2::text
+AND transaction_date BETWEEN $3::date AND $4::date
+) all_sales
+GROUP BY all_sales.month_number, all_sales.year_number
+ORDER BY all_sales.month_number, all_sales.year_number
+`
+
+type GetMonthlyGrossSalesParams struct {
+	CompanyID string    `db:"company_id"`
+	BranchID  string    `db:"branch_id"`
+	StartDate time.Time `db:"start_date"`
+	EndDate   time.Time `db:"end_date"`
+}
+
+type GetMonthlyGrossSalesRow struct {
+	MonthNumber int64 `db:"month_number"`
+	YearNumber  int64 `db:"year_number"`
+	Total       int64 `db:"total"`
+}
+
+func (q *Queries) GetMonthlyGrossSales(ctx context.Context, arg GetMonthlyGrossSalesParams) ([]GetMonthlyGrossSalesRow, error) {
+	rows, err := q.db.QueryContext(ctx, getMonthlyGrossSales,
+		arg.CompanyID,
+		arg.BranchID,
+		arg.StartDate,
+		arg.EndDate,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetMonthlyGrossSalesRow
+	for rows.Next() {
+		var i GetMonthlyGrossSalesRow
+		if err := rows.Scan(&i.MonthNumber, &i.YearNumber, &i.Total); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getMostSoldItems = `-- name: GetMostSoldItems :many
 SELECT sales_items.item_variant_id,
 SUM(sales_items.amount) AS total
