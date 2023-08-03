@@ -18,6 +18,7 @@ type CreateNewCompanyTrxResult struct {
 	InitialName       string
 	Type              string
 	ResponsiblePerson string
+	ImageUrl          string
 	Branches          []model.CompanyBranch
 }
 
@@ -36,6 +37,7 @@ func (trx *Trx) CreateNewCompanyTrx(ctx context.Context, arg db.InsertCompanyPar
 			InitialName:       arg.InitialName,
 			Type:              arg.Type,
 			ResponsiblePerson: arg.ResponsiblePerson,
+			ImageUrl:          arg.ImageUrl,
 		})
 		if err != nil {
 			return err
@@ -187,6 +189,7 @@ func (trx *Trx) CreateNewCompanyTrx(ctx context.Context, arg db.InsertCompanyPar
 		result.InitialName = companyRes.InitialName
 		result.Type = companyRes.Type
 		result.ResponsiblePerson = companyRes.ResponsiblePerson
+		result.ImageUrl = companyRes.ImageUrl
 		result.Branches = []model.CompanyBranch{
 			{
 				AccountId:   arg.ID,

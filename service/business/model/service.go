@@ -25,6 +25,7 @@ type Company struct {
 	InitialName       string          `json:"initial_name" validate:"required"`
 	Type              string          `json:"type" validate:"required"`
 	ResponsiblePerson string          `json:"responsible_person" validate:"required"`
+	ImageUrl          string          `json:"image_url"`
 	Branches          []CompanyBranch `json:"branches" validate:"required"`
 }
 
@@ -44,6 +45,7 @@ type RegisterCompanyRequest struct {
 	InitialName       string `json:"initial_name" validate:"required"`
 	Type              string `json:"type" validate:"required"`
 	ResponsiblePerson string `json:"responsible_person" validate:"required"`
+	ImageUrl          string `json:"image_url"`
 }
 
 type RegisterCompanyResponse struct {
@@ -61,6 +63,7 @@ type UpdateCompanyRequest struct {
 	InitialName       string `json:"initial_name" validate:"required"`
 	Type              string `json:"type" validate:"required"`
 	ResponsiblePerson string `json:"responsible_person" validate:"required"`
+	ImageUrl          string `json:"image_url"`
 }
 
 type DeleteCompanyRequest struct {

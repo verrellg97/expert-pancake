@@ -37,6 +37,7 @@ func (a businessService) RegisterCompany(w http.ResponseWriter, r *http.Request)
 		InitialName:       req.InitialName,
 		Type:              req.Type,
 		ResponsiblePerson: req.ResponsiblePerson,
+		ImageUrl:          req.ImageUrl,
 	}
 
 	result, err := a.dbTrx.CreateNewCompanyTrx(context.Background(), arg)
@@ -52,6 +53,7 @@ func (a businessService) RegisterCompany(w http.ResponseWriter, r *http.Request)
 			InitialName:       result.InitialName,
 			Type:              result.Type,
 			ResponsiblePerson: result.ResponsiblePerson,
+			ImageUrl:          result.ImageUrl,
 			Branches:          result.Branches,
 		},
 	}

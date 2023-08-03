@@ -1,6 +1,6 @@
 -- name: InsertCompany :one
-INSERT INTO business.companies(id, user_id, name, initial_name, type, responsible_person, is_deleted)
-VALUES ($1, $2, $3, $4, $5, $6, $7)
+INSERT INTO business.companies(id, user_id, name, initial_name, type, responsible_person, image_url, is_deleted)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
 RETURNING *;
 
 -- name: UpdateCompany :one
@@ -9,6 +9,7 @@ SET name = $2,
 initial_name = $3, 
 type = $4, 
 responsible_person = $5, 
+image_url = $6, 
 updated_at = NOW()
 WHERE id = $1
 RETURNING *;
@@ -20,11 +21,11 @@ updated_at = NOW()
 WHERE id = $1;
 
 -- name: GetUserCompanies :many
-SELECT id, user_id, name, initial_name, type, responsible_person FROM business.companies
+SELECT id, user_id, name, initial_name, type, responsible_person, image_url FROM business.companies
 WHERE user_id = $1 AND is_deleted = false;
 
 -- name: GetUserCompaniesFilteredByName :many
-SELECT id, user_id, name, initial_name, type, responsible_person FROM business.companies
+SELECT id, user_id, name, initial_name, type, responsible_person, image_url FROM business.companies
 WHERE user_id = $1 AND is_deleted = false AND name LIKE $2;
 
 -- name: InsertCompanyBranch :one
