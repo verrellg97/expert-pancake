@@ -42,6 +42,7 @@ type SalesService interface {
 	GetSalesInvoiceItems(w http.ResponseWriter, r *http.Request) error
 
 	GetSalesSummaryReport(w http.ResponseWriter, r *http.Request) error
+	GetMostSoldItems(w http.ResponseWriter, r *http.Request) error
 }
 
 type POS struct {
@@ -583,4 +584,23 @@ type GetSalesSummaryReportRequest struct {
 
 type GetSalesSummaryReportResponse struct {
 	SalesSummaries []SalesSummary `json:"sales_summaries" validate:"required"`
+}
+
+type MostSoldItem struct {
+	ItemVariantId   string `json:"item_variant_id" validate:"required"`
+	ItemVariantName string `json:"item_variant_name" validate:"required"`
+	ItemCode        string `json:"item_code" validate:"required"`
+	ItemName        string `json:"item_name" validate:"required"`
+	Total           string `json:"total" validate:"required"`
+}
+
+type GetMostSoldItemsRequest struct {
+	CompanyId string `json:"company_id" validate:"required"`
+	BranchId  string `json:"branch_id"`
+	StartDate string `json:"start_date" validate:"required"`
+	EndDate   string `json:"end_date" validate:"required"`
+}
+
+type GetMostSoldItemsResponse struct {
+	MostSoldItems []MostSoldItem `json:"most_sold_items" validate:"required"`
 }

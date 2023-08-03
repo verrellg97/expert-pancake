@@ -232,6 +232,74 @@ func (q *Queries) GetDeliveryOrders(ctx context.Context, arg GetDeliveryOrdersPa
 	return items, nil
 }
 
+const getMostSoldItems = `-- name: GetMostSoldItems :many
+SELECT sales_items.item_variant_id,
+SUM(sales_items.amount) AS total
+FROM
+(SELECT 
+    b.item_variant_id AS item_variant_id,
+    b.amount*b.item_unit_value AS amount
+FROM sales.point_of_sales a
+JOIN sales.point_of_sale_items b ON a.id = b.point_of_sale_id
+WHERE a.company_id = $1::text
+AND a.branch_id LIKE $2::text
+AND a.transaction_date BETWEEN $3::date AND $4::date 
+AND a.is_deleted = FALSE
+UNION ALL
+SELECT 
+    b.primary_item_variant_id AS item_variant_id,
+    b.amount*b.primary_item_unit_value AS amount
+FROM sales.sales_invoices a
+JOIN sales.sales_invoice_items b ON a.id = b.sales_invoice_id
+WHERE a.company_id = $1::text
+AND a.branch_id LIKE $2::text
+AND a.transaction_date BETWEEN $3::date AND $4::date 
+AND a.is_deleted = FALSE
+) sales_items
+GROUP BY sales_items.item_variant_id
+ORDER BY total DESC
+`
+
+type GetMostSoldItemsParams struct {
+	CompanyID string    `db:"company_id"`
+	BranchID  string    `db:"branch_id"`
+	StartDate time.Time `db:"start_date"`
+	EndDate   time.Time `db:"end_date"`
+}
+
+type GetMostSoldItemsRow struct {
+	ItemVariantID string `db:"item_variant_id"`
+	Total         int64  `db:"total"`
+}
+
+func (q *Queries) GetMostSoldItems(ctx context.Context, arg GetMostSoldItemsParams) ([]GetMostSoldItemsRow, error) {
+	rows, err := q.db.QueryContext(ctx, getMostSoldItems,
+		arg.CompanyID,
+		arg.BranchID,
+		arg.StartDate,
+		arg.EndDate,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetMostSoldItemsRow
+	for rows.Next() {
+		var i GetMostSoldItemsRow
+		if err := rows.Scan(&i.ItemVariantID, &i.Total); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getPOS = `-- name: GetPOS :many
 SELECT 
   a.id as id,
@@ -392,7 +460,7 @@ func (q *Queries) GetPOSCustomerSetting(ctx context.Context, branchID string) ([
 }
 
 const getPOSItemsByPOSId = `-- name: GetPOSItemsByPOSId :many
-SELECT a.id, a.point_of_sale_id, a.warehouse_rack_id, a.item_variant_id, a.item_unit_id, a.item_unit_value, a.batch, a.expired_date, a.item_barcode_id, a.amount, a.price, a.is_deleted, a.created_at, a.updated_at FROM sales.point_of_sale_items a WHERE a.point_of_sale_id = $1 ORDER BY a.id
+SELECT a.id, a.point_of_sale_id, a.warehouse_rack_id, a.item_variant_id, a.item_unit_id, a.item_unit_value, a.batch, a.expired_date, a.item_barcode_id, a.amount, a.price, a.is_deleted, a.created_at, a.updated_at FROM sales.point_of_sale_items a WHERE a.point_of_sale_id = $1
 `
 
 func (q *Queries) GetPOSItemsByPOSId(ctx context.Context, pointOfSaleID string) ([]SalesPointOfSaleItem, error) {

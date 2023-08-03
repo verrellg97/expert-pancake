@@ -38,4 +38,5 @@ const (
 	GetSalesInvoiceItemsError = 800903
 
 	GetSalesSummaryReportError = 801001
+	GetMostSoldItemsError      = 801002
 )

@@ -54,7 +54,7 @@ WHERE a.company_id LIKE $1
     AND a.is_deleted = FALSE;
 
 -- name: GetPOSItemsByPOSId :many
-SELECT a.* FROM sales.point_of_sale_items a WHERE a.point_of_sale_id = $1 ORDER BY a.id;
+SELECT a.* FROM sales.point_of_sale_items a WHERE a.point_of_sale_id = $1;
 
 -- name: GetPOSUserSetting :one
 SELECT 
@@ -424,3 +424,30 @@ AND branch_id LIKE @branch_id::text
 AND transaction_date BETWEEN @start_date::date AND @end_date::date 
 AND is_deleted = FALSE
 ORDER BY transaction_date DESC;
+
+-- name: GetMostSoldItems :many
+SELECT sales_items.item_variant_id,
+SUM(sales_items.amount) AS total
+FROM
+(SELECT 
+    b.item_variant_id AS item_variant_id,
+    b.amount*b.item_unit_value AS amount
+FROM sales.point_of_sales a
+JOIN sales.point_of_sale_items b ON a.id = b.point_of_sale_id
+WHERE a.company_id = @company_id::text
+AND a.branch_id LIKE @branch_id::text
+AND a.transaction_date BETWEEN @start_date::date AND @end_date::date 
+AND a.is_deleted = FALSE
+UNION ALL
+SELECT 
+    b.primary_item_variant_id AS item_variant_id,
+    b.amount*b.primary_item_unit_value AS amount
+FROM sales.sales_invoices a
+JOIN sales.sales_invoice_items b ON a.id = b.sales_invoice_id
+WHERE a.company_id = @company_id::text
+AND a.branch_id LIKE @branch_id::text
+AND a.transaction_date BETWEEN @start_date::date AND @end_date::date 
+AND a.is_deleted = FALSE
+) sales_items
+GROUP BY sales_items.item_variant_id
+ORDER BY total DESC;
