@@ -20,6 +20,7 @@ type Querier interface {
 	GetCheckPOS(ctx context.Context, companyID string) (int64, error)
 	GetDeliveryOrderItems(ctx context.Context, deliveryOrderID string) ([]SalesDeliveryOrderItem, error)
 	GetDeliveryOrders(ctx context.Context, arg GetDeliveryOrdersParams) ([]GetDeliveryOrdersRow, error)
+	GetMonthlyGrossSales(ctx context.Context, arg GetMonthlyGrossSalesParams) ([]GetMonthlyGrossSalesRow, error)
 	GetMostSoldItems(ctx context.Context, arg GetMostSoldItemsParams) ([]GetMostSoldItemsRow, error)
 	GetPOS(ctx context.Context, arg GetPOSParams) ([]GetPOSRow, error)
 	GetPOSCOASetting(ctx context.Context, branchID string) ([]SalesPosChartOfAccountSetting, error)

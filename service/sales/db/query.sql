@@ -451,3 +451,29 @@ AND a.is_deleted = FALSE
 ) sales_items
 GROUP BY sales_items.item_variant_id
 ORDER BY total DESC;
+
+-- name: GetMonthlyGrossSales :many
+SELECT all_sales.month_number,
+all_sales.year_number,
+SUM(all_sales.total) AS total
+FROM 
+(SELECT
+EXTRACT(MONTH FROM transaction_date)::bigint AS month_number,
+EXTRACT(YEAR FROM transaction_date)::bigint AS year_number,
+total
+FROM sales.point_of_sales
+WHERE company_id = @company_id::text
+AND branch_id LIKE @branch_id::text
+AND transaction_date BETWEEN @start_date::date AND @end_date::date
+UNION ALL
+SELECT
+EXTRACT(MONTH FROM transaction_date)::bigint AS month_number,
+EXTRACT(YEAR FROM transaction_date)::bigint AS year_number,
+total
+FROM sales.sales_invoices
+WHERE company_id = @company_id::text
+AND branch_id LIKE @branch_id::text
+AND transaction_date BETWEEN @start_date::date AND @end_date::date
+) all_sales
+GROUP BY all_sales.month_number, all_sales.year_number
+ORDER BY all_sales.month_number, all_sales.year_number;

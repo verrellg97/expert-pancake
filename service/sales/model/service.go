@@ -43,6 +43,7 @@ type SalesService interface {
 
 	GetSalesSummaryReport(w http.ResponseWriter, r *http.Request) error
 	GetMostSoldItems(w http.ResponseWriter, r *http.Request) error
+	GetMonthlyGrossSales(w http.ResponseWriter, r *http.Request) error
 }
 
 type POS struct {
@@ -603,4 +604,21 @@ type GetMostSoldItemsRequest struct {
 
 type GetMostSoldItemsResponse struct {
 	MostSoldItems []MostSoldItem `json:"most_sold_items" validate:"required"`
+}
+
+type MonthlyGrossSale struct {
+	Month string `json:"month" validate:"required"`
+	Year  string `json:"year" validate:"required"`
+	Total string `json:"total" validate:"required"`
+}
+
+type GetMonthlyGrossSalesRequest struct {
+	CompanyId string `json:"company_id" validate:"required"`
+	BranchId  string `json:"branch_id"`
+	StartDate string `json:"start_date" validate:"required"`
+	EndDate   string `json:"end_date" validate:"required"`
+}
+
+type GetMonthlyGrossSalesResponse struct {
+	MonthlyGrossSales []MonthlyGrossSale `json:"monthly_gross_sales" validate:"required"`
 }
