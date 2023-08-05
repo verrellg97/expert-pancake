@@ -22,3 +22,4 @@
 20230731_alter_table_stock_movements 2023-07-31T05:57:06Z Verrell <verrell@Verrells-MacBook-Air.local> # Add table stock_movements
 20230731_alter_table_update_stocks_and_internal_stock_transfers 2023-07-31T06:39:09Z Verrell <verrell@Verrells-MacBook-Air.local> # Alter table update_stocks and internal_stock_transfers
 20230806_add_table_opening_stocks 2023-08-05T19:55:51Z Verrell <verrell@Verrells-MacBook-Air.local> # Add table opening_stocks
+20230806_alter_table_opening_stocks 2023-08-05T21:24:46Z Verrell <verrell@Verrells-MacBook-Air.local> # Add table opening_stocks
