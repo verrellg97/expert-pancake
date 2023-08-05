@@ -1052,3 +1052,36 @@ WHERE a.branch_id = $1
     AND item.id = $2
     AND a.variant_id LIKE $3
 ORDER BY a.transaction_date DESC;
+
+-- name: InsertOpeningStock :exec
+INSERT INTO inventory.opening_stocks(id,
+form_number, transaction_date, company_id, branch_id, warehouse_id, warehouse_rack_id,
+variant_id, item_unit_id, item_unit_value, amount, price,
+batch, expired_date, item_barcode_id)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15);
+
+-- name: GetOpeningStock :one
+SELECT a.id, a.form_number, a.transaction_date, a.warehouse_id, a.warehouse_rack_id,
+b.item_id, c.name AS item_name, a.variant_id, b.name AS variant_name,
+a.item_unit_id, e.name AS item_unit_name, a.item_unit_value,
+a.amount, a.price, a.batch, a.expired_date
+FROM inventory.opening_stocks a
+JOIN inventory.item_variants b ON a.variant_id = b.id
+JOIN inventory.items c ON b.item_id = c.id
+JOIN inventory.item_units d ON a.item_unit_id = d.id
+JOIN inventory.units e ON d.unit_id = e.id
+WHERE a.id = $1;
+
+-- name: GetOpeningStocks :many
+SELECT a.id, a.form_number, a.transaction_date, a.warehouse_id, a.warehouse_rack_id,
+b.item_id, c.name AS item_name, a.variant_id, b.name AS variant_name,
+a.item_unit_id, e.name AS item_unit_name, a.item_unit_value,
+a.amount, a.price, a.batch, a.expired_date
+FROM inventory.opening_stocks a
+JOIN inventory.item_variants b ON a.variant_id = b.id
+JOIN inventory.items c ON b.item_id = c.id
+JOIN inventory.item_units d ON a.item_unit_id = d.id
+JOIN inventory.units e ON d.unit_id = e.id
+WHERE a.is_deleted = false
+AND a.transaction_date BETWEEN @start_date::date AND @end_date::date
+AND a.warehouse_id = ANY(@warehouse_ids::text[]);

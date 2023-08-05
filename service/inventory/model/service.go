@@ -88,6 +88,9 @@ type InventoryService interface {
 	GetIncomingStock(w http.ResponseWriter, r *http.Request) error
 
 	GetItemHistory(w http.ResponseWriter, r *http.Request) error
+
+	AddOpeningStock(w http.ResponseWriter, r *http.Request) error
+	GetOpeningStocks(w http.ResponseWriter, r *http.Request) error
 }
 
 type Brand struct {
@@ -1095,4 +1098,54 @@ type GetItemHistoryRequest struct {
 
 type GetItemHistoryResponse struct {
 	ItemHistories []ItemHistory `json:"item_histories" validate:"required"`
+}
+
+type OpeningStock struct {
+	TransactionId     string  `json:"transaction_id" validate:"required"`
+	FormNumber        string  `json:"form_number" validate:"required"`
+	TransactionDate   string  `json:"transaction_date" validate:"required"`
+	WarehouseId       string  `json:"warehouse_id" validate:"required"`
+	WarehouseName     string  `json:"warehouse_name" validate:"required"`
+	WarehouseRackId   string  `json:"warehouse_rack_id" validate:"required"`
+	WarehouseRackName string  `json:"warehouse_rack_name" validate:"required"`
+	ItemId            string  `json:"item_id" validate:"required"`
+	ItemName          string  `json:"item_name" validate:"required"`
+	VariantId         string  `json:"variant_id" validate:"required"`
+	VariantName       string  `json:"variant_name" validate:"required"`
+	ItemUnitId        string  `json:"item_unit_id" validate:"required"`
+	ItemUnitName      string  `json:"item_unit_name" validate:"required"`
+	ItemUnitValue     string  `json:"item_unit_value" validate:"required"`
+	Amount            string  `json:"amount" validate:"required"`
+	Price             string  `json:"price" validate:"required"`
+	Batch             *string `json:"batch" validate:"required"`
+	ExpiredDate       *string `json:"expired_date" validate:"required"`
+}
+
+type AddOpeningStockRequest struct {
+	TransactionDate string `json:"transaction_date" validate:"required"`
+	CompanyId       string `json:"company_id" validate:"required"`
+	BranchId        string `json:"branch_id" validate:"required"`
+	WarehouseId     string `json:"warehouse_id" validate:"required"`
+	WarehouseRackId string `json:"warehouse_rack_id" validate:"required"`
+	VariantId       string `json:"variant_id" validate:"required"`
+	ItemUnitId      string `json:"item_unit_id" validate:"required"`
+	ItemUnitValue   string `json:"item_unit_value" validate:"required"`
+	Amount          string `json:"amount" validate:"required"`
+	Price           string `json:"price" validate:"required"`
+	Batch           string `json:"batch"`
+	ExpiredDate     string `json:"expired_date"`
+}
+
+type AddOpeningStockResponse struct {
+	OpeningStock
+}
+
+type GetOpeningStocksRequest struct {
+	BranchId  string `json:"branch_id" validate:"required"`
+	StartDate string `json:"start_date"`
+	EndDate   string `json:"end_date"`
+}
+
+type GetOpeningStocksResponse struct {
+	OpeningStocks []OpeningStock `json:"opening_stocks" validate:"required"`
 }
