@@ -84,4 +84,7 @@ const (
 	GetIncomingStockError     = 700057
 
 	GetItemHistoryError = 700058
+
+	AddNewOpeningStockError = 700059
+	GetOpeningStocksError   = 700060
 )

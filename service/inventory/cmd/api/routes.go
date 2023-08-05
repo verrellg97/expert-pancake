@@ -94,6 +94,9 @@ const (
 	GetIncomingStockPath     = "/inventory/incoming-stock"
 
 	GetItemHistoryPath = "/inventory/item-history"
+
+	AddOpeningStockPath  = "/inventory/opening-stock/add"
+	GetOpeningStocksPath = "/inventory/opening-stocks"
 )
 
 func (c *component) Routes(inventoryService model.InventoryService) http.Handler {
@@ -195,6 +198,9 @@ func (c *component) Routes(inventoryService model.InventoryService) http.Handler
 	mux.Method("POST", GetIncomingStockPath, httpHandler.New(inventoryService.GetIncomingStock))
 
 	mux.Method("POST", GetItemHistoryPath, httpHandler.New(inventoryService.GetItemHistory))
+
+	mux.Method("POST", AddOpeningStockPath, httpHandler.New(inventoryService.AddOpeningStock))
+	mux.Method("POST", GetOpeningStocksPath, httpHandler.New(inventoryService.GetOpeningStocks))
 
 	return mux
 }
