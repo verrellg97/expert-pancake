@@ -127,10 +127,14 @@ type AddMemberRequestResponse struct {
 }
 
 type MemberRequest struct {
-	Id     string `json:"id" validate:"required"`
-	UserId string `json:"user_id" validate:"required"`
-	Name   string `json:"name" validate:"required"`
-	Status string `json:"status" validate:"required"`
+	Id          string `json:"id" validate:"required"`
+	UserId      string `json:"user_id" validate:"required"`
+	ImageUrl    string `json:"image_url" validate:"required"`
+	FullName    string `json:"full_name" validate:"required"`
+	Nickname    string `json:"nickname" validate:"required"`
+	Email       string `json:"email" validate:"required"`
+	PhoneNumber string `json:"phone_number" validate:"required"`
+	Status      string `json:"status" validate:"required"`
 }
 
 type GetReceiveMemberRequestsRequest struct {
