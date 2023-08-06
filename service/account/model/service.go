@@ -22,6 +22,8 @@ type AccountService interface {
 
 	UpdateUser(w http.ResponseWriter, r *http.Request) error
 	UpdateUserPassword(w http.ResponseWriter, r *http.Request) error
+
+	GetUserInformation(w http.ResponseWriter, r *http.Request) error
 }
 
 type User struct {
@@ -149,4 +151,17 @@ type PostUserSecurityAnswerRequest struct {
 
 type PostUserSecurityAnswerResponse struct {
 	Message string `json:"message"`
+}
+
+type GetUserInformationRequest struct {
+	AccountId string `json:"account_id" validate:"required"`
+}
+
+type GetUserInformationResponse struct {
+	AccountId   string `json:"account_id"`
+	ImageUrl    string `json:"image_url"`
+	FullName    string `json:"full_name"`
+	Nickname    string `json:"nickname"`
+	Email       string `json:"email"`
+	PhoneNumber string `json:"phone_number"`
 }

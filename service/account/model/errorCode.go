@@ -12,4 +12,5 @@ const (
 	UpdateUserPasswordError       = 300009
 	GetUserSecurityQuestionError  = 300010
 	PostUserSecurityAnswerError   = 300011
+	GetUserInformationError       = 300012
 )
