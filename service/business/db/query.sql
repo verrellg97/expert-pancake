@@ -89,3 +89,8 @@ INSERT INTO business.company_member_requests(
     id, user_id,company_id
 )
 VALUES ($1, $2, $3);
+
+-- name: GetReceiveMemberRequests :many
+SELECT id, user_id, company_id, status
+FROM business.company_member_requests
+WHERE company_id = $1;

@@ -181,6 +181,47 @@ func (q *Queries) GetCompanyByName(ctx context.Context, name string) (string, er
 	return id, err
 }
 
+const getReceiveMemberRequests = `-- name: GetReceiveMemberRequests :many
+SELECT id, user_id, company_id, status
+FROM business.company_member_requests
+WHERE company_id = $1
+`
+
+type GetReceiveMemberRequestsRow struct {
+	ID        string `db:"id"`
+	UserID    string `db:"user_id"`
+	CompanyID string `db:"company_id"`
+	Status    string `db:"status"`
+}
+
+func (q *Queries) GetReceiveMemberRequests(ctx context.Context, companyID string) ([]GetReceiveMemberRequestsRow, error) {
+	rows, err := q.db.QueryContext(ctx, getReceiveMemberRequests, companyID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetReceiveMemberRequestsRow
+	for rows.Next() {
+		var i GetReceiveMemberRequestsRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.UserID,
+			&i.CompanyID,
+			&i.Status,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getUserCompanies = `-- name: GetUserCompanies :many
 SELECT id, user_id, name, initial_name, type, responsible_person, image_url FROM business.companies
 WHERE user_id = $1 AND is_deleted = false
