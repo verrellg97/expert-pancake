@@ -1,12 +1,13 @@
 package main
 
 import (
+	"net/http"
+
 	"github.com/calvinkmts/expert-pancake/engine/httpHandler"
 	"github.com/expert-pancake/service/account/model"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
-	"net/http"
 )
 
 const (
@@ -20,6 +21,7 @@ const (
 	UpdateUserPasswordPath          = "/account/user/password/update"
 	GetUserSecurityQuestionPath     = "/account/user/security-question"
 	PostUserSecurityAnswerPath      = "/account/user/security-answer/post"
+	GetUserInformationPath          = "/account/user/info"
 )
 
 func (c *component) Routes(accountService model.AccountService) http.Handler {
@@ -53,6 +55,7 @@ func (c *component) Routes(accountService model.AccountService) http.Handler {
 	mux.Method("POST", UpdateUserPasswordPath, httpHandler.New(accountService.UpdateUserPassword))
 	mux.Method("POST", GetUserSecurityQuestionPath, httpHandler.New(accountService.GetUserSecurityQuestion))
 	mux.Method("POST", PostUserSecurityAnswerPath, httpHandler.New(accountService.PostUserSecurityAnswer))
+	mux.Method("POST", GetUserInformationPath, httpHandler.New(accountService.GetUserInformation))
 
 	// mux.Get("/hello-world", httpHandler.New(accountService.HelloWorld))
 
