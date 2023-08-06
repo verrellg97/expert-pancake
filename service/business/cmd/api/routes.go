@@ -22,7 +22,8 @@ const (
 	DeleteCompanyBranchPath    = "/business/company/branch/delete"
 	GetCompanyBranchesPath     = "/business/company/branches"
 
-	AddMemberRequestPath = "/business/company/member-request/add"
+	AddMemberRequestPath         = "/business/company/member-request/add"
+	GetReceiveMemberRequestsPath = "/business/company/member-request/receive"
 )
 
 func (c *component) Routes(businessService model.BusinessService) http.Handler {
@@ -53,6 +54,7 @@ func (c *component) Routes(businessService model.BusinessService) http.Handler {
 	mux.Method("POST", GetCompanyBranchesPath, httpHandler.New(businessService.GetCompanyBranches))
 
 	mux.Method("POST", AddMemberRequestPath, httpHandler.New(businessService.AddMemberRequest))
+	mux.Method("POST", GetReceiveMemberRequestsPath, httpHandler.New(businessService.GetReceiveMemberRequests))
 
 	return mux
 }

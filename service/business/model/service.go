@@ -18,6 +18,7 @@ type BusinessService interface {
 	GetCompanyBranches(w http.ResponseWriter, r *http.Request) error
 
 	AddMemberRequest(w http.ResponseWriter, r *http.Request) error
+	GetReceiveMemberRequests(w http.ResponseWriter, r *http.Request) error
 }
 
 type Company struct {
@@ -123,4 +124,19 @@ type AddMemberRequestRequest struct {
 
 type AddMemberRequestResponse struct {
 	Message string `json:"message"`
+}
+
+type MemberRequest struct {
+	Id     string `json:"id" validate:"required"`
+	UserId string `json:"user_id" validate:"required"`
+	Name   string `json:"name" validate:"required"`
+	Status string `json:"status" validate:"required"`
+}
+
+type GetReceiveMemberRequestsRequest struct {
+	CompanyId string `json:"company_id" validate:"required"`
+}
+
+type GetReceiveMemberRequestsResponse struct {
+	MemberRequests MemberRequest `json:"member_requests" validate:"required"`
 }

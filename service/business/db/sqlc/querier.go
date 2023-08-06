@@ -16,6 +16,7 @@ type Querier interface {
 	GetCompanyBranchesByCompany(ctx context.Context, companyID string) ([]GetCompanyBranchesByCompanyRow, error)
 	GetCompanyById(ctx context.Context, id string) (GetCompanyByIdRow, error)
 	GetCompanyByName(ctx context.Context, name string) (string, error)
+	GetReceiveMemberRequests(ctx context.Context, companyID string) ([]GetReceiveMemberRequestsRow, error)
 	GetUserCompanies(ctx context.Context, userID string) ([]GetUserCompaniesRow, error)
 	GetUserCompaniesFilteredByName(ctx context.Context, arg GetUserCompaniesFilteredByNameParams) ([]GetUserCompaniesFilteredByNameRow, error)
 	GetUserCompanyBranches(ctx context.Context, arg GetUserCompanyBranchesParams) ([]GetUserCompanyBranchesRow, error)

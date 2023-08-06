@@ -18,5 +18,6 @@ const (
 	GetUserCompanyBranchesError = 400204
 	GetCompanyBranchesError     = 400205
 
-	AddMemberRequestError = 400300
+	AddMemberRequestError         = 400300
+	GetReceiveMemberRequestsError = 400301
 )
