@@ -512,9 +512,27 @@ func (q *Queries) InsertCompanyBranch(ctx context.Context, arg InsertCompanyBran
 	return i, err
 }
 
+const insertCompanyMember = `-- name: InsertCompanyMember :exec
+INSERT INTO business.company_members(
+    id, user_id, company_id
+)
+VALUES ($1, $2, $3)
+`
+
+type InsertCompanyMemberParams struct {
+	ID        string `db:"id"`
+	UserID    string `db:"user_id"`
+	CompanyID string `db:"company_id"`
+}
+
+func (q *Queries) InsertCompanyMember(ctx context.Context, arg InsertCompanyMemberParams) error {
+	_, err := q.db.ExecContext(ctx, insertCompanyMember, arg.ID, arg.UserID, arg.CompanyID)
+	return err
+}
+
 const insertMemberRequest = `-- name: InsertMemberRequest :exec
 INSERT INTO business.company_member_requests(
-    id, user_id,company_id
+    id, user_id, company_id
 )
 VALUES ($1, $2, $3)
 `
@@ -610,6 +628,33 @@ func (q *Queries) UpdateCompanyBranch(ctx context.Context, arg UpdateCompanyBran
 		&i.PhoneNumber,
 		&i.IsCentral,
 		&i.IsDeleted,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const updateMemberRequest = `-- name: UpdateMemberRequest :one
+UPDATE business.company_member_requests
+SET status = $2,
+updated_at = NOW()
+WHERE id = $1
+RETURNING id, user_id, company_id, status, created_at, updated_at
+`
+
+type UpdateMemberRequestParams struct {
+	ID     string `db:"id"`
+	Status string `db:"status"`
+}
+
+func (q *Queries) UpdateMemberRequest(ctx context.Context, arg UpdateMemberRequestParams) (BusinessCompanyMemberRequest, error) {
+	row := q.db.QueryRowContext(ctx, updateMemberRequest, arg.ID, arg.Status)
+	var i BusinessCompanyMemberRequest
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.CompanyID,
+		&i.Status,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)

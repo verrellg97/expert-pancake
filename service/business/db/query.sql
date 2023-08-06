@@ -86,7 +86,7 @@ ORDER BY is_central DESC;
 
 -- name: InsertMemberRequest :exec
 INSERT INTO business.company_member_requests(
-    id, user_id,company_id
+    id, user_id, company_id
 )
 VALUES ($1, $2, $3);
 
@@ -94,3 +94,16 @@ VALUES ($1, $2, $3);
 SELECT id, user_id, company_id, status
 FROM business.company_member_requests
 WHERE company_id = $1;
+
+-- name: InsertCompanyMember :exec
+INSERT INTO business.company_members(
+    id, user_id, company_id
+)
+VALUES ($1, $2, $3);
+
+-- name: UpdateMemberRequest :one
+UPDATE business.company_member_requests
+SET status = $2,
+updated_at = NOW()
+WHERE id = $1
+RETURNING *;
