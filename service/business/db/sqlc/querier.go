@@ -23,9 +23,11 @@ type Querier interface {
 	GetUserCompanyBranchesFilteredByName(ctx context.Context, arg GetUserCompanyBranchesFilteredByNameParams) ([]GetUserCompanyBranchesFilteredByNameRow, error)
 	InsertCompany(ctx context.Context, arg InsertCompanyParams) (BusinessCompany, error)
 	InsertCompanyBranch(ctx context.Context, arg InsertCompanyBranchParams) (BusinessCompanyBranch, error)
+	InsertCompanyMember(ctx context.Context, arg InsertCompanyMemberParams) error
 	InsertMemberRequest(ctx context.Context, arg InsertMemberRequestParams) error
 	UpdateCompany(ctx context.Context, arg UpdateCompanyParams) (BusinessCompany, error)
 	UpdateCompanyBranch(ctx context.Context, arg UpdateCompanyBranchParams) (BusinessCompanyBranch, error)
+	UpdateMemberRequest(ctx context.Context, arg UpdateMemberRequestParams) (BusinessCompanyMemberRequest, error)
 }
 
 var _ Querier = (*Queries)(nil)
