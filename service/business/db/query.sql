@@ -83,3 +83,9 @@ SELECT id, user_id, company_id, name, address, phone_number, is_central
 FROM business.company_branches
 WHERE company_id = $1
 ORDER BY is_central DESC;
+
+-- name: InsertMemberRequest :exec
+INSERT INTO business.company_member_requests(
+    id, user_id,company_id
+)
+VALUES ($1, $2, $3);
