@@ -26,7 +26,7 @@ const (
 	GetReceiveMemberRequestsPath = "/business/company/member-request/receive"
 	UpdateMemberRequestPath      = "/business/company/member-request/update"
 
-	GetCompaniesPath = "/business/companies"
+	GetPublicCompaniesPath = "/business/public-companies"
 )
 
 func (c *component) Routes(businessService model.BusinessService) http.Handler {
@@ -60,7 +60,7 @@ func (c *component) Routes(businessService model.BusinessService) http.Handler {
 	mux.Method("POST", GetReceiveMemberRequestsPath, httpHandler.New(businessService.GetReceiveMemberRequests))
 	mux.Method("POST", UpdateMemberRequestPath, httpHandler.New(businessService.UpdateMemberRequest))
 
-	mux.Method("POST", GetCompaniesPath, httpHandler.New(businessService.GetCompanies))
+	mux.Method("POST", GetPublicCompaniesPath, httpHandler.New(businessService.GetPublicCompanies))
 
 	return mux
 }

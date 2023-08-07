@@ -22,5 +22,5 @@ const (
 	GetReceiveMemberRequestsError = 400301
 	UpdateMemberRequestError      = 400302
 
-	GetCompaniesError = 400400
+	GetPublicCompaniesError = 400400
 )

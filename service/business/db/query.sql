@@ -119,7 +119,7 @@ updated_at = NOW()
 WHERE id = $1
 RETURNING *;
 
--- name: GetCompaniesFilteredByName :many
+-- name: GetPublicCompaniesFilteredByName :many
 SELECT id, user_id, name, initial_name, type, responsible_person, image_url
 FROM business.companies
-WHERE is_deleted = false AND name LIKE $1;
+WHERE user_id <> $1 AND is_deleted = false AND name LIKE $2;
