@@ -20,6 +20,8 @@ type BusinessService interface {
 	AddMemberRequest(w http.ResponseWriter, r *http.Request) error
 	GetReceiveMemberRequests(w http.ResponseWriter, r *http.Request) error
 	UpdateMemberRequest(w http.ResponseWriter, r *http.Request) error
+
+	GetCompanies(w http.ResponseWriter, r *http.Request) error
 }
 
 type Company struct {
@@ -143,7 +145,7 @@ type GetReceiveMemberRequestsRequest struct {
 }
 
 type GetReceiveMemberRequestsResponse struct {
-	MemberRequests MemberRequest `json:"member_requests" validate:"required"`
+	MemberRequests []MemberRequest `json:"member_requests" validate:"required"`
 }
 
 type UpdateMemberRequestRequest struct {
@@ -153,4 +155,12 @@ type UpdateMemberRequestRequest struct {
 
 type UpdateMemberRequestResponse struct {
 	Message string `json:"message"`
+}
+
+type GetCompaniesRequest struct {
+	Keyword string `json:"keyword"`
+}
+
+type GetCompaniesResponse struct {
+	Companies []Company `json:"companies" validate:"required"`
 }

@@ -107,3 +107,8 @@ SET status = $2,
 updated_at = NOW()
 WHERE id = $1
 RETURNING *;
+
+-- name: GetCompaniesFilteredByName :many
+SELECT id, user_id, name, initial_name, type, responsible_person, image_url
+FROM business.companies
+WHERE is_deleted = false AND name LIKE $1;

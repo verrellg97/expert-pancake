@@ -45,6 +45,53 @@ func (q *Queries) DeleteCompanyBranchesByCompanyId(ctx context.Context, companyI
 	return err
 }
 
+const getCompaniesFilteredByName = `-- name: GetCompaniesFilteredByName :many
+SELECT id, user_id, name, initial_name, type, responsible_person, image_url
+FROM business.companies
+WHERE is_deleted = false AND name LIKE $1
+`
+
+type GetCompaniesFilteredByNameRow struct {
+	ID                string `db:"id"`
+	UserID            string `db:"user_id"`
+	Name              string `db:"name"`
+	InitialName       string `db:"initial_name"`
+	Type              string `db:"type"`
+	ResponsiblePerson string `db:"responsible_person"`
+	ImageUrl          string `db:"image_url"`
+}
+
+func (q *Queries) GetCompaniesFilteredByName(ctx context.Context, name string) ([]GetCompaniesFilteredByNameRow, error) {
+	rows, err := q.db.QueryContext(ctx, getCompaniesFilteredByName, name)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetCompaniesFilteredByNameRow
+	for rows.Next() {
+		var i GetCompaniesFilteredByNameRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.UserID,
+			&i.Name,
+			&i.InitialName,
+			&i.Type,
+			&i.ResponsiblePerson,
+			&i.ImageUrl,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getCompanyBranches = `-- name: GetCompanyBranches :many
 SELECT id, user_id, company_id, name, address, phone_number, is_central 
 FROM business.company_branches
