@@ -12,6 +12,7 @@ type Querier interface {
 	DeleteCompany(ctx context.Context, id string) error
 	DeleteCompanyBranch(ctx context.Context, id string) error
 	DeleteCompanyBranchesByCompanyId(ctx context.Context, companyID string) error
+	GetCompaniesFilteredByName(ctx context.Context, name string) ([]GetCompaniesFilteredByNameRow, error)
 	GetCompanyBranches(ctx context.Context, companyID string) ([]GetCompanyBranchesRow, error)
 	GetCompanyBranchesByCompany(ctx context.Context, companyID string) ([]GetCompanyBranchesByCompanyRow, error)
 	GetCompanyById(ctx context.Context, id string) (GetCompanyByIdRow, error)

@@ -49,7 +49,9 @@ func (a businessService) GetReceiveMemberRequests(w http.ResponseWriter, r *http
 		memberRequests = append(memberRequests, memberRequest)
 	}
 
-	res := memberRequests
+	res := model.GetReceiveMemberRequestsResponse{
+		MemberRequests: memberRequests,
+	}
 	httpHandler.WriteResponse(w, res)
 
 	return nil
