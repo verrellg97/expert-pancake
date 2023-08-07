@@ -968,37 +968,39 @@ WHERE warehouse_id = ANY(@warehouse_ids::text []);
 
 -- name: GetUnderMinimumOrder :many
 SELECT 
-	c.id as item_id,
+    rp.warehouse_id,
+	c.id AS item_id,
 	c.code AS item_code,
 	c.name AS item_name,
-	bb.id as variant_id,
+	bb.id AS variant_id,
 	bb.name AS variant_name,
-    e.id as unit_id,
-	e.name as unit_name,
+    e.id AS unit_id,
+	e.name AS unit_name,
 	a.minimum_stock,
-	SUM(rp.amount) amount
+	SUM(rp.amount) AS amount
 FROM
 	inventory.stock_movements rp
 	JOIN inventory.item_variants bb ON bb.id = rp.variant_id
 	JOIN inventory.items c ON bb.item_id = c.id
     JOIN inventory.item_units d ON d.item_id = c.id AND d.value = 1
 	JOIN inventory.units e ON e.id = d.unit_id
-	JOIN inventory.item_reorders a ON a.variant_id = bb.id 
+	JOIN inventory.item_reorders a ON a.warehouse_id = rp.warehouse_id
+    AND a.variant_id = bb.id 
 WHERE rp.company_id = $1 AND rp.branch_id = $2
-GROUP BY bb.id, c.id, e.id, a.minimum_stock
+GROUP BY rp.warehouse_id, bb.id, c.id, e.id, a.minimum_stock
 HAVING SUM(rp.amount) < a.minimum_stock
 ORDER BY c.name, bb.name;
 
 -- name: GetOutgoingStock :many
 SELECT 
-	rp.transaction_code as transaction_code,
-	c.id as item_id,
+	rp.transaction_code AS transaction_code,
+	c.id AS item_id,
 	c.code AS item_code,
 	c.name AS item_name,
-	bb.id as variant_id,
+	bb.id AS variant_id,
 	bb.name AS variant_name,
-    e.id as unit_id,
-	e.name as unit_name,
+    e.id AS unit_id,
+	e.name AS unit_name,
 	-(rp.amount) AS amount
 FROM
 	inventory.stock_movements rp
@@ -1012,14 +1014,14 @@ ORDER BY rp.transaction_date DESC;
 
 -- name: GetIncomingStock :many
 SELECT 
-	rp.transaction_code as transaction_code,
-	c.id as item_id,
+	rp.transaction_code AS transaction_code,
+	c.id AS item_id,
 	c.code AS item_code,
 	c.name AS item_name,
-	bb.id as variant_id,
+	bb.id AS variant_id,
 	bb.name AS variant_name,
-    e.id as unit_id,
-	e.name as unit_name,
+    e.id AS unit_id,
+	e.name AS unit_name,
 	(rp.amount) AS amount
 FROM
 	inventory.stock_movements rp
@@ -1035,10 +1037,10 @@ ORDER BY rp.transaction_date DESC;
 SELECT a.transaction_code,
     a.transaction_date,
     item.id AS item_id,
-    item.code as item_code,
-    item.name as item_name,
-    variant.id as variant_id,
-    variant.name as variant_name,
+    item.code AS item_code,
+    item.name AS item_name,
+    variant.id AS variant_id,
+    variant.name AS variant_name,
     units.id AS unit_id,
     units.name AS unit_name,
     a.amount
