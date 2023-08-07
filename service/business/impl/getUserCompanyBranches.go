@@ -24,7 +24,7 @@ func (a businessService) GetUserCompanyBranches(w http.ResponseWriter, r *http.R
 	result, err := a.dbTrx.GetUserCompanyBranchesFilteredByName(context.Background(), db.GetUserCompanyBranchesFilteredByNameParams{
 		UserID:    req.AccountId,
 		CompanyID: req.CompanyId,
-		Name:      util.WildCardString(req.Keyword),
+		Keyword:   util.WildCardString(req.Keyword),
 	})
 	if err != nil {
 		return errors.NewServerError(model.GetUserCompanyBranchesError, err.Error())

@@ -22,8 +22,8 @@ func (a businessService) GetUserCompanies(w http.ResponseWriter, r *http.Request
 	}
 
 	result, err := a.dbTrx.GetUserCompaniesFilteredByName(context.Background(), db.GetUserCompaniesFilteredByNameParams{
-		UserID: req.AccountId,
-		Name:   util.WildCardString(req.Keyword),
+		UserID:  req.AccountId,
+		Keyword: util.WildCardString(req.Keyword),
 	})
 	if err != nil {
 		return errors.NewServerError(model.GetUserCompaniesError, err.Error())

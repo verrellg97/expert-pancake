@@ -316,13 +316,19 @@ func (q *Queries) GetUserCompanies(ctx context.Context, userID string) ([]GetUse
 }
 
 const getUserCompaniesFilteredByName = `-- name: GetUserCompaniesFilteredByName :many
-SELECT id, user_id, name, initial_name, type, responsible_person, image_url FROM business.companies
-WHERE user_id = $1 AND is_deleted = false AND name LIKE $2
+SELECT id, user_id, name, initial_name, type, responsible_person, image_url
+FROM business.companies
+WHERE user_id = $1::text AND is_deleted = false AND name LIKE $2::text
+UNION
+SELECT a.id, a.user_id, a.name, a.initial_name, a.type, a.responsible_person, a.image_url
+FROM business.companies a
+JOIN business.company_members b ON a.id = b.company_id AND b.is_deleted = false
+WHERE b.user_id = $1::text AND a.name LIKE $2::text
 `
 
 type GetUserCompaniesFilteredByNameParams struct {
-	UserID string `db:"user_id"`
-	Name   string `db:"name"`
+	UserID  string `db:"user_id"`
+	Keyword string `db:"keyword"`
 }
 
 type GetUserCompaniesFilteredByNameRow struct {
@@ -336,7 +342,7 @@ type GetUserCompaniesFilteredByNameRow struct {
 }
 
 func (q *Queries) GetUserCompaniesFilteredByName(ctx context.Context, arg GetUserCompaniesFilteredByNameParams) ([]GetUserCompaniesFilteredByNameRow, error) {
-	rows, err := q.db.QueryContext(ctx, getUserCompaniesFilteredByName, arg.UserID, arg.Name)
+	rows, err := q.db.QueryContext(ctx, getUserCompaniesFilteredByName, arg.UserID, arg.Keyword)
 	if err != nil {
 		return nil, err
 	}
@@ -421,13 +427,18 @@ func (q *Queries) GetUserCompanyBranches(ctx context.Context, arg GetUserCompany
 const getUserCompanyBranchesFilteredByName = `-- name: GetUserCompanyBranchesFilteredByName :many
 SELECT id, user_id, company_id, name, address, phone_number, is_central 
 FROM business.company_branches
-WHERE user_id = $1 AND company_id = $2 AND is_deleted = false AND name LIKE $3
+WHERE user_id = $1::text AND company_id = $2::text AND is_deleted = false AND name LIKE $3::text
+UNION
+SELECT a.id, a.user_id, a.company_id, a.name, a.address, a.phone_number, a.is_central 
+FROM business.company_branches a
+JOIN business.company_members b ON a.company_id = b.company_id AND b.is_deleted = false
+WHERE b.user_id = $1::text AND a.company_id = $2::text AND a.is_deleted = false AND a.name LIKE $3::text
 `
 
 type GetUserCompanyBranchesFilteredByNameParams struct {
 	UserID    string `db:"user_id"`
 	CompanyID string `db:"company_id"`
-	Name      string `db:"name"`
+	Keyword   string `db:"keyword"`
 }
 
 type GetUserCompanyBranchesFilteredByNameRow struct {
@@ -441,7 +452,7 @@ type GetUserCompanyBranchesFilteredByNameRow struct {
 }
 
 func (q *Queries) GetUserCompanyBranchesFilteredByName(ctx context.Context, arg GetUserCompanyBranchesFilteredByNameParams) ([]GetUserCompanyBranchesFilteredByNameRow, error) {
-	rows, err := q.db.QueryContext(ctx, getUserCompanyBranchesFilteredByName, arg.UserID, arg.CompanyID, arg.Name)
+	rows, err := q.db.QueryContext(ctx, getUserCompanyBranchesFilteredByName, arg.UserID, arg.CompanyID, arg.Keyword)
 	if err != nil {
 		return nil, err
 	}
