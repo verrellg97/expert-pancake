@@ -11,9 +11,9 @@ import (
 	"github.com/expert-pancake/service/business/util"
 )
 
-func (a businessService) GetCompanies(w http.ResponseWriter, r *http.Request) error {
+func (a businessService) GetPublicCompanies(w http.ResponseWriter, r *http.Request) error {
 
-	var req model.GetCompaniesRequest
+	var req model.GetPublicCompaniesRequest
 	httpHandler.ParseHTTPRequest(r, &req)
 
 	errMapRequest := a.validator.Validate(req)
@@ -21,9 +21,12 @@ func (a businessService) GetCompanies(w http.ResponseWriter, r *http.Request) er
 		return errors.NewClientError().WithDataMap(errMapRequest)
 	}
 
-	result, err := a.dbTrx.GetCompaniesFilteredByName(context.Background(), util.WildCardString(req.Keyword))
+	result, err := a.dbTrx.GetPublicCompaniesFilteredByName(context.Background(), db.GetPublicCompaniesFilteredByNameParams{
+		UserID: req.AccountId,
+		Name:   util.WildCardString(req.Keyword),
+	})
 	if err != nil {
-		return errors.NewServerError(model.GetCompaniesError, err.Error())
+		return errors.NewServerError(model.GetPublicCompaniesError, err.Error())
 	}
 
 	var companies = make([]model.Company, 0)
@@ -34,7 +37,7 @@ func (a businessService) GetCompanies(w http.ResponseWriter, r *http.Request) er
 			CompanyID: d.ID,
 		})
 		if err != nil {
-			return errors.NewServerError(model.GetCompaniesError, err.Error())
+			return errors.NewServerError(model.GetPublicCompaniesError, err.Error())
 		}
 
 		var company = model.Company{
@@ -50,7 +53,7 @@ func (a businessService) GetCompanies(w http.ResponseWriter, r *http.Request) er
 		companies = append(companies, company)
 	}
 
-	res := model.GetCompaniesResponse{
+	res := model.GetPublicCompaniesResponse{
 		Companies: companies,
 	}
 	httpHandler.WriteResponse(w, res)
