@@ -2,6 +2,8 @@ package impl
 
 import (
 	"context"
+	"fmt"
+	"math/rand"
 	"net/http"
 	"strconv"
 
@@ -29,6 +31,10 @@ func (a inventoryService) UpsertItemVariant(w http.ResponseWriter, r *http.Reque
 		id = uuid.NewV4().String()
 	} else {
 		id = req.ItemVariantId
+	}
+
+	if req.Barcode == "" {
+		req.Barcode = "BRG-" + fmt.Sprintf("%08d", rand.Intn(100000000))
 	}
 
 	price, _ := strconv.ParseInt(req.Price, 10, 64)

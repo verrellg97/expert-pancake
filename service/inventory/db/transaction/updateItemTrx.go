@@ -74,7 +74,7 @@ func (trx *Trx) UpdateItemTrx(ctx context.Context, arg UpdateItemTrxParams) (Upd
 		itemVariantRes, err := q.UpdateItemVariantDefault(ctx, db.UpdateItemVariantDefaultParams{
 			ItemID:   arg.ItemId,
 			ImageUrl: arg.ImageUrl,
-			Barcode:  arg.Barcode,
+			Barcode:  itemRes.Code,
 			Price:    price,
 		})
 		if err != nil {

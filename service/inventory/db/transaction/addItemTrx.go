@@ -87,7 +87,7 @@ func (trx *Trx) AddItemTrx(ctx context.Context, arg AddItemTrxParams) (AddItemTr
 			ID:        uuid.NewV4().String(),
 			ItemID:    id,
 			ImageUrl:  arg.ImageUrl,
-			Barcode:   arg.Barcode,
+			Barcode:   arg.Code,
 			Price:     price,
 			IsDefault: true,
 		})
