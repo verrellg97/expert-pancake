@@ -59,6 +59,7 @@ func (trx *Trx) UpdateUserTrx(ctx context.Context, arg UpdateUserTrxParams) (Upd
 		}
 
 		result.AccountId = userRes.ID
+		result.ImageUrl = userRes.ImageUrl
 		result.FullName = userRes.Fullname
 		result.Nickname = userRes.Nickname
 		result.Email = userRes.Email.String
