@@ -87,4 +87,5 @@ const (
 
 	AddNewOpeningStockError = 700059
 	GetOpeningStocksError   = 700060
+	UpsertNewOpeningStockError = 700061
 )

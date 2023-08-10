@@ -91,6 +91,7 @@ type InventoryService interface {
 
 	AddOpeningStock(w http.ResponseWriter, r *http.Request) error
 	GetOpeningStocks(w http.ResponseWriter, r *http.Request) error
+	UpsertOpeningStock(w http.ResponseWriter, r *http.Request) error
 }
 
 type Brand struct {
@@ -1149,4 +1150,25 @@ type GetOpeningStocksRequest struct {
 
 type GetOpeningStocksResponse struct {
 	OpeningStocks []OpeningStock `json:"opening_stocks" validate:"required"`
+}
+
+
+type UpsertOpeningStockRequest struct {
+	Id              string `json:"id"`
+	TransactionDate string `json:"transaction_date" validate:"required"`
+	CompanyId       string `json:"company_id" validate:"required"`
+	BranchId        string `json:"branch_id" validate:"required"`
+	WarehouseId     string `json:"warehouse_id" validate:"required"`
+	WarehouseRackId string `json:"warehouse_rack_id" validate:"required"`
+	VariantId       string `json:"variant_id" validate:"required"`
+	ItemUnitId      string `json:"item_unit_id" validate:"required"`
+	ItemUnitValue   string `json:"item_unit_value" validate:"required"`
+	Amount          string `json:"amount" validate:"required"`
+	Price           string `json:"price" validate:"required"`
+	Batch           string `json:"batch"`
+	ExpiredDate     string `json:"expired_date"`
+}
+
+type UpsertOpeningStockResponse struct {
+	OpeningStock
 }
