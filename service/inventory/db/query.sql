@@ -1062,6 +1062,36 @@ variant_id, item_unit_id, item_unit_value, amount, price,
 batch, expired_date, item_barcode_id)
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15);
 
+-- name: UpsertOpeningStock :exec
+INSERT INTO inventory.opening_stocks(id,
+form_number, transaction_date, company_id, branch_id, warehouse_id, warehouse_rack_id,
+variant_id, item_unit_id, item_unit_value, amount, price,
+batch, expired_date, item_barcode_id)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
+ON CONFLICT (id) DO UPDATE SET
+form_number = EXCLUDED.form_number,
+transaction_date = EXCLUDED.transaction_date,
+company_id = EXCLUDED.company_id,
+branch_id = EXCLUDED.branch_id,
+warehouse_id = EXCLUDED.warehouse_id,
+warehouse_rack_id = EXCLUDED.warehouse_rack_id,
+variant_id = EXCLUDED.variant_id,
+item_unit_id = EXCLUDED.item_unit_id,
+item_unit_value = EXCLUDED.item_unit_value,
+amount = EXCLUDED.amount,
+price = EXCLUDED.price,
+batch = EXCLUDED.batch,
+expired_date = EXCLUDED.expired_date,
+item_barcode_id = EXCLUDED.item_barcode_id;
+
+-- name: DeleteOpeningStock :exec
+UPDATE inventory.opening_stocks 
+SET 
+    is_Deleted = TRUE,
+    updated_at = NOW()
+WHERE id = $1;
+
+
 -- name: GetOpeningStock :one
 SELECT a.id, a.form_number, a.transaction_date, a.warehouse_id, a.warehouse_rack_id,
 b.item_id, c.name AS item_name, a.variant_id, b.name AS variant_name,
