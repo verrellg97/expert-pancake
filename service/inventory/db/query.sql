@@ -1087,10 +1087,9 @@ item_barcode_id = EXCLUDED.item_barcode_id;
 -- name: DeleteOpeningStock :exec
 UPDATE inventory.opening_stocks 
 SET 
-    is_Deleted = TRUE,
+    is_deleted = TRUE,
     updated_at = NOW()
 WHERE id = $1;
-
 
 -- name: GetOpeningStock :one
 SELECT a.id, a.form_number, a.transaction_date, a.warehouse_id, a.warehouse_rack_id,
