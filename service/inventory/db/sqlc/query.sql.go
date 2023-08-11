@@ -61,6 +61,19 @@ func (q *Queries) DeleteItemVariant(ctx context.Context, id string) error {
 	return err
 }
 
+const deleteOpeningStock = `-- name: DeleteOpeningStock :exec
+UPDATE inventory.opening_stocks 
+SET 
+    is_Deleted = TRUE,
+    updated_at = NOW()
+WHERE id = $1
+`
+
+func (q *Queries) DeleteOpeningStock(ctx context.Context, id string) error {
+	_, err := q.db.ExecContext(ctx, deleteOpeningStock, id)
+	return err
+}
+
 const deleteStockMovement = `-- name: DeleteStockMovement :exec
 DELETE FROM inventory.stock_movements
 WHERE transaction_id = $1 AND transaction_reference = $2

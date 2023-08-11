@@ -92,6 +92,7 @@ type InventoryService interface {
 	AddOpeningStock(w http.ResponseWriter, r *http.Request) error
 	GetOpeningStocks(w http.ResponseWriter, r *http.Request) error
 	UpsertOpeningStock(w http.ResponseWriter, r *http.Request) error
+	DeleteOpeningStock(w http.ResponseWriter, r *http.Request) error
 }
 
 type Brand struct {
@@ -1171,4 +1172,12 @@ type UpsertOpeningStockRequest struct {
 
 type UpsertOpeningStockResponse struct {
 	OpeningStock
+}
+
+type DeleteOpeningStockRequest struct {
+	Id string `json:"id" validate:"required"`
+}
+
+type DeleteOpeningStockResponse struct {
+	Message string `json:"message" validate:"required"`
 }

@@ -17,6 +17,7 @@ type InventoryTrx interface {
 	UpsertPricelistItemsTrx(ctx context.Context, arg UpsertPricelistItemsTrxParams) (UpsertPricelistItemsTrxResult, error)
 	AddOpeningStockTrx(ctx context.Context, arg AddOpeningStockTrxParams) (AddOpeningStockTrxResult, error)
 	UpsertOpeningStockTrx(ctx context.Context, arg UpsertOpeningStockTrxParams) (UpsertOpeningStockTrxResult, error)
+	DeleteOpeningStockTrx(ctx context.Context, arg DeleteOpeningStockTrxParams) (error)
 	
 }
 
