@@ -80,22 +80,18 @@ func (trx *Trx) UpsertOpeningStockTrx(ctx context.Context, arg UpsertOpeningStoc
 		}
 
 		var id = ""
+		var formNumber = ""
+
 		if arg.Id == "" {
 			id = uuid.NewV4().String()
+			formNumber = "OPS-" + fmt.Sprintf("%08d", rand.Intn(100000000))
 		} else {
 			id = arg.Id
-		}
-
-		var formNumber = ""
-		isFormNumberExist, err := q.GetOpeningStock(ctx, id)
-		if err != nil {
-			return err
-		}
-
-		if isFormNumberExist.ID != "" {
-			formNumber = isFormNumberExist.FormNumber
-		} else {
-			formNumber = "OPS-" + fmt.Sprintf("%08d", rand.Intn(100000000))
+			oldData, err := q.GetOpeningStock(ctx, id)
+			if err != nil {
+				return err
+			}
+			formNumber = oldData.FormNumber
 		}
 
 		item_unit_value, _ := strconv.ParseInt(arg.ItemUnitValue, 10, 64)
@@ -122,14 +118,13 @@ func (trx *Trx) UpsertOpeningStockTrx(ctx context.Context, arg UpsertOpeningStoc
 			return err
 		}
 
-		deleteStockMovement := q.DeleteStockMovement(ctx, db.DeleteStockMovementParams{
-			TransactionID: id,
+		err = q.DeleteStockMovement(ctx, db.DeleteStockMovementParams{
+			TransactionID:        id,
 			TransactionReference: "OPENING STOCK",
 		})
-		if deleteStockMovement != nil {
-			return deleteStockMovement
+		if err != nil {
+			return err
 		}
-
 
 		err = q.InsertStockMovement(ctx, db.InsertStockMovementParams{
 			ID:                   uuid.NewV4().String(),
