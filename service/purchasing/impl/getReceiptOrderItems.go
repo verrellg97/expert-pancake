@@ -55,6 +55,10 @@ func (a purchasingService) GetReceiptOrderItems(w http.ResponseWriter, r *http.R
 		if err != nil {
 			return errors.NewServerError(model.GetReceiptOrderItemsError, err.Error())
 		}
+		warehouseRackName := ""
+		if len(warehouseRack.Result.WarehouseRacks) > 0 {
+			warehouseRackName = warehouseRack.Result.WarehouseRacks[0].Name
+		}
 
 		var batch, expiredDate *string
 		if d.Batch.Valid {
@@ -65,27 +69,27 @@ func (a purchasingService) GetReceiptOrderItems(w http.ResponseWriter, r *http.R
 			*expiredDate = d.ExpiredDate.Time.Format(util.DateLayoutYMD)
 		}
 		var receiptOrderItem = model.ReceiptOrderItem{
-			DetailId:                 d.ID,
-			PurchaseOrderItemId:      d.PurchaseOrderItemID,
-			SalesOrderItemId:         d.SalesOrderItemID,
-			DeliveryOrderItemId:      d.DeliveryOrderItemID,
-			ReceiptOrderId:           d.ReceiptOrderID,
-			PrimaryItemVariantId:     d.PrimaryItemVariantID,
-			ItemCode:                 itemVariant.Result.ItemVariants[0].Code,
-			ItemName:                 itemVariant.Result.ItemVariants[0].Name,
-			ItemVariantName:          itemVariant.Result.ItemVariants[0].VariantName,
-			WarehouseRackId:          d.WarehouseRackID,
-			WarehouseRackName:        warehouseRack.Result.WarehouseRacks[0].Name,
-			Batch:                    batch,
-			ExpiredDate:              expiredDate,
-			ItemBarcodeId:            d.ItemBarcodeID,
-			SecondaryItemVariantId:   d.SecondaryItemVariantID,
-			PrimaryItemUnitId:        d.PrimaryItemUnitID,
-			ItemUnitName:             itemUnit.Result.ItemUnits[0].UnitName,
-			SecondaryItemUnitId:      d.SecondaryItemUnitID,
-			PrimaryItemUnitValue:     strconv.FormatInt(d.PrimaryItemUnitValue, 10),
-			SecondaryItemUnitValue:   strconv.FormatInt(d.SecondaryItemUnitValue, 10),
-			Amount:                   strconv.FormatInt(d.Amount, 10),
+			DetailId:               d.ID,
+			PurchaseOrderItemId:    d.PurchaseOrderItemID,
+			SalesOrderItemId:       d.SalesOrderItemID,
+			DeliveryOrderItemId:    d.DeliveryOrderItemID,
+			ReceiptOrderId:         d.ReceiptOrderID,
+			PrimaryItemVariantId:   d.PrimaryItemVariantID,
+			ItemCode:               itemVariant.Result.ItemVariants[0].Code,
+			ItemName:               itemVariant.Result.ItemVariants[0].Name,
+			ItemVariantName:        itemVariant.Result.ItemVariants[0].VariantName,
+			WarehouseRackId:        d.WarehouseRackID,
+			WarehouseRackName:      warehouseRackName,
+			Batch:                  batch,
+			ExpiredDate:            expiredDate,
+			ItemBarcodeId:          d.ItemBarcodeID,
+			SecondaryItemVariantId: d.SecondaryItemVariantID,
+			PrimaryItemUnitId:      d.PrimaryItemUnitID,
+			ItemUnitName:           itemUnit.Result.ItemUnits[0].UnitName,
+			SecondaryItemUnitId:    d.SecondaryItemUnitID,
+			PrimaryItemUnitValue:   strconv.FormatInt(d.PrimaryItemUnitValue, 10),
+			SecondaryItemUnitValue: strconv.FormatInt(d.SecondaryItemUnitValue, 10),
+			Amount:                 strconv.FormatInt(d.Amount, 10),
 		}
 		receiptOrderitems = append(receiptOrderitems, receiptOrderItem)
 	}
