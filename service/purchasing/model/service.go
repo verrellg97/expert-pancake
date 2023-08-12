@@ -223,7 +223,7 @@ type UpsertReceiptOrderItemsRequest struct {
 	SalesOrderItemId       string `json:"sales_order_item_id"`
 	DeliveryOrderItemId    string `json:"delivery_order_item_id"`
 	PrimaryItemVariantId   string `json:"primary_item_variant_id" validate:"required"`
-	WarehouseRackId        string `json:"warehouse_rack_id" validate:"required"`
+	WarehouseRackId        string `json:"warehouse_rack_id"`
 	Batch                  string `json:"batch"`
 	ExpiredDate            string `json:"expired_date"`
 	ItemBarcodeId          string `json:"item_barcode_id"`
