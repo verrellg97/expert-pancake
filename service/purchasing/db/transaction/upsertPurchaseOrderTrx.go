@@ -20,6 +20,7 @@ type UpsertPurchaseOrderTrxParams struct {
 	ContactBookId        string
 	SecondaryCompanyId   string
 	KonekinId            string
+	PaymentTerm          string
 	CurrencyCode         string
 	ShippingDate         time.Time
 	ReceivingWarehouseId string
@@ -34,6 +35,7 @@ type UpsertPurchaseOrderTrxResult struct {
 	ContactBookId        string
 	SecondaryCompanyId   string
 	KonekinId            string
+	PaymentTerm          string
 	CurrencyCode         string
 	ShippingDate         string
 	ReceivingWarehouseId string
@@ -55,6 +57,8 @@ func (trx *Trx) UpsertPurchaseOrderTrx(ctx context.Context, arg UpsertPurchaseOr
 			id = arg.Id
 		}
 
+		payment_term, _ := strconv.ParseInt(arg.PaymentTerm, 10, 64)
+
 		headerRes, err := q.UpsertPurchaseOrder(ctx, db.UpsertPurchaseOrderParams{
 			ID:                   id,
 			CompanyID:            arg.CompanyId,
@@ -64,6 +68,7 @@ func (trx *Trx) UpsertPurchaseOrderTrx(ctx context.Context, arg UpsertPurchaseOr
 			ContactBookID:        arg.ContactBookId,
 			SecondaryCompanyID:   arg.SecondaryCompanyId,
 			KonekinID:            arg.KonekinId,
+			PaymentTerm:          int32(payment_term),
 			CurrencyCode:         arg.CurrencyCode,
 			ShippingDate:         arg.ShippingDate,
 			ReceivingWarehouseID: arg.ReceivingWarehouseId,
@@ -81,6 +86,7 @@ func (trx *Trx) UpsertPurchaseOrderTrx(ctx context.Context, arg UpsertPurchaseOr
 		result.ContactBookId = headerRes.ContactBookID
 		result.SecondaryCompanyId = headerRes.SecondaryCompanyID
 		result.KonekinId = headerRes.KonekinID
+		result.PaymentTerm = strconv.FormatInt(int64(headerRes.PaymentTerm), 10)
 		result.CurrencyCode = headerRes.CurrencyCode
 		result.ShippingDate = headerRes.ShippingDate.Format(util.DateLayoutYMD)
 		result.ReceivingWarehouseId = headerRes.ReceivingWarehouseID

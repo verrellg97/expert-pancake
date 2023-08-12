@@ -55,31 +55,31 @@ func (a purchasingService) GetPurchaseInvoices(w http.ResponseWriter, r *http.Re
 		}
 
 		var purchaseInvoice = model.PurchaseInvoice{
-			Id:                 d.ID,
-			FormNumber: 			 d.FormNumber,
-			SalesInvoiceId:     d.SalesInvoiceID,
-			ReceiptOrderId:     d.ReceiptOrderID,
-			ReceiptOrderFormNumber: d.ReceiptOrderFormNumber,
+			Id:                          d.ID,
+			FormNumber:                  d.FormNumber,
+			SalesInvoiceId:              d.SalesInvoiceID,
+			ReceiptOrderId:              d.ReceiptOrderID,
+			ReceiptOrderFormNumber:      d.ReceiptOrderFormNumber,
 			ReceiptOrderTransactionDate: d.ReceiptOrderTransactionDate.Format(util.DateLayoutYMD),
-			WarehouseId:        d.WarehouseID,
-			WarehouseName:      warehouse.Result.Warehouses[0].Name,
-			CompanyId:          d.CompanyID,
-			BranchId:           d.BranchID,
-			TransactionDate:    d.TransactionDate.Format(util.DateLayoutYMD),
-			ContactBookId:      d.ContactBookID,
-			SecondaryCompanyId: d.SecondaryCompanyID,
-			KonekinId:          d.KonekinID,
-			SupplierName:       contactBook.Result[0].Name,
-			CurrencyCode:       d.CurrencyCode,
-			Total:              strconv.FormatInt(d.Total, 10),
-			TotalItems:         strconv.FormatInt(d.TotalItems, 10),
-			Status:             d.Status,
+			WarehouseId:                 d.WarehouseID,
+			WarehouseName:               warehouse.Result.Warehouses[0].Name,
+			CompanyId:                   d.CompanyID,
+			BranchId:                    d.BranchID,
+			TransactionDate:             d.TransactionDate.Format(util.DateLayoutYMD),
+			ContactBookId:               d.ContactBookID,
+			SecondaryCompanyId:          d.SecondaryCompanyID,
+			KonekinId:                   d.KonekinID,
+			SupplierName:                contactBook.Result[0].Name,
+			CurrencyCode:                d.CurrencyCode,
+			Total:                       strconv.FormatInt(d.Total, 10),
+			TotalItems:                  strconv.FormatInt(d.TotalItems, 10),
+			Status:                      d.Status,
 		}
 		purchaseInvoices = append(purchaseInvoices, purchaseInvoice)
 	}
 
 	res := model.GetPurchaseInvoicesResponse{
-			purchaseInvoices,
+		PurchaseInvoices: purchaseInvoices,
 	}
 	httpHandler.WriteResponse(w, res)
 

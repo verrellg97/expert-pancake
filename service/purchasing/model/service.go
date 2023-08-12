@@ -35,6 +35,7 @@ type PurchaseOrder struct {
 	ContactBookId             string `json:"contact_book_id" validate:"required"`
 	SecondaryCompanyId        string `json:"secondary_company_id" validate:"required"`
 	KonekinId                 string `json:"konekin_id" validate:"required"`
+	PaymentTerm               string `json:"payment_term" validate:"required"`
 	SupplierName              string `json:"supplier_name" validate:"required"`
 	CurrencyCode              string `json:"currency_code" validate:"required"`
 	ShippingDate              string `json:"shipping_date" validate:"required"`
@@ -54,6 +55,7 @@ type UpsertPurchaseOrderRequest struct {
 	ContactBookId        string `json:"contact_book_id" validate:"required"`
 	SecondaryCompanyId   string `json:"secondary_company_id"`
 	KonekinId            string `json:"konekin_id"`
+	PaymentTerm          string `json:"payment_term"`
 	CurrencyCode         string `json:"currency_code" validate:"required"`
 	ShippingDate         string `json:"shipping_date" validate:"required"`
 	ReceivingWarehouseId string `json:"receiving_warehouse_id" validate:"required"`

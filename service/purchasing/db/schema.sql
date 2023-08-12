@@ -10,6 +10,7 @@ CREATE TABLE "purchasing"."purchase_orders" (
   "contact_book_id" text NOT NULL,
   "secondary_company_id" text NOT NULL DEFAULT '',
   "konekin_id" text NOT NULL DEFAULT '',
+  "payment_term" int NOT NULL DEFAULT 0,
   "currency_code" text NOT NULL,
   "shipping_date" date NOT NULL DEFAULT CURRENT_DATE,
   "receiving_warehouse_id" text NOT NULL DEFAULT '',
