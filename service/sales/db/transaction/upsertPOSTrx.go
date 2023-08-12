@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	db "github.com/expert-pancake/service/sales/db/sqlc"
+	"github.com/expert-pancake/service/sales/impl/client"
 	"github.com/expert-pancake/service/sales/model"
 	"github.com/expert-pancake/service/sales/util"
 	uuid "github.com/satori/go.uuid"
@@ -80,12 +81,21 @@ func (trx *Trx) UpsertPOSTrx(ctx context.Context, arg UpsertPOSTrxParams) (Upser
 			return err
 		}
 
+		deleteStock, err := client.DeleteStockMovement(
+			client.DeleteStockMovementRequest{
+				TransactionId:        headerRes.ID,
+				TransactionReference: "POS",
+			})
+		if err != nil || deleteStock.Result.Message != "OK" {
+			return err
+		}
+
 		for _, d := range arg.POSItems {
 			itemUnitValue, _ := strconv.ParseInt(d.ItemUnitValue, 10, 64)
 			amount, _ := strconv.ParseInt(d.Amount, 10, 64)
 			price, _ := strconv.ParseInt(d.Price, 10, 64)
 
-			_, err := q.InsertPOSItem(ctx, db.InsertPOSItemParams{
+			detailRes, err := q.InsertPOSItem(ctx, db.InsertPOSItemParams{
 				ID:              uuid.NewV4().String(),
 				PointOfSaleID:   headerRes.ID,
 				WarehouseRackID: d.WarehouseRackId,
@@ -99,6 +109,25 @@ func (trx *Trx) UpsertPOSTrx(ctx context.Context, arg UpsertPOSTrxParams) (Upser
 				Price:           price,
 			})
 			if err != nil {
+				return err
+			}
+
+			insertStock, err := client.InsertStockMovement(
+				client.InsertStockMovementRequest{
+					TransactionId:        headerRes.ID,
+					CompanyId:            headerRes.CompanyID,
+					BranchId:             headerRes.BranchID,
+					TransactionCode:      formNumber,
+					TransactionDate:      arg.TransactionDate,
+					TransactionReference: "POS",
+					DetailTransactionId:  detailRes.ID,
+					WarehouseId:          arg.WarehouseId,
+					WarehouseRackId:      d.WarehouseRackId,
+					VariantId:            d.ItemVariantId,
+					ItemBarcodeId:        d.ItemBarcodeId,
+					Amount:               strconv.FormatInt(-amount*itemUnitValue, 10),
+				})
+			if err != nil || insertStock.Result.Message != "OK" {
 				return err
 			}
 
