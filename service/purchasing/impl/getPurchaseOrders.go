@@ -64,6 +64,7 @@ func (a purchasingService) GetPurchaseOrders(w http.ResponseWriter, r *http.Requ
 			SecondaryCompanyId:        d.SecondaryCompanyID,
 			SupplierName:              contactBook.Result[0].Name,
 			KonekinId:                 d.KonekinID,
+			PaymentTerm:               strconv.FormatInt(int64(d.PaymentTerm), 10),
 			CurrencyCode:              d.CurrencyCode,
 			ShippingDate:              d.ShippingDate.Format(util.DateLayoutYMD),
 			ReceivingWarehouseId:      d.ReceivingWarehouseID,

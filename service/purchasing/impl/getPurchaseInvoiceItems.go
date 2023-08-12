@@ -94,7 +94,7 @@ func (a purchasingService) GetPurchaseInvoiceItems(w http.ResponseWriter, r *htt
 	}
 
 	res := model.GetPurchaseInvoiceItemsResponse{
-		purchaseInvoiceitems,
+		PurchaseInvoiceItems: purchaseInvoiceitems,
 	}
 	httpHandler.WriteResponse(w, res)
 
