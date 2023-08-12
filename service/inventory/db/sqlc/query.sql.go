@@ -2797,7 +2797,7 @@ func (q *Queries) GetVariantWarehouseRackBatches(ctx context.Context, arg GetVar
 }
 
 const getVariantWarehouseRackStock = `-- name: GetVariantWarehouseRackStock :one
-SELECT COALESCE(SUM(a.amount), 0)::bigint AS stock
+SELECT b.id, COALESCE(SUM(a.amount), 0)::bigint AS stock
 FROM inventory.stock_movements a
 JOIN inventory.item_barcodes b ON a.item_barcode_id = b.id
 WHERE a.variant_id = $1
@@ -2821,7 +2821,12 @@ type GetVariantWarehouseRackStockParams struct {
 	IsNullExpiredDate bool           `db:"is_null_expired_date"`
 }
 
-func (q *Queries) GetVariantWarehouseRackStock(ctx context.Context, arg GetVariantWarehouseRackStockParams) (int64, error) {
+type GetVariantWarehouseRackStockRow struct {
+	ID    string `db:"id"`
+	Stock int64  `db:"stock"`
+}
+
+func (q *Queries) GetVariantWarehouseRackStock(ctx context.Context, arg GetVariantWarehouseRackStockParams) (GetVariantWarehouseRackStockRow, error) {
 	row := q.db.QueryRowContext(ctx, getVariantWarehouseRackStock,
 		arg.VariantID,
 		arg.WarehouseRackID,
@@ -2830,9 +2835,9 @@ func (q *Queries) GetVariantWarehouseRackStock(ctx context.Context, arg GetVaria
 		arg.IsNullBatch,
 		arg.IsNullExpiredDate,
 	)
-	var stock int64
-	err := row.Scan(&stock)
-	return stock, err
+	var i GetVariantWarehouseRackStockRow
+	err := row.Scan(&i.ID, &i.Stock)
+	return i, err
 }
 
 const getVariantWarehouseRacks = `-- name: GetVariantWarehouseRacks :many

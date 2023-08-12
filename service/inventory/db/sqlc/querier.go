@@ -60,7 +60,7 @@ type Querier interface {
 	GetUpdateStocks(ctx context.Context, arg GetUpdateStocksParams) ([]GetUpdateStocksRow, error)
 	GetVariantWarehouseRackBatchExpiredDates(ctx context.Context, arg GetVariantWarehouseRackBatchExpiredDatesParams) ([]sql.NullTime, error)
 	GetVariantWarehouseRackBatches(ctx context.Context, arg GetVariantWarehouseRackBatchesParams) ([]sql.NullString, error)
-	GetVariantWarehouseRackStock(ctx context.Context, arg GetVariantWarehouseRackStockParams) (int64, error)
+	GetVariantWarehouseRackStock(ctx context.Context, arg GetVariantWarehouseRackStockParams) (GetVariantWarehouseRackStockRow, error)
 	GetVariantWarehouseRacks(ctx context.Context, arg GetVariantWarehouseRacksParams) ([]string, error)
 	GetVariantWarehouseRacksByBranch(ctx context.Context, arg GetVariantWarehouseRacksByBranchParams) ([]GetVariantWarehouseRacksByBranchRow, error)
 	GetVariantWarehouseStocks(ctx context.Context, warehouseID string) ([]GetVariantWarehouseStocksRow, error)
