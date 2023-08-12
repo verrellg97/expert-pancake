@@ -549,7 +549,7 @@ AND CASE
 END;
 
 -- name: GetVariantWarehouseRackStock :one
-SELECT COALESCE(SUM(a.amount), 0)::bigint AS stock
+SELECT b.id, COALESCE(SUM(a.amount), 0)::bigint AS stock
 FROM inventory.stock_movements a
 JOIN inventory.item_barcodes b ON a.item_barcode_id = b.id
 WHERE a.variant_id = $1

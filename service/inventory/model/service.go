@@ -603,7 +603,8 @@ type GetVariantWarehouseRackStockRequest struct {
 }
 
 type GetVariantWarehouseRackStockResponse struct {
-	Stock string `json:"stock" validate:"required"`
+	ItemBarcodeId string `json:"item_barcode_id" validate:"required"`
+	Stock         string `json:"stock" validate:"required"`
 }
 
 type VariantStock struct {
@@ -1152,7 +1153,6 @@ type GetOpeningStocksRequest struct {
 type GetOpeningStocksResponse struct {
 	OpeningStocks []OpeningStock `json:"opening_stocks" validate:"required"`
 }
-
 
 type UpsertOpeningStockRequest struct {
 	Id              string `json:"id"`

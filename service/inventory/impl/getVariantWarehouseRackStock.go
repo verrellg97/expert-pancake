@@ -37,7 +37,8 @@ func (a inventoryService) GetVariantWarehouseRackStock(w http.ResponseWriter, r 
 	}
 
 	res := model.GetVariantWarehouseRackStockResponse{
-		Stock: strconv.FormatInt(result, 10),
+		ItemBarcodeId: result.ID,
+		Stock:         strconv.FormatInt(result.Stock, 10),
 	}
 	httpHandler.WriteResponse(w, res)
 
