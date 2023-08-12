@@ -18,6 +18,7 @@ type Querier interface {
 	DeleteSalesInvoiceItems(ctx context.Context, salesInvoiceID string) error
 	DeleteSalesOrderItems(ctx context.Context, salesOrderID string) error
 	GetCheckPOS(ctx context.Context, companyID string) (int64, error)
+	GetDeliveryOrder(ctx context.Context, id string) (SalesDeliveryOrder, error)
 	GetDeliveryOrderItems(ctx context.Context, deliveryOrderID string) ([]SalesDeliveryOrderItem, error)
 	GetDeliveryOrders(ctx context.Context, arg GetDeliveryOrdersParams) ([]GetDeliveryOrdersRow, error)
 	GetMonthlyGrossSales(ctx context.Context, arg GetMonthlyGrossSalesParams) ([]GetMonthlyGrossSalesRow, error)
@@ -40,10 +41,11 @@ type Querier interface {
 	InsertPOSItem(ctx context.Context, arg InsertPOSItemParams) (SalesPointOfSaleItem, error)
 	InsertSalesInvoiceItem(ctx context.Context, arg InsertSalesInvoiceItemParams) error
 	InsertSalesOrderBranch(ctx context.Context, arg InsertSalesOrderBranchParams) error
+	UpdateDeliveryOrderStatus(ctx context.Context, arg UpdateDeliveryOrderStatusParams) error
 	UpdateDeliveryOrderTotalItems(ctx context.Context, arg UpdateDeliveryOrderTotalItemsParams) error
 	UpdateSalesInvoiceAddItem(ctx context.Context, salesInvoiceID string) error
 	UpdateSalesOrderAddItem(ctx context.Context, salesOrderID string) error
-	UpdateSalesOrderItemAmountSent(ctx context.Context, arg UpdateSalesOrderItemAmountSentParams) (SalesSalesOrderItem, error)
+	UpdateSalesOrderItemAmountSent(ctx context.Context, arg UpdateSalesOrderItemAmountSentParams) error
 	UpdateSalesOrderStatus(ctx context.Context, arg UpdateSalesOrderStatusParams) error
 	UpsertDeliveryOrder(ctx context.Context, arg UpsertDeliveryOrderParams) (SalesDeliveryOrder, error)
 	UpsertDeliveryOrderItem(ctx context.Context, arg UpsertDeliveryOrderItemParams) (SalesDeliveryOrderItem, error)

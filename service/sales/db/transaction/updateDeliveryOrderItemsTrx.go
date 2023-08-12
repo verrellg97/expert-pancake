@@ -35,14 +35,6 @@ func (trx *Trx) UpdateDeliveryOrderItemsTrx(ctx context.Context, arg UpdateDeliv
 			secondaryItemUnitValue, _ := strconv.ParseInt(d.SecondaryItemUnitValue, 10, 64)
 			amount, _ := strconv.ParseInt(d.Amount, 10, 64)
 
-			// _, err = q.UpdateSalesOrderItemAmountSent(ctx, db.UpdateSalesOrderItemAmountSentParams{
-			// 	ID:         d.SalesOrderItemId,
-			// 	AmountSent: amount,
-			// })
-			// if err != nil {
-			// 	return err
-			// }
-
 			headerRes, err := q.UpsertDeliveryOrderItem(ctx, db.UpsertDeliveryOrderItemParams{
 				ID:                     uuid.NewV4().String(),
 				PurchaseOrderItemID:    d.PurchaseOrderItemId,

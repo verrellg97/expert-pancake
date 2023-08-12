@@ -17,6 +17,7 @@ type SalesTrx interface {
 	UpdateSalesOrderItemsTrx(ctx context.Context, arg UpdateSalesOrderItemsTrxParams) (UpdateSalesOrderItemsTrxResult, error)
 	UpsertDeliveryOrderTrx(ctx context.Context, arg UpsertDeliveryOrderTrxParams) (UpsertDeliveryOrderTrxResult, error)
 	UpdateDeliveryOrderItemsTrx(ctx context.Context, arg UpdateDeliveryOrderItemsTrxParams) (UpdateDeliveryOrderItemsTrxResult, error)
+	UpdateDeliveryOrderStatusTrx(ctx context.Context, arg UpdateDeliveryOrderStatusTrxParams) (UpdateDeliveryOrderStatusTrxResult, error)
 	UpsertSalesInvoiceTrx(ctx context.Context, arg UpsertSalesInvoiceTrxParams) error
 }
 
