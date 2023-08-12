@@ -100,6 +100,36 @@ func (q *Queries) GetCheckPOS(ctx context.Context, companyID string) (int64, err
 	return total_count, err
 }
 
+const getDeliveryOrder = `-- name: GetDeliveryOrder :one
+SELECT 
+    id, sales_order_id, receipt_order_id, company_id, branch_id, form_number, transaction_date, contact_book_id, secondary_company_id, konekin_id, total_items, is_deleted, status, created_at, updated_at
+FROM sales.delivery_orders
+WHERE id = $1
+`
+
+func (q *Queries) GetDeliveryOrder(ctx context.Context, id string) (SalesDeliveryOrder, error) {
+	row := q.db.QueryRowContext(ctx, getDeliveryOrder, id)
+	var i SalesDeliveryOrder
+	err := row.Scan(
+		&i.ID,
+		&i.SalesOrderID,
+		&i.ReceiptOrderID,
+		&i.CompanyID,
+		&i.BranchID,
+		&i.FormNumber,
+		&i.TransactionDate,
+		&i.ContactBookID,
+		&i.SecondaryCompanyID,
+		&i.KonekinID,
+		&i.TotalItems,
+		&i.IsDeleted,
+		&i.Status,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
 const getDeliveryOrderItems = `-- name: GetDeliveryOrderItems :many
 SELECT 
     id, purchase_order_item_id, sales_order_item_id, receipt_order_item_id, delivery_order_id, primary_item_variant_id, warehouse_rack_id, batch, expired_date, item_barcode_id, secondary_item_variant_id, primary_item_unit_id, secondary_item_unit_id, primary_item_unit_value, secondary_item_unit_value, amount, is_deleted, created_at, updated_at
@@ -1255,6 +1285,22 @@ func (q *Queries) InsertSalesOrderBranch(ctx context.Context, arg InsertSalesOrd
 	return err
 }
 
+const updateDeliveryOrderStatus = `-- name: UpdateDeliveryOrderStatus :exec
+UPDATE sales.delivery_orders
+SET status = $2
+WHERE id = $1
+`
+
+type UpdateDeliveryOrderStatusParams struct {
+	ID     string `db:"id"`
+	Status string `db:"status"`
+}
+
+func (q *Queries) UpdateDeliveryOrderStatus(ctx context.Context, arg UpdateDeliveryOrderStatusParams) error {
+	_, err := q.db.ExecContext(ctx, updateDeliveryOrderStatus, arg.ID, arg.Status)
+	return err
+}
+
 const updateDeliveryOrderTotalItems = `-- name: UpdateDeliveryOrderTotalItems :exec
 UPDATE sales.delivery_orders
 SET total_items = $2
@@ -1305,11 +1351,10 @@ func (q *Queries) UpdateSalesOrderAddItem(ctx context.Context, salesOrderID stri
 	return err
 }
 
-const updateSalesOrderItemAmountSent = `-- name: UpdateSalesOrderItemAmountSent :one
+const updateSalesOrderItemAmountSent = `-- name: UpdateSalesOrderItemAmountSent :exec
 UPDATE sales.sales_order_items
 SET amount_sent = amount_sent+$2
 WHERE id = $1
-RETURNING id, purchase_order_item_id, sales_order_id, primary_item_variant_id, secondary_item_variant_id, primary_item_unit_id, secondary_item_unit_id, primary_item_unit_value, secondary_item_unit_value, amount, amount_sent, amount_invoiced, price, is_deleted, created_at, updated_at
 `
 
 type UpdateSalesOrderItemAmountSentParams struct {
@@ -1317,28 +1362,9 @@ type UpdateSalesOrderItemAmountSentParams struct {
 	AmountSent int64  `db:"amount_sent"`
 }
 
-func (q *Queries) UpdateSalesOrderItemAmountSent(ctx context.Context, arg UpdateSalesOrderItemAmountSentParams) (SalesSalesOrderItem, error) {
-	row := q.db.QueryRowContext(ctx, updateSalesOrderItemAmountSent, arg.ID, arg.AmountSent)
-	var i SalesSalesOrderItem
-	err := row.Scan(
-		&i.ID,
-		&i.PurchaseOrderItemID,
-		&i.SalesOrderID,
-		&i.PrimaryItemVariantID,
-		&i.SecondaryItemVariantID,
-		&i.PrimaryItemUnitID,
-		&i.SecondaryItemUnitID,
-		&i.PrimaryItemUnitValue,
-		&i.SecondaryItemUnitValue,
-		&i.Amount,
-		&i.AmountSent,
-		&i.AmountInvoiced,
-		&i.Price,
-		&i.IsDeleted,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-	)
-	return i, err
+func (q *Queries) UpdateSalesOrderItemAmountSent(ctx context.Context, arg UpdateSalesOrderItemAmountSentParams) error {
+	_, err := q.db.ExecContext(ctx, updateSalesOrderItemAmountSent, arg.ID, arg.AmountSent)
+	return err
 }
 
 const updateSalesOrderStatus = `-- name: UpdateSalesOrderStatus :exec

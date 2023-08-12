@@ -318,11 +318,21 @@ UPDATE sales.delivery_orders
 SET total_items = $2
 WHERE id = $1;
 
--- name: UpdateSalesOrderItemAmountSent :one
+-- name: GetDeliveryOrder :one
+SELECT 
+    *
+FROM sales.delivery_orders
+WHERE id = $1;
+
+-- name: UpdateDeliveryOrderStatus :exec
+UPDATE sales.delivery_orders
+SET status = $2
+WHERE id = $1;
+
+-- name: UpdateSalesOrderItemAmountSent :exec
 UPDATE sales.sales_order_items
 SET amount_sent = amount_sent+$2
-WHERE id = $1
-RETURNING *;
+WHERE id = $1;
 
 -- name: InsertSalesOrderBranch :exec
 INSERT INTO sales.sales_order_branches(sales_order_id, company_branch_id)
