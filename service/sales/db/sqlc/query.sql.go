@@ -1285,6 +1285,38 @@ func (q *Queries) InsertSalesOrderBranch(ctx context.Context, arg InsertSalesOrd
 	return err
 }
 
+const updateAcceptedDeliveryOrder = `-- name: UpdateAcceptedDeliveryOrder :exec
+UPDATE sales.delivery_orders
+SET receipt_order_id = $2
+WHERE id = $1
+`
+
+type UpdateAcceptedDeliveryOrderParams struct {
+	ID             string `db:"id"`
+	ReceiptOrderID string `db:"receipt_order_id"`
+}
+
+func (q *Queries) UpdateAcceptedDeliveryOrder(ctx context.Context, arg UpdateAcceptedDeliveryOrderParams) error {
+	_, err := q.db.ExecContext(ctx, updateAcceptedDeliveryOrder, arg.ID, arg.ReceiptOrderID)
+	return err
+}
+
+const updateAcceptedDeliveryOrderItem = `-- name: UpdateAcceptedDeliveryOrderItem :exec
+UPDATE sales.delivery_order_items
+SET receipt_order_item_id = $2
+WHERE id = $1
+`
+
+type UpdateAcceptedDeliveryOrderItemParams struct {
+	ID                 string `db:"id"`
+	ReceiptOrderItemID string `db:"receipt_order_item_id"`
+}
+
+func (q *Queries) UpdateAcceptedDeliveryOrderItem(ctx context.Context, arg UpdateAcceptedDeliveryOrderItemParams) error {
+	_, err := q.db.ExecContext(ctx, updateAcceptedDeliveryOrderItem, arg.ID, arg.ReceiptOrderItemID)
+	return err
+}
+
 const updateDeliveryOrderStatus = `-- name: UpdateDeliveryOrderStatus :exec
 UPDATE sales.delivery_orders
 SET status = $2

@@ -41,6 +41,8 @@ type Querier interface {
 	InsertPOSItem(ctx context.Context, arg InsertPOSItemParams) (SalesPointOfSaleItem, error)
 	InsertSalesInvoiceItem(ctx context.Context, arg InsertSalesInvoiceItemParams) error
 	InsertSalesOrderBranch(ctx context.Context, arg InsertSalesOrderBranchParams) error
+	UpdateAcceptedDeliveryOrder(ctx context.Context, arg UpdateAcceptedDeliveryOrderParams) error
+	UpdateAcceptedDeliveryOrderItem(ctx context.Context, arg UpdateAcceptedDeliveryOrderItemParams) error
 	UpdateDeliveryOrderStatus(ctx context.Context, arg UpdateDeliveryOrderStatusParams) error
 	UpdateDeliveryOrderTotalItems(ctx context.Context, arg UpdateDeliveryOrderTotalItemsParams) error
 	UpdateSalesInvoiceAddItem(ctx context.Context, salesInvoiceID string) error

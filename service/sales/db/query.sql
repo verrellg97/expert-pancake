@@ -334,6 +334,16 @@ UPDATE sales.sales_order_items
 SET amount_sent = amount_sent+$2
 WHERE id = $1;
 
+-- name: UpdateAcceptedDeliveryOrder :exec
+UPDATE sales.delivery_orders
+SET receipt_order_id = $2
+WHERE id = $1;
+
+-- name: UpdateAcceptedDeliveryOrderItem :exec
+UPDATE sales.delivery_order_items
+SET receipt_order_item_id = $2
+WHERE id = $1;
+
 -- name: InsertSalesOrderBranch :exec
 INSERT INTO sales.sales_order_branches(sales_order_id, company_branch_id)
 VALUES ($1, $2);

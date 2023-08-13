@@ -1,6 +1,6 @@
 {
   "db": {
-    "host": "postgres",
+    "host": "103.174.67.78:6000",
     "db_name": "sales",
     "username": "postgres",
     "password": "changeme",
