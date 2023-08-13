@@ -91,7 +91,7 @@ func (trx *Trx) UpdateDeliveryOrderStatusTrx(ctx context.Context, arg UpdateDeli
 						deliveryOrderItemsReq = append(deliveryOrderItemsReq, deliveryOrderItemReq)
 					}
 
-					_, err = client.UpsertReceiptOrder(
+					receiptOrder, err := client.UpsertReceiptOrder(
 						client.UpsertReceiptOrderRequest{
 							DeliveryOrderId:                deliveryOrder.ID,
 							WarehouseId:                    salesOrder.PurchaseOrderReceivingWarehouseID,
@@ -108,15 +108,23 @@ func (trx *Trx) UpdateDeliveryOrderStatusTrx(ctx context.Context, arg UpdateDeli
 						return err
 					}
 
-					// for _, d := range salesOrderItems.Result.SalesOrderItems {
-					// 	err = q.UpdateAcceptedPurchaseOrderItem(context.Background(), db.UpdateAcceptedPurchaseOrderItemParams{
-					// 		ID:               d.PurchaseOrderItemId,
-					// 		SalesOrderItemID: d.DetailId,
-					// 	})
-					// 	if err != nil {
-					// 		return err
-					// 	}
-					// }
+					err = q.UpdateAcceptedDeliveryOrder(context.Background(), db.UpdateAcceptedDeliveryOrderParams{
+						ID:             arg.DeliveryOrderId,
+						ReceiptOrderID: receiptOrder.Result.ReceiptOrder.Id,
+					})
+					if err != nil {
+						return err
+					}
+
+					for _, d := range receiptOrder.Result.ReceiptOrderItems {
+						err = q.UpdateAcceptedDeliveryOrderItem(context.Background(), db.UpdateAcceptedDeliveryOrderItemParams{
+							ID:                 d.DeliveryOrderItemId,
+							ReceiptOrderItemID: d.DetailId,
+						})
+						if err != nil {
+							return err
+						}
+					}
 				}
 			} else {
 				result.Message = "No data updated"
