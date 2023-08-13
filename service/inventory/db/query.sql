@@ -561,7 +561,8 @@ END
 AND CASE
     WHEN @is_null_expired_date::bool THEN b.expired_date is null
     ELSE b.expired_date = $4
-END;
+END
+GROUP BY b.id;
 
 -- name: GetVariantWarehouseStocks :many
 SELECT c.id AS item_id, c.name AS item_name,

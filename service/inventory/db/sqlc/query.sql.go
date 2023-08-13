@@ -2810,6 +2810,7 @@ AND CASE
     WHEN $6::bool THEN b.expired_date is null
     ELSE b.expired_date = $4
 END
+GROUP BY b.id
 `
 
 type GetVariantWarehouseRackStockParams struct {
