@@ -15,7 +15,7 @@ type UpdateReceiptOrderItemsTrxParams struct {
 	ReceiptOrderItems []model.ReceiptOrderItemsRequest
 }
 
-func (trx *Trx) UpdateReceiptOrderItemsTrx(ctx context.Context, arg UpdateReceiptOrderItemsTrxParams) (error) {
+func (trx *Trx) UpdateReceiptOrderItemsTrx(ctx context.Context, arg UpdateReceiptOrderItemsTrxParams) error {
 	err := trx.execTx(ctx, func(q *db.Queries) error {
 		var err error
 
@@ -29,7 +29,7 @@ func (trx *Trx) UpdateReceiptOrderItemsTrx(ctx context.Context, arg UpdateReceip
 			secondaryItemUnitValue, _ := strconv.ParseInt(d.SecondaryItemUnitValue, 10, 64)
 			amount, _ := strconv.ParseInt(d.Amount, 10, 64)
 
-			err := q.InsertReceiptOrderItem(ctx, db.InsertReceiptOrderItemParams{
+			_, err := q.InsertReceiptOrderItem(ctx, db.InsertReceiptOrderItemParams{
 				ID:                     uuid.NewV4().String(),
 				ReceiptOrderID:         arg.ReceiptOrderId,
 				PurchaseOrderItemID:    d.PurchaseOrderItemId,

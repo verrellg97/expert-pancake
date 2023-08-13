@@ -561,7 +561,7 @@ func (q *Queries) InsertPurchaseInvoiceItem(ctx context.Context, arg InsertPurch
 	return err
 }
 
-const insertReceiptOrderItem = `-- name: InsertReceiptOrderItem :exec
+const insertReceiptOrderItem = `-- name: InsertReceiptOrderItem :one
 INSERT INTO purchasing.receipt_order_items(
     id, purchase_order_item_id, sales_order_item_id, delivery_order_item_id,
     receipt_order_id, primary_item_variant_id, warehouse_rack_id, batch,
@@ -570,6 +570,7 @@ INSERT INTO purchasing.receipt_order_items(
     secondary_item_unit_value, amount
 )
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)
+RETURNING id, purchase_order_item_id, sales_order_item_id, delivery_order_item_id, receipt_order_id, primary_item_variant_id, warehouse_rack_id, batch, expired_date, item_barcode_id, secondary_item_variant_id, primary_item_unit_id, secondary_item_unit_id, primary_item_unit_value, secondary_item_unit_value, amount, is_deleted, created_at, updated_at
 `
 
 type InsertReceiptOrderItemParams struct {
@@ -591,8 +592,8 @@ type InsertReceiptOrderItemParams struct {
 	Amount                 int64          `db:"amount"`
 }
 
-func (q *Queries) InsertReceiptOrderItem(ctx context.Context, arg InsertReceiptOrderItemParams) error {
-	_, err := q.db.ExecContext(ctx, insertReceiptOrderItem,
+func (q *Queries) InsertReceiptOrderItem(ctx context.Context, arg InsertReceiptOrderItemParams) (PurchasingReceiptOrderItem, error) {
+	row := q.db.QueryRowContext(ctx, insertReceiptOrderItem,
 		arg.ID,
 		arg.PurchaseOrderItemID,
 		arg.SalesOrderItemID,
@@ -610,7 +611,29 @@ func (q *Queries) InsertReceiptOrderItem(ctx context.Context, arg InsertReceiptO
 		arg.SecondaryItemUnitValue,
 		arg.Amount,
 	)
-	return err
+	var i PurchasingReceiptOrderItem
+	err := row.Scan(
+		&i.ID,
+		&i.PurchaseOrderItemID,
+		&i.SalesOrderItemID,
+		&i.DeliveryOrderItemID,
+		&i.ReceiptOrderID,
+		&i.PrimaryItemVariantID,
+		&i.WarehouseRackID,
+		&i.Batch,
+		&i.ExpiredDate,
+		&i.ItemBarcodeID,
+		&i.SecondaryItemVariantID,
+		&i.PrimaryItemUnitID,
+		&i.SecondaryItemUnitID,
+		&i.PrimaryItemUnitValue,
+		&i.SecondaryItemUnitValue,
+		&i.Amount,
+		&i.IsDeleted,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
 }
 
 const updateAcceptedPurchaseOrder = `-- name: UpdateAcceptedPurchaseOrder :exec

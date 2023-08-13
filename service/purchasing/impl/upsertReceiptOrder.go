@@ -19,7 +19,7 @@ func (a purchasingService) UpsertReceiptOrder(w http.ResponseWriter, r *http.Req
 	if errMapRequest != nil {
 		return errors.NewClientError().WithDataMap(errMapRequest)
 	}
-	
+
 	arg := db.UpsertReceiptOrderTrxParams{
 		Id:                 req.Id,
 		DeliveryOrderId:    req.DeliveryOrderId,
@@ -33,14 +33,28 @@ func (a purchasingService) UpsertReceiptOrder(w http.ResponseWriter, r *http.Req
 		TotalItems:         req.TotalItems,
 		ReceiptOrderItems:  req.UpsertReceiptOrderItemsRequest,
 	}
-	
-	err := a.dbTrx.UpsertReceiptOrderTrx(context.Background(), arg)
+
+	result, err := a.dbTrx.UpsertReceiptOrderTrx(context.Background(), arg)
 	if err != nil {
 		return errors.NewServerError(model.UpsertReceiptOrderError, err.Error())
 	}
 
 	res := model.UpsertReceiptOrderResponse{
-		Message: `OK`,
+		ReceiptOrder: model.ReceiptOrder{
+			Id:                 result.TransactionId,
+			DeliveryOrderId:    result.DeliveryOrderId,
+			WarehouseId:        result.WarehouseId,
+			CompanyId:          result.CompanyId,
+			BranchId:           result.BranchId,
+			FormNumber:         result.FormNumber,
+			TransactionDate:    result.TransactionDate,
+			ContactBookId:      result.ContactBookId,
+			SecondaryCompanyId: result.SecondaryCompanyId,
+			KonekinId:          result.KonekinId,
+			TotalItems:         result.TotalItems,
+			Status:             result.Status,
+		},
+		ReceiptOrderItems: result.ReceiptOrderItems,
 	}
 
 	httpHandler.WriteResponse(w, res)
