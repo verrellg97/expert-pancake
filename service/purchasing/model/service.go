@@ -262,7 +262,7 @@ type GetReceiptOrdersRequest struct {
 }
 
 type GetReceiptOrdersResponse struct {
-	ReceiptOrders []ReceiptOrder
+	ReceiptOrders []ReceiptOrder `json:"receipt_orders" validate:"required"`
 }
 
 type ReceiptOrderItemsRequest struct {
@@ -296,7 +296,7 @@ type GetReceiptOrderItemsRequest struct {
 }
 
 type GetReceiptOrderItemsResponse struct {
-	ReceiptOrderItems []ReceiptOrderItem
+	ReceiptOrderItems []ReceiptOrderItem `json:"receipt_order_items" validate:"required"`
 }
 
 type DeleteReceiptOrderRequest struct {
