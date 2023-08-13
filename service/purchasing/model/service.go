@@ -234,6 +234,7 @@ type UpsertReceiptOrderItemsRequest struct {
 	SecondaryItemUnitValue string `json:"secondary_item_unit_value"`
 	Amount                 string `json:"amount" validate:"required"`
 }
+
 type UpsertReceiptOrderRequest struct {
 	Id                             string                           `json:"id"`
 	DeliveryOrderId                string                           `json:"delivery_order_id"`
@@ -249,7 +250,8 @@ type UpsertReceiptOrderRequest struct {
 }
 
 type UpsertReceiptOrderResponse struct {
-	Message string `json:"message" validate:"required"`
+	ReceiptOrder      ReceiptOrder       `json:"receipt_order" validate:"required"`
+	ReceiptOrderItems []ReceiptOrderItem `json:"items" validate:"required"`
 }
 
 type GetReceiptOrdersRequest struct {

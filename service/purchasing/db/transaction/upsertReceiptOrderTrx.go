@@ -26,7 +26,24 @@ type UpsertReceiptOrderTrxParams struct {
 	ReceiptOrderItems  []model.UpsertReceiptOrderItemsRequest
 }
 
-func (trx *Trx) UpsertReceiptOrderTrx(ctx context.Context, arg UpsertReceiptOrderTrxParams) error {
+type UpsertReceiptOrderTrxResult struct {
+	TransactionId      string
+	DeliveryOrderId    string
+	WarehouseId        string
+	CompanyId          string
+	BranchId           string
+	FormNumber         string
+	TransactionDate    string
+	ContactBookId      string
+	SecondaryCompanyId string
+	KonekinId          string
+	TotalItems         string
+	Status             string
+	ReceiptOrderItems  []model.ReceiptOrderItem
+}
+
+func (trx *Trx) UpsertReceiptOrderTrx(ctx context.Context, arg UpsertReceiptOrderTrxParams) (UpsertReceiptOrderTrxResult, error) {
+	var result UpsertReceiptOrderTrxResult
 
 	err := trx.execTx(ctx, func(q *db.Queries) error {
 		var err error
@@ -65,7 +82,7 @@ func (trx *Trx) UpsertReceiptOrderTrx(ctx context.Context, arg UpsertReceiptOrde
 			secondaryItemUnitValue, _ := strconv.ParseInt(d.SecondaryItemUnitValue, 10, 64)
 			amount, _ := strconv.ParseInt(d.Amount, 10, 64)
 
-			err := q.InsertReceiptOrderItem(ctx, db.InsertReceiptOrderItemParams{
+			detailRes, err := q.InsertReceiptOrderItem(ctx, db.InsertReceiptOrderItemParams{
 				ID:                     uuid.NewV4().String(),
 				PurchaseOrderItemID:    d.PurchaseOrderItemId,
 				SalesOrderItemID:       d.SalesOrderItemId,
@@ -86,10 +103,52 @@ func (trx *Trx) UpsertReceiptOrderTrx(ctx context.Context, arg UpsertReceiptOrde
 			if err != nil {
 				return err
 			}
+
+			var batch, expired_date *string
+			if detailRes.Batch.Valid {
+				batch = &detailRes.Batch.String
+			}
+			if detailRes.ExpiredDate.Valid {
+				expired_date = new(string)
+				*expired_date = detailRes.ExpiredDate.Time.Format(util.DateLayoutYMD)
+			}
+
+			var receiptOrderItem = model.ReceiptOrderItem{
+				DetailId:               detailRes.ID,
+				PurchaseOrderItemId:    detailRes.PurchaseOrderItemID,
+				SalesOrderItemId:       detailRes.SalesOrderItemID,
+				DeliveryOrderItemId:    detailRes.DeliveryOrderItemID,
+				ReceiptOrderId:         headerRes.ID,
+				PrimaryItemVariantId:   detailRes.PrimaryItemVariantID,
+				WarehouseRackId:        detailRes.WarehouseRackID,
+				Batch:                  batch,
+				ExpiredDate:            expired_date,
+				ItemBarcodeId:          detailRes.ItemBarcodeID,
+				SecondaryItemVariantId: detailRes.SecondaryItemVariantID,
+				PrimaryItemUnitId:      detailRes.PrimaryItemUnitID,
+				SecondaryItemUnitId:    detailRes.SecondaryItemUnitID,
+				PrimaryItemUnitValue:   d.PrimaryItemUnitValue,
+				SecondaryItemUnitValue: d.SecondaryItemUnitValue,
+				Amount:                 d.Amount,
+			}
+			result.ReceiptOrderItems = append(result.ReceiptOrderItems, receiptOrderItem)
 		}
+
+		result.TransactionId = headerRes.ID
+		result.DeliveryOrderId = headerRes.DeliveryOrderID
+		result.WarehouseId = headerRes.WarehouseID
+		result.CompanyId = headerRes.CompanyID
+		result.BranchId = headerRes.BranchID
+		result.FormNumber = headerRes.FormNumber
+		result.TransactionDate = headerRes.TransactionDate.Format(util.DateLayoutYMD)
+		result.ContactBookId = headerRes.ContactBookID
+		result.SecondaryCompanyId = headerRes.SecondaryCompanyID
+		result.KonekinId = headerRes.KonekinID
+		result.TotalItems = arg.TotalItems
+		result.Status = headerRes.Status
 
 		return err
 	})
 
-	return err
+	return result, err
 }

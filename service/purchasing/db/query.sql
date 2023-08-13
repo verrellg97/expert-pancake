@@ -150,7 +150,7 @@ WHERE company_id = $1
 DELETE FROM purchasing.receipt_order_items
 WHERE receipt_order_id = $1;
 
--- name: InsertReceiptOrderItem :exec
+-- name: InsertReceiptOrderItem :one
 INSERT INTO purchasing.receipt_order_items(
     id, purchase_order_item_id, sales_order_item_id, delivery_order_item_id,
     receipt_order_id, primary_item_variant_id, warehouse_rack_id, batch,
@@ -158,7 +158,8 @@ INSERT INTO purchasing.receipt_order_items(
     primary_item_unit_id, secondary_item_unit_id, primary_item_unit_value,
     secondary_item_unit_value, amount
 )
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16);
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)
+RETURNING *;
 
 -- name: GetReceiptOrderItems :many
 SELECT 

@@ -23,7 +23,7 @@ type Querier interface {
 	GetReceiptOrderItems(ctx context.Context, receiptOrderID string) ([]PurchasingReceiptOrderItem, error)
 	GetReceiptOrders(ctx context.Context, arg GetReceiptOrdersParams) ([]PurchasingReceiptOrder, error)
 	InsertPurchaseInvoiceItem(ctx context.Context, arg InsertPurchaseInvoiceItemParams) error
-	InsertReceiptOrderItem(ctx context.Context, arg InsertReceiptOrderItemParams) error
+	InsertReceiptOrderItem(ctx context.Context, arg InsertReceiptOrderItemParams) (PurchasingReceiptOrderItem, error)
 	UpdateAcceptedPurchaseOrder(ctx context.Context, arg UpdateAcceptedPurchaseOrderParams) error
 	UpdateAcceptedPurchaseOrderItem(ctx context.Context, arg UpdateAcceptedPurchaseOrderItemParams) error
 	UpdatePurchaseOrderAddItem(ctx context.Context, purchaseOrderID string) error
