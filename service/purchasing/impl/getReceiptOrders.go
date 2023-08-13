@@ -53,12 +53,16 @@ func (a purchasingService) GetReceiptOrders(w http.ResponseWriter, r *http.Reque
 		if err != nil {
 			return errors.NewServerError(model.GetReceiptOrdersError, err.Error())
 		}
+		warehouseName := ""
+		if len(warehouse.Result.Warehouses) > 0 {
+			warehouseName = warehouse.Result.Warehouses[0].Name
+		}
 
 		var receiptOrder = model.ReceiptOrder{
 			Id:                 d.ID,
 			DeliveryOrderId:    d.DeliveryOrderID,
 			WarehouseId:        d.WarehouseID,
-			WarehouseName:      warehouse.Result.Warehouses[0].Name,
+			WarehouseName:      warehouseName,
 			CompanyId:          d.CompanyID,
 			BranchId:           d.BranchID,
 			FormNumber:         d.FormNumber,
