@@ -238,7 +238,7 @@ type UpsertReceiptOrderItemsRequest struct {
 type UpsertReceiptOrderRequest struct {
 	Id                             string                           `json:"id"`
 	DeliveryOrderId                string                           `json:"delivery_order_id"`
-	WarehouseId                    string                           `json:"warehouse_id" validate:"required"`
+	WarehouseId                    string                           `json:"warehouse_id"`
 	CompanyId                      string                           `json:"company_id" validate:"required"`
 	BranchId                       string                           `json:"branch_id" validate:"required"`
 	TransactionDate                string                           `json:"transaction_date" validate:"required"`
