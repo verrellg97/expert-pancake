@@ -34,6 +34,7 @@ func (a salesService) UpsertDeliveryOrder(w http.ResponseWriter, r *http.Request
 		Id:                 id,
 		CompanyId:          req.CompanyId,
 		BranchId:           req.BranchId,
+		WarehouseId:        req.WarehouseId,
 		TransactionDate:    util.StringToDate(req.TransactionDate),
 		ContactBookId:      req.ContactBookId,
 		SecondaryCompanyId: req.SecondaryCompanyId,

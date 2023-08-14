@@ -373,6 +373,8 @@ type DeliveryOrder struct {
 	TransactionId        string `json:"transaction_id" validate:"required"`
 	CompanyId            string `json:"company_id" validate:"required"`
 	BranchId             string `json:"branch_id" validate:"required"`
+	WarehouseId          string `json:"warehouse_id" validate:"required"`
+	WarehouseName        string `json:"warehouse_name" validate:"required"`
 	FormNumber           string `json:"form_number" validate:"required"`
 	TransactionDate      string `json:"transaction_date" validate:"required"`
 	ContactBookId        string `json:"contact_book_id" validate:"required"`
@@ -389,6 +391,7 @@ type UpsertDeliveryOrderRequest struct {
 	Id                 string                      `json:"id"`
 	CompanyId          string                      `json:"company_id" validate:"required"`
 	BranchId           string                      `json:"branch_id" validate:"required"`
+	WarehouseId        string                      `json:"warehouse_id" validate:"required"`
 	TransactionDate    string                      `json:"transaction_date" validate:"required"`
 	ContactBookId      string                      `json:"contact_book_id" validate:"required"`
 	SecondaryCompanyId string                      `json:"secondary_company_id"`

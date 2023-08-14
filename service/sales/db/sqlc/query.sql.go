@@ -102,7 +102,7 @@ func (q *Queries) GetCheckPOS(ctx context.Context, companyID string) (int64, err
 
 const getDeliveryOrder = `-- name: GetDeliveryOrder :one
 SELECT 
-    id, sales_order_id, receipt_order_id, company_id, branch_id, form_number, transaction_date, contact_book_id, secondary_company_id, konekin_id, total_items, is_deleted, status, created_at, updated_at
+    id, sales_order_id, receipt_order_id, company_id, branch_id, warehouse_id, form_number, transaction_date, contact_book_id, secondary_company_id, konekin_id, total_items, is_deleted, status, created_at, updated_at
 FROM sales.delivery_orders
 WHERE id = $1
 `
@@ -116,6 +116,7 @@ func (q *Queries) GetDeliveryOrder(ctx context.Context, id string) (SalesDeliver
 		&i.ReceiptOrderID,
 		&i.CompanyID,
 		&i.BranchID,
+		&i.WarehouseID,
 		&i.FormNumber,
 		&i.TransactionDate,
 		&i.ContactBookID,
@@ -182,7 +183,7 @@ func (q *Queries) GetDeliveryOrderItems(ctx context.Context, deliveryOrderID str
 
 const getDeliveryOrders = `-- name: GetDeliveryOrders :many
 SELECT 
-    a.id, a.sales_order_id, a.receipt_order_id, a.company_id, a.branch_id, a.form_number, a.transaction_date, a.contact_book_id, a.secondary_company_id, a.konekin_id, a.total_items, a.is_deleted, a.status, a.created_at, a.updated_at, b.form_number AS sales_order_form_number
+    a.id, a.sales_order_id, a.receipt_order_id, a.company_id, a.branch_id, a.warehouse_id, a.form_number, a.transaction_date, a.contact_book_id, a.secondary_company_id, a.konekin_id, a.total_items, a.is_deleted, a.status, a.created_at, a.updated_at, b.form_number AS sales_order_form_number
 FROM sales.delivery_orders a
 JOIN sales.sales_orders b ON a.sales_order_id = b.id
 WHERE a.company_id = $1
@@ -204,6 +205,7 @@ type GetDeliveryOrdersRow struct {
 	ReceiptOrderID       string       `db:"receipt_order_id"`
 	CompanyID            string       `db:"company_id"`
 	BranchID             string       `db:"branch_id"`
+	WarehouseID          string       `db:"warehouse_id"`
 	FormNumber           string       `db:"form_number"`
 	TransactionDate      time.Time    `db:"transaction_date"`
 	ContactBookID        string       `db:"contact_book_id"`
@@ -237,6 +239,7 @@ func (q *Queries) GetDeliveryOrders(ctx context.Context, arg GetDeliveryOrdersPa
 			&i.ReceiptOrderID,
 			&i.CompanyID,
 			&i.BranchID,
+			&i.WarehouseID,
 			&i.FormNumber,
 			&i.TransactionDate,
 			&i.ContactBookID,
@@ -1418,16 +1421,17 @@ func (q *Queries) UpdateSalesOrderStatus(ctx context.Context, arg UpdateSalesOrd
 
 const upsertDeliveryOrder = `-- name: UpsertDeliveryOrder :one
 INSERT INTO sales.delivery_orders(
-    id, sales_order_id, company_id, branch_id,
+    id, sales_order_id, company_id, branch_id, warehouse_id,
     form_number, transaction_date,
     contact_book_id, secondary_company_id, konekin_id,
     total_items
 )
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) ON CONFLICT (id) DO
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) ON CONFLICT (id) DO
 UPDATE
 SET sales_order_id = EXCLUDED.sales_order_id,
     company_id = EXCLUDED.company_id,
     branch_id = EXCLUDED.branch_id,
+    warehouse_id = EXCLUDED.warehouse_id,
     form_number = EXCLUDED.form_number,
     transaction_date = EXCLUDED.transaction_date,
     contact_book_id = EXCLUDED.contact_book_id,
@@ -1435,7 +1439,7 @@ SET sales_order_id = EXCLUDED.sales_order_id,
     konekin_id = EXCLUDED.konekin_id,
     total_items = EXCLUDED.total_items,
     updated_at = NOW()
-RETURNING id, sales_order_id, receipt_order_id, company_id, branch_id, form_number, transaction_date, contact_book_id, secondary_company_id, konekin_id, total_items, is_deleted, status, created_at, updated_at
+RETURNING id, sales_order_id, receipt_order_id, company_id, branch_id, warehouse_id, form_number, transaction_date, contact_book_id, secondary_company_id, konekin_id, total_items, is_deleted, status, created_at, updated_at
 `
 
 type UpsertDeliveryOrderParams struct {
@@ -1443,6 +1447,7 @@ type UpsertDeliveryOrderParams struct {
 	SalesOrderID       string    `db:"sales_order_id"`
 	CompanyID          string    `db:"company_id"`
 	BranchID           string    `db:"branch_id"`
+	WarehouseID        string    `db:"warehouse_id"`
 	FormNumber         string    `db:"form_number"`
 	TransactionDate    time.Time `db:"transaction_date"`
 	ContactBookID      string    `db:"contact_book_id"`
@@ -1457,6 +1462,7 @@ func (q *Queries) UpsertDeliveryOrder(ctx context.Context, arg UpsertDeliveryOrd
 		arg.SalesOrderID,
 		arg.CompanyID,
 		arg.BranchID,
+		arg.WarehouseID,
 		arg.FormNumber,
 		arg.TransactionDate,
 		arg.ContactBookID,
@@ -1471,6 +1477,7 @@ func (q *Queries) UpsertDeliveryOrder(ctx context.Context, arg UpsertDeliveryOrd
 		&i.ReceiptOrderID,
 		&i.CompanyID,
 		&i.BranchID,
+		&i.WarehouseID,
 		&i.FormNumber,
 		&i.TransactionDate,
 		&i.ContactBookID,

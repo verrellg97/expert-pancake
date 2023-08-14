@@ -49,10 +49,22 @@ func (a salesService) GetDeliveryOrders(w http.ResponseWriter, r *http.Request) 
 			customerName = contactBook.Result[0].Name
 		}
 
+		argWarehouse := client.GetWarehousesRequest{
+			Id:       d.WarehouseID,
+			BranchId: "1",
+		}
+		warehouseName := ""
+		warehouse, err := client.GetWarehouses(argWarehouse)
+		if len(warehouse.Result.Warehouses) > 0 {
+			warehouseName = warehouse.Result.Warehouses[0].Name
+		}
+
 		var deliveryOrder = model.DeliveryOrder{
 			TransactionId:        d.ID,
 			CompanyId:            d.CompanyID,
 			BranchId:             d.BranchID,
+			WarehouseId:          "",
+			WarehouseName:        warehouseName,
 			FormNumber:           d.FormNumber,
 			TransactionDate:      d.TransactionDate.Format(util.DateLayoutYMD),
 			ContactBookId:        d.ContactBookID,

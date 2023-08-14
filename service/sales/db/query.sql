@@ -238,16 +238,17 @@ WHERE id = $1;
 
 -- name: UpsertDeliveryOrder :one
 INSERT INTO sales.delivery_orders(
-    id, sales_order_id, company_id, branch_id,
+    id, sales_order_id, company_id, branch_id, warehouse_id,
     form_number, transaction_date,
     contact_book_id, secondary_company_id, konekin_id,
     total_items
 )
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) ON CONFLICT (id) DO
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) ON CONFLICT (id) DO
 UPDATE
 SET sales_order_id = EXCLUDED.sales_order_id,
     company_id = EXCLUDED.company_id,
     branch_id = EXCLUDED.branch_id,
+    warehouse_id = EXCLUDED.warehouse_id,
     form_number = EXCLUDED.form_number,
     transaction_date = EXCLUDED.transaction_date,
     contact_book_id = EXCLUDED.contact_book_id,

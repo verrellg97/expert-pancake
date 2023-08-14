@@ -17,6 +17,7 @@ type UpsertDeliveryOrderTrxParams struct {
 	Id                 string
 	CompanyId          string
 	BranchId           string
+	WarehouseId        string
 	TransactionDate    time.Time
 	ContactBookId      string
 	SecondaryCompanyId string
@@ -46,6 +47,7 @@ func (trx *Trx) UpsertDeliveryOrderTrx(ctx context.Context, arg UpsertDeliveryOr
 			ID:                 id,
 			CompanyID:          arg.CompanyId,
 			BranchID:           arg.BranchId,
+			WarehouseID:        arg.WarehouseId,
 			FormNumber:         "DO-" + fmt.Sprintf("%08d", rand.Intn(100000000)),
 			TransactionDate:    arg.TransactionDate,
 			ContactBookID:      arg.ContactBookId,

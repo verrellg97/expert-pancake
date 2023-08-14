@@ -15,6 +15,7 @@ type SalesDeliveryOrder struct {
 	ReceiptOrderID     string       `db:"receipt_order_id"`
 	CompanyID          string       `db:"company_id"`
 	BranchID           string       `db:"branch_id"`
+	WarehouseID        string       `db:"warehouse_id"`
 	FormNumber         string       `db:"form_number"`
 	TransactionDate    time.Time    `db:"transaction_date"`
 	ContactBookID      string       `db:"contact_book_id"`
