@@ -10,3 +10,4 @@
 20230616_add_table_sales_order_branches 2023-06-15T18:36:46Z Verrell <verrell@Verrells-MacBook-Air.local> # Add table sales_order_branches
 20230702_add_table_sales_invoices 2023-07-02T12:18:35Z Verrell <verrell@Verrells-MacBook-Air.local> # Add table sales_invoices
 20230813_alter_table_sales_orders 2023-08-12T20:33:40Z Verrell <verrell@Verrells-MacBook-Air.local> # Add table sales_orders
+20230815_alter_table_delivery_orders 2023-08-14T21:22:22Z Verrell <verrell@Verrells-MacBook-Air.local> # Add table delivery_orders
