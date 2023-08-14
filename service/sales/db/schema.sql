@@ -131,6 +131,7 @@ CREATE TABLE "sales"."delivery_orders" (
   "receipt_order_id" text NOT NULL DEFAULT '',
   "company_id" text NOT NULL,
   "branch_id" text NOT NULL,
+  "warehouse_id" text NOT NULL,
   "form_number" text NOT NULL,
   "transaction_date" date NOT NULL DEFAULT CURRENT_DATE,
   "contact_book_id" text NOT NULL,

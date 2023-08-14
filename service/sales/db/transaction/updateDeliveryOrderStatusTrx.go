@@ -64,7 +64,36 @@ func (trx *Trx) UpdateDeliveryOrderStatusTrx(ctx context.Context, arg UpdateDeli
 
 					var deliveryOrderItemsReq = make([]client.UpsertReceiptOrderItemsRequest, 0)
 
+					deleteStock, err := client.DeleteStockMovement(
+						client.DeleteStockMovementRequest{
+							TransactionId:        deliveryOrder.ID,
+							TransactionReference: "DO",
+						})
+					if err != nil || deleteStock.Result.Message != "OK" {
+						return err
+					}
+
 					for _, d := range deliveryOrderItems {
+
+						insertStock, err := client.InsertStockMovement(
+							client.InsertStockMovementRequest{
+								TransactionId:        arg.DeliveryOrderId,
+								CompanyId:            deliveryOrder.CompanyID,
+								BranchId:             deliveryOrder.BranchID,
+								TransactionCode:      deliveryOrder.FormNumber,
+								TransactionDate:      deliveryOrder.TransactionDate.Format(util.DateLayoutYMD),
+								TransactionReference: "DO",
+								DetailTransactionId:  d.ID,
+								WarehouseId:          deliveryOrder.WarehouseID,
+								WarehouseRackId:      d.WarehouseRackID,
+								VariantId:            d.PrimaryItemVariantID,
+								ItemBarcodeId:        d.ItemBarcodeID,
+								Amount:               strconv.FormatInt(-d.Amount*d.PrimaryItemUnitValue, 10),
+							})
+						if err != nil || insertStock.Result.Message != "OK" {
+							return err
+						}
+
 						var deliveryOrderItemReq = client.UpsertReceiptOrderItemsRequest{
 							PurchaseOrderItemId:    d.PurchaseOrderItemID,
 							SalesOrderItemId:       d.SalesOrderItemID,
@@ -81,6 +110,7 @@ func (trx *Trx) UpdateDeliveryOrderStatusTrx(ctx context.Context, arg UpdateDeli
 							SecondaryItemUnitValue: strconv.FormatInt(d.PrimaryItemUnitValue, 10),
 							Amount:                 strconv.FormatInt(d.Amount, 10),
 						}
+
 						err = q.UpdateSalesOrderItemAmountSent(context.Background(), db.UpdateSalesOrderItemAmountSentParams{
 							ID:         d.SalesOrderItemID,
 							AmountSent: d.Amount,
@@ -88,6 +118,7 @@ func (trx *Trx) UpdateDeliveryOrderStatusTrx(ctx context.Context, arg UpdateDeli
 						if err != nil {
 							return err
 						}
+
 						deliveryOrderItemsReq = append(deliveryOrderItemsReq, deliveryOrderItemReq)
 					}
 
