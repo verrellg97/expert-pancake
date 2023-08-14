@@ -43,3 +43,15 @@ type GetItemUnitsResponse struct {
 		ItemUnits []ItemUnit `json:"item_units" validate:"required"`
 	}
 }
+
+type InsertStockMovementResponse struct {
+	Result struct {
+		Message string `json:"message" validate:"required"`
+	} `json:"result"`
+}
+
+type DeleteStockMovementResponse struct {
+	Result struct {
+		Message string `json:"message" validate:"required"`
+	} `json:"result"`
+}

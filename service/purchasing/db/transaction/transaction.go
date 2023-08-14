@@ -16,6 +16,7 @@ type PurchasingTrx interface {
 	UpdatePurchaseOrderStatusTrx(ctx context.Context, arg UpdatePurchaseOrderStatusTrxParams) (UpdatePurchaseOrderStatusTrxResult, error)
 	UpdateReceiptOrderItemsTrx(ctx context.Context, arg UpdateReceiptOrderItemsTrxParams) error
 	UpsertReceiptOrderTrx(ctx context.Context, arg UpsertReceiptOrderTrxParams) (UpsertReceiptOrderTrxResult, error)
+	UpdateReceiptOrderStatusTrx(ctx context.Context, arg UpdateReceiptOrderStatusTrxParams) (UpdateReceiptOrderStatusTrxResult, error)
 	UpsertPurchaseInvoiceTrx(ctx context.Context, arg UpsertPurchaseInvoiceTrxParams) error
 }
 

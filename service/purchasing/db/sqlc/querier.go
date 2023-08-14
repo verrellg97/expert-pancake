@@ -20,6 +20,7 @@ type Querier interface {
 	GetPurchaseOrderItems(ctx context.Context, purchaseOrderID string) ([]PurchasingPurchaseOrderItem, error)
 	GetPurchaseOrders(ctx context.Context, arg GetPurchaseOrdersParams) ([]PurchasingPurchaseOrder, error)
 	GetPurchaseSetting(ctx context.Context, companyID string) (PurchasingPurchaseSetting, error)
+	GetReceiptOrder(ctx context.Context, id string) (PurchasingReceiptOrder, error)
 	GetReceiptOrderItems(ctx context.Context, receiptOrderID string) ([]PurchasingReceiptOrderItem, error)
 	GetReceiptOrders(ctx context.Context, arg GetReceiptOrdersParams) ([]PurchasingReceiptOrder, error)
 	InsertPurchaseInvoiceItem(ctx context.Context, arg InsertPurchaseInvoiceItemParams) error
@@ -27,7 +28,9 @@ type Querier interface {
 	UpdateAcceptedPurchaseOrder(ctx context.Context, arg UpdateAcceptedPurchaseOrderParams) error
 	UpdateAcceptedPurchaseOrderItem(ctx context.Context, arg UpdateAcceptedPurchaseOrderItemParams) error
 	UpdatePurchaseOrderAddItem(ctx context.Context, purchaseOrderID string) error
+	UpdatePurchaseOrderItemAmountReceived(ctx context.Context, arg UpdatePurchaseOrderItemAmountReceivedParams) error
 	UpdatePurchaseOrderStatus(ctx context.Context, arg UpdatePurchaseOrderStatusParams) error
+	UpdateReceiptOrderStatus(ctx context.Context, arg UpdateReceiptOrderStatusParams) error
 	UpsertPurchaseInvoice(ctx context.Context, arg UpsertPurchaseInvoiceParams) (PurchasingPurchaseInvoice, error)
 	UpsertPurchaseOrder(ctx context.Context, arg UpsertPurchaseOrderParams) (PurchasingPurchaseOrder, error)
 	UpsertPurchaseOrderItem(ctx context.Context, arg UpsertPurchaseOrderItemParams) (PurchasingPurchaseOrderItem, error)

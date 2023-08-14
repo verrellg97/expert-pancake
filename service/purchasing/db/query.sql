@@ -172,6 +172,22 @@ UPDATE purchasing.receipt_orders
 SET is_deleted = TRUE
 WHERE id = $1;
 
+-- name: GetReceiptOrder :one
+SELECT 
+    *
+FROM purchasing.receipt_orders
+WHERE id = $1;
+
+-- name: UpdateReceiptOrderStatus :exec
+UPDATE purchasing.receipt_orders
+SET status = $2
+WHERE id = $1;
+
+-- name: UpdatePurchaseOrderItemAmountReceived :exec
+UPDATE purchasing.purchase_order_items
+SET amount_received = amount_received+$2
+WHERE id = $1;
+
 -- name: UpsertPurchaseInvoice :one
 INSERT INTO purchasing.purchase_invoices(
         id, sales_invoice_id, receipt_order_id, company_id, branch_id, form_number, transaction_date,

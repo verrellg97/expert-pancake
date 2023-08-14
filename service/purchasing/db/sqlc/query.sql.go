@@ -276,7 +276,7 @@ func (q *Queries) GetPurchaseOrder(ctx context.Context, id string) (PurchasingPu
 
 const getPurchaseOrderItems = `-- name: GetPurchaseOrderItems :many
 SELECT 
-    id, sales_order_item_id, purchase_order_id, primary_item_variant_id, secondary_item_variant_id, primary_item_unit_id, secondary_item_unit_id, primary_item_unit_value, secondary_item_unit_value, amount, price, is_deleted, created_at, updated_at
+    id, sales_order_item_id, purchase_order_id, primary_item_variant_id, secondary_item_variant_id, primary_item_unit_id, secondary_item_unit_id, primary_item_unit_value, secondary_item_unit_value, amount, amount_received, amount_invoiced, price, is_deleted, created_at, updated_at
 FROM purchasing.purchase_order_items
 WHERE purchase_order_id = $1 AND is_deleted = FALSE
 `
@@ -301,6 +301,8 @@ func (q *Queries) GetPurchaseOrderItems(ctx context.Context, purchaseOrderID str
 			&i.PrimaryItemUnitValue,
 			&i.SecondaryItemUnitValue,
 			&i.Amount,
+			&i.AmountReceived,
+			&i.AmountInvoiced,
 			&i.Price,
 			&i.IsDeleted,
 			&i.CreatedAt,
@@ -397,6 +399,36 @@ func (q *Queries) GetPurchaseSetting(ctx context.Context, companyID string) (Pur
 	err := row.Scan(
 		&i.CompanyID,
 		&i.IsAutoApproveOrder,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const getReceiptOrder = `-- name: GetReceiptOrder :one
+SELECT 
+    id, delivery_order_id, company_id, branch_id, warehouse_id, form_number, transaction_date, contact_book_id, secondary_company_id, konekin_id, total_items, is_deleted, status, created_at, updated_at
+FROM purchasing.receipt_orders
+WHERE id = $1
+`
+
+func (q *Queries) GetReceiptOrder(ctx context.Context, id string) (PurchasingReceiptOrder, error) {
+	row := q.db.QueryRowContext(ctx, getReceiptOrder, id)
+	var i PurchasingReceiptOrder
+	err := row.Scan(
+		&i.ID,
+		&i.DeliveryOrderID,
+		&i.CompanyID,
+		&i.BranchID,
+		&i.WarehouseID,
+		&i.FormNumber,
+		&i.TransactionDate,
+		&i.ContactBookID,
+		&i.SecondaryCompanyID,
+		&i.KonekinID,
+		&i.TotalItems,
+		&i.IsDeleted,
+		&i.Status,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
@@ -685,6 +717,22 @@ func (q *Queries) UpdatePurchaseOrderAddItem(ctx context.Context, purchaseOrderI
 	return err
 }
 
+const updatePurchaseOrderItemAmountReceived = `-- name: UpdatePurchaseOrderItemAmountReceived :exec
+UPDATE purchasing.purchase_order_items
+SET amount_received = amount_received+$2
+WHERE id = $1
+`
+
+type UpdatePurchaseOrderItemAmountReceivedParams struct {
+	ID             string `db:"id"`
+	AmountReceived int64  `db:"amount_received"`
+}
+
+func (q *Queries) UpdatePurchaseOrderItemAmountReceived(ctx context.Context, arg UpdatePurchaseOrderItemAmountReceivedParams) error {
+	_, err := q.db.ExecContext(ctx, updatePurchaseOrderItemAmountReceived, arg.ID, arg.AmountReceived)
+	return err
+}
+
 const updatePurchaseOrderStatus = `-- name: UpdatePurchaseOrderStatus :exec
 UPDATE purchasing.purchase_orders
 SET status = $2
@@ -698,6 +746,22 @@ type UpdatePurchaseOrderStatusParams struct {
 
 func (q *Queries) UpdatePurchaseOrderStatus(ctx context.Context, arg UpdatePurchaseOrderStatusParams) error {
 	_, err := q.db.ExecContext(ctx, updatePurchaseOrderStatus, arg.ID, arg.Status)
+	return err
+}
+
+const updateReceiptOrderStatus = `-- name: UpdateReceiptOrderStatus :exec
+UPDATE purchasing.receipt_orders
+SET status = $2
+WHERE id = $1
+`
+
+type UpdateReceiptOrderStatusParams struct {
+	ID     string `db:"id"`
+	Status string `db:"status"`
+}
+
+func (q *Queries) UpdateReceiptOrderStatus(ctx context.Context, arg UpdateReceiptOrderStatusParams) error {
+	_, err := q.db.ExecContext(ctx, updateReceiptOrderStatus, arg.ID, arg.Status)
 	return err
 }
 
@@ -884,7 +948,7 @@ SET sales_order_item_id = EXCLUDED.sales_order_item_id,
     amount = EXCLUDED.amount,
     price = EXCLUDED.price,
     updated_at = NOW()
-RETURNING id, sales_order_item_id, purchase_order_id, primary_item_variant_id, secondary_item_variant_id, primary_item_unit_id, secondary_item_unit_id, primary_item_unit_value, secondary_item_unit_value, amount, price, is_deleted, created_at, updated_at
+RETURNING id, sales_order_item_id, purchase_order_id, primary_item_variant_id, secondary_item_variant_id, primary_item_unit_id, secondary_item_unit_id, primary_item_unit_value, secondary_item_unit_value, amount, amount_received, amount_invoiced, price, is_deleted, created_at, updated_at
 `
 
 type UpsertPurchaseOrderItemParams struct {
@@ -927,6 +991,8 @@ func (q *Queries) UpsertPurchaseOrderItem(ctx context.Context, arg UpsertPurchas
 		&i.PrimaryItemUnitValue,
 		&i.SecondaryItemUnitValue,
 		&i.Amount,
+		&i.AmountReceived,
+		&i.AmountInvoiced,
 		&i.Price,
 		&i.IsDeleted,
 		&i.CreatedAt,

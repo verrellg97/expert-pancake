@@ -34,6 +34,8 @@ CREATE TABLE "purchasing"."purchase_order_items" (
   "primary_item_unit_value" bigint NOT NULL DEFAULT 0,
   "secondary_item_unit_value" bigint NOT NULL DEFAULT 0,
   "amount" bigint NOT NULL DEFAULT 0,
+  "amount_received" bigint NOT NULL DEFAULT 0,
+  "amount_invoiced" bigint NOT NULL DEFAULT 0,
   "price" bigint NOT NULL DEFAULT 0,
   "is_deleted" bool NOT NULL DEFAULT false,
   "created_at" timestamptz DEFAULT (now()),
