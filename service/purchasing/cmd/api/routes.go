@@ -23,16 +23,16 @@ const (
 
 	UpdatePurchaseOrderStatusPath = "/purchasing/order/status"
 
-	UpsertReceiptOrderPath      = "/purchasing/receipt-order/upsert"
-	GetReceiptOrdersPath        = "/purchasing/receipt-orders"
-	UpdateReceiptOrderItemsPath = "/purchasing/receipt-order/items/update"
-	GetReceiptOrderItemsPath    = "/purchasing/receipt-order/items"
-	DeleteReceiptOrderPath      = "/purchasing/receipt-order/delete"
+	UpsertReceiptOrderPath       = "/purchasing/receipt-order/upsert"
+	GetReceiptOrdersPath         = "/purchasing/receipt-orders"
+	UpdateReceiptOrderItemsPath  = "/purchasing/receipt-order/items/update"
+	GetReceiptOrderItemsPath     = "/purchasing/receipt-order/items"
+	DeleteReceiptOrderPath       = "/purchasing/receipt-order/delete"
+	UpdateReceiptOrderStatusPath = "/purchasing/receipt-order/status"
 
-	UpsertPurchaseInvoicePath = "/purchasing/invoice/upsert"
-	GetPurchaseInvoicesPath    = "/purchasing/invoices"
-	GetPurchaseInvoiceItemsPath   = "/purchasing/invoice/items"
-
+	UpsertPurchaseInvoicePath   = "/purchasing/invoice/upsert"
+	GetPurchaseInvoicesPath     = "/purchasing/invoices"
+	GetPurchaseInvoiceItemsPath = "/purchasing/invoice/items"
 )
 
 func (c *component) Routes(purchasingService model.PurchasingService) http.Handler {
@@ -56,7 +56,7 @@ func (c *component) Routes(purchasingService model.PurchasingService) http.Handl
 	mux.Method("POST", UpdatePurchaseOrderItemsPath, httpHandler.New(purchasingService.UpdatePurchaseOrderItems))
 	mux.Method("POST", GetPurchaseOrdersPath, httpHandler.New(purchasingService.GetPurchaseOrders))
 	mux.Method("POST", GetPurcaseOrderItemsPath, httpHandler.New(purchasingService.GetPurchaseOrderItems))
-	
+
 	mux.Method("POST", UpdatePurchaseSettingPath, httpHandler.New(purchasingService.UpdatePurchaseSetting))
 	mux.Method("POST", GetPurchaseSettingPath, httpHandler.New(purchasingService.GetPurchaseSetting))
 
@@ -69,11 +69,11 @@ func (c *component) Routes(purchasingService model.PurchasingService) http.Handl
 	mux.Method("POST", UpdateReceiptOrderItemsPath, httpHandler.New(purchasingService.UpdateReceiptOrderItems))
 	mux.Method("POST", GetReceiptOrderItemsPath, httpHandler.New(purchasingService.GetReceiptOrderItems))
 	mux.Method("POST", DeleteReceiptOrderPath, httpHandler.New(purchasingService.DeleteReceiptOrder))
+	mux.Method("POST", UpdateReceiptOrderStatusPath, httpHandler.New(purchasingService.UpdateReceiptOrderStatus))
 
 	mux.Method("POST", UpsertPurchaseInvoicePath, httpHandler.New(purchasingService.UpsertPurchaseInvoice))
 	mux.Method("POST", GetPurchaseInvoicesPath, httpHandler.New(purchasingService.GetPurchaseInvoices))
 	mux.Method("POST", GetPurchaseInvoiceItemsPath, httpHandler.New(purchasingService.GetPurchaseInvoiceItems))
-	
 
 	return mux
 }

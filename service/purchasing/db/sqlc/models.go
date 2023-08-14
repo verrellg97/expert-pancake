@@ -82,6 +82,8 @@ type PurchasingPurchaseOrderItem struct {
 	PrimaryItemUnitValue   int64        `db:"primary_item_unit_value"`
 	SecondaryItemUnitValue int64        `db:"secondary_item_unit_value"`
 	Amount                 int64        `db:"amount"`
+	AmountReceived         int64        `db:"amount_received"`
+	AmountInvoiced         int64        `db:"amount_invoiced"`
 	Price                  int64        `db:"price"`
 	IsDeleted              bool         `db:"is_deleted"`
 	CreatedAt              sql.NullTime `db:"created_at"`

@@ -20,6 +20,7 @@ type PurchasingService interface {
 	UpdateReceiptOrderItems(w http.ResponseWriter, r *http.Request) error
 	GetReceiptOrderItems(w http.ResponseWriter, r *http.Request) error
 	DeleteReceiptOrder(w http.ResponseWriter, r *http.Request) error
+	UpdateReceiptOrderStatus(w http.ResponseWriter, r *http.Request) error
 
 	UpsertPurchaseInvoice(w http.ResponseWriter, r *http.Request) error
 	GetPurchaseInvoices(w http.ResponseWriter, r *http.Request) error
@@ -304,5 +305,14 @@ type DeleteReceiptOrderRequest struct {
 }
 
 type DeleteReceiptOrderResponse struct {
+	Message string `json:"message" validate:"required"`
+}
+
+type UpdateReceiptOrderStatusRequest struct {
+	ReceiptOrderId string `json:"Receipt_order_id" validate:"required"`
+	Status         string `json:"status" validate:"required"`
+}
+
+type UpdateReceiptOrderStatusResponse struct {
 	Message string `json:"message" validate:"required"`
 }
